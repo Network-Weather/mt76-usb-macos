@@ -1,0 +1,17 @@
+# MediaTek firmware blobs are licensed and MUST NOT be committed (fetched by setup.sh)
+firmware/
+*.bin
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+*.egg-info/
+
+# Captures and local scratch
+*.pcap
+*.pcapng
+.DS_Store
