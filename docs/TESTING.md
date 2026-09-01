@@ -27,7 +27,7 @@ As of 2026-09-01, 47 tests pass. They cover:
 The final wheel was also installed with its declared PyUSB dependency into a newly created
 virtual environment. Both modules imported, the module/distribution versions matched `0.1.0`,
 and `pip check` reported no broken requirements. This verifies the wheel as an importable
-library artifact; [PUBLISHING.md](PUBLISHING.md) explains why `0.1.0` is still distributed as
+library artifact; [PUBLISHING.md](PUBLISHING.md) explains why `0.1.0` will be distributed as
 a GitHub source release rather than a turnkey PyPI application.
 
 The final source distribution was extracted into a new temporary directory and `bash setup.sh`

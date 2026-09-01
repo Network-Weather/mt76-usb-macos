@@ -4,12 +4,6 @@ Sprint started 2026-09-01. Items come from [ROADMAP.md](ROADMAP.md); each names 
 item. Strike through when merged. Hardware items need the reference adapter attached and at
 least two APs on one SSID.
 
-## Decide
-
-- [ ] **R18. 0.1.0 tag.** CHANGELOG records a released `0.1.0`; there is no tag and the repo is
-  private. Either tag the commit that passed the 2026-08-31 smoke gate or move the entry back
-  under Unreleased. Owner: David.
-
 ## Measure before building
 
 - [ ] **R14/R15 hypothesis check.** Force a phone to roam between two APs while the radio is
@@ -32,6 +26,8 @@ least two APs on one SSID.
 
 ## Landed this sprint
 
+- ~~R18 decision: 0.1.0 is not released. CHANGELOG entry moved back under Unreleased; tagging
+  waits on the publication checklist.~~
 - ~~Roadmap regrouped into goal tracks; R14 to R21 added.~~
 - ~~NEGATIVE_RESULTS.md created with the two known zeros.~~
 - ~~Random-input fuzz test for the descriptor, frame, and IE parsers.~~
