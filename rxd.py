@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-# Copyright (c) 2026 Network Weather, Inc.
+# Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 # Portions transcribed from openwrt/mt76 (BSD-3-Clause-Clear).
 # See NOTICE.md and RELATED_WORK.md for source lineage and peer implementations.
 """Decode connac2 RX descriptors and the 802.11 frames behind them.

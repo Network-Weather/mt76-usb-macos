@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-# Copyright (c) 2026 Network Weather, Inc.
+# Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 """Synthetic decode proofs for 802.11k/v/r, PMF, and mesh/backhaul parsing.
 
 These exercise pure frame-decode logic in rxd.py against hardcoded frame
