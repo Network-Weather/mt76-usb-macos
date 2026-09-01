@@ -204,12 +204,20 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 44 offline tests for firmware parsing, MCU framing, RX descriptors,
+The macOS-only CI runs 47 offline tests for firmware parsing, MCU framing, RX descriptors,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.
 It also enforces Ruff formatting/linting, shell syntax, and distribution builds. Hardware tests
 are intentionally separate because GitHub runners have no radio. See
 [docs/TESTING.md](docs/TESTING.md) for the dated attached-hardware evidence and exact untested
 list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known engineering gaps.
+
+## Planning
+
+- [ROADMAP.md](ROADMAP.md): stack-ranked work in three tracks (house-call instrument,
+  community capture source, researcher reference). Fresh as of 2026-09-01.
+- [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-01.
+- [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
+  not re-run by accident. Fresh as of 2026-09-01.
 
 ## License and provenance
 

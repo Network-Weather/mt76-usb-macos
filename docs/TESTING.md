@@ -14,14 +14,15 @@ bash setup.sh
 ./scripts/check.sh
 ```
 
-As of 2026-08-31, 44 tests pass. They cover:
+As of 2026-09-01, 47 tests pass. They cover:
 
 - MediaTek patch/RAM metadata parsing and truncated-image rejection;
 - MCU sequence wrapping, command framing, scatter framing, and endpoint choice without USB;
 - 802.11k/v/r, PMF, EasyMesh, 802.11s, four-address, and protected-action parsing;
 - channel/RSSI conversion, PHY-rate points, airtime, and A-MPDU grouping;
-- radiotap and pcap serialization; and
-- bounded Probe Request and TXWI input construction without transmitting.
+- radiotap and pcap serialization;
+- bounded Probe Request and TXWI input construction without transmitting; and
+- random-byte inputs to the descriptor, frame, and IE parsers never raising.
 
 The final wheel was also installed with its declared PyUSB dependency into a newly created
 virtual environment. Both modules imported, the module/distribution versions matched `0.1.0`,

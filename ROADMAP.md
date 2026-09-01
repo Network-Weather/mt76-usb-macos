@@ -1,13 +1,22 @@
 # Roadmap
 
-This roadmap is ordered by user value and risk reduction, not by novelty. The project should
-first become a trustworthy, composable macOS capture source for the exact tested MT7921U
-hardware. It should not recreate the broad adapter support or attack engines already offered
-by [wifikit and wifit3](RELATED_WORK.md).
+The project serves three goals, and the roadmap is organized as one track per goal:
 
+- **Track A, house-call instrument.** A Mac-attached passive radio that measures a home
+  network as a person walks between named places, with roaming as the first-class question:
+  which APs are audible where, whether they advertise 802.11k/v/r, whether they steer clients,
+  and whether clients accept the steer.
+- **Track B, community capture source.** A Wireshark extcap and a distributable install so
+  other people's adapters and tools can use the driver without reading it.
+- **Track C, researcher reference.** A small, readable, evidence-gated reference for MT7921U
+  bring-up that a wireless researcher, or an AI assistant helping one, can find and trust.
+
+Items carry stable `R` numbers because other documents cite them; numbers do not imply order.
+Within a track, items are stack-ranked top to bottom. Strike an item through when it merges.
 The evidence behind the current baseline is in [docs/TESTING.md](docs/TESTING.md): the exact
 `0e8d:7961` reference device captures on 2.4, 5, and 6 GHz and writes radiotap pcap. Wider
-claims require wider evidence.
+claims require wider evidence. The current sprint is in [TODO.md](TODO.md); measured
+negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 ## Decision rules
 
@@ -18,35 +27,69 @@ claims require wider evidence.
 - Add a USB ID, bandwidth, band, or chip family only after recording dated hardware evidence.
 - Keep protocol knowledge reusable: documented structures, small pure functions, and sanitized
   test vectors are more valuable to peers than another monolithic command-line tool.
-- A failed experiment can complete a roadmap item if the limits and evidence are documented.
+- A failed experiment can complete a roadmap item if the limits and evidence are documented in
+  [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md). Check that file before proposing an experiment.
 - Treat the cross-project findings in
   [RELATED_WORK.md](RELATED_WORK.md#what-this-project-can-learn-from-the-ecosystem) as an
   investigation queue, not inherited capability. Reimplement independently, preserve license
   boundaries, and require local evidence.
+- The Python code stays the reference. Any future native implementation (for example a Swift
+  library for the Network Weather app) is a separate repository tested against the same recorded
+  USB corpus (R20), not a rewrite of this one.
 
-## 0.1.x — Trustworthy reference implementation
+## Track A: house-call instrument
 
-### R1. Repeatable passive hardware smoke command
+The decoder already classifies the whole roaming vocabulary: BTM query, request, and response
+with named status codes, neighbor reports, FT authentication and reassociation, the Extended
+Capabilities BSS-transition bit, and BSS Load. `rxd.management_event` normalizes all of it and
+nothing outside `tests/` consumes it yet. This track builds the consumer.
 
-Create one non-interactive command that boots firmware, tunes a redacted channel set, captures
-frames, and emits a machine-readable result suitable for local release checks.
+One radio cannot watch both channels of a roam. The BTM exchange, the deauth or disassoc with its
+reason code, and the client's last data frame occur on the current AP's channel; only
+authentication and reassociation occur on the target. That split is standard 802.11 behavior and
+is the working hypothesis behind R15, but it has not been confirmed against a phone on this
+hardware. R14's first measurement is to confirm it.
 
-Done when it:
+### R14. Place-tagged survey command
 
-- reports USB identity, firmware hashes, macOS/Python versions, requested and actual channel,
-  transfer/frame counts, timeouts, decode failures, and optional independent pcap validation;
-- redacts SSIDs, BSSIDs, client addresses, and payloads by default;
-- distinguishes `pass`, `fail`, `unsupported`, and `not tested`; and
-- has a checked-in schema plus one redacted result from the reference adapter.
+Add a passive command that takes a place name, sweeps the channels of one SSID (or all bands),
+and emits one JSON record per place: audible BSSIDs of that SSID with RSSI, channel, width,
+BSS Load, and the 802.11k/v/r flags each AP advertises. Use the redacted-JSON pattern from
+`scripts/hardware_smoke.py`; identifiers are opt-in, never default.
 
-### R2. Descriptor discovery and explicit device support
+Done when a walk through several named places produces one file per place, the fields are
+schema-checked, each field cites the frame and IE it came from, and the command has been run on
+the reference adapter in at least one multi-AP home with the result format reviewed against what
+a house-call report actually needs.
 
-Replace the hard-coded interface 3 and endpoint layout with descriptor inspection and an
-explicit supported-device table. Do not infer that every `0e8d:7961` enclosure has the same
-layout.
+### R5. Long-lived capture session with a single RX reader
 
-Done when descriptor selection is unit-tested with synthetic layouts, ambiguous layouts fail
-closed with useful diagnostics, and each claimed adapter has a dated smoke result.
+Boot once, retain ownership of the initialized device, retune safely, and stream until stopped.
+This removes the firmware upload cost from each capture and fixes a measured fidelity gap: MCU
+replies and 802.11 frames share endpoint `0x84` once EP4 routing is on, and the reply-wait loop
+in `mcu_wait` discards every non-event packet until the matching sequence arrives, so each retune
+silently drops in-flight frames. The frames that matter for a roam are exactly the low-volume,
+time-critical ones this drops.
+
+Done when one reader drains the endpoint and demultiplexes into an MCU-reply queue and a frame
+queue; startup, stop, retune, and device-loss behavior have explicit states; cancellation does
+not corrupt output; and queue depth, frames dropped (including frames dropped during a retune),
+USB errors, and current channel are observable. Cold boot, warm reattach, and recovery must be
+distinct transitions; a warm path must drain or classify buffered RX without accidentally
+accepting a stale MCU response.
+
+### R15. Channel lock, follow mode, and the roaming event log
+
+Lock the radio to one client's current AP channel, log every steering and roaming event from
+`rxd.management_event` with a timestamp, and follow the client on reassociation or to a BTM
+target channel. Emit a classified per-walk log: AP never steered; AP steered and the client
+refused with status X; the client roamed on its own with reason Y; the roam completed on the
+target channel or was not observed there.
+
+Done when a forced roam of a known client on the reference adapter yields the expected event
+sequence on the source channel, the arrival on the target channel is either captured or reported
+as unobserved (never inferred), the per-hop blind interval is measured and reported, and the
+event log is schema-checked and redacted by default.
 
 ### R3. Failure handling and soak evidence
 
@@ -59,36 +102,81 @@ appear in the result. Tests must include a short bulk write, a stale or wrong-se
 an unsolicited event, and a stalled endpoint. Hot-unplug remains explicitly untested until
 exercised on hardware.
 
-### R4. Maintainable Python boundary
+### R16. Multiple adapters
 
-Replace runtime monkey-patching and heterogeneous dictionaries with typed result objects and a
-small transport interface. This unlocks fake-USB tests and useful static type checking.
+After R2, open more than one adapter in one process so a second radio can sit on the roam
+target channel while the first stays on the source. Two adapters of the same USB ID must be
+distinguished without relying on serial numbers appearing in output.
 
-Done when the public capture path passes an agreed mypy or pyright configuration without broad
-module ignores, USB behavior can be tested through a fake transport, and the compatibility
-policy for public Python APIs is documented.
+Done when two reference adapters capture concurrently with per-device counters, a forced roam
+is observed on both source and target channels in one run, and the single-adapter path is
+unchanged.
 
-## 0.2 — Usable capture source
+### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 
-### R5. Long-lived capture session
+Both currently read zero and the code that observed the zero is not in the repository (see
+[NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md)). These are research-risk items that may end as
+documented negatives, so run them beside Track A rather than after it, and ship the probe
+scripts whatever the outcome.
 
-Boot once, retain ownership of the initialized device, retune safely, and stream until stopped.
-This removes the firmware upload cost from each capture.
+- **R11. Hardware CCA/channel-busy counters.** Determine whether the missing step is firmware
+  configuration, counter selection, reset/latch behavior, or a firmware limitation. wifikit
+  reports MT7921AU MIB/test-mode experiments, but those are leads only; record the exact
+  registers and reset/latch sequence independently against the pinned mt76 source. Done when
+  counters correlate with controlled traffic across repeated trials, including idle and busy
+  channels, or when a documented negative result explains why they are unavailable. Frame counts
+  must not be relabeled as channel utilization.
+- **R12. Noise floor.** The `mt792x_phy_get_nf()` path returns zero. Find and validate a real
+  per-channel or per-chain source, or document that this firmware path does not expose one.
+  Done when values respond plausibly to controlled RF conditions and are compared with an
+  independent instrument, or the negative result is recorded. RSSI alone must not be presented
+  as SNR.
 
-Done when startup, stop, retune, and device-loss behavior have explicit states; cancellation
-does not corrupt output; and queue depth, dropped frames, USB errors, and current channel are
-observable. Cold boot, warm reattach, and recovery must be distinct transitions; a warm path
-must drain or classify buffered RX without accidentally accepting a stale MCU response.
+## Track B: community capture source
 
-### R6. Wireshark extcap
+### R2. Descriptor discovery and explicit device support
 
-Add an extcap adapter that exposes supported channels and emits radiotap capture data on stdout.
-This is the highest-impact end-user integration and should consume the stable session API rather
-than duplicate driver logic.
+Replace the hard-coded interface 3 and endpoint layout with descriptor inspection and an
+explicit supported-device table. This is the first thing that fails for anyone whose adapter is
+not the reference unit, so it precedes extcap. Do not infer that every `0e8d:7961` enclosure
+has the same layout.
+
+Done when descriptor selection is unit-tested with synthetic layouts, ambiguous layouts fail
+closed with useful diagnostics, and each claimed adapter has a dated smoke result.
+
+### R6. Wireshark extcap, bundled with rate, MCS, and width in radiotap
+
+Add an extcap adapter that exposes supported channels and emits radiotap capture data on stdout,
+consuming the R5 session API rather than duplicating driver logic. Ship it with the subset of R8
+that the decoder already produces: rate, MCS, and channel width. A first Wireshark-visible
+experience without PHY rate is a half-feature.
 
 Done when Wireshark can enumerate the adapter, select a supported band/channel, start and stop a
-capture, and open the result without malformed packets. The workflow must be hardware-tested on
-a clean macOS account and documented with its permissions and firmware requirements.
+capture, and open the result without malformed packets and with rate columns populated. The
+workflow must be hardware-tested on a clean macOS account and documented with its permissions
+and firmware requirements.
+
+### R17. Distribution
+
+An extcap must be an executable Wireshark can find. A venv, Homebrew libusb, and a firmware
+fetch script are too much friction for adoption. Choose and document one install path (a pipx
+console script, a Homebrew formula, or a zipapp) that places the extcap where Wireshark looks
+and fetches firmware with the same pinned hashes as `setup.sh`.
+
+Done when a fresh macOS account goes from nothing to a Wireshark 6 GHz capture by following one
+page, and [docs/PUBLISHING.md](docs/PUBLISHING.md) records the chosen path and why PyPI is or is
+not part of it.
+
+### R8. Rich, verified radiotap
+
+Export only metadata the hardware actually supplies: channel/bandwidth, RSSI per available
+chain, rate/MCS, aggregation flags, FCS state, and timestamps where trustworthy. Today the pcap
+writer emits flags, channel, and one signal value; the decoder already produces more, and the
+hardware timestamp is decoded but unused.
+
+Done when each field has a source citation to mt76 or the hardware message format, golden tests
+cover legacy/HT/VHT/HE samples, and Wireshark agrees on a sanitized hardware corpus. Unknown
+values must be omitted rather than synthesized.
 
 ### R7. Capture format, metadata, and privacy
 
@@ -98,17 +186,6 @@ firmware, and drop metadata. Add bounded file rotation and explicit payload hand
 Done when Wireshark independently accepts all emitted formats, timestamps and snap length are
 specified, rotation cannot silently overwrite unrelated files, and documentation explains that
 802.11 captures may contain personal or sensitive data.
-
-## 0.3 — Capture fidelity
-
-### R8. Rich, verified radiotap
-
-Export only metadata the hardware actually supplies: channel/bandwidth, RSSI per available
-chain, rate/MCS, aggregation flags, FCS state, and timestamps where trustworthy.
-
-Done when each field has a source citation to mt76 or the hardware message format, golden tests
-cover legacy/HT/VHT/HE samples, and Wireshark agrees on a sanitized hardware corpus. Unknown
-values must be omitted rather than synthesized.
 
 ### R9. Qualify bandwidth and control-channel combinations
 
@@ -127,32 +204,65 @@ aggregation metadata for callers that need it.
 Done when malformed length/padding cases cannot overrun input, golden and property-based tests
 cover multi-subframe inputs, and the capture output behavior is documented.
 
-## 0.4 — RF measurement experiments
+## Track C: researcher reference and discoverability
 
-### R11. Hardware CCA/channel-busy counters
+### R18. Publish 0.1.0
 
-The upstream registers currently read as zero in this userspace bring-up. Determine whether the
-missing step is firmware configuration, counter selection, reset/latch behavior, or an actual
-firmware limitation.
+The repository is private and untagged while [CHANGELOG.md](CHANGELOG.md) records a released
+`0.1.0`. Resolve that one way or the other, then work the [publication checklist](docs/PUBLISHING.md):
+visibility, description and topics, branch protection, issues and private vulnerability
+reporting, and the release tag. Nothing in this track is discoverable until this lands.
 
-wifikit reports useful MT7921AU MIB/test-mode experiments, but those reports are only leads.
-Record the exact registers and reset/latch sequence independently against the pinned mt76 source
-before changing the local implementation.
+Done when the tag exists, the checklist is complete, and CHANGELOG and the GitHub release agree.
 
-Done when counters correlate with controlled traffic across repeated trials, including idle and
-busy channels, or when a documented negative result explains why they are unavailable. Frame
-counts must not be relabeled as channel utilization.
+### R1. Repeatable passive hardware smoke command (mostly done)
 
-### R12. Noise floor
+~~Create one non-interactive command that boots firmware, tunes a redacted channel set, captures
+frames, and emits a machine-readable result~~ (`scripts/hardware_smoke.py`, with a checked-in
+schema, a redacted reference result, and an offline test). ~~Redacts SSIDs, BSSIDs, client
+addresses, and payloads by default.~~ ~~Reports USB identity, firmware hashes, macOS/Python
+versions, transfer/frame counts, timeouts, and decode failures.~~
 
-The current `mt792x_phy_get_nf()` path returns zero. Find and validate a real per-channel or
-per-chain noise-floor source, or document that this firmware path does not expose one.
+Remaining: report requested and actual channel per step, distinguish `not tested` from
+`inconclusive`, and add optional independent pcap validation through tshark.
 
-Done when values respond plausibly to controlled RF conditions and are compared with an
-independent instrument/reference adapter, or the negative result is recorded. RSSI alone must
-not be presented as SNR.
+### R19. Findings that a researcher's assistant can retrieve
 
-## Later — More hardware, only with evidence
+The five measured bring-up findings in the README and the roaming event vocabulary in `rxd.py`
+are the two things a wireless researcher, or an AI assistant helping one, would search for.
+Give each finding a stable anchor in a `FINDINGS.md` with its evidence date, exact register
+names, and the error text seen when the step is missing. Publish an indexed write-up with the
+same terms, mint a DOI against the existing `CITATION.cff`, and request links from where
+researchers already look: the mt76 issue tracker, the AWUS036AXML threads, the Wireshark extcap
+wiki, and the peer project READMEs. Add an `llms.txt` last; it is the least of these.
+
+Done when each finding has a URL that resolves to its evidence, the DOI exists, and at least
+one inbound link from an external venue is live. Which venues an assistant actually indexes is
+not measured; revisit the ordering if search results say otherwise.
+
+### R20. Recorded-USB corpus and fake transport
+
+Record sanitized USB transfers from the reference adapter (firmware download, MCU exchanges,
+retunes, and a short capture on each band) and replay them through a fake transport in tests.
+The corpus is the contract any other implementation, including a future native one, is tested
+against, and it is what lets R3's fault-injection tests exist.
+
+Done when the offline suite boots the driver end to end against the corpus with no adapter,
+the corpus contains no SSIDs, MAC addresses, serials, or payloads, and a documented tool
+regenerates it from hardware.
+
+### R4. Maintainable Python boundary
+
+Replace runtime method attachment and heterogeneous dictionaries with typed result objects and a
+small transport interface. Do this after R5 fixes the session API shape; typing an interface
+that R5 then reshapes is rework. Readability of the two flat modules is a feature of this
+track, not a cost to be optimized away.
+
+Done when the public capture path passes an agreed mypy or pyright configuration without broad
+module ignores, USB behavior can be tested through the R20 fake transport, and the compatibility
+policy for public Python APIs is documented.
+
+## Deferred
 
 ### R13. Additional MT7921U layouts and sibling chips
 
@@ -163,7 +273,16 @@ not proof of compatibility.
 Each newly claimed model needs captured descriptors, an explicit capability record, firmware
 provenance, offline fixtures, and tri-band/bandwidth hardware results appropriate to that model.
 
-## Gated optional track — Transmit
+### R21. iPad
+
+Third-party USB drivers exist on iPadOS 16 and later for M-series iPads through DriverKit
+([WWDC22 session 110373](https://developer.apple.com/videos/play/wwdc2022/110373/)), distributed
+through the App Store and enabled by the user in Settings. That is a C++ driver extension, not
+Python, so an iPad path is a from-scratch port tested against the R20 corpus. No path for
+iPhone was found. Entitlement availability and whether an iPad USB-C port can power the
+reference adapter are unverified. Not planned until Track A has a Mac result worth porting.
+
+### Gated optional track: transmit
 
 Injection remains a research demo: a few spaced probe requests have worked, but sustained
 transmit can panic the MCU and the current publication evidence does not re-test injection.
@@ -182,7 +301,7 @@ Before any broader transmit API or claim:
 
 Linux mt76 issue [#839](https://github.com/openwrt/mt76/issues/839) and upstream commit
 [`9de65849`](https://github.com/openwrt/mt76/commit/9de658490af758f89c083605bd412310511fff17)
-show why the generic “active monitor” capability must not be assumed for MT792x. A peer's
+show why the generic "active monitor" capability must not be assumed for MT792x. A peer's
 spoofed-address auto-ACK experiment is a hypothesis to reproduce, not evidence for this driver.
 
 The project does not plan to reproduce wifikit/wifit3 attack suites. If transmit becomes stable,
