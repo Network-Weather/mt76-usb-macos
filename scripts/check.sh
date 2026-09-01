@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-# Copyright (c) 2026 Network Weather, Inc.
+# Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 # Run the publication checks that do not require firmware or attached hardware.
 set -eu
 

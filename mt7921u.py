@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-# Copyright (c) 2026 Network Weather, Inc.
+# Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 # Portions transcribed from openwrt/mt76 (BSD-3-Clause-Clear).
 # See NOTICE.md and RELATED_WORK.md for source lineage, firmware, and peer implementations.
 """Userspace driver for the MediaTek MT7921AU over libusb.

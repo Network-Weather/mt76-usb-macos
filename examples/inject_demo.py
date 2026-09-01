@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-# Copyright (c) 2026 Network Weather, Inc.
+# Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 #
 # ============================================================================
 # WARNING: injection on this radio is RESEARCH-GRADE and RATE-LIMITED.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-# Copyright (c) 2026 Network Weather, Inc.
+# Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 """Capture one channel to a radiotap pcap that Wireshark can read.
 
 Passive receive only. Once frames land in a pcap, every existing 802.11 tool

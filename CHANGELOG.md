@@ -16,6 +16,8 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
   researcher reference), keeping existing item numbers and adding R14 to R21. Added TODO.md for
   the current sprint, NEGATIVE_RESULTS.md for the channel-busy and noise-floor zeros, and
   CLAUDE.md for agent sessions.
+- Corrected the copyright holder in the license, citation metadata, and source headers to
+  Primatech Paper Co LLC d/b/a Network Weather.
 
 ### Tests
 
