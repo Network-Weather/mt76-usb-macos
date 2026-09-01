@@ -208,8 +208,8 @@ cover multi-subframe inputs, and the capture output behavior is documented.
 
 ### R18. Publish 0.1.0
 
-The repository is private and untagged while [CHANGELOG.md](CHANGELOG.md) records a released
-`0.1.0`. Resolve that one way or the other, then work the [publication checklist](docs/PUBLISHING.md):
+The repository is private and untagged. `0.1.0` is the first planned tag; its candidate notes sit
+under Unreleased in [CHANGELOG.md](CHANGELOG.md). Work the [publication checklist](docs/PUBLISHING.md):
 visibility, description and topics, branch protection, issues and private vulnerability
 reporting, and the release tag. Nothing in this track is discoverable until this lands.
 
