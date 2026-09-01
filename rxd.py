@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 # Copyright (c) 2026 Network Weather, Inc.
-# Portions transcribed from openwrt/mt76 (BSD-3-Clause-Clear). See NOTICE.
+# Portions transcribed from openwrt/mt76 (BSD-3-Clause-Clear).
+# See NOTICE.md and RELATED_WORK.md for source lineage and peer implementations.
 """Decode connac2 RX descriptors and the 802.11 frames behind them.
 
 Transcribed from mt7921_mac_fill_rx (mt7921/mac.c) and the MT_RXD* field
 definitions in mt76_connac2_mac.h. BSD-3-Clause-Clear, same as the driver.
 """
+
 from __future__ import annotations
 
 import struct
@@ -150,11 +152,7 @@ def decode(buf: bytes) -> dict | None:
             off += 48
 
     # Monitor mode reads RCPI from group 5 when present, else group 3's v1.
-    rcpi_word = (
-        rxv_group5
-        if rxv_group5 is not None
-        else (rxv_group3[1] if rxv_group3 else None)
-    )
+    rcpi_word = rxv_group5 if rxv_group5 is not None else (rxv_group3[1] if rxv_group3 else None)
     if rcpi_word is not None:
         chains = [to_rssi(fget(rcpi_word, f)) for f in MT_PRXV_RCPI]
         out["chain_signal"] = chains
@@ -508,11 +506,7 @@ def parse_neighbor_report(value: bytes) -> dict:
 
 
 def parse_neighbor_reports(ie_list: list[tuple[int, bytes]]) -> list[dict]:
-    return [
-        parse_neighbor_report(value)
-        for eid, value in ie_list
-        if eid == EID_NEIGHBOR_REPORT
-    ]
+    return [parse_neighbor_report(value) for eid, value in ie_list if eid == EID_NEIGHBOR_REPORT]
 
 
 def parse_measurements(ie_list: list[tuple[int, bytes]]) -> list[dict]:
@@ -886,9 +880,7 @@ def parse_ies(body: bytes) -> dict:
     if EID_RSN in ies:
         out["rsn"] = parse_rsn(ies[EID_RSN])
     if EID_RRM_ENABLED_CAPABILITIES in ies:
-        out["rrm_capabilities"] = parse_rrm_capabilities(
-            ies[EID_RRM_ENABLED_CAPABILITIES]
-        )
+        out["rrm_capabilities"] = parse_rrm_capabilities(ies[EID_RRM_ENABLED_CAPABILITIES])
     if EID_EXT_CAPABILITY in ies:
         extended = ies[EID_EXT_CAPABILITY]
         out["bss_transition"] = len(extended) >= 3 and bool(extended[2] & 0x08)
@@ -1144,13 +1136,12 @@ def decode_rxv(rxv0, rxv2=0):
 
     mcs = idx
     if mode in (
+        MT_PHY_TYPE_VHT,
         MT_PHY_TYPE_HE_SU,
         MT_PHY_TYPE_HE_EXT_SU,
         MT_PHY_TYPE_HE_TB,
         MT_PHY_TYPE_HE_MU,
     ):
-        mcs = idx & 0xF
-    elif mode == MT_PHY_TYPE_VHT:
         mcs = idx & 0xF
 
     bw_mhz = BW_MHZ.get(bw)
@@ -1195,7 +1186,7 @@ def _mpdu_bytes_on_air(frame_len):
 class Aggregate:
     """One A-MPDU, or a single non-aggregated frame."""
 
-    __slots__ = ("timestamp", "frames", "mode", "rate_mbps", "is_ampdu")
+    __slots__ = ("frames", "is_ampdu", "mode", "rate_mbps", "timestamp")
 
     def __init__(self, timestamp, mode, rate_mbps, is_ampdu):
         self.timestamp = timestamp

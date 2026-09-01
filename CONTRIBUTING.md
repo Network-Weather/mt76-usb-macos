@@ -11,6 +11,10 @@ best-effort.
   descriptor field, cite the upstream source file inline the way the existing code does,
   and note the mt76 commit you referenced. See [NOTICE.md](NOTICE.md) for the pinned
   baseline commit; diff forward from it.
+- **Check the existing ecosystem.** Read [RELATED_WORK.md](RELATED_WORK.md) before claiming
+  a new mechanism. If mt76, linux-firmware, wifikit, wifit3, an issue, or another project
+  informed a change, cite the exact revision/file/symbol or experiment. Comparative evidence
+  does not become a local hardware result without being reproduced here.
 - **Never commit firmware.** The MediaTek blobs are licensed and fetched at runtime by
   `setup.sh`. `.gitignore` blocks `*.bin`; keep it that way.
 - **No hardware-only tests in CI.** The test suite must pass with no adapter attached and
@@ -23,9 +27,15 @@ best-effort.
 ## Before opening a PR
 
 ```bash
-ruff check .
-pytest -q
+./scripts/check.sh
 ```
 
+The script checks Ruff formatting and lint, shell syntax (plus ShellCheck when installed),
+all offline tests, and both distribution formats. See [docs/QUALITY.md](docs/QUALITY.md) for
+what these checks establish and the quality gaps they do not cover.
+
 Describe what you changed, why, and (for driver changes) the upstream mt76 source you
-checked against.
+checked against. If you exercised hardware, use the evidence format in
+[docs/TESTING.md](docs/TESTING.md), preferably attach the redacted output from
+`scripts/hardware_smoke.py`, and state exactly what was not tested. Never attach its ambient
+traffic or an unredacted pcap.

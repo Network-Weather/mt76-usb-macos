@@ -17,10 +17,12 @@
 # ============================================================================
 """Minimal probe-request injection demo.
 
-Usage: inject_demo.py [channel] [band]     band 2.4GHz|5GHz|6GHz (default 2.4GHz)
+Usage: inject_demo.py [channel] [band] --acknowledge-experimental-transmit
 
 Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
 """
+
+import argparse
 import os
 import sys
 import time
@@ -53,6 +55,8 @@ def listen(dev, our_mac_str, secs=1.5):
         except usb.core.USBError:
             continue
         d = rxd.decode(raw)
+        if d is None:
+            continue
         f = d.get("frame")
         if not f:
             continue
@@ -64,11 +68,26 @@ def listen(dev, our_mac_str, secs=1.5):
 
 
 def main() -> int:
-    chan = int(sys.argv[1]) if len(sys.argv) > 1 else 6
-    band = sys.argv[2] if len(sys.argv) > 2 else "2.4GHz"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("channel", type=int, nargs="?", default=6)
+    parser.add_argument("band", nargs="?", choices=sorted(CHAN_BAND), default="2.4GHz")
+    parser.add_argument(
+        "--acknowledge-experimental-transmit",
+        action="store_true",
+        help="confirm that this sends frames and can panic the MCU",
+    )
+    args = parser.parse_args()
+    if not args.acknowledge_experimental_transmit:
+        parser.error("refusing to transmit without --acknowledge-experimental-transmit")
+    if not 1 <= args.channel <= 255:
+        parser.error("channel must be between 1 and 255")
+    chan = args.channel
+    band = args.band
 
-    patch = open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb").read()
-    ram = open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb").read()
+    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
+        patch = fh.read()
+    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
+        ram = fh.read()
 
     with m.Mt7921uDevice() as dev:
         dev.bringup(patch, ram, log=lambda *a: None)
@@ -79,15 +98,12 @@ def main() -> int:
 
         dev.set_monitor_mode()
         dev.set_sniffer(True)
-        dev.set_chan_info(control_ch=chan, center_ch=chan,
-                          bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-        dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band,
-                           bw=m.SNIFFER_BW_20)
+        dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
+        dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band, bw=m.SNIFFER_BW_20)
         time.sleep(0.2)
 
         base, _ = listen(dev, mac_str, 1.0)
-        print(f"baseline receive works: {sum(base.values())} frames, "
-              f"{base['Beacon']} beacons")
+        print(f"baseline receive works: {sum(base.values())} frames, {base['Beacon']} beacons")
         print(f"chip alive before transmit: {dev.alive()}\n")
 
         frame = m.build_probe_request(mac)

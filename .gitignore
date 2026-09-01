@@ -8,8 +8,14 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
 .hypothesis/
+.coverage
+coverage.xml
+htmlcov/
 *.egg-info/
+build/
+dist/
 
 # Captures and local scratch
 *.pcap

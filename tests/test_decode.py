@@ -6,6 +6,7 @@ These exercise pure frame-decode logic in rxd.py against hardcoded frame
 bytes. No hardware, no firmware, and no USB dependency: rxd imports cleanly on
 its own, so this suite runs anywhere pytest does.
 """
+
 import struct
 
 import rxd
@@ -102,9 +103,7 @@ def test_btm_response_decodes_accepted_target():
 
 def test_neighbor_report_response_and_link_measurement():
     response = rxd.parse_80211(mgmt(13, bytes((5, 5, 9)) + neighbor_report()))
-    link = rxd.parse_80211(
-        mgmt(13, bytes((5, 3, 4, 35, 2, 0xF6, 12, 1, 2, 140, 45)))
-    )
+    link = rxd.parse_80211(mgmt(13, bytes((5, 3, 4, 35, 2, 0xF6, 12, 1, 2, 140, 45))))
 
     assert response["action"]["name"] == "neighbor-report-response"
     assert response["action"]["neighbor_reports"][0]["bssid"] == rxd.mac(TARGET)

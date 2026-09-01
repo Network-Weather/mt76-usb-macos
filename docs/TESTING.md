@@ -1,0 +1,154 @@
+# Testing and evidence
+
+This document separates repeatable offline tests, current attached-hardware evidence,
+older observations, and untested behavior. A passing parser test is not presented as a
+hardware result, and a packet seen once is not presented as a reliability guarantee.
+
+## Offline test suite
+
+Run on macOS from the repository root:
+
+```bash
+bash setup.sh
+./.venv/bin/pip install -e '.[dev]'
+./scripts/check.sh
+```
+
+As of 2026-08-31, 44 tests pass. They cover:
+
+- MediaTek patch/RAM metadata parsing and truncated-image rejection;
+- MCU sequence wrapping, command framing, scatter framing, and endpoint choice without USB;
+- 802.11k/v/r, PMF, EasyMesh, 802.11s, four-address, and protected-action parsing;
+- channel/RSSI conversion, PHY-rate points, airtime, and A-MPDU grouping;
+- radiotap and pcap serialization; and
+- bounded Probe Request and TXWI input construction without transmitting.
+
+The final wheel was also installed with its declared PyUSB dependency into a newly created
+virtual environment. Both modules imported, the module/distribution versions matched `0.1.0`,
+and `pip check` reported no broken requirements. This verifies the wheel as an importable
+library artifact; [PUBLISHING.md](PUBLISHING.md) explains why `0.1.0` is still distributed as
+a GitHub source release rather than a turnkey PyPI application.
+
+The final source distribution was extracted into a new temporary directory and `bash setup.sh`
+was run from that copy. It created a fresh environment, installed PyUSB, found Homebrew libusb,
+downloaded exactly the two pinned firmware files, and verified both SHA-256 hashes. The scan,
+pcap, and hardware-smoke help paths then loaded successfully, while the injection example
+refused to run without its explicit transmit acknowledgement flag.
+
+CI runs only on Apple Silicon macOS (`macos-14` and `macos-26`, Python 3.10 and 3.14).
+CI has no USB adapter and does not prove firmware boot or RF behavior.
+
+For a redacted attached-device result, run:
+
+```bash
+./.venv/bin/python scripts/hardware_smoke.py --plan all > hardware-smoke.json
+```
+
+The command is passive-only and emits aggregate counts rather than frames, SSIDs, BSSIDs,
+client addresses, payloads, or the USB serial number. Its exit status is 0 for `pass`, 1 for
+`fail`, 2 for `inconclusive` (for example, a requested band was quiet), and 3 for
+`unsupported` (the exact USB device was absent). The checked-in schema is
+[hardware-smoke.schema.json](hardware-smoke.schema.json).
+
+## Attached-hardware validation: 2026-08-31
+
+### Test bed
+
+| Item | Value |
+|---|---|
+| Host | Apple M1 Max |
+| OS | macOS 26.6, build 25G72 |
+| Python | 3.14.7 |
+| USB device | MediaTek `Wireless_Device`, `0e8d:7961`, USB SuperSpeed |
+| Driver access | PyUSB 1.3.1 + Homebrew libusb 1.0.30, unprivileged user |
+| RAM firmware SHA-256 | `b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9` |
+| Patch firmware SHA-256 | `a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6` |
+| linux-firmware commit | `e981caea6ed33c48d25b7dbf473327dbd01df163` |
+
+No root process, kernel extension, DriverKit extension, or VM was used.
+
+### Redacted release smoke result
+
+The final aggregate smoke path was run with:
+
+```bash
+./.venv/bin/python scripts/hardware_smoke.py --plan all --dwell 0.5
+```
+
+It returned `pass` after all 43 requested channels, with 1,156 decoded frames: 316 on
+2.4 GHz, 673 on 5 GHz, and 167 on 6 GHz. There were zero undecoded transfers and zero
+non-timeout USB errors. Ordinary quiet-channel read timeouts are reported separately (43
+in this run) and are not treated as hardware faults. The full aggregate-only result is
+[hardware-smoke-reference.json](hardware-smoke-reference.json); its UTC timestamp falls on
+2026-09-01 while the America/Los_Angeles test date was 2026-08-31.
+
+### Passive tri-band sweep
+
+```bash
+DWELL_SECONDS=0.75 ./.venv/bin/python examples/scan.py all
+```
+
+One firmware boot followed by 43 channel changes completed. The scan observed 67 physical
+BSSIDs: 24 on 2.4 GHz, 37 on 5 GHz, and 6 on 6 GHz. At least one beacon or Probe Response
+was decoded on each band. This proves the tested device could boot, accept monitor/sniffer
+commands, retune, receive USB transfers, decode descriptors, and parse management frames
+on all three bands in that RF environment.
+
+It does **not** prove that every legal channel, channel width, frame subtype, or regulatory
+domain works. A quiet channel returning no packets is not itself a driver failure.
+
+### Independent 6 GHz pcap check
+
+```bash
+./.venv/bin/python examples/sniff_to_pcap.py 53 5 /tmp/mt7921u-e2e-6ghz.pcap 6GHz
+/Applications/Wireshark.app/Contents/MacOS/capinfos /tmp/mt7921u-e2e-6ghz.pcap
+/Applications/Wireshark.app/Contents/MacOS/tshark \
+  -r /tmp/mt7921u-e2e-6ghz.pcap -Y '_ws.malformed' -T fields -e frame.number
+```
+
+The capture contained 353 packets over 5.008523 seconds at radiotap frequency 6215 MHz.
+Wireshark classified 307 as management and 46 as data; its malformed filter returned zero
+packets. `capinfos` identified the encapsulation as “IEEE 802.11 plus radiotap radio
+header.” The local pcap SHA-256 was
+`d4ced0a3929ffab020c06697fe148542e0c47431a3086800eaf1668099920457`.
+
+The pcap is not committed because ambient captures contain third-party MAC addresses and
+network names. The hash records the exact artifact that was checked without publishing it.
+
+After the publication edits, the same command path was rerun for two seconds. It produced
+57 more 6 GHz packets, again with zero packets matching Wireshark's `_ws.malformed` filter
+(pcap SHA-256 `f17e156261f0ade1126e81585ee7fa6e9cc49a78009fcd09d858b97618d8c4c4`).
+
+After the final release-safety changes, a fresh three-second channel 53 capture produced
+232 packets over 3.010363 seconds: 189 management and 43 data frames. `capinfos` again
+identified radiotap 802.11, strict time order was true, and tshark returned zero packets
+for `_ws.malformed`. Its unpublished ambient pcap SHA-256 is
+`cbaa4953e9d45f550304e30b8dbe10569f25e5b6c0bd00d017dd556816897a0a`.
+
+## Previously observed, not rerun in the current validation
+
+- control-frame receive;
+- per-frame PHY width/MCS/rate/retry reporting across all modes;
+- hardware good-MPDU and FCS-error counters;
+- 40 and 80 MHz capture paths; and
+- low-rate Probe Request injection followed by a directed Probe Response.
+
+These observations motivated code and documentation, but they should not be interpreted
+as a current release qualification.
+
+## Explicitly untested or unsupported
+
+- Intel Macs, non-26.6 macOS hardware runs, and non-Apple operating systems;
+- USB IDs other than `0e8d:7961` or layouts whose Wi-Fi function is not interface 3;
+- 160/320 MHz, simultaneous channels, multiple adapters, MT7922, PCIe, and SDIO;
+- association, client mode, AP mode, routing, CoreWLAN, and a BSD network interface;
+- Bluetooth firmware or coexistence;
+- decryption and complete capture of beamformed downlink or A-MSDU inner frames;
+- working noise-floor and CCA-busy measurements;
+- suspend/resume, sleep/wake, hot-unplug recovery, and long-duration soak behavior;
+- sustained or high-rate injection, injection across bands/widths, TX power, TX feedback,
+  and regulatory-domain enforcement; and
+- automatic recovery from an MCU panic.
+
+Do not turn an item in this section into a positive claim until a dated result, exact test
+bed, command, acceptance criterion, and failure disclosure are added here.

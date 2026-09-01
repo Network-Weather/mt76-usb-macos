@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If this software helps your work, please cite it using this metadata."
+title: "mt7921u-macos: a userspace MT7921AU Wi-Fi 6E monitor-mode driver for macOS"
+type: software
+authors:
+  - name: "Network Weather, Inc."
+version: 0.1.0
+date-released: "2026-08-31"
+repository-code: "https://github.com/Network-Weather/mt7921u-macos"
+url: "https://github.com/Network-Weather/mt7921u-macos"
+license: BSD-3-Clause-Clear
+keywords:
+  - MT7921AU
+  - MT7921U
+  - Wi-Fi 6E
+  - macOS
+  - monitor mode
+  - packet capture
+  - radiotap

@@ -1,22 +1,76 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "mt7921u-macos"
 version = "0.1.0"
-description = "Userspace MT7921U monitor-mode driver for macOS (6 GHz capable, no kext/DriverKit/VM)"
+description = "Userspace MT7921AU/MT7921U Wi-Fi 6E monitor-mode driver for macOS"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "BSD-3-Clause-Clear" }
-dependencies = ["pyusb>=1.2"]
+license = "BSD-3-Clause-Clear"
+license-files = ["LICENSE", "NOTICE.md"]
+dependencies = ["pyusb>=1.2,<2"]
+keywords = [
+    "802.11",
+    "6 GHz",
+    "AWUS036AXML",
+    "libusb",
+    "macOS",
+    "monitor mode",
+    "MT7921AU",
+    "MT7921U",
+    "packet capture",
+    "radiotap",
+    "Wi-Fi 6E",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: MacOS X",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: System :: Hardware :: Hardware Drivers",
+    "Topic :: System :: Networking :: Monitoring",
+]
+
+[project.urls]
+Changelog = "https://github.com/Network-Weather/mt7921u-macos/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/Network-Weather/mt7921u-macos"
+Documentation = "https://github.com/Network-Weather/mt7921u-macos/blob/main/docs/TESTING.md"
+Issues = "https://github.com/Network-Weather/mt7921u-macos/issues"
+"Related work" = "https://github.com/Network-Weather/mt7921u-macos/blob/main/RELATED_WORK.md"
+Repository = "https://github.com/Network-Weather/mt7921u-macos.git"
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest"]
+dev = [
+    "build>=1.2,<2",
+    "pytest>=8,<10",
+    "ruff>=0.16,<0.17",
+    "setuptools>=77",
+    "wheel>=0.45,<1",
+]
+
+[tool.setuptools]
+py-modules = ["mt7921u", "rxd"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B"]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "EXE", "FURB", "S", "SIM", "PIE", "PT", "RUF"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
