@@ -36,8 +36,9 @@ These are publication disclosures, not hidden backlog:
   design problem, so type checking is not yet advertised or made cosmetic. Roadmap R4 replaces
   these boundaries before adding a type-check gate.
 - **Coverage is narrow.** The suite exercises important pure parsing and serialization paths,
-  but there is no coverage threshold, sanitized golden USB corpus, mutation test, or fuzz/property
-  test campaign.
+  but there is no coverage threshold, sanitized golden USB corpus, or mutation test. A seeded
+  random-byte smoke fuzz covers the descriptor, frame, and IE parser entry points; structured
+  and property-based fuzzing remain roadmap work (R20).
 - **The USB boundary is not injectable.** There is no fake transport for stalls, short reads,
   disconnects, delayed MCU replies, or cancellation. Hardware-negative paths therefore have
   weaker evidence than pure parsers.
@@ -102,5 +103,5 @@ The following expectations guide the roadmap and reviews.
 - Security reports have a private path, and malformed device/air input is in the threat model.
 - Claims distinguish offline synthetic coverage, observed hardware behavior, and untested behavior.
 
-Roadmap R1–R10 turns the most important gaps above into acceptance criteria rather than a vague
+The roadmap tracks in [ROADMAP.md](../ROADMAP.md) turn the most important gaps above into acceptance criteria rather than a vague
 promise to “improve quality.”
