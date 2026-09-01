@@ -3,6 +3,16 @@
 This project follows [Semantic Versioning](https://semver.org/). Hardware claims remain
 separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
+## [Unreleased]
+
+### Documentation
+
+- Expanded provenance to distinguish the pinned openwrt/mt76 transcription source from the
+  canonical in-tree Linux integration, retain exact upstream copyright notices, pin peer
+  comparison revisions, and catalogue selected downstream/backport projects.
+- Recorded independently testable lessons from mt76, wifikit, and wifit3 without treating peer
+  claims as local evidence or crossing their license boundaries.
+
 ## [0.1.0] — 2026-08-31
 
 Initial research release.
@@ -34,3 +44,4 @@ Initial research release.
   [evidence and untested list](docs/TESTING.md#explicitly-untested-or-unsupported).
 
 [0.1.0]: https://github.com/Network-Weather/mt7921u-macos/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Network-Weather/mt7921u-macos/compare/v0.1.0...HEAD

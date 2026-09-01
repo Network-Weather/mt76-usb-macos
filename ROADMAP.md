@@ -19,6 +19,10 @@ claims require wider evidence.
 - Keep protocol knowledge reusable: documented structures, small pure functions, and sanitized
   test vectors are more valuable to peers than another monolithic command-line tool.
 - A failed experiment can complete a roadmap item if the limits and evidence are documented.
+- Treat the cross-project findings in
+  [RELATED_WORK.md](RELATED_WORK.md#what-this-project-can-learn-from-the-ecosystem) as an
+  investigation queue, not inherited capability. Reimplement independently, preserve license
+  boundaries, and require local evidence.
 
 ## 0.1.x — Trustworthy reference implementation
 
@@ -51,7 +55,9 @@ failures predictable.
 
 Done when offline fault-injection tests cover cleanup and timeout paths, a repeated retune test
 and a multi-hour passive capture complete without leaked interfaces, and drop/error counters
-appear in the result. Hot-unplug remains explicitly untested until exercised on hardware.
+appear in the result. Tests must include a short bulk write, a stale or wrong-sequence MCU reply,
+an unsolicited event, and a stalled endpoint. Hot-unplug remains explicitly untested until
+exercised on hardware.
 
 ### R4. Maintainable Python boundary
 
@@ -71,7 +77,8 @@ This removes the firmware upload cost from each capture.
 
 Done when startup, stop, retune, and device-loss behavior have explicit states; cancellation
 does not corrupt output; and queue depth, dropped frames, USB errors, and current channel are
-observable.
+observable. Cold boot, warm reattach, and recovery must be distinct transitions; a warm path
+must drain or classify buffered RX without accidentally accepting a stale MCU response.
 
 ### R6. Wireshark extcap
 
@@ -128,6 +135,10 @@ The upstream registers currently read as zero in this userspace bring-up. Determ
 missing step is firmware configuration, counter selection, reset/latch behavior, or an actual
 firmware limitation.
 
+wifikit reports useful MT7921AU MIB/test-mode experiments, but those reports are only leads.
+Record the exact registers and reset/latch sequence independently against the pinned mt76 source
+before changing the local implementation.
+
 Done when counters correlate with controlled traffic across repeated trials, including idle and
 busy channels, or when a documented negative result explains why they are unavailable. Frame
 counts must not be relabeled as channel utilization.
@@ -161,9 +172,18 @@ Passive milestones do not depend on this track.
 Before any broader transmit API or claim:
 
 - supported frame types, rates, channels, and regulatory assumptions must fail closed;
+- regulatory-domain and per-band TX-power programming must be implemented and independently
+  reviewed before transmitting outside an isolated test setup;
+- sequence control, endpoint selection, basic-rate choice, hardware retry state, and ACK
+  behavior must have golden descriptor tests and hardware evidence;
 - tests must run in an isolated RF environment with a watchdog and recovery procedure;
 - acknowledgements, firmware failures, queue depth, and rate limiting must be observable; and
 - sustained and malformed-input tests must demonstrate bounded behavior.
+
+Linux mt76 issue [#839](https://github.com/openwrt/mt76/issues/839) and upstream commit
+[`9de65849`](https://github.com/openwrt/mt76/commit/9de658490af758f89c083605bd412310511fff17)
+show why the generic “active monitor” capability must not be assumed for MT792x. A peer's
+spoofed-address auto-ACK experiment is a hypothesis to reproduce, not evidence for this driver.
 
 The project does not plan to reproduce wifikit/wifit3 attack suites. If transmit becomes stable,
 the useful output is a narrow, documented primitive that those projects could evaluate.

@@ -21,6 +21,9 @@ different built-in capabilities.
 **Lineage:** the driver logic is transcribed from the BSD-3-Clause-Clear
 [`openwrt/mt76`](https://github.com/openwrt/mt76) MT7921 path, and it boots MediaTek blobs
 fetched from [`linux-firmware`](https://gitlab.com/kernel-firmware/linux-firmware). The
+same mt76 lineage is integrated in the
+[Linux kernel](https://github.com/torvalds/linux/tree/master/drivers/net/wireless/mediatek/mt76);
+openwrt/mt76 commit `c5a3bd91` is the exact transcription baseline for this repository. The
 closest peer userspace implementations are [`wifikit`](https://github.com/RLabs-Inc/wifikit)
 on macOS and [`wifit3`](https://github.com/derv82/wifit3) across Windows, Linux, and macOS. See
 [Lineage and related work](RELATED_WORK.md) for exact relationships, pinned revisions, and
@@ -146,7 +149,10 @@ again in the publication run. Exact commands and results are in [docs/TESTING.md
 The transmit path (`inject`, `_build_txwi`, `build_probe_request`, and
 `examples/inject_demo.py`) is **experimental, rate-limited, and outside the current
 end-to-end validation.** Sustained transmit can panic the MCU and require a physical
-replug. The code does not implement regulatory-domain enforcement. Transmit only on
+replug. Linux mt76 also stopped advertising generic active-monitor support for MT792x after
+[upstream issue #839](https://github.com/openwrt/mt76/issues/839); that feature and this raw
+injection demo are not equivalent, and neither establishes reliable auto-ACK behavior here.
+The code does not implement regulatory-domain or per-band TX-power enforcement. Transmit only on
 frequencies, power levels, and systems you are legally permitted to use. This repository
 is a diagnostics and driver-research tool, not an attack toolkit. The demo refuses to run
 unless `--acknowledge-experimental-transmit` is explicitly supplied.

@@ -6,8 +6,12 @@ driver claim. Before making it public or tagging a release:
 - verify the macOS-only GitHub Actions matrix is green;
 - run `pip-audit -r requirements.txt` against the current Python vulnerability database;
 - review [TESTING.md](TESTING.md) and keep its current/previous/untested distinctions;
-- review [../RELATED_WORK.md](../RELATED_WORK.md) and retain both foundational upstream
-  projects and both peer projects in release notes and repository-facing documentation;
+- review [../RELATED_WORK.md](../RELATED_WORK.md) and retain the direct transcription source,
+  in-tree Linux integration, firmware source, and both peer projects in release notes and
+  repository-facing documentation;
+- retain the exact upstream copyright notices in `LICENSE` and `NOTICE.md`, distinguish the
+  pinned openwrt/mt76 transcription source from its in-tree Linux integration, and pin any peer
+  claim to the revision actually reviewed;
 - confirm firmware blobs, pcaps, SSIDs, MAC addresses, and serial numbers are absent from
   the Git history, release assets, and issue attachments;
 - enable GitHub Issues and private vulnerability reporting;
@@ -48,8 +52,9 @@ Do not market this as the first native macOS userspace Wi-Fi driver. `wifikit` o
 macOS and MT7921AU, while `wifit3` overlaps on a cross-platform userspace mt76 port. The defensible value
 is a compact, auditable Python reference focused on passive tri-band capture and measured
 bring-up details. `openwrt/mt76` must be credited as the source implementation and
-`linux-firmware` as the required firmware source. Link related work; it makes the claim
-more credible, not less.
+the in-tree Linux mt76 module as the canonical kernel integration; `linux-firmware` must be
+credited as the required firmware source. Link related work; it makes the claim more credible,
+not less.
 
 Keep the strong/weak table in [../RELATED_WORK.md](../RELATED_WORK.md#capability-comparison)
 current. Every release should state the comparison date, distinguish peer self-reports from

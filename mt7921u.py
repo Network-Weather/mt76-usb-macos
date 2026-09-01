@@ -1354,8 +1354,11 @@ Mt7921uDevice.set_eeprom = _set_eeprom
 # designed to answer. That makes it the cleanest possible proof that a frame
 # reached the air: the AP replies to us by name.
 #
-# Injection is documented to panic this chip's MCU (openwrt/mt76 #839). Expect
-# to lose the device and have to replug it.
+# Linux active-monitor failure is tracked separately in openwrt/mt76 issue #839;
+# upstream commit 9de65849 stopped advertising that generic feature on MT792x.
+# This userspace port has independently observed MCU instability under sustained
+# raw injection. Expect to lose the device and have to replug it. See
+# RELATED_WORK.md and ROADMAP.md.
 # ---------------------------------------------------------------------------
 
 MT_TXD_SIZE = 32

@@ -6,7 +6,7 @@ that “based on,” “depends on,” and “peer” are not conflated.
 
 ## Foundational upstream projects
 
-### openwrt/mt76 — source implementation
+### openwrt/mt76 — direct transcription source
 
 [`openwrt/mt76`](https://github.com/openwrt/mt76) is the direct source implementation for
 the register map, USB control path, firmware boot sequence, MCU framing, channel/sniffer
@@ -17,6 +17,32 @@ This repository transcribes the BSD-3-Clause-Clear MT7921 path from
 mechanisms as independently invented. Inline comments name the relevant mt76 files and
 symbols so a change can be diffed against upstream. The detailed licensing audit and file
 list are in [NOTICE.md](NOTICE.md).
+
+The principal source surfaces at that revision are
+[`mt792x_usb.c`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt792x_usb.c),
+[`usb.c`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/usb.c),
+[`mt7921/mcu.c`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7921/mcu.c),
+[`mt7921/mac.c`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7921/mac.c),
+[`mt76_connac_mcu.c`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac_mcu.c),
+[`mt76_connac_mac.c`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac_mac.c),
+[`mt792x_regs.h`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt792x_regs.h), and
+[`mt76_connac2_mac.h`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac2_mac.h).
+These links are deliberately revision-pinned; a moving `master` link is not adequate
+provenance for transcribed register values or wire formats.
+
+### Linux kernel mt76 — canonical in-tree integration
+
+The corresponding driver is distributed in the Linux kernel under
+[`drivers/net/wireless/mediatek/mt76`](https://github.com/torvalds/linux/tree/786262be6048deab760f68c8acc2c85607165894/drivers/net/wireless/mediatek/mt76),
+including the in-tree
+[`mt7921u` USB module](https://github.com/torvalds/linux/blob/786262be6048deab760f68c8acc2c85607165894/drivers/net/wireless/mediatek/mt76/mt7921/usb.c).
+It is the canonical Linux integration of the same mt76 lineage, not a second independent
+implementation. This repository's transcription baseline remains the openwrt/mt76 commit
+above; the Linux tree is cited so readers can follow kernel integration, review lifecycle and
+regulatory behavior, and avoid describing mt76 as merely an OpenWrt-only driver. The in-tree
+links were reviewed at Linux commit
+[`786262be`](https://github.com/torvalds/linux/commit/786262be6048deab760f68c8acc2c85607165894)
+on 2026-09-01.
 
 ### linux-firmware — required firmware source
 
@@ -41,20 +67,68 @@ either project is included here.
 Wi-Fi toolkit written in Rust. It supports multiple USB chipsets, including MT7921AU, and
 has a much broader end-user and security-testing scope than this passive reference driver.
 It is the closest peer for the “MT7921AU directly from macOS userspace” category.
+The comparison below was reviewed at
+[`6ab5c5b1`](https://github.com/RLabs-Inc/wifikit/commit/6ab5c5b1e88333b1acc0ada7c01d75f6d5d7ff24)
+(MIT); no wifikit code is incorporated here.
 
 ### wifit3
 
 [`derv82/wifit3`](https://github.com/derv82/wifit3) is a Python userspace wireless auditor
 for Windows, Linux, and macOS containing another port of the mt76/mt7921u path. Its
-[`MT7921AU.md`](https://github.com/derv82/wifit3/blob/master/src/wifit3/chips/mt7921au/MT7921AU.md)
+[`MT7921AU.md`](https://github.com/derv82/wifit3/blob/274f4849d88a88dd59d035f06b46c552c1a695be/src/wifit3/chips/mt7921au/MT7921AU.md)
 documents Windows and Linux hardware results, interface-layout differences, endpoint
 routing, monitor receive, and transmit behavior. It is valuable comparative evidence for
 the same silicon and for a broader cross-platform design.
+The comparison below was reviewed at
+[`274f4849`](https://github.com/derv82/wifit3/commit/274f4849d88a88dd59d035f06b46c552c1a695be)
+(GPL-2.0). Its source may inform experiments and clean, independent implementation, but it
+must not be copied into this BSD-licensed project without an explicit license decision.
+
+## Selected downstream and backport projects
+
+These projects redistribute, package, backport, or document Linux mt76. They are useful for
+compatibility reports and operational practices, but they are downstream evidence—not
+additional original sources for the protocol—and no code from them is incorporated here.
+
+- [`morrownr/mt76`](https://github.com/morrownr/mt76/tree/6b0ef22e275c36e3a5d10dd108546192c54e9238)
+  adapts openwrt/mt76 for standalone out-of-tree builds, DKMS, diagnostics, and current desktop
+  kernels. It is useful for install/diagnostic design and device reports, not for establishing
+  that this macOS port supports the same adapters.
+- [`astsam/mt7921`](https://github.com/astsam/mt7921/tree/f281125d5a7f654b53d745d824418492bb3f9f7c)
+  is a historical backport of the kernel 5.18.19 MT7921 driver to older kernels. It helps explain
+  deployment history but is too old to use as the current protocol baseline.
+- [`morrownr/USB-WiFi`](https://github.com/morrownr/USB-WiFi/tree/0e00f79dca363e0d3edc410b0bb3905882041d42)
+  collects adapter and monitor-mode field reports. Those reports are useful leads for hardware
+  selection and test planning, but remain community observations until reproduced locally.
+
+Listing every GitHub fork would add noise rather than provenance. A downstream belongs here
+when it supplied a concrete design input, compatibility report, or experiment. Cite the exact
+revision, file, issue, or result used; do not imply endorsement or independent confirmation.
+
+## What this project can learn from the ecosystem
+
+The following are investigation leads, not inherited capabilities. Each needs an independent
+implementation and local tests before it can change this project's support claims.
+
+| Source | Useful lesson | Current local state / required evidence |
+|---|---|---|
+| Linux/openwrt mt76 | Treat reset, resume, USB transport recovery, firmware events, regulatory setup, and TX-power programming as explicit lifecycle operations | Cold bring-up works; recovery, resume, regulatory enforcement, and sustained TX remain unqualified |
+| mt76 issue [`#839`](https://github.com/openwrt/mt76/issues/839) and commit [`9de65849`](https://github.com/openwrt/mt76/commit/9de658490af758f89c083605bd412310511fff17) | MT792x must not advertise Linux “active monitor” merely because the mt76 core supports it | This project makes no active-monitor/auto-ACK claim; its low-rate injection demo is a different, experimental path |
+| wifikit | Use explicit lifecycle states, targeted hardware test programs, and controlled MIB/test-mode experiments | The roadmap has soak/recovery and CCA work; peer self-reports are not substituted for local measurements |
+| wifit3 | Discover the vendor interface, reject short USB writes, match MCU replies by sequence, drain stale RX, distinguish warm attach from cold boot, and build sanitized USB record/replay tests | Sequence matching exists; descriptor discovery, short-transfer tests, warm attach, stale-buffer handling, and replay fixtures remain roadmap work |
+| wifit3 TX investigations | Sequence control, endpoint selection, per-band basic rates, regulatory-domain configuration, and TX-power programming all affect credible transmit results | Do not expand TX until these are independently implemented, isolated-RF tested, and evidence-gated |
+| Linux downstreams | Diagnostics should record the actual module/source revision, firmware, USB identity/layout, and recent transport errors | The hardware smoke record covers identity and firmware; reusable transport diagnostics and broader layouts remain open |
+
+Two boundaries matter. First, another project's successful hardware result is a hypothesis here,
+not a pass. Second, learning an architecture is not permission to copy its implementation:
+wifit3 is GPL-2.0, while this repository and the transcribed mt76 paths are
+BSD-3-Clause-Clear.
 
 ## Capability comparison
 
 This table is a project-selection aid, not an independent benchmark. Peer capabilities are
-summarized from their own documentation as read on 2026-08-31; “not assessed” means this
+summarized from their own documentation at the pinned revisions above as read on 2026-09-01;
+“not assessed” means this
 project has not verified the behavior. All projects are moving targets.
 
 | Dimension | mt7921u-macos (this project) | openwrt/mt76 | wifikit | wifit3 |

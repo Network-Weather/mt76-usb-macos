@@ -15,6 +15,11 @@ best-effort.
   a new mechanism. If mt76, linux-firmware, wifikit, wifit3, an issue, or another project
   informed a change, cite the exact revision/file/symbol or experiment. Comparative evidence
   does not become a local hardware result without being reproduced here.
+- **Preserve license boundaries.** The transcribed mt76 paths are BSD-3-Clause-Clear and their
+  exact notices are retained in [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md). wifikit is MIT;
+  wifit3 is GPL-2.0. Ideas and observed behavior can motivate an independent experiment, but do
+  not translate peer code into this BSD repository without an explicit license review and an
+  updated provenance record.
 - **Never commit firmware.** The MediaTek blobs are licensed and fetched at runtime by
   `setup.sh`. `.gitignore` blocks `*.bin`; keep it that way.
 - **No hardware-only tests in CI.** The test suite must pass with no adapter attached and
