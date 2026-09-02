@@ -10,9 +10,6 @@ least two APs on one SSID.
   locked to the source AP's channel. Record which of these appear on the source channel: BTM
   request, BTM response, deauth/disassoc with reason, last data frame. Record what is missing.
   Result goes in [docs/TESTING.md](docs/TESTING.md) or [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
-- [ ] **R5 drop magnitude.** Count frames discarded by the MCU reply wait during a retune on a
-  busy channel, over ten retunes. The count exists in `mcu_wait` but only prints when verbose;
-  expose it as a counter first. Report the distribution, not the mean.
 
 ## Build
 
@@ -26,6 +23,8 @@ least two APs on one SSID.
 
 ## Landed this sprint
 
+- ~~R5 drop magnitude measured: median 1 frame lost per retune, max 8, over 30 hops at 100 to
+  250 frames per second; `scripts/retune_drops.py` and the `mcu_wait` counters shipped.~~
 - ~~R18 decision: 0.1.0 is not released. CHANGELOG entry moved back under Unreleased; tagging
   waits on the publication checklist.~~
 - ~~Roadmap regrouped into goal tracks; R14 to R21 added.~~

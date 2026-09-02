@@ -172,3 +172,37 @@ def test_txwi_requires_a_complete_80211_header():
 
     with pytest.raises(ValueError, match="24-byte"):
         dev._build_txwi(b"\0" * 23)
+
+
+class QueuedRxMcu(m.Mt7921uMcu):
+    """MCU transport whose RX endpoint replays a fixed queue of transfers."""
+
+    def __init__(self, transfers):
+        super().__init__()
+        self.evt_ep4 = True
+        self.queue = list(transfers)
+
+    def bulk_in(self, ep, length, timeout=1000):
+        assert ep == m.EP_IN_PKT_RX
+        return self.queue.pop(0)
+
+
+def rx_event(seq: int) -> bytes:
+    raw = bytearray(m.MCU_RXD_LEN + 4)
+    struct.pack_into("<I", raw, 0, m.PKT_TYPE_RX_EVENT << 27)
+    raw[m.RXD_SEQ_OFFSET] = seq
+    return bytes(raw)
+
+
+def rx_frame() -> bytes:
+    # Packet type 0 in rxd0 bits 27..31: an ordinary received 802.11 frame.
+    return bytes(m.MCU_RXD_LEN + 4)
+
+
+def test_mcu_wait_counts_frames_and_stale_events_it_discards():
+    dev = QueuedRxMcu([rx_frame(), rx_frame(), rx_event(3), rx_frame(), rx_event(7)])
+
+    assert dev.mcu_wait(seq=7, cid=0x44) == rx_event(7)
+    assert dev.mcu_wait_dropped_frames == 3
+    assert dev.mcu_wait_stale_events == 1
+    assert dev.queue == []

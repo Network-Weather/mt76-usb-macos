@@ -126,6 +126,29 @@ identified radiotap 802.11, strict time order was true, and tshark returned zero
 for `_ws.malformed`. Its unpublished ambient pcap SHA-256 is
 `cbaa4953e9d45f550304e30b8dbe10569f25e5b6c0bd00d017dd556816897a0a`.
 
+## Retune frame loss: 2026-09-02
+
+Same host and firmware as the 2026-08-31 test bed; macOS 26.6, Python 3.14.7, reference adapter.
+
+```bash
+./.venv/bin/python scripts/retune_drops.py --retunes 10 --dwell 2
+./.venv/bin/python scripts/retune_drops.py --retunes 20 --dwell 1
+```
+
+The script listens on seven candidate channels for one second each, picks the two busiest
+(2.4 GHz channel 11 and 5 GHz channel 44 in this environment), then alternates between them,
+draining frames for the dwell and recording what the two retune commands discard.
+
+| Run | Hops | Frames per dwell | Frames lost per hop | Stale MCU events | Channel switch | Sniffer config |
+|---|---|---|---|---|---|---|
+| 1 | 10 | 188 to 502 in 2 s | min 0, median 1, max 8, total 14 | 0 | 7.5 to 9.4 ms | 6.1 to 7.1 ms |
+| 2 | 20 | 88 to 286 in 1 s | min 0, median 1, max 4, total 21 | 0 | median 9.1 ms | median 6.7 ms |
+
+A retune therefore costs about 16 ms of MCU round trips and, while the caller keeps reading, loses
+a median of one frame. This is the cost of hopping while draining; it does not describe what is
+lost when a caller stops reading for longer, and it was measured on ambient traffic, not a
+controlled load.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

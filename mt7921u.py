@@ -342,6 +342,11 @@ class Mt7921uMcu(Mt7921u):
         super().__init__(verbose=verbose)
         self.msg_seq = 0
         self.evt_ep4 = False  # set once dma_rx_evt_ep4 has run
+        # Counters for what mcu_wait throws away while hunting for a reply on the
+        # shared RX endpoint. Cumulative over the object lifetime; callers snapshot
+        # before and after a command to attribute drops to it.
+        self.mcu_wait_dropped_frames = 0  # 802.11 frames discarded (not MCU events)
+        self.mcu_wait_stale_events = 0  # MCU events whose sequence did not match
 
     def _next_seq(self) -> int:
         self.msg_seq = (self.msg_seq + 1) & 0xF
@@ -440,6 +445,7 @@ class Mt7921uMcu(Mt7921u):
             pkt_type = (rxd0 >> 27) & 0x1F
             if pkt_type != PKT_TYPE_RX_EVENT:
                 discarded += 1
+                self.mcu_wait_dropped_frames += 1
                 continue
             rseq = raw[RXD_SEQ_OFFSET]
             if self.verbose:
@@ -447,6 +453,7 @@ class Mt7921uMcu(Mt7921u):
             if rseq == seq:
                 return raw
             discarded += 1
+            self.mcu_wait_stale_events += 1
         raise McuError(
             f"cid 0x{cid:02x}: no response matching seq {seq} ({discarded} frames skipped)"
         )

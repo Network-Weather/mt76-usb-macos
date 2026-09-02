@@ -21,6 +21,12 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
   source/wheel construction.
 - Pinned linux-firmware provenance and SHA-256 verification, security/contribution policies,
   related-project comparison, integration analysis, and an acceptance-criteria roadmap.
+- `mcu_wait` counts the 802.11 frames and stale MCU events it discards while waiting for a reply,
+  on the device object, so callers can attribute losses to a command.
+- `scripts/retune_drops.py`: measures frames lost per retune on the two busiest channels and
+  reports the distribution as counts-only JSON.
+- `scripts/roam_watch.py`: lists the BSSIDs of one SSID with their channels and 802.11k/v/r
+  flags, or locks to one channel and prints classified roaming and steering events.
 
 ### Experimental
 
@@ -52,5 +58,6 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 ### Tests
 
 - Random-input fuzz test asserting the descriptor, frame, and IE parsers never raise.
+- Offline test for the `mcu_wait` discard counters through a queued fake RX endpoint.
 
 [Unreleased]: https://github.com/Network-Weather/mt7921u-macos/commits/main

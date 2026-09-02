@@ -65,11 +65,14 @@ a house-call report actually needs.
 ### R5. Long-lived capture session with a single RX reader
 
 Boot once, retain ownership of the initialized device, retune safely, and stream until stopped.
-This removes the firmware upload cost from each capture and fixes a measured fidelity gap: MCU
-replies and 802.11 frames share endpoint `0x84` once EP4 routing is on, and the reply-wait loop
-in `mcu_wait` discards every non-event packet until the matching sequence arrives, so each retune
-silently drops in-flight frames. The frames that matter for a roam are exactly the low-volume,
-time-critical ones this drops.
+This removes the firmware upload cost from each capture and closes a measured, small fidelity
+gap: MCU replies and 802.11 frames share endpoint `0x84` once EP4 routing is on, and `mcu_wait`
+discards every frame it reads while hunting for its reply. Measured with `scripts/retune_drops.py`
+on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#retune-frame-loss-2026-09-02)): a retune is two
+commands totalling about 16 ms, and with the caller draining continuously it drops a median of one
+frame per hop and at most eight, at 100 to 250 frames per second. That is a 16 ms blind window per
+hop, not bulk loss. The device object now carries the drop counters, so any caller can attribute
+lost frames to the command that lost them; R5 turns that into a queue that loses nothing.
 
 Done when one reader drains the endpoint and demultiplexes into an MCU-reply queue and a frame
 queue; startup, stop, retune, and device-loss behavior have explicit states; cancellation does

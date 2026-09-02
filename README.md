@@ -75,6 +75,9 @@ terms and the one blob you must not fetch.
 ./.venv/bin/python examples/scan.py 6                            # 6 GHz PSCs only
 ./.venv/bin/python examples/sniff_to_pcap.py 53 8 out.pcap 6GHz # 6 GHz radiotap pcap
 ./.venv/bin/python scripts/hardware_smoke.py --plan all          # redacted passive release check
+./.venv/bin/python scripts/retune_drops.py                    # frames lost per channel hop, counts only
+./.venv/bin/python scripts/roam_watch.py --find MySSID           # BSSIDs of one SSID with k/v/r flags
+./.venv/bin/python scripts/roam_watch.py --lock 5GHz:44 --client aa:bb:cc:dd:ee:ff
 ```
 
 `scan.py` intentionally prints observed SSIDs and BSSIDs; treat its terminal output as
