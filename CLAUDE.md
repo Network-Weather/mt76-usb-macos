@@ -91,3 +91,7 @@ Each is documented in full elsewhere; these are the ones that bite.
   command, and acceptance criterion there. A quiet channel is not a driver failure.
 - Only `0e8d:7961` with Wi-Fi on interface 3 is supported; adding a USB ID, band, width,
   or chip requires dated hardware evidence first ([ROADMAP.md](ROADMAP.md) decision rules).
+- This repository is the instrument, not a survey product. Generic probes and decoders belong
+  here; site-survey orchestration, place or room naming, network-specific verdict rules, and
+  anything that identifies a real network (SSIDs, BSSIDs, AP names, controller settings) do
+  not. Evidence in docs stays chip-generic.

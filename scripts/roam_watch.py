@@ -87,7 +87,7 @@ def frames(dev: m.Mt7921uDevice, seconds: float):
 
 
 def ap_flags(p: dict) -> dict:
-    """The 802.11k/v/r advertisement bits a house call cares about, from one beacon."""
+    """The 802.11k/v/r advertisement bits of one beacon."""
     rrm = p.get("rrm_capabilities") or {}
     return {
         "k_neighbor_report": bool(rrm.get("neighbor_report")),

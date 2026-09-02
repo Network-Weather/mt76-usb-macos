@@ -48,7 +48,7 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
   comparison revisions, and catalogue selected downstream/backport projects.
 - Recorded independently testable lessons from mt76, wifikit, and wifit3 without treating peer
   claims as local evidence or crossing their license boundaries.
-- Regrouped the roadmap into goal tracks (house-call instrument, community capture source,
+- Regrouped the roadmap into goal tracks (roaming and steering instrument, community capture source,
   researcher reference), keeping existing item numbers and adding R14 to R21. Added TODO.md for
   the current sprint, NEGATIVE_RESULTS.md for the channel-busy and noise-floor zeros, and
   CLAUDE.md for agent sessions.

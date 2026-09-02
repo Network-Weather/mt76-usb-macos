@@ -2,10 +2,10 @@
 
 The project serves three goals, and the roadmap is organized as one track per goal:
 
-- **Track A, house-call instrument.** A Mac-attached passive radio that measures a home
-  network as a person walks between named places, with roaming as the first-class question:
-  which APs are audible where, whether they advertise 802.11k/v/r, whether they steer clients,
-  and whether clients accept the steer.
+- **Track A, roaming and steering instrument.** A Mac-attached passive radio that answers,
+  for one location at a time, which APs are audible, whether they advertise 802.11k/v/r,
+  whether they steer clients, and whether clients accept the steer. Survey orchestration and
+  site analysis are the consumer's job, not this repository's.
 - **Track B, community capture source.** A Wireshark extcap and a distributable install so
   other people's adapters and tools can use the driver without reading it.
 - **Track C, researcher reference.** A small, readable, evidence-gated reference for MT7921U
@@ -37,7 +37,7 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
   library for the Network Weather app) is a separate repository tested against the same recorded
   USB corpus (R20), not a rewrite of this one.
 
-## Track A: house-call instrument
+## Track A: roaming and steering instrument
 
 The decoder already classifies the whole roaming vocabulary: BTM query, request, and response
 with named status codes, neighbor reports, FT authentication and reassociation, the Extended
@@ -50,17 +50,16 @@ authentication and reassociation occur on the target. That split is standard 802
 is the working hypothesis behind R15, but it has not been confirmed against a phone on this
 hardware. R14's first measurement is to confirm it.
 
-### R14. Place-tagged survey command
+### R14. Survey record primitive
 
-Add a passive command that takes a place name, sweeps the channels of one SSID (or all bands),
-and emits one JSON record per place: audible BSSIDs of that SSID with RSSI, channel, width,
-BSS Load, and the 802.11k/v/r flags each AP advertises. Use the redacted-JSON pattern from
-`scripts/hardware_smoke.py`; identifiers are opt-in, never default.
+Add a passive command that sweeps the channels of one SSID (or all bands) once and emits a
+single JSON record for wherever the radio is: audible BSSIDs of that SSID with RSSI, channel,
+advertised operating width, BSS Load, and the 802.11k/v/r flags each AP advertises. A caller
+supplies any label it wants; this repository does not know about places, walks, or reports.
+Use the redacted-JSON pattern from `scripts/hardware_smoke.py`; identifiers are opt-in.
 
-Done when a walk through several named places produces one file per place, the fields are
-schema-checked, each field cites the frame and IE it came from, and the command has been run on
-the reference adapter in at least one multi-AP home with the result format reviewed against what
-a house-call report actually needs.
+Done when the record is schema-checked, each field cites the frame and IE it came from, and
+the command has been run on the reference adapter in a multi-AP environment.
 
 ### R5. Long-lived capture session with a single RX reader
 
@@ -85,7 +84,7 @@ accepting a stale MCU response.
 
 Lock the radio to one client's current AP channel, log every steering and roaming event from
 `rxd.management_event` with a timestamp, and follow the client on reassociation or to a BTM
-target channel. Emit a classified per-walk log: AP never steered; AP steered and the client
+target channel. Emit a classified per-session log: AP never steered; AP steered and the client
 refused with status X; the client roamed on its own with reason Y; the roam completed on the
 target channel or was not observed there.
 
@@ -94,7 +93,7 @@ sequence on the source channel, the arrival on the target channel is either capt
 as unobserved (never inferred), the per-hop blind interval is measured and reported, and the
 event log is schema-checked and redacted by default.
 
-An MLO client (Wi-Fi 7) associates on several links with per-link addresses; the controller shows
+An MLO client (Wi-Fi 7) associates on several links with per-link addresses; a management view shows
 only the MLD address. The watcher must learn the link addresses from the Multi-Link element in
 (re)association frames and match on all of them, or it will miss the client on most links; this
 was observed on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#single-radio-roaming-observation-same-day)).

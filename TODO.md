@@ -7,9 +7,9 @@ least two APs on one SSID.
 ## Measure before building
 
 - [ ] **R14/R15 hypothesis check, second attempt.** The first attempt (2026-09-02) locked one
-  radio to one channel and saw none of five roams of an MLO client; the controller log did.
-  Next: watch the client's current 5 GHz link (80 MHz) with the controller log open, and add
-  Multi-Link element parsing so all of the client's link addresses match.
+  radio to one channel and saw none of five roams of an MLO client; the network's own
+  management log did. Next: watch the client's current 5 GHz link at 80 MHz with that log as
+  the reference, and add Multi-Link element parsing so all of the client's link addresses match.
 - [ ] **A9000 day one (R22).** Record the full USB descriptor set with pyusb before claiming
   anything; read `MT_HW_CHIPID`; check what owns the Bluetooth interface in `ioreg`; then follow
   [docs/MT7925.md](docs/MT7925.md).
@@ -18,8 +18,8 @@ least two APs on one SSID.
 
 ## Build
 
-- [ ] **R14. Survey command skeleton.** `examples/survey.py --place kitchen --ssid NAME` emits
-  one redacted JSON record with per-BSSID RSSI, channel, BSS Load, and k/v/r flags, using the
+- [ ] **R14. Survey record primitive.** `examples/survey.py --ssid NAME` emits one redacted JSON
+  record with per-BSSID RSSI, channel, advertised width, BSS Load, and k/v/r flags, using the
   parsing `rxd.py` already has. Schema file beside it, offline test on synthetic beacons.
 - [ ] **R1 remainder.** Requested-versus-actual channel per step and a `not_tested` status in
   `scripts/hardware_smoke.py`.

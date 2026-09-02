@@ -173,14 +173,14 @@ capture worked. The 160 MHz configuration is recorded in [NEGATIVE_RESULTS.md](.
 
 With the radio locked to the channel of a 160 MHz 6 GHz AP for 120 seconds, a Wi-Fi 7 client
 held at -79 dBm on that AP exchanged 443 data frames with it and received no BTM request,
-deauthentication, or disassociation. The network controller's 802.11v handoff threshold for
-6 GHz was -80 dBm, so no suggestion was due; the controller UI corroborated the absence. Over the
-following ten minutes the same client, which the controller showed as an MLO client with three
+deauthentication, or disassociation. The network's own 802.11v suggestion threshold, checked out of
+band, was set below the client's signal level, so no suggestion was due. Over the following ten
+minutes the same client, which the network's management view showed as an MLO client with three
 links, moved through five APs on three bands and logged two authentication failures during
 roams; a radio locked to any one channel observed none of those transitions. Two consequences:
-roaming evidence needs either a second radio on the target channel (R16) or the controller's
-log beside the capture, and an MLO client must be tracked by its per-link addresses, not only
-the MLD address the controller displays (R15).
+roaming evidence needs either a second radio on the target channel (R16) or the network's own
+management log beside the capture, and an MLO client must be tracked by its per-link addresses, not only
+the MLD address a management view displays (R15).
 
 ## Previously observed, not rerun in the current validation
 

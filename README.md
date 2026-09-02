@@ -217,7 +217,7 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
 
 ## Planning
 
-- [ROADMAP.md](ROADMAP.md): stack-ranked work in three tracks (house-call instrument,
+- [ROADMAP.md](ROADMAP.md): stack-ranked work in three tracks (roaming and steering instrument,
   community capture source, researcher reference). Fresh as of 2026-09-01.
 - [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-01.
 - [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
