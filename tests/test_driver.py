@@ -194,19 +194,23 @@ def rx_event(seq: int) -> bytes:
     return bytes(raw)
 
 
-def rx_packet(pkt_type: int) -> bytes:
+def rx_packet(pkt_type: int, pkt_flag: int = 0, seq: int = 0) -> bytes:
     raw = bytearray(m.MCU_RXD_LEN + 4)
-    struct.pack_into("<I", raw, 0, pkt_type << 27)
+    struct.pack_into("<I", raw, 0, (pkt_type << 27) | (pkt_flag << m.RXD0_PKT_FLAG_SHIFT))
+    raw[m.RXD_SEQ_OFFSET] = seq
     return bytes(raw)
 
 
 def test_mcu_wait_counts_what_it_discards_by_packet_type():
     txs = 0  # PKT_TYPE_TXS: a transmit status, not a received frame
+    # A NORMAL_MCU frame is RX_EVENT with packet flag 1 on the wire. Give it the wanted
+    # sequence byte so the test proves it is classified by flag, not mistaken for the reply.
+    normal_mcu = rx_packet(m.PKT_TYPE_RX_EVENT, pkt_flag=m.PKT_FLAG_NORMAL_MCU, seq=7)
     dev = QueuedRxMcu(
         [
             rx_packet(m.PKT_TYPE_NORMAL),
             rx_packet(txs),
-            rx_packet(m.PKT_TYPE_NORMAL_MCU),
+            normal_mcu,
             rx_event(3),
             rx_packet(m.PKT_TYPE_NORMAL),
             rx_event(7),

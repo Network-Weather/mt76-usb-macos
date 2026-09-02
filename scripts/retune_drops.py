@@ -78,18 +78,22 @@ def retune(dev: m.Mt7921uDevice, band: str, chan: int) -> dict:
 
 def drain(dev: m.Mt7921uDevice, seconds: float) -> dict:
     """Read frames for `seconds`, the way a capture loop would, and count them."""
-    frames = timeouts = 0
+    frames = timeouts = usb_errors = 0
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
         try:
             raw = bytes(dev.rx_read(timeout=READ_TIMEOUT_MS))
-        except usb.core.USBError:
-            timeouts += 1
+        except usb.core.USBTimeoutError:
+            timeouts += 1  # a quiet channel, not a fault
+            continue
+        except usb.core.USBError as exc:
+            usb_errors += 1  # a real transport failure; the sample is incomplete
+            print(f"usb error during drain: {exc}", file=sys.stderr)
             continue
         decoded = rxd.decode(raw)
         if decoded and decoded.get("frame"):
             frames += 1
-    return {"frames": frames, "timeouts": timeouts, "seconds": seconds}
+    return {"frames": frames, "timeouts": timeouts, "usb_errors": usb_errors, "seconds": seconds}
 
 
 def summary(values: list[int]) -> dict:
@@ -162,12 +166,22 @@ def main() -> int:
             leaving = drain(dev, args.dwell)
             target = pair[(i + 1) % 2]
             hop = retune(dev, *target)
-            runs.append({"from_frames_in_dwell": leaving["frames"], **hop})
+            runs.append(
+                {
+                    "from_frames_in_dwell": leaving["frames"],
+                    "usb_errors_in_dwell": leaving["usb_errors"],
+                    **hop,
+                }
+            )
         result["retunes"] = runs
 
     result["dropped_frames"] = summary([r["dropped_frames"] for r in runs])
     result["stale_events"] = summary([r["stale_events"] for r in runs])
+    result["other_packets"] = summary([r["other_packets"] for r in runs])
     result["frames_per_dwell"] = summary([r["from_frames_in_dwell"] for r in runs])
+    result["usb_errors"] = sum(c["usb_errors"] for c in census) + sum(
+        r["usb_errors_in_dwell"] for r in runs
+    )
     print(json.dumps(result, indent=2))
     return 0
 

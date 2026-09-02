@@ -74,7 +74,11 @@ def frames(dev: m.Mt7921uDevice, seconds: float):
     while time.monotonic() < deadline:
         try:
             raw = bytes(dev.rx_read(timeout=READ_TIMEOUT_MS))
-        except usb.core.USBError:
+        except usb.core.USBTimeoutError:
+            continue  # quiet channel
+        except usb.core.USBError as exc:
+            # A transport failure means events can be missed; say so rather than hide it.
+            print(f"usb error, frames may be missing: {exc}", file=sys.stderr)
             continue
         d = rxd.decode(raw)
         if not d or not d.get("frame") or len(d["frame"]) < 10:
