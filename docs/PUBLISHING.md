@@ -30,7 +30,7 @@ contract. Building the wheel in CI currently checks packaging metadata and clean
 ## GitHub discovery metadata
 
 The description and topics below were configured on the still-private GitHub repository on
-2026-08-31. Verify that they remain present when visibility changes.
+2026-09-02. Verify that they remain present when visibility changes.
 
 Suggested repository description:
 
@@ -40,7 +40,7 @@ Suggested topics:
 
 `macos`, `apple-silicon`, `mt76`, `mt7921au`, `mt7921u`, `mt7961`, `mt7925`, `mt7925u`, `awus036axml`,
 `nighthawk-a9000`, `wifi-6e`, `wifi-7`, `6ghz`, `monitor-mode`, `packet-capture`, `radiotap`, `wireshark`,
-`libusb`, `pyusb`, `802-11`, `wireless-research`
+`libusb`, `802-11`, `wireless-research` (GitHub allows 20 topics; `pyusb` was dropped to fit)
 
 Those strings cover the names users actually search: the Linux driver name (`mt7921u`),
 the silicon/adapter names (`MT7921AU`, `MT7961`, `AWUS036AXML`), the task (“macOS monitor

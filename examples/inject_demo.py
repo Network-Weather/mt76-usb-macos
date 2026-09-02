@@ -6,8 +6,9 @@
 # WARNING: injection on this radio is RESEARCH-GRADE and RATE-LIMITED.
 #
 # Transmit has been confirmed only at scan rates (a few frames, spaced out).
-# SUSTAINED TRANSMIT CAN PANIC THE MCU and force a physical replug. Do not
-# loop this at high rate. Only ever transmit on frequencies you are legally
+# Only 60 frames at 50 ms spacing have ever been sent with this code, with the chip
+# alive after; sustained or high-rate transmit is UNTESTED. Do not loop this at high
+# rate. Only ever transmit on frequencies you are legally
 # permitted to use in your regulatory domain.
 #
 # This demo sends a single wildcard Probe Request: the frame every station on
@@ -74,7 +75,7 @@ def main() -> int:
     parser.add_argument(
         "--acknowledge-experimental-transmit",
         action="store_true",
-        help="confirm that this sends frames and can panic the MCU",
+        help="confirm that this transmits, and that sustained transmit is untested",
     )
     args = parser.parse_args()
     if not args.acknowledge_experimental_transmit:
@@ -121,7 +122,7 @@ def main() -> int:
         alive = dev.alive()
         print(f"write accepted: {sent_ok}   chip alive after: {alive}")
         if not alive:
-            print("MCU appears to have panicked; replug the radio")
+            print("device stopped responding after transmit; replug the radio")
             return 3
 
         kinds, directed = listen(dev, mac_str, 1.5)

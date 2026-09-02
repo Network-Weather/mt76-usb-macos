@@ -46,7 +46,7 @@ These are publication disclosures, not hidden backlog:
   logs or counters for queue depth, USB retries, decode failures, dropped frames, current
   channel, and firmware state.
 - **Long-run behavior is not qualified.** There is no multi-hour soak, hot-unplug, sleep/wake,
-  multiple-adapter, or repeated panic-recovery result.
+  multiple-adapter, or device-recovery result.
 - **Release automation is minimal.** There is a changelog, tag/version check, and dependency
   update bot, but no signed release procedure, code-coverage report, API reference site, or
   compatibility/deprecation policy yet. Publication remains a manual checklist in

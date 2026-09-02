@@ -163,8 +163,15 @@ again in the publication run. Exact commands and results are in [docs/TESTING.md
 
 The transmit path (`inject`, `_build_txwi`, `build_probe_request`, and
 `examples/inject_demo.py`) is **experimental, rate-limited, and outside the current
-end-to-end validation.** Sustained transmit can panic the MCU and require a physical
-replug. Linux mt76 also stopped advertising generic active-monitor support for MT792x after
+end-to-end validation.** What has been tested here is small: 60 Probe Requests at 50 ms spacing on
+one 2.4 GHz channel, with the chip alive after every 20 and 677 directed Probe Responses received
+([docs/TESTING.md](docs/TESTING.md#previously-observed-not-rerun-in-the-current-validation)).
+Sustained or high-rate transmit is untested, so treat it as unknown rather than safe. The widely
+reported Linux symptom, "injection kills the mt7921u" and the interface vanishes until a replug, is
+a host-driver NULL dereference in the `TXRX_NOTIFY` path, fixed upstream in
+[`d367ee6d`](https://github.com/openwrt/mt76/commit/d367ee6d) and present in this repository's
+baseline; it is not an MCU panic and does not describe this userspace path. Linux mt76 also stopped
+advertising generic active-monitor support for MT792x after
 [upstream issue #839](https://github.com/openwrt/mt76/issues/839); that feature and this raw
 injection demo are not equivalent, and neither establishes reliable auto-ACK behavior here.
 The code does not implement regulatory-domain or per-band TX-power enforcement. Transmit only on
@@ -190,7 +197,7 @@ unless `--acknowledge-experimental-transmit` is explicitly supplied.
 - PHY rate is metadata, not throughput. Airtime estimates are approximate and a
   channel-local partial view.
 - There is no tested suspend/resume, hot-unplug recovery, long-duration soak test,
-  multi-adapter support, or automatic MCU panic recovery.
+  multi-adapter support, or automatic recovery from a device that stops responding.
 - Firmware is re-uploaded for every process. The MediaTek blobs are fetched separately
   and are never distributed in this repository.
 

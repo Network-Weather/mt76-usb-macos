@@ -307,8 +307,10 @@ reference adapter are unverified. Not planned until Track A has a Mac result wor
 
 ### Gated optional track: transmit
 
-Injection remains a research demo: a few spaced probe requests have worked, but sustained
-transmit can panic the MCU and the current publication evidence does not re-test injection.
+Injection remains a research demo: 60 spaced probe requests have worked with the chip alive
+after, sustained or high-rate transmit is untested, and the current publication evidence does
+not re-test injection. The Linux "injection kills the chip" reports are a host-driver bug
+(upstream `d367ee6d`), not evidence about this path.
 Passive milestones do not depend on this track.
 
 Before any broader transmit API or claim:

@@ -11,7 +11,8 @@ and usb.c (__mt76u_vendor_request). Register addresses from mt792x_regs.h.
 Register I/O, firmware download, MCU command framing, channel and sniffer setup,
 and passive receive. Frame injection (the inject/_build_txwi/build_probe_request
 helpers at the tail of this module) is research-grade and rate-limited: it is
-confirmed only at scan rates, and sustained transmit can panic the MCU.
+confirmed only at scan rates (60 frames at 50 ms, chip alive after); sustained or
+high-rate transmit is untested.
 """
 
 from __future__ import annotations
@@ -1378,9 +1379,11 @@ Mt7921uDevice.set_eeprom = _set_eeprom
 #
 # Linux active-monitor failure is tracked separately in openwrt/mt76 issue #839;
 # upstream commit 9de65849 stopped advertising that generic feature on MT792x.
-# This userspace port has independently observed MCU instability under sustained
-# raw injection. Expect to lose the device and have to replug it. See
-# RELATED_WORK.md and ROADMAP.md.
+# The Linux "injection kills the chip" reports are a host-driver NULL dereference in the
+# TXRX_NOTIFY path (upstream d367ee6d, in this repo's baseline), not an MCU fault, and do
+# not apply to this userspace path. Here only 60 frames at 50 ms spacing have been sent,
+# with the chip alive after; anything sustained or faster is untested. See RELATED_WORK.md
+# and ROADMAP.md.
 # ---------------------------------------------------------------------------
 
 MT_TXD_SIZE = 32
