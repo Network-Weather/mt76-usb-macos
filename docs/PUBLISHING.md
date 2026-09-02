@@ -14,7 +14,7 @@ driver claim. Before making it public or tagging a release:
   claim to the revision actually reviewed;
 - confirm firmware blobs, pcaps, SSIDs, MAC addresses, and serial numbers are absent from
   the Git history, release assets, and issue attachments;
-- enable GitHub Issues and private vulnerability reporting;
+- enable GitHub Issues and private vulnerability reporting (both on as of 2026-09-02);
 - add the GitHub description and topics below;
 - protect `main` by requiring CI and review for future changes; and
 - tag `v0.1.0` only after the release commit itself has passed
@@ -29,8 +29,8 @@ contract. Building the wheel in CI currently checks packaging metadata and clean
 
 ## GitHub discovery metadata
 
-The description and topics below were configured on the still-private GitHub repository on
-2026-09-02. Verify that they remain present when visibility changes.
+The description and topics below were configured before the repository went public on
+2026-09-02 and verified present afterwards.
 
 Suggested repository description:
 
