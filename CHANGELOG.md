@@ -17,7 +17,7 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
   adapter, with radiotap pcap output for Wireshark.
 - RX descriptor, 802.11 management, PHY-rate, and aggregation parsing.
 - A redacted JSON hardware smoke test covering all 43 default tri-band scan channels.
-- 53 offline tests, Ruff formatting/security linting, shell checks, macOS-only CI, and PEP 517
+- 54 offline tests, Ruff formatting/security linting, shell checks, macOS-only CI, and PEP 517
   source/wheel construction.
 - Pinned linux-firmware provenance and SHA-256 verification, security/contribution policies,
   related-project comparison, integration analysis, and an acceptance-criteria roadmap.

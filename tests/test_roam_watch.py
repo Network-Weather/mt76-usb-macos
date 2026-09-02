@@ -18,6 +18,13 @@ def rxd(band="5GHz", channel=36, rssi=-60) -> dict:
     return {"band": band, "channel": channel, "rssi": rssi}
 
 
+def test_on_channel_requires_descriptor_band_and_channel_to_match():
+    assert rw.on_channel(rxd(band="5GHz", channel=44), "5GHz", 44)
+    assert not rw.on_channel(rxd(band="5GHz", channel=36), "5GHz", 44)  # queued from before
+    assert not rw.on_channel(rxd(band="2.4GHz", channel=3), "2.4GHz", 1)  # adjacent channel
+    assert not rw.on_channel({"rssi": -50}, "5GHz", 44)  # no channel decoded
+
+
 def test_channel_comes_from_the_frame_not_the_sweep_target():
     found = {}
     # Received while the radio sat on channel 40, but the descriptor says 36 and the

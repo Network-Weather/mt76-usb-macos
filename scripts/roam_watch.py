@@ -97,6 +97,15 @@ def ap_flags(p: dict) -> dict:
     }
 
 
+def on_channel(d: dict, band: str, chan: int) -> bool:
+    """True if the RX descriptor says this frame was received on (band, chan).
+
+    Transfers queued before a retune and adjacent-channel 2.4 GHz frames carry the
+    channel the radio was actually on; evidence for a locked channel must exclude them.
+    """
+    return d.get("band") == band and d.get("channel") == chan
+
+
 def note_bssid(found: dict[str, dict], d: dict, p: dict, ssid: str) -> None:
     """Record one beacon or probe response for `ssid` into `found`, keyed by BSSID.
 
@@ -154,9 +163,13 @@ def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, durati
     client_data_per_sec: dict[int, int] = defaultdict(int)
     last_client_data = None
     aps: dict[str, dict] = {}
+    off_channel = 0
 
-    for _d, p in frames(dev, duration):
+    for d, p in frames(dev, duration):
         t = time.monotonic() - start
+        if not on_channel(d, band, chan):
+            off_channel += 1
+            continue
         if p.get("kind") in ("Beacon", "ProbeResp") and p.get("addr3"):
             aps.setdefault(p["addr3"], {"ssid": p.get("ssid"), **ap_flags(p)})
             continue
@@ -184,6 +197,7 @@ def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, durati
             f"  {bssid}  {e['ssid']!r}  k={e['k_neighbor_report']} v={e['v_bss_transition']} r={bool(e['r_mobility_domain'])}"
         )
     print("management events:", dict(events) or "none")
+    print(f"frames ignored because the descriptor named another channel: {off_channel}")
     if client:
         secs = sorted(client_data_per_sec)
         print(
