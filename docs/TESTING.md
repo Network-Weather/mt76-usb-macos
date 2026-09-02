@@ -149,6 +149,39 @@ a median of one frame. This is the cost of hopping while draining; it does not d
 lost when a caller stops reading for longer, and it was measured on ambient traffic, not a
 controlled load.
 
+## Channel width and 6 GHz access points: 2026-09-02
+
+Same test bed as the retune measurement. `scripts/width_probe.py` configured the sniffer at
+several widths and counted decoded frames for six to ten seconds each, with a Wi-Fi 7 phone running a
+speed test on the 6 GHz network during the 6 GHz captures.
+
+| Band:channel | Center | Width | Frames | Of which data |
+|---|---|---|---|---|
+| 5GHz:132 | 132 | 20 MHz | 808 | 419 |
+| 5GHz:132 | 138 | 80 MHz | 1007 | 241 data plus 66 BlockAck; 146 frames decoded at 80 MHz |
+| 6GHz:53 | 53 | 20 MHz | 470 | 0 (beacons and FILS discovery action frames only) |
+| 6GHz:53 | 55 | 80 MHz | 586 | 0 |
+| 6GHz:53 | 47 | 160 MHz | 0 | 0 |
+
+The beacons on 6 GHz channels 53 and 101 carry an HE Operation element whose 6 GHz Operation
+Information says width 160 with center channel fields 55 and 47 (53) and 103 and 111 (101),
+so the client's data frames were 160 MHz transmissions and outside what this adapter decodes.
+The 5 GHz beacons carry VHT Operation width 1 with center 138, an 80 MHz block, and 80 MHz
+capture worked. The 160 MHz configuration is recorded in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
+
+### Single-radio roaming observation, same day
+
+With the radio locked to the channel of a 160 MHz 6 GHz AP for 120 seconds, a Wi-Fi 7 client
+held at -79 dBm on that AP exchanged 443 data frames with it and received no BTM request,
+deauthentication, or disassociation. The network controller's 802.11v handoff threshold for
+6 GHz was -80 dBm, so no suggestion was due; the controller UI corroborated the absence. Over the
+following ten minutes the same client, which the controller showed as an MLO client with three
+links, moved through five APs on three bands and logged two authentication failures during
+roams; a radio locked to any one channel observed none of those transitions. Two consequences:
+roaming evidence needs either a second radio on the target channel (R16) or the controller's
+log beside the capture, and an MLO client must be tracked by its per-link addresses, not only
+the MLD address the controller displays (R15).
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

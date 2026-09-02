@@ -76,6 +76,7 @@ terms and the one blob you must not fetch.
 ./.venv/bin/python examples/sniff_to_pcap.py 53 8 out.pcap 6GHz # 6 GHz radiotap pcap
 ./.venv/bin/python scripts/hardware_smoke.py --plan all          # redacted passive release check
 ./.venv/bin/python scripts/retune_drops.py                    # frames lost per channel hop, counts only
+./.venv/bin/python scripts/width_probe.py 5GHz:132:138:80 6GHz:53:47:160   # which widths decode; counts only
 ./.venv/bin/python scripts/roam_watch.py --find MySSID           # BSSIDs of one SSID with k/v/r flags
 ./.venv/bin/python scripts/roam_watch.py --lock 5GHz:44 --client aa:bb:cc:dd:ee:ff
 ```
@@ -220,7 +221,9 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
   community capture source, researcher reference). Fresh as of 2026-09-01.
 - [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-01.
 - [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
-  not re-run by accident. Fresh as of 2026-09-01.
+  not re-run by accident. Fresh as of 2026-09-02.
+- [docs/MT7925.md](docs/MT7925.md): the MT7925U (Wi-Fi 7, 160 MHz) port plan, each claim checked
+  against the pinned mt76 source. Fresh as of 2026-09-02.
 
 ## License and provenance
 

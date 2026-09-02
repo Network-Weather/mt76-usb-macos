@@ -54,6 +54,9 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
   CLAUDE.md for agent sessions.
 - Corrected the copyright holder in the license, citation metadata, and source headers to
   Primatech Paper Co LLC d/b/a Network Weather.
+- Recorded the MT7925U port plan in docs/MT7925.md with every claim checked against the pinned
+  mt76 source, and the 2026-09-02 channel-width, 160 MHz, and single-radio roaming evidence in
+  docs/TESTING.md and NEGATIVE_RESULTS.md. Roadmap R22 added; R15 and R16 cite the evidence.
 
 ### Tests
 

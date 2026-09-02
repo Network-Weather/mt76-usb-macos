@@ -33,3 +33,19 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Code:** none in the repository; same gap as above. Roadmap R12 starts by committing the
   probe.
 - **Consequence:** RSSI alone is reported. It must not be presented as SNR.
+
+## 160 MHz sniffer configuration on MT7921U returns nothing
+
+- **Tried:** `set_chan_info` with `CMD_CBW_160MHZ` and `config_sniffer` with `SNIFFER_BW_160`
+  on 6 GHz primary channel 53, center 47, on 2026-09-02 with the reference adapter, while an
+  AP on that channel was beaconing at 160 MHz.
+- **Observed:** zero USB transfers in 6 seconds. The same channel at 20 MHz and 80 MHz (center 55)
+  returned about 350 management frames in the same interval.
+- **Not ruled out:** a different center-channel encoding for 160 MHz in the sniffer TLV; a
+  firmware that accepts the command and never delivers. The README already lists 160 MHz as
+  unsupported for this part; upstream advertises it unconditionally for the MT7925
+  (`mt7925/init.c:290-292` at `c5a3bd91`), which is why that chip is the port target.
+- **Code:** `scripts/width_probe.py`; the run is recorded in [docs/TESTING.md](docs/TESTING.md#channel-width-and-6-ghz-access-points-2026-09-02).
+- **Consequence:** data frames from clients on a 160 MHz AP are invisible to this adapter, and
+  only their 20 MHz management frames can be observed. This is the reason for the MT7925 port
+  ([docs/MT7925.md](docs/MT7925.md)).

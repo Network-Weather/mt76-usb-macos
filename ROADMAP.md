@@ -94,6 +94,11 @@ sequence on the source channel, the arrival on the target channel is either capt
 as unobserved (never inferred), the per-hop blind interval is measured and reported, and the
 event log is schema-checked and redacted by default.
 
+An MLO client (Wi-Fi 7) associates on several links with per-link addresses; the controller shows
+only the MLD address. The watcher must learn the link addresses from the Multi-Link element in
+(re)association frames and match on all of them, or it will miss the client on most links; this
+was observed on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#single-radio-roaming-observation-same-day)).
+
 ### R3. Failure handling and soak evidence
 
 Make disconnects, USB stalls, bad firmware responses, partial transfers, Ctrl-C, and retune
@@ -107,6 +112,8 @@ exercised on hardware.
 
 ### R16. Multiple adapters
 
+On 2026-09-02 a client moved through five APs on three bands in ten minutes while a single
+locked radio observed none of the transitions ([docs/TESTING.md](docs/TESTING.md)).
 After R2, open more than one adapter in one process so a second radio can sit on the roam
 target channel while the first stays on the source. Two adapters of the same USB ID must be
 distinguished without relying on serial numbers appearing in output.
@@ -114,6 +121,20 @@ distinguished without relying on serial numbers appearing in output.
 Done when two reference adapters capture concurrently with per-device counters, a forced roam
 is observed on both source and target channels in one run, and the single-adapter path is
 unchanged.
+
+### R22. MT7925U port for 160 MHz and Wi-Fi 7
+
+Every 6 GHz AP in the reference house runs 160 MHz and the MT7921 returns nothing when
+configured for it, so client data on 6 GHz is invisible to this adapter
+([NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md)). The MT7925 (Netgear A9000) decodes 160 MHz.
+[docs/MT7925.md](docs/MT7925.md) records what the upstream driver says the port involves,
+checked line by line against the pinned mt76 source: the USB bring-up and firmware download are
+shared, the sniffer command is byte-identical, and the work is the WFSYS reset, the MCU reply
+header, four commands moving to UNI encoding, and a connac3 RX descriptor decoder.
+
+Done when the A9000 boots, tunes, and captures on 20, 80, and 160 MHz through the existing
+redacted smoke schema, with descriptor discovery (R2) rather than a hard-coded interface, a
+connac3 decoder with synthetic fixtures, and a dated evidence section in docs/TESTING.md.
 
 ### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 

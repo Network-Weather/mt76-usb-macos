@@ -6,10 +6,15 @@ least two APs on one SSID.
 
 ## Measure before building
 
-- [ ] **R14/R15 hypothesis check.** Force a phone to roam between two APs while the radio is
-  locked to the source AP's channel. Record which of these appear on the source channel: BTM
-  request, BTM response, deauth/disassoc with reason, last data frame. Record what is missing.
-  Result goes in [docs/TESTING.md](docs/TESTING.md) or [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
+- [ ] **R14/R15 hypothesis check, second attempt.** The first attempt (2026-09-02) locked one
+  radio to one channel and saw none of five roams of an MLO client; the controller log did.
+  Next: watch the client's current 5 GHz link (80 MHz) with the controller log open, and add
+  Multi-Link element parsing so all of the client's link addresses match.
+- [ ] **A9000 day one (R22).** Record the full USB descriptor set with pyusb before claiming
+  anything; read `MT_HW_CHIPID`; check what owns the Bluetooth interface in `ioreg`; then follow
+  [docs/MT7925.md](docs/MT7925.md).
+- [ ] **roam_watch --bw 80.** 80 MHz capture works on 5 GHz (146 decoded 80 MHz frames in 10 s);
+  the watcher and survey commands still configure 20 MHz.
 
 ## Build
 
