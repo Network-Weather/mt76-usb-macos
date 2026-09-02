@@ -11,7 +11,7 @@ page separates checks enforced today from work that remains.
 | Python formatting | `ruff format --check .` in macOS CI |
 | Python linting | Ruff `E`, `F`, `W`, import sorting, upgrades, bugbear, comprehensions, executable-bit, refurb, security, simplify, pie, pytest, and Ruff-specific rules |
 | Shell syntax | `bash -n setup.sh` in CI; `shellcheck setup.sh` in the local release check when ShellCheck is installed |
-| Offline behavior | 47 pytest tests, with no adapter or firmware required |
+| Offline behavior | 53 pytest tests, with no adapter or firmware required |
 | Distribution | PEP 517 wheel and source-distribution build on every CI matrix member; the local check reuses installed development backends rather than silently downloading them |
 | Platform matrix | macOS runners only, at the oldest/newest declared Python versions |
 | Hardware evidence | Dated, exact-device results kept separately in [TESTING.md](TESTING.md) |

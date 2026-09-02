@@ -17,7 +17,7 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
   adapter, with radiotap pcap output for Wireshark.
 - RX descriptor, 802.11 management, PHY-rate, and aggregation parsing.
 - A redacted JSON hardware smoke test covering all 43 default tri-band scan channels.
-- 47 offline tests, Ruff formatting/security linting, shell checks, macOS-only CI, and PEP 517
+- 53 offline tests, Ruff formatting/security linting, shell checks, macOS-only CI, and PEP 517
   source/wheel construction.
 - Pinned linux-firmware provenance and SHA-256 verification, security/contribution policies,
   related-project comparison, integration analysis, and an acceptance-criteria roadmap.
@@ -59,5 +59,7 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 - Random-input fuzz test asserting the descriptor, frame, and IE parsers never raise.
 - Offline test for the `mcu_wait` discard counters through a queued fake RX endpoint.
+- Offline tests for the roam watcher's BSSID bookkeeping: channel from the frame, not the sweep
+  target; DS Parameter Set over descriptor; strongest RSSI; k/v/r flags.
 
 [Unreleased]: https://github.com/Network-Weather/mt7921u-macos/commits/main

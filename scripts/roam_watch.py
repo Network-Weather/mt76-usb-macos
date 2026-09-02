@@ -97,20 +97,40 @@ def ap_flags(p: dict) -> dict:
     }
 
 
+def note_bssid(found: dict[str, dict], d: dict, p: dict, ssid: str) -> None:
+    """Record one beacon or probe response for `ssid` into `found`, keyed by BSSID.
+
+    The channel comes from the frame, never from where the radio was tuned: frames
+    queued before a retune and adjacent-channel 2.4 GHz beacons both arrive while the
+    radio is elsewhere. The DS Parameter Set IE is the AP's own statement and wins; the
+    RX descriptor's channel (authoritative in the capture path) is the fallback.
+    """
+    if p.get("kind") not in ("Beacon", "ProbeResp") or p.get("ssid") != ssid:
+        return
+    bssid = p.get("addr3")
+    if not bssid or not d.get("band"):
+        return
+    entry = found.setdefault(bssid, {"band": d["band"], "channel": d.get("channel"), "rssi": None})
+    if p.get("ds_channel"):
+        entry["band"], entry["channel"], entry["channel_source"] = d["band"], p["ds_channel"], "ds"
+    elif entry.get("channel_source") != "ds":
+        entry["band"], entry["channel"], entry["channel_source"] = (
+            d["band"],
+            d.get("channel"),
+            "rxd",
+        )
+    entry.update(ap_flags(p))
+    rssi = d.get("rssi")
+    if rssi is not None and (entry["rssi"] is None or rssi > entry["rssi"]):
+        entry["rssi"] = rssi
+
+
 def find(dev: m.Mt7921uDevice, ssid: str) -> int:
     found: dict[str, dict] = {}
     for band, chan in SWEEP:
         tune(dev, band, chan)
         for d, p in frames(dev, FIND_DWELL_SECONDS):
-            if p.get("kind") not in ("Beacon", "ProbeResp") or p.get("ssid") != ssid:
-                continue
-            bssid = p.get("addr3")
-            if not bssid:
-                continue
-            entry = found.setdefault(bssid, {"band": band, "channel": chan, "rssi": d.get("rssi")})
-            entry.update(ap_flags(p))
-            if d.get("rssi") is not None and (entry["rssi"] is None or d["rssi"] > entry["rssi"]):
-                entry["rssi"] = d["rssi"]
+            note_bssid(found, d, p, ssid)
     if not found:
         print(f"no beacons for SSID {ssid!r} on any swept channel", file=sys.stderr)
         return 2

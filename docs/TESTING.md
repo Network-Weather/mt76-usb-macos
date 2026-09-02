@@ -14,7 +14,7 @@ bash setup.sh
 ./scripts/check.sh
 ```
 
-As of 2026-09-01, 47 tests pass. They cover:
+As of 2026-09-02, 53 tests pass. They cover:
 
 - MediaTek patch/RAM metadata parsing and truncated-image rejection;
 - MCU sequence wrapping, command framing, scatter framing, and endpoint choice without USB;
