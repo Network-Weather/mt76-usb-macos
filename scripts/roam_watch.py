@@ -171,7 +171,13 @@ def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, durati
             off_channel += 1
             continue
         if p.get("kind") in ("Beacon", "ProbeResp") and p.get("addr3"):
-            aps.setdefault(p["addr3"], {"ssid": p.get("ssid"), **ap_flags(p)})
+            # On 2.4 GHz the radio hears overlapping channels, and the descriptor still
+            # names the tuned channel. Keep the AP's own DS Parameter Set channel beside
+            # it so an adjacent-channel AP is visible as such rather than presumed local.
+            aps.setdefault(
+                p["addr3"],
+                {"ssid": p.get("ssid"), "ds_channel": p.get("ds_channel"), **ap_flags(p)},
+            )
             continue
         if client and p.get("ftype") == FTYPE_DATA:
             if client in (p.get("addr1"), p.get("addr2")):
@@ -185,16 +191,22 @@ def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, durati
         if client and client not in (p.get("addr1"), p.get("addr2"), p.get("addr3")):
             continue
         events[name] += 1
+        # Management frames carry no channel IE, so the only provenance is where the
+        # radio was tuned when it received them; say that rather than "on channel".
         print(
-            f"{t:8.3f}s  {name:<22} {p.get('addr2', '?')} -> {p.get('addr1', '?')}  "
-            f"bssid {p.get('addr3', '?')}  {json.dumps(detail, default=str)}"
+            f"{t:8.3f}s  rx {d['band']}:{d['channel']}  {name:<22} "
+            f"{p.get('addr2', '?')} -> {p.get('addr1', '?')}  bssid {p.get('addr3', '?')}  "
+            f"{json.dumps(detail, default=str)}"
         )
 
     print()
-    print("APs beaconing on this channel:")
+    print(f"APs heard while tuned to {band}:{chan} (ds = channel the AP itself advertises):")
     for bssid, e in aps.items():
+        ds = e["ds_channel"]
+        where = "ds ?" if ds is None else (f"ds {ds}" if ds == chan else f"ds {ds} ADJACENT")
         print(
-            f"  {bssid}  {e['ssid']!r}  k={e['k_neighbor_report']} v={e['v_bss_transition']} r={bool(e['r_mobility_domain'])}"
+            f"  {bssid}  {where:<14} {e['ssid']!r}  k={e['k_neighbor_report']} "
+            f"v={e['v_bss_transition']} r={bool(e['r_mobility_domain'])}"
         )
     print("management events:", dict(events) or "none")
     print(f"frames ignored because the descriptor named another channel: {off_channel}")
