@@ -3,9 +3,9 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mt7921u-macos"
+name = "mt76-usb-macos"
 version = "0.1.0"
-description = "Userspace MT7921AU/MT7921U Wi-Fi 6E monitor-mode driver for macOS"
+description = "Userspace MediaTek mt76 USB (MT7921U, MT7925U) Wi-Fi 6E/7 monitor-mode driver for macOS"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "BSD-3-Clause-Clear"
@@ -42,12 +42,12 @@ classifiers = [
 ]
 
 [project.urls]
-Changelog = "https://github.com/Network-Weather/mt7921u-macos/blob/main/CHANGELOG.md"
-Homepage = "https://github.com/Network-Weather/mt7921u-macos"
-Documentation = "https://github.com/Network-Weather/mt7921u-macos/blob/main/docs/TESTING.md"
-Issues = "https://github.com/Network-Weather/mt7921u-macos/issues"
-"Related work" = "https://github.com/Network-Weather/mt7921u-macos/blob/main/RELATED_WORK.md"
-Repository = "https://github.com/Network-Weather/mt7921u-macos.git"
+Changelog = "https://github.com/Network-Weather/mt76-usb-macos/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/Network-Weather/mt76-usb-macos"
+Documentation = "https://github.com/Network-Weather/mt76-usb-macos/blob/main/docs/TESTING.md"
+Issues = "https://github.com/Network-Weather/mt76-usb-macos/issues"
+"Related work" = "https://github.com/Network-Weather/mt76-usb-macos/blob/main/RELATED_WORK.md"
+Repository = "https://github.com/Network-Weather/mt76-usb-macos.git"
 
 [project.optional-dependencies]
 dev = [

@@ -14,7 +14,7 @@ bash setup.sh
 ./scripts/check.sh
 ```
 
-As of 2026-09-01, 47 tests pass. They cover:
+As of 2026-09-02, 54 tests pass. They cover:
 
 - MediaTek patch/RAM metadata parsing and truncated-image rejection;
 - MCU sequence wrapping, command framing, scatter framing, and endpoint choice without USB;
@@ -125,6 +125,62 @@ After the final release-safety changes, a fresh three-second channel 53 capture 
 identified radiotap 802.11, strict time order was true, and tshark returned zero packets
 for `_ws.malformed`. Its unpublished ambient pcap SHA-256 is
 `cbaa4953e9d45f550304e30b8dbe10569f25e5b6c0bd00d017dd556816897a0a`.
+
+## Retune frame loss: 2026-09-02
+
+Same host and firmware as the 2026-08-31 test bed; macOS 26.6, Python 3.14.7, reference adapter.
+
+```bash
+./.venv/bin/python scripts/retune_drops.py --retunes 10 --dwell 2
+./.venv/bin/python scripts/retune_drops.py --retunes 20 --dwell 1
+```
+
+The script listens on seven candidate channels for one second each, picks the two busiest
+(2.4 GHz channel 11 and 5 GHz channel 44 in this environment), then alternates between them,
+draining frames for the dwell and recording what the two retune commands discard.
+
+| Run | Hops | Frames per dwell | Frames lost per hop | Stale MCU events | Channel switch | Sniffer config |
+|---|---|---|---|---|---|---|
+| 1 | 10 | 188 to 502 in 2 s | min 0, median 1, max 8, total 14 | 0 | 7.5 to 9.4 ms | 6.1 to 7.1 ms |
+| 2 | 20 | 88 to 286 in 1 s | min 0, median 1, max 4, total 21 | 0 | median 9.1 ms | median 6.7 ms |
+
+A retune therefore costs about 16 ms of MCU round trips and, while the caller keeps reading, loses
+a median of one frame. This is the cost of hopping while draining; it does not describe what is
+lost when a caller stops reading for longer, and it was measured on ambient traffic, not a
+controlled load.
+
+## Channel width and 6 GHz access points: 2026-09-02
+
+Same test bed as the retune measurement. `scripts/width_probe.py` configured the sniffer at
+several widths and counted decoded frames for six to ten seconds each, with a Wi-Fi 7 phone running a
+speed test on the 6 GHz network during the 6 GHz captures.
+
+| Band:channel | Center | Width | Frames | Of which data |
+|---|---|---|---|---|
+| 5GHz:132 | 132 | 20 MHz | 808 | 419 |
+| 5GHz:132 | 138 | 80 MHz | 1007 | 241 data plus 66 BlockAck; 146 frames decoded at 80 MHz |
+| 6GHz:53 | 53 | 20 MHz | 470 | 0 (beacons and FILS discovery action frames only) |
+| 6GHz:53 | 55 | 80 MHz | 586 | 0 |
+| 6GHz:53 | 47 | 160 MHz | 0 | 0 |
+
+The beacons on 6 GHz channels 53 and 101 carry an HE Operation element whose 6 GHz Operation
+Information says width 160 with center channel fields 55 and 47 (53) and 103 and 111 (101),
+so the client's data frames were 160 MHz transmissions and outside what this adapter decodes.
+The 5 GHz beacons carry VHT Operation width 1 with center 138, an 80 MHz block, and 80 MHz
+capture worked. The 160 MHz configuration is recorded in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
+
+### Single-radio roaming observation, same day
+
+With the radio locked to the channel of a 160 MHz 6 GHz AP for 120 seconds, a Wi-Fi 7 client
+held at -79 dBm on that AP exchanged 443 data frames with it and received no BTM request,
+deauthentication, or disassociation. The network's own 802.11v suggestion threshold, checked out of
+band, was set below the client's signal level, so no suggestion was due. Over the following ten
+minutes the same client, which the network's management view showed as an MLO client with three
+links, moved through five APs on three bands and logged two authentication failures during
+roams; a radio locked to any one channel observed none of those transitions. Two consequences:
+roaming evidence needs either a second radio on the target channel (R16) or the network's own
+management log beside the capture, and an MLO client must be tracked by its per-link addresses, not only
+the MLD address a management view displays (R15).
 
 ## Previously observed, not rerun in the current validation
 

@@ -6,18 +6,20 @@ least two APs on one SSID.
 
 ## Measure before building
 
-- [ ] **R14/R15 hypothesis check.** Force a phone to roam between two APs while the radio is
-  locked to the source AP's channel. Record which of these appear on the source channel: BTM
-  request, BTM response, deauth/disassoc with reason, last data frame. Record what is missing.
-  Result goes in [docs/TESTING.md](docs/TESTING.md) or [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
-- [ ] **R5 drop magnitude.** Count frames discarded by the MCU reply wait during a retune on a
-  busy channel, over ten retunes. The count exists in `mcu_wait` but only prints when verbose;
-  expose it as a counter first. Report the distribution, not the mean.
+- [ ] **R14/R15 hypothesis check, second attempt.** The first attempt (2026-09-02) locked one
+  radio to one channel and saw none of five roams of an MLO client; the network's own
+  management log did. Next: watch the client's current 5 GHz link at 80 MHz with that log as
+  the reference, and add Multi-Link element parsing so all of the client's link addresses match.
+- [ ] **A9000 day one (R22).** Record the full USB descriptor set with pyusb before claiming
+  anything; read `MT_HW_CHIPID`; check what owns the Bluetooth interface in `ioreg`; then follow
+  [docs/MT7925.md](docs/MT7925.md).
+- [ ] **roam_watch --bw 80.** 80 MHz capture works on 5 GHz (146 decoded 80 MHz frames in 10 s);
+  the watcher and survey commands still configure 20 MHz.
 
 ## Build
 
-- [ ] **R14. Survey command skeleton.** `examples/survey.py --place kitchen --ssid NAME` emits
-  one redacted JSON record with per-BSSID RSSI, channel, BSS Load, and k/v/r flags, using the
+- [ ] **R14. Survey record primitive.** `examples/survey.py --ssid NAME` emits one redacted JSON
+  record with per-BSSID RSSI, channel, advertised width, BSS Load, and k/v/r flags, using the
   parsing `rxd.py` already has. Schema file beside it, offline test on synthetic beacons.
 - [ ] **R1 remainder.** Requested-versus-actual channel per step and a `not_tested` status in
   `scripts/hardware_smoke.py`.
@@ -26,6 +28,8 @@ least two APs on one SSID.
 
 ## Landed this sprint
 
+- ~~R5 drop magnitude measured: median 1 frame lost per retune, max 8, over 30 hops at 100 to
+  250 frames per second; `scripts/retune_drops.py` and the `mcu_wait` counters shipped.~~
 - ~~R18 decision: 0.1.0 is not released. CHANGELOG entry moved back under Unreleased; tagging
   waits on the publication checklist.~~
 - ~~Roadmap regrouped into goal tracks; R14 to R21 added.~~

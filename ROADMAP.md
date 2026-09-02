@@ -2,10 +2,10 @@
 
 The project serves three goals, and the roadmap is organized as one track per goal:
 
-- **Track A, house-call instrument.** A Mac-attached passive radio that measures a home
-  network as a person walks between named places, with roaming as the first-class question:
-  which APs are audible where, whether they advertise 802.11k/v/r, whether they steer clients,
-  and whether clients accept the steer.
+- **Track A, roaming and steering instrument.** A Mac-attached passive radio that answers,
+  for one location at a time, which APs are audible, whether they advertise 802.11k/v/r,
+  whether they steer clients, and whether clients accept the steer. Survey orchestration and
+  site analysis are the consumer's job, not this repository's.
 - **Track B, community capture source.** A Wireshark extcap and a distributable install so
   other people's adapters and tools can use the driver without reading it.
 - **Track C, researcher reference.** A small, readable, evidence-gated reference for MT7921U
@@ -37,7 +37,7 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
   library for the Network Weather app) is a separate repository tested against the same recorded
   USB corpus (R20), not a rewrite of this one.
 
-## Track A: house-call instrument
+## Track A: roaming and steering instrument
 
 The decoder already classifies the whole roaming vocabulary: BTM query, request, and response
 with named status codes, neighbor reports, FT authentication and reassociation, the Extended
@@ -50,26 +50,28 @@ authentication and reassociation occur on the target. That split is standard 802
 is the working hypothesis behind R15, but it has not been confirmed against a phone on this
 hardware. R14's first measurement is to confirm it.
 
-### R14. Place-tagged survey command
+### R14. Survey record primitive
 
-Add a passive command that takes a place name, sweeps the channels of one SSID (or all bands),
-and emits one JSON record per place: audible BSSIDs of that SSID with RSSI, channel, width,
-BSS Load, and the 802.11k/v/r flags each AP advertises. Use the redacted-JSON pattern from
-`scripts/hardware_smoke.py`; identifiers are opt-in, never default.
+Add a passive command that sweeps the channels of one SSID (or all bands) once and emits a
+single JSON record for wherever the radio is: audible BSSIDs of that SSID with RSSI, channel,
+advertised operating width, BSS Load, and the 802.11k/v/r flags each AP advertises. A caller
+supplies any label it wants; this repository does not know about places, walks, or reports.
+Use the redacted-JSON pattern from `scripts/hardware_smoke.py`; identifiers are opt-in.
 
-Done when a walk through several named places produces one file per place, the fields are
-schema-checked, each field cites the frame and IE it came from, and the command has been run on
-the reference adapter in at least one multi-AP home with the result format reviewed against what
-a house-call report actually needs.
+Done when the record is schema-checked, each field cites the frame and IE it came from, and
+the command has been run on the reference adapter in a multi-AP environment.
 
 ### R5. Long-lived capture session with a single RX reader
 
 Boot once, retain ownership of the initialized device, retune safely, and stream until stopped.
-This removes the firmware upload cost from each capture and fixes a measured fidelity gap: MCU
-replies and 802.11 frames share endpoint `0x84` once EP4 routing is on, and the reply-wait loop
-in `mcu_wait` discards every non-event packet until the matching sequence arrives, so each retune
-silently drops in-flight frames. The frames that matter for a roam are exactly the low-volume,
-time-critical ones this drops.
+This removes the firmware upload cost from each capture and closes a measured, small fidelity
+gap: MCU replies and 802.11 frames share endpoint `0x84` once EP4 routing is on, and `mcu_wait`
+discards every frame it reads while hunting for its reply. Measured with `scripts/retune_drops.py`
+on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#retune-frame-loss-2026-09-02)): a retune is two
+commands totalling about 16 ms, and with the caller draining continuously it drops a median of one
+frame per hop and at most eight, at 100 to 250 frames per second. That is a 16 ms blind window per
+hop, not bulk loss. The device object now carries the drop counters, so any caller can attribute
+lost frames to the command that lost them; R5 turns that into a queue that loses nothing.
 
 Done when one reader drains the endpoint and demultiplexes into an MCU-reply queue and a frame
 queue; startup, stop, retune, and device-loss behavior have explicit states; cancellation does
@@ -82,7 +84,7 @@ accepting a stale MCU response.
 
 Lock the radio to one client's current AP channel, log every steering and roaming event from
 `rxd.management_event` with a timestamp, and follow the client on reassociation or to a BTM
-target channel. Emit a classified per-walk log: AP never steered; AP steered and the client
+target channel. Emit a classified per-session log: AP never steered; AP steered and the client
 refused with status X; the client roamed on its own with reason Y; the roam completed on the
 target channel or was not observed there.
 
@@ -90,6 +92,11 @@ Done when a forced roam of a known client on the reference adapter yields the ex
 sequence on the source channel, the arrival on the target channel is either captured or reported
 as unobserved (never inferred), the per-hop blind interval is measured and reported, and the
 event log is schema-checked and redacted by default.
+
+An MLO client (Wi-Fi 7) associates on several links with per-link addresses; a management view shows
+only the MLD address. The watcher must learn the link addresses from the Multi-Link element in
+(re)association frames and match on all of them, or it will miss the client on most links; this
+was observed on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#single-radio-roaming-observation-same-day)).
 
 ### R3. Failure handling and soak evidence
 
@@ -104,6 +111,8 @@ exercised on hardware.
 
 ### R16. Multiple adapters
 
+On 2026-09-02 a client moved through five APs on three bands in ten minutes while a single
+locked radio observed none of the transitions ([docs/TESTING.md](docs/TESTING.md)).
 After R2, open more than one adapter in one process so a second radio can sit on the roam
 target channel while the first stays on the source. Two adapters of the same USB ID must be
 distinguished without relying on serial numbers appearing in output.
@@ -111,6 +120,20 @@ distinguished without relying on serial numbers appearing in output.
 Done when two reference adapters capture concurrently with per-device counters, a forced roam
 is observed on both source and target channels in one run, and the single-adapter path is
 unchanged.
+
+### R22. MT7925U port for 160 MHz and Wi-Fi 7
+
+Every 6 GHz AP in the reference house runs 160 MHz and the MT7921 returns nothing when
+configured for it, so client data on 6 GHz is invisible to this adapter
+([NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md)). The MT7925 (Netgear A9000) decodes 160 MHz.
+[docs/MT7925.md](docs/MT7925.md) records what the upstream driver says the port involves,
+checked line by line against the pinned mt76 source: the USB bring-up and firmware download are
+shared, the sniffer command is byte-identical, and the work is the WFSYS reset, the MCU reply
+header, four commands moving to UNI encoding, and a connac3 RX descriptor decoder.
+
+Done when the A9000 boots, tunes, and captures on 20, 80, and 160 MHz through the existing
+redacted smoke schema, with descriptor discovery (R2) rather than a hard-coded interface, a
+connac3 decoder with synthetic fixtures, and a dated evidence section in docs/TESTING.md.
 
 ### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 

@@ -143,7 +143,7 @@ def main() -> int:
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": "fail",
         "software": {
-            "mt7921u_macos": m.__version__,
+            "mt76_usb_macos": m.__version__,
             "python": platform.python_version(),
             "pyusb": package_version("pyusb"),
         },

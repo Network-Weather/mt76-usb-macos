@@ -327,6 +327,13 @@ SDIO_HDR_LEN = 4  # MT_SDIO_HDR_SIZE, on the TX side only
 # the bulk transfer. The DMA length word is rxd[0]'s low half.
 RXD_SEQ_OFFSET = 29  # rxd[6] (24) + len,pkt_type_id (4) + eid (1)
 PKT_TYPE_RX_EVENT = 7  # MT_RXD0_PKT_TYPE value carrying an MCU reply
+# rx_pkt_type values (mt76_connac2_mac.h). A received 802.11 frame is PKT_TYPE_NORMAL, or
+# PKT_TYPE_RX_EVENT with MT_RXD0_PKT_FLAG == 1 (the "NORMAL_MCU" case that rxd.decode also
+# remaps). Anything else on the RX endpoint is a status or notification packet (TXS,
+# TXRXV, TXRX_NOTIFY, ...).
+PKT_TYPE_NORMAL = 2
+RXD0_PKT_FLAG_SHIFT, RXD0_PKT_FLAG_MASK = 16, 0xF  # MT_RXD0_PKT_FLAG GENMASK(19, 16)
+PKT_FLAG_NORMAL_MCU = 1
 RXD_STATUS_OFFSET = 32  # skb_pull(sizeof(*rxd) - 4) in mt7921_mcu_parse_response
 FW_SCATTER_MAX = 4096  # max_len for non-SDIO
 
@@ -342,6 +349,12 @@ class Mt7921uMcu(Mt7921u):
         super().__init__(verbose=verbose)
         self.msg_seq = 0
         self.evt_ep4 = False  # set once dma_rx_evt_ep4 has run
+        # Counters for what mcu_wait throws away while hunting for a reply on the
+        # shared RX endpoint. Cumulative over the object lifetime; callers snapshot
+        # before and after a command to attribute drops to it.
+        self.mcu_wait_dropped_frames = 0  # received 802.11 frames (NORMAL or NORMAL_MCU)
+        self.mcu_wait_stale_events = 0  # MCU events whose sequence did not match
+        self.mcu_wait_other_packets = 0  # status/notification packets (TXS, TXRXV, ...)
 
     def _next_seq(self) -> int:
         self.msg_seq = (self.msg_seq + 1) & 0xF
@@ -438,8 +451,16 @@ class Mt7921uMcu(Mt7921u):
                 continue
             rxd0 = struct.unpack_from("<I", raw, 0)[0]
             pkt_type = (rxd0 >> 27) & 0x1F
-            if pkt_type != PKT_TYPE_RX_EVENT:
+            pkt_flag = (rxd0 >> RXD0_PKT_FLAG_SHIFT) & RXD0_PKT_FLAG_MASK
+            is_frame = pkt_type == PKT_TYPE_NORMAL or (
+                pkt_type == PKT_TYPE_RX_EVENT and pkt_flag == PKT_FLAG_NORMAL_MCU
+            )
+            if is_frame or pkt_type != PKT_TYPE_RX_EVENT:
                 discarded += 1
+                if is_frame:
+                    self.mcu_wait_dropped_frames += 1
+                else:
+                    self.mcu_wait_other_packets += 1
                 continue
             rseq = raw[RXD_SEQ_OFFSET]
             if self.verbose:
@@ -447,6 +468,7 @@ class Mt7921uMcu(Mt7921u):
             if rseq == seq:
                 return raw
             discarded += 1
+            self.mcu_wait_stale_events += 1
         raise McuError(
             f"cid 0x{cid:02x}: no response matching seq {seq} ({discarded} frames skipped)"
         )

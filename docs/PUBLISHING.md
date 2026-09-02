@@ -34,13 +34,13 @@ The description and topics below were configured on the still-private GitHub rep
 
 Suggested repository description:
 
-> Userspace MT7921AU/MT7921U Wi-Fi 6E monitor-mode driver for macOS: passive 2.4/5/6 GHz radiotap capture via libusb, no kext or VM.
+> Userspace MediaTek mt76 USB driver for macOS: MT7921U (AWUS036AXML) working, MT7925U (A9000, Wi-Fi 7, 160 MHz) in progress. Passive 2.4/5/6 GHz radiotap capture via libusb, no kext or VM.
 
 Suggested topics:
 
-`macos`, `apple-silicon`, `mt7921au`, `mt7921u`, `mt7961`, `awus036axml`, `wifi-6e`,
-`6ghz`, `monitor-mode`, `packet-capture`, `radiotap`, `wireshark`, `libusb`, `pyusb`,
-`802-11`, `wireless-research`
+`macos`, `apple-silicon`, `mt76`, `mt7921au`, `mt7921u`, `mt7961`, `mt7925`, `mt7925u`, `awus036axml`,
+`nighthawk-a9000`, `wifi-6e`, `wifi-7`, `6ghz`, `monitor-mode`, `packet-capture`, `radiotap`, `wireshark`,
+`libusb`, `pyusb`, `802-11`, `wireless-research`
 
 Those strings cover the names users actually search: the Linux driver name (`mt7921u`),
 the silicon/adapter names (`MT7921AU`, `MT7961`, `AWUS036AXML`), the task (“macOS monitor

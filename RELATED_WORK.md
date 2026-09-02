@@ -131,7 +131,7 @@ summarized from their own documentation at the pinned revisions above as read on
 “not assessed” means this
 project has not verified the behavior. All projects are moving targets.
 
-| Dimension | mt7921u-macos (this project) | openwrt/mt76 | wifikit | wifit3 |
+| Dimension | mt76-usb-macos (this project) | openwrt/mt76 | wifikit | wifit3 |
 |---|---|---|---|---|
 | Primary goal | Compact driver reference and passive pcap | Linux kernel Wi-Fi driver | Native macOS security-testing toolkit | Cross-platform USB wireless auditor |
 | Host integration | macOS userspace, PyUSB/libusb | Linux mac80211/cfg80211 kernel integration | Direct userspace USB; interactive Rust application | Direct userspace USB; Python application and packaged binaries |
@@ -142,7 +142,7 @@ project has not verified the behavior. All projects are moving targets.
 | Transmit/security work | Experimental low-rate Probe Request only; not release-qualified | Normal kernel TX facilities, not an attack application | Broad active security-testing/attack engines | PMKID, handshake, WPS, WEP, deauth, and related workflows |
 | Multiple adapters | No | Multiple kernel devices | Yes | Yes |
 | User experience | Source-level library and three examples | Linux networking/capture ecosystem | Interactive terminal UI and single compiled application | Interactive terminal UI and prebuilt binaries |
-| Local evidence style | 47 offline tests plus dated, redacted tri-band macOS hardware/pcap evidence | Upstream kernel development and per-device testing | Project reports extensive unit tests and hardware testing | USB-trace replay against Linux behavior plus real-hardware tests |
+| Local evidence style | 54 offline tests plus dated, redacted tri-band macOS hardware/pcap evidence | Upstream kernel development and per-device testing | Project reports extensive unit tests and hardware testing | USB-trace replay against Linux behavior plus real-hardware tests |
 | Regulatory enforcement | **None in transmit path** | Linux regulatory stack | Not assessed here | Not assessed here |
 | Best reason to choose it | Smallest surface to read, modify, and compare with mt76; attached-device 6 GHz evidence | Mature Linux network integration and much broader driver lifecycle | Broader polished macOS workflow, chipset coverage, and active tooling | Broadest cross-platform/adapter workflow and replay-based porting harness |
 | Main reason not to choose it | Narrow hardware, no UI/network interface, weak TX/recovery/soak coverage | Not native macOS userspace | Much larger scope when only a minimal reference is wanted | Much larger active-auditing scope; its MT7921 table does not currently claim 6 GHz |
@@ -173,6 +173,19 @@ project has not verified the behavior. All projects are moving targets.
 - A smaller codebase is easier to audit, but it is not evidence of greater completeness or
   reliability. Peer claims are not local test results, and local results do not establish
   superiority outside the tested host, firmware, radio, channels, and duration.
+
+## The kernel-extension alternative on macOS
+
+The other way a USB MediaTek adapter has been made to work on macOS is a resurrected proprietary
+kernel extension. [D-LinkUtility-Package](https://github.com/chris1111/D-LinkUtility-Package)
+(read 2026-09-02; binary only, no license file) repackages the Ralink-era
+`RT2870USBWirelessDriver.kext` and the D-Link client utility so they install on Catalina through
+Tahoe, for the RT28xx to RT55xx, MT7601, MT7610, and MT7621U parts. It provides a managed network
+interface in station mode, not capture, and requires System Integrity Protection and Gatekeeper to
+be disabled or a separately notarized build. Nothing in it applies to the MT7921 or MT7925
+generation, and it was not run here. It is listed because it is the clearest example of the
+opposite architectural choice to this project: a kernel driver with a system-integrity cost, versus
+a userspace capture tool with none.
 
 ## Supporting projects and validation tools
 

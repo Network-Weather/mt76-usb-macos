@@ -11,7 +11,7 @@ import mt7921u as m
 
 
 def test_module_and_distribution_versions_match():
-    assert m.__version__ == version("mt7921u-macos") == "0.1.0"
+    assert m.__version__ == version("mt76-usb-macos") == "0.1.0"
 
 
 class RecordingMcu(m.Mt7921uMcu):
@@ -172,3 +172,53 @@ def test_txwi_requires_a_complete_80211_header():
 
     with pytest.raises(ValueError, match="24-byte"):
         dev._build_txwi(b"\0" * 23)
+
+
+class QueuedRxMcu(m.Mt7921uMcu):
+    """MCU transport whose RX endpoint replays a fixed queue of transfers."""
+
+    def __init__(self, transfers):
+        super().__init__()
+        self.evt_ep4 = True
+        self.queue = list(transfers)
+
+    def bulk_in(self, ep, length, timeout=1000):
+        assert ep == m.EP_IN_PKT_RX
+        return self.queue.pop(0)
+
+
+def rx_event(seq: int) -> bytes:
+    raw = bytearray(m.MCU_RXD_LEN + 4)
+    struct.pack_into("<I", raw, 0, m.PKT_TYPE_RX_EVENT << 27)
+    raw[m.RXD_SEQ_OFFSET] = seq
+    return bytes(raw)
+
+
+def rx_packet(pkt_type: int, pkt_flag: int = 0, seq: int = 0) -> bytes:
+    raw = bytearray(m.MCU_RXD_LEN + 4)
+    struct.pack_into("<I", raw, 0, (pkt_type << 27) | (pkt_flag << m.RXD0_PKT_FLAG_SHIFT))
+    raw[m.RXD_SEQ_OFFSET] = seq
+    return bytes(raw)
+
+
+def test_mcu_wait_counts_what_it_discards_by_packet_type():
+    txs = 0  # PKT_TYPE_TXS: a transmit status, not a received frame
+    # A NORMAL_MCU frame is RX_EVENT with packet flag 1 on the wire. Give it the wanted
+    # sequence byte so the test proves it is classified by flag, not mistaken for the reply.
+    normal_mcu = rx_packet(m.PKT_TYPE_RX_EVENT, pkt_flag=m.PKT_FLAG_NORMAL_MCU, seq=7)
+    dev = QueuedRxMcu(
+        [
+            rx_packet(m.PKT_TYPE_NORMAL),
+            rx_packet(txs),
+            normal_mcu,
+            rx_event(3),
+            rx_packet(m.PKT_TYPE_NORMAL),
+            rx_event(7),
+        ]
+    )
+
+    assert dev.mcu_wait(seq=7, cid=0x44) == rx_event(7)
+    assert dev.mcu_wait_dropped_frames == 3
+    assert dev.mcu_wait_other_packets == 1
+    assert dev.mcu_wait_stale_events == 1
+    assert dev.queue == []
