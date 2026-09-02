@@ -174,6 +174,19 @@ project has not verified the behavior. All projects are moving targets.
   reliability. Peer claims are not local test results, and local results do not establish
   superiority outside the tested host, firmware, radio, channels, and duration.
 
+## The kernel-extension alternative on macOS
+
+The other way a USB MediaTek adapter has been made to work on macOS is a resurrected proprietary
+kernel extension. [D-LinkUtility-Package](https://github.com/chris1111/D-LinkUtility-Package)
+(read 2026-09-02; binary only, no license file) repackages the Ralink-era
+`RT2870USBWirelessDriver.kext` and the D-Link client utility so they install on Catalina through
+Tahoe, for the RT28xx to RT55xx, MT7601, MT7610, and MT7621U parts. It provides a managed network
+interface in station mode, not capture, and requires System Integrity Protection and Gatekeeper to
+be disabled or a separately notarized build. Nothing in it applies to the MT7921 or MT7925
+generation, and it was not run here. It is listed because it is the clearest example of the
+opposite architectural choice to this project: a kernel driver with a system-integrity cost, versus
+a userspace capture tool with none.
+
 ## Supporting projects and validation tools
 
 - [`PyUSB`](https://github.com/pyusb/pyusb) supplies the Python USB API.
