@@ -194,15 +194,27 @@ def rx_event(seq: int) -> bytes:
     return bytes(raw)
 
 
-def rx_frame() -> bytes:
-    # Packet type 0 in rxd0 bits 27..31: an ordinary received 802.11 frame.
-    return bytes(m.MCU_RXD_LEN + 4)
+def rx_packet(pkt_type: int) -> bytes:
+    raw = bytearray(m.MCU_RXD_LEN + 4)
+    struct.pack_into("<I", raw, 0, pkt_type << 27)
+    return bytes(raw)
 
 
-def test_mcu_wait_counts_frames_and_stale_events_it_discards():
-    dev = QueuedRxMcu([rx_frame(), rx_frame(), rx_event(3), rx_frame(), rx_event(7)])
+def test_mcu_wait_counts_what_it_discards_by_packet_type():
+    txs = 0  # PKT_TYPE_TXS: a transmit status, not a received frame
+    dev = QueuedRxMcu(
+        [
+            rx_packet(m.PKT_TYPE_NORMAL),
+            rx_packet(txs),
+            rx_packet(m.PKT_TYPE_NORMAL_MCU),
+            rx_event(3),
+            rx_packet(m.PKT_TYPE_NORMAL),
+            rx_event(7),
+        ]
+    )
 
     assert dev.mcu_wait(seq=7, cid=0x44) == rx_event(7)
     assert dev.mcu_wait_dropped_frames == 3
+    assert dev.mcu_wait_other_packets == 1
     assert dev.mcu_wait_stale_events == 1
     assert dev.queue == []

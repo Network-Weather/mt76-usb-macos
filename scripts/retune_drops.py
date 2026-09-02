@@ -60,6 +60,7 @@ def parse_candidates(text: str) -> list[tuple[str, int]]:
 def retune(dev: m.Mt7921uDevice, band: str, chan: int) -> dict:
     """Retune and return what the two MCU commands discarded, with wall time."""
     dropped0, stale0 = dev.mcu_wait_dropped_frames, dev.mcu_wait_stale_events
+    other0 = dev.mcu_wait_other_packets
     t0 = time.monotonic()
     dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
     t1 = time.monotonic()
@@ -69,6 +70,7 @@ def retune(dev: m.Mt7921uDevice, band: str, chan: int) -> dict:
         "to": f"{band}:{chan}",
         "dropped_frames": dev.mcu_wait_dropped_frames - dropped0,
         "stale_events": dev.mcu_wait_stale_events - stale0,
+        "other_packets": dev.mcu_wait_other_packets - other0,
         "chan_switch_ms": round((t1 - t0) * 1000, 1),
         "sniffer_cfg_ms": round((t2 - t1) * 1000, 1),
     }

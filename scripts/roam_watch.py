@@ -88,9 +88,7 @@ def ap_flags(p: dict) -> dict:
     return {
         "k_neighbor_report": bool(rrm.get("neighbor_report")),
         "v_bss_transition": bool(p.get("bss_transition")),
-        "r_mobility_domain": p.get("mobility_domain", {}).get("mdid")
-        if p.get("mobility_domain")
-        else None,
+        "r_mobility_domain": (p.get("mobility_domain") or {}).get("id"),
         "load": p.get("bss_load"),
     }
 
@@ -119,7 +117,7 @@ def find(dev: m.Mt7921uDevice, ssid: str) -> int:
         load = e["load"] or {}
         print(
             f"{bssid}  {e['band']:>6}:{e['channel']:<3}  rssi {e['rssi']!s:>4}  {flags}  "
-            f"stations {load.get('station_count', '?')}  util {load.get('utilization', '?')}"
+            f"stations {load.get('stations', '?')}  util {load.get('channel_util_pct', '?')}%"
         )
     return 0
 
