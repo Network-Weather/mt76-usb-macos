@@ -188,7 +188,9 @@ the MLD address a management view displays (R15).
 - per-frame PHY width/MCS/rate/retry reporting across all modes;
 - hardware good-MPDU and FCS-error counters;
 - 40 and 80 MHz capture paths; and
-- low-rate Probe Request injection followed by a directed Probe Response.
+- low-rate Probe Request injection: 60 Probe Requests at 50 ms spacing on one 2.4 GHz channel,
+  the chip alive after every 20, 677 directed Probe Responses received from 6 BSSIDs. Sustained
+  or high-rate transmit was not attempted, then or since.
 
 These observations motivated code and documentation, but they should not be interpreted
 as a current release qualification.
@@ -205,7 +207,7 @@ as a current release qualification.
 - suspend/resume, sleep/wake, hot-unplug recovery, and long-duration soak behavior;
 - sustained or high-rate injection, injection across bands/widths, TX power, TX feedback,
   and regulatory-domain enforcement; and
-- automatic recovery from an MCU panic.
+- automatic recovery from a device that stops responding.
 
 Do not turn an item in this section into a positive claim until a dated result, exact test
 bed, command, acceptance criterion, and failure disclosure are added here.

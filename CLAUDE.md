@@ -84,7 +84,8 @@ Each is documented in full elsewhere; these are the ones that bite.
   repo, tests, issues, or PRs. `scan.py` output is sensitive; `hardware_smoke.py` output
   is redacted by design.
 - Injection (`inject`, `_build_txwi`, `examples/inject_demo.py`) is experimental and
-  rate-limited; sustained TX can panic the MCU. Do not extend it toward reliability or
+  rate-limited; only 60 spaced frames have ever been sent here and sustained transmit is
+  untested. Do not extend it toward reliability or
   present it as dependable.
 - Do not promote anything from the "previously observed" or "untested" lists in
   [docs/TESTING.md](docs/TESTING.md) to a claim without adding a dated result, test bed,

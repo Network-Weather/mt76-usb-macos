@@ -31,7 +31,8 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 ### Experimental
 
 - Low-rate Probe Request injection is included for driver research but was not requalified for
-  this release. Sustained transmit can panic the MCU.
+  this release. Only 60 frames at 50 ms spacing have been sent here, with the chip alive after;
+  sustained or high-rate transmit is untested.
 
 ### Known limitations
 
