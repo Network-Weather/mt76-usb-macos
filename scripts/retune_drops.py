@@ -134,7 +134,7 @@ def main() -> int:
 
     result = {
         "tool": "retune_drops",
-        "mt7921u_macos": m.__version__,
+        "mt76_usb_macos": m.__version__,
         "python": platform.python_version(),
         "macos": platform.mac_ver()[0],
         "started_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),

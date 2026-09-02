@@ -1,12 +1,12 @@
 cff-version: 1.2.0
 message: "If this software helps your work, please cite it using this metadata."
-title: "mt7921u-macos: a userspace MT7921AU Wi-Fi 6E monitor-mode driver for macOS"
+title: "mt76-usb-macos: a userspace MediaTek mt76 USB (MT7921U, MT7925U) monitor-mode driver for macOS"
 type: software
 authors:
   - name: "Primatech Paper Co LLC d/b/a Network Weather"
 version: 0.1.0
-repository-code: "https://github.com/Network-Weather/mt7921u-macos"
-url: "https://github.com/Network-Weather/mt7921u-macos"
+repository-code: "https://github.com/Network-Weather/mt76-usb-macos"
+url: "https://github.com/Network-Weather/mt76-usb-macos"
 license: BSD-3-Clause-Clear
 keywords:
   - MT7921AU

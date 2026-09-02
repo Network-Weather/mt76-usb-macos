@@ -43,6 +43,9 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 ### Documentation
 
+- Renamed the repository and distribution from mt7921u-macos to mt76-usb-macos, after the upstream
+  `mt76-usb` module it transcribes, with a per-chip support matrix in the README. The Python modules
+  keep their kernel-module names (`mt7921u`, and `mt7925u` when it lands).
 - Expanded provenance to distinguish the pinned openwrt/mt76 transcription source from the
   canonical in-tree Linux integration, retain exact upstream copyright notices, pin peer
   comparison revisions, and catalogue selected downstream/backport projects.
@@ -65,4 +68,4 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 - Offline tests for the roam watcher's BSSID bookkeeping: channel from the frame, not the sweep
   target; DS Parameter Set over descriptor; strongest RSSI; k/v/r flags.
 
-[Unreleased]: https://github.com/Network-Weather/mt7921u-macos/commits/main
+[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/commits/main

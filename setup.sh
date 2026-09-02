@@ -15,7 +15,7 @@ set -eu
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT" || { echo "cannot cd to repo root"; exit 1; }
 
-echo "== mt7921u-macos setup ($ROOT) =="
+echo "== mt76-usb-macos setup ($ROOT) =="
 
 # --- venv + pyusb ---
 if [ -x .venv/bin/python ] && .venv/bin/python -c 'import usb.core' 2>/dev/null; then

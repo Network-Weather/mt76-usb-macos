@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/Network-Weather/mt7921u-macos/blob/main/docs/hardware-smoke.schema.json",
-  "title": "mt7921u-macos passive hardware smoke result",
+  "$id": "https://github.com/Network-Weather/mt76-usb-macos/blob/main/docs/hardware-smoke.schema.json",
+  "title": "mt76-usb-macos passive hardware smoke result",
   "type": "object",
   "required": [
     "schema_version",

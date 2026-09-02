@@ -137,7 +137,7 @@ def main() -> int:
             results.append(probe(dev, band, control, center, width, args.seconds))
     print(
         json.dumps(
-            {"tool": "width_probe", "mt7921u_macos": m.__version__, "runs": results}, indent=2
+            {"tool": "width_probe", "mt76_usb_macos": m.__version__, "runs": results}, indent=2
         )
     )
     return 0

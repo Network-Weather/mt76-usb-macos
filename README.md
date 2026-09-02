@@ -1,6 +1,6 @@
-# mt7921u-macos: MT7921AU Wi-Fi 6E monitor mode on macOS
+# mt76-usb-macos: MediaTek MT7921U and MT7925U (MT7961, MT7925) Wi-Fi 6E and Wi-Fi 7 monitor mode on macOS
 
-[![CI](https://github.com/Network-Weather/mt7921u-macos/actions/workflows/ci.yml/badge.svg)](https://github.com/Network-Weather/mt7921u-macos/actions/workflows/ci.yml)
+[![CI](https://github.com/Network-Weather/mt76-usb-macos/actions/workflows/ci.yml/badge.svg)](https://github.com/Network-Weather/mt76-usb-macos/actions/workflows/ci.yml)
 [![License: BSD-3-Clause-Clear](https://img.shields.io/badge/license-BSD--3--Clause--Clear-blue.svg)](LICENSE)
 
 A small, readable Python userspace monitor-mode driver for the MediaTek MT7921AU / MT7921U
@@ -17,6 +17,17 @@ different built-in capabilities.
 > current release validation. Read [Testing and evidence](docs/TESTING.md),
 > [Known limits](#known-limits-and-non-goals), [engineering quality](docs/QUALITY.md), and
 > [ROADMAP.md](ROADMAP.md) before relying on it.
+
+## Supported hardware
+
+The name is the upstream family, `mt76-usb`, the Linux USB transport this driver transcribes.
+Support is per chip and evidence-gated:
+
+| Chip (Linux module) | Adapter tested | Status |
+|---|---|---|
+| MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Working: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz, dated evidence in [docs/TESTING.md](docs/TESTING.md) |
+| MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | none yet | In progress: port plan in [docs/MT7925.md](docs/MT7925.md); adds 160 MHz |
+| MT7663U, MT76x2U, MT76x0U (`mt7663u`, `mt76x2u`, `mt76x0u`) | none | Not attempted: different firmware and MCU models; nothing here has been run on them |
 
 **Lineage:** the driver logic is transcribed from the BSD-3-Clause-Clear
 [`openwrt/mt76`](https://github.com/openwrt/mt76) MT7921 path, and it boots MediaTek blobs

@@ -131,7 +131,7 @@ summarized from their own documentation at the pinned revisions above as read on
 “not assessed” means this
 project has not verified the behavior. All projects are moving targets.
 
-| Dimension | mt7921u-macos (this project) | openwrt/mt76 | wifikit | wifit3 |
+| Dimension | mt76-usb-macos (this project) | openwrt/mt76 | wifikit | wifit3 |
 |---|---|---|---|---|
 | Primary goal | Compact driver reference and passive pcap | Linux kernel Wi-Fi driver | Native macOS security-testing toolkit | Cross-platform USB wireless auditor |
 | Host integration | macOS userspace, PyUSB/libusb | Linux mac80211/cfg80211 kernel integration | Direct userspace USB; interactive Rust application | Direct userspace USB; Python application and packaged binaries |
