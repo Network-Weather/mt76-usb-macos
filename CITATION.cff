@@ -5,6 +5,7 @@ type: software
 authors:
   - name: "Primatech Paper Co LLC d/b/a Network Weather"
 version: 0.1.0
+date-released: "2026-09-02"
 repository-code: "https://github.com/Network-Weather/mt76-usb-macos"
 url: "https://github.com/Network-Weather/mt76-usb-macos"
 license: BSD-3-Clause-Clear
