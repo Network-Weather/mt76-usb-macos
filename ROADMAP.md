@@ -33,9 +33,11 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
   [RELATED_WORK.md](RELATED_WORK.md#what-this-project-can-learn-from-the-ecosystem) as an
   investigation queue, not inherited capability. Reimplement independently, preserve license
   boundaries, and require local evidence.
-- The Python code stays the reference. Any future native implementation (for example a Swift
-  library for the Network Weather app) is a separate repository tested against the same recorded
-  USB corpus (R20), not a rewrite of this one.
+- The Python code stays the reference implementation. Other-language implementations (a Swift
+  package for app embedding, a C library) live in sibling repositories and prove themselves against
+  this repository's protocol document (R19), recorded USB corpus (R20), and conformance suite
+  (R23). SwiftPM requires `Package.swift` at a repository root, so a Swift package cannot live in
+  a subdirectory here. Wireshark needs no native code: extcap is a separate process (R6).
 
 ## Track A: roaming and steering instrument
 
@@ -238,6 +240,41 @@ reporting, and the release tag. Nothing in this track is discoverable until this
 
 Done when the tag exists, the checklist is complete, and CHANGELOG and the GitHub release agree.
 
+### R20. Recorded-USB corpus and fake transport
+
+The language-neutral contract. Record sanitized USB transfers from the reference adapter (firmware download, MCU exchanges,
+retunes, and a short capture on each band) and replay them through a fake transport in tests.
+Every implementation, in any language, is tested against the same bytes; it is also what lets
+R3's fault-injection tests exist, and it must be captured from both the MT7921 and the MT7925.
+
+Done when the offline suite boots the driver end to end against the corpus with no adapter,
+the corpus contains no SSIDs, MAC addresses, serials, or payloads, and a documented tool
+regenerates it from hardware.
+
+### R19. Protocol document: the contract for every implementation
+
+Write `docs/PROTOCOL.md`: the bring-up sequence, every MCU message used with its byte layout and
+offsets, the RX descriptor layouts for connac2 (MT7921) and connac3 (MT7925), the width and band
+tables, and the five measured findings, each with an mt76 file and line citation at the pinned
+baseline and the error seen when the step is missing. It is what a C or Swift author reads instead
+of the Python, and what a researcher's assistant retrieves. Publish an indexed write-up with the
+same terms, mint a DOI against `CITATION.cff`, and request links from where researchers look: the
+mt76 issue tracker, the adapter threads, the Wireshark extcap wiki, the peer READMEs.
+
+Done when every statement in the document cites source or a dated measurement, a second
+implementation could be written from it without reading `mt7921u.py`, the DOI exists, and at
+least one external inbound link is live.
+
+### R23. Conformance suite over the corpus
+
+Define the replay format (NDJSON or similar: direction, endpoint, bytes, timestamp) and a suite
+of checks any implementation can run: boots to `N9_RDY` with the recorded exchanges, decodes each
+recorded transfer to the recorded frame and metadata, tunes with the recorded commands. "Supports
+MT7921U" then means passing the suite, whichever language.
+
+Done when the Python reference passes it from the corpus alone, the format and checks are
+documented for another language to implement, and a sibling implementation has run it.
+
 ### R1. Repeatable passive hardware smoke command (mostly done)
 
 ~~Create one non-interactive command that boots firmware, tunes a redacted channel set, captures
@@ -248,31 +285,6 @@ versions, transfer/frame counts, timeouts, and decode failures.~~
 
 Remaining: report requested and actual channel per step, distinguish `not tested` from
 `inconclusive`, and add optional independent pcap validation through tshark.
-
-### R19. Findings that a researcher's assistant can retrieve
-
-The five measured bring-up findings in the README and the roaming event vocabulary in `rxd.py`
-are the two things a wireless researcher, or an AI assistant helping one, would search for.
-Give each finding a stable anchor in a `FINDINGS.md` with its evidence date, exact register
-names, and the error text seen when the step is missing. Publish an indexed write-up with the
-same terms, mint a DOI against the existing `CITATION.cff`, and request links from where
-researchers already look: the mt76 issue tracker, the AWUS036AXML threads, the Wireshark extcap
-wiki, and the peer project READMEs. Add an `llms.txt` last; it is the least of these.
-
-Done when each finding has a URL that resolves to its evidence, the DOI exists, and at least
-one inbound link from an external venue is live. Which venues an assistant actually indexes is
-not measured; revisit the ordering if search results say otherwise.
-
-### R20. Recorded-USB corpus and fake transport
-
-Record sanitized USB transfers from the reference adapter (firmware download, MCU exchanges,
-retunes, and a short capture on each band) and replay them through a fake transport in tests.
-The corpus is the contract any other implementation, including a future native one, is tested
-against, and it is what lets R3's fault-injection tests exist.
-
-Done when the offline suite boots the driver end to end against the corpus with no adapter,
-the corpus contains no SSIDs, MAC addresses, serials, or payloads, and a documented tool
-regenerates it from hardware.
 
 ### R4. Maintainable Python boundary
 

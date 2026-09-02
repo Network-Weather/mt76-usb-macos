@@ -47,6 +47,9 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 - Renamed the repository and distribution from mt7921u-macos to mt76-usb-macos, after the upstream
   `mt76-usb` module it transcribes, with a per-chip support matrix in the README. The Python modules
   keep their kernel-module names (`mt7921u`, and `mt7925u` when it lands).
+- Reordered Track C around a language-neutral contract: R20 recorded-USB corpus first, R19 reframed
+  as the protocol document, new R23 conformance suite; other-language implementations live in
+  sibling repositories validated against them.
 - Expanded provenance to distinguish the pinned openwrt/mt76 transcription source from the
   canonical in-tree Linux integration, retain exact upstream copyright notices, pin peer
   comparison revisions, and catalogue selected downstream/backport projects.
