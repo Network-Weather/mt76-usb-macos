@@ -182,6 +182,18 @@ roaming evidence needs either a second radio on the target channel (R16) or the 
 management log beside the capture, and an MLO client must be tracked by its per-link addresses, not only
 the MLD address a management view displays (R15).
 
+## Release smoke for 0.1.0: 2026-09-02
+
+The release commit was run through the full redacted smoke on the reference adapter and host:
+
+```bash
+./.venv/bin/python scripts/hardware_smoke.py --plan all --dwell 0.75
+```
+
+Result `pass` on all 43 channels with 1,244 decoded frames: 377 on 2.4 GHz, 683 on 5 GHz, 184 on
+6 GHz. The aggregate-only result is [hardware-smoke-reference.json](hardware-smoke-reference.json),
+which replaces the 2026-08-31 reference file; that earlier run's numbers remain above.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

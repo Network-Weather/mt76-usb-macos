@@ -5,9 +5,12 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
-Nothing below has been released. The first tag will be `0.1.0`, the version already declared in
-`pyproject.toml` and `mt7921u.__version__`; the gate for tagging it is roadmap item R18 and the
-checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
+Nothing yet.
+
+## [0.1.0] - 2026-09-02
+
+First release: a research-grade passive capture instrument for the MT7921U on macOS, with the
+MT7925U port planned. Hardware claims are evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
@@ -72,4 +75,5 @@ checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 - Offline tests for the roam watcher's BSSID bookkeeping: channel from the frame, not the sweep
   target; DS Parameter Set over descriptor; strongest RSSI; k/v/r flags.
 
-[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/commits/main
+[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Network-Weather/mt76-usb-macos/releases/tag/v0.1.0

@@ -231,7 +231,7 @@ cover multi-subframe inputs, and the capture output behavior is documented.
 
 ## Track C: researcher reference and discoverability
 
-### R18. Publish 0.1.0
+### ~~R18. Publish 0.1.0~~ (tagged 2026-09-02)
 
 The repository is private and untagged. `0.1.0` is the first planned tag; its candidate notes sit
 under Unreleased in [CHANGELOG.md](CHANGELOG.md). Work the [publication checklist](docs/PUBLISHING.md):

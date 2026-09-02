@@ -4,49 +4,49 @@
       "channels_attempted": 3,
       "channels_with_frames": 3,
       "channels_with_transfers": 3,
-      "decoded_frames": 316,
+      "decoded_frames": 377,
       "frame_types": {
-        "control": 3,
-        "data": 208,
-        "management": 105,
+        "control": 60,
+        "data": 86,
+        "management": 231,
         "other": 0
       },
       "undecoded_transfers": 0,
       "usb_errors": 0,
       "usb_timeouts": 0,
-      "usb_transfers": 316
+      "usb_transfers": 377
     },
     "5GHz": {
       "channels_attempted": 25,
-      "channels_with_frames": 17,
-      "channels_with_transfers": 17,
-      "decoded_frames": 673,
+      "channels_with_frames": 16,
+      "channels_with_transfers": 16,
+      "decoded_frames": 683,
       "frame_types": {
-        "control": 446,
-        "data": 32,
-        "management": 195,
+        "control": 265,
+        "data": 83,
+        "management": 335,
         "other": 0
       },
       "undecoded_transfers": 0,
       "usb_errors": 0,
-      "usb_timeouts": 19,
-      "usb_transfers": 673
+      "usb_timeouts": 35,
+      "usb_transfers": 683
     },
     "6GHz": {
       "channels_attempted": 15,
       "channels_with_frames": 4,
       "channels_with_transfers": 4,
-      "decoded_frames": 167,
+      "decoded_frames": 184,
       "frame_types": {
         "control": 0,
-        "data": 2,
-        "management": 165,
+        "data": 0,
+        "management": 184,
         "other": 0
       },
       "undecoded_transfers": 0,
       "usb_errors": 0,
-      "usb_timeouts": 24,
-      "usb_transfers": 167
+      "usb_timeouts": 35,
+      "usb_transfers": 184
     }
   },
   "device": {
@@ -54,19 +54,19 @@
     "usb_speed_code": 4,
     "wifi_interface": 3
   },
-  "duration_seconds": 39.37,
+  "duration_seconds": 50.931,
   "firmware": {
     "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
     "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
   },
-  "generated_at_utc": "2026-09-01T04:36:46.176012+00:00",
+  "generated_at_utc": "2026-09-02T23:22:47.212314+00:00",
   "host": {
     "machine": "arm64",
     "macos": "26.6"
   },
   "plan": {
     "channels": 43,
-    "dwell_seconds": 0.5,
+    "dwell_seconds": 0.75,
     "name": "all",
     "requested_bands": [
       "2.4GHz",
@@ -82,10 +82,10 @@
   },
   "status": "pass",
   "totals": {
-    "decoded_frames": 1156,
+    "decoded_frames": 1244,
     "undecoded_transfers": 0,
     "usb_errors": 0,
-    "usb_timeouts": 43,
-    "usb_transfers": 1156
+    "usb_timeouts": 70,
+    "usb_transfers": 1244
   }
 }
