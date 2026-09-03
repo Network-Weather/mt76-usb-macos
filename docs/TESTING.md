@@ -194,6 +194,68 @@ Result `pass` on all 43 channels with 1,244 decoded frames: 377 on 2.4 GHz, 683 
 6 GHz. The aggregate-only result is [hardware-smoke-reference.json](hardware-smoke-reference.json),
 which replaces the 2026-08-31 reference file; that earlier run's numbers remain above.
 
+## Attached-hardware validation: Pure C driver: 2026-09-02
+
+### Test bed
+
+| Item | Value |
+|---|---|
+| Host | Apple M1 Max |
+| OS | macOS 26.6, build 25G72 |
+| Compiler | Apple clang 17.0.0 (clang-1700.0.13.5), C11, `-Wall -Wextra -O2` |
+| USB device | MediaTek `Wireless_Device`, `0e8d:7961`, USB SuperSpeed (speed code 4) |
+| Driver access | Native IOKit (`IOUSBDeviceInterface500`, `IOUSBInterfaceInterface500`), unprivileged user |
+| RAM firmware SHA-256 | `b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9` |
+| Patch firmware SHA-256 | `a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6` |
+
+No Python runtime, PyUSB, or libusb was linked or invoked.
+
+### Passive tri-band sweep (`--plan all`)
+
+```bash
+./c/mt7921_smoke --plan all --dwell 0.5
+```
+
+- **Criterion**: Exit code 0 (`status: pass`), all 43 channels scanned, zero non-timeout USB errors, zero undecoded transfers.
+- **Result**: `status: "pass"` across 43 channels (2.4 GHz, 5 GHz, and 6 GHz PSC) with 1,333 decoded frames: 282 on 2.4 GHz, 893 on 5 GHz, and 158 on 6 GHz. Zero undecoded transfers, zero non-timeout USB errors.
+
+### On-die thermal telemetry
+
+```bash
+./c/mt7921_smoke --temp
+```
+
+- **Criterion**: Send `MCU_EXT_CMD_THERMAL_CTRL` (`0x2c`), read signed temperature in °C, check non-negative and within operating limits (20°C–80°C), exit 0.
+- **Result**: Output `Die temperature: 32 C` (exit code 0).
+
+### Raw EFUSE block query and sensitive data masking
+
+```bash
+./c/mt7921_smoke --read-efuse 0x000
+```
+
+- **Criterion**: Send `MCU_EXT_CMD_EFUSE_ACCESS` (`0x01`) query for block `0x000`, confirm chip ID `0x7961` (`61 79`) in bytes 0–1, `valid=1`, and ensure MAC address bytes (offsets 0x004..0x009) are masked with `xx` unless `--acknowledge-sensitive-raw-efuse` is passed.
+- **Result**: Output `EFUSE [0x000] (valid=0x00000001): 61 79 00 00 xx xx xx xx xx xx 00 00 00 00 00 00 [MAC redacted; pass --acknowledge-sensitive-raw-efuse to display]` (exit code 0).
+
+### Rate-limited 2.4 GHz probe request injection
+
+```bash
+./c/mt7921_smoke --plan quick --dwell 0.5 --inject 3 --acknowledge-experimental-transmit
+```
+
+- **Criterion**: Send exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and transmit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted, chip alive after transmit, exit 0 (`status: pass`).
+- **Result**: 3 frames transmitted on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-transmit liveness check; 317 ambient frames decoded across all 3 bands; exit code 0 (`status: pass`).
+
+### Radiotap PCAP export with Rate, MCS, VHT, and HE metadata
+
+```bash
+./c/mt7921_smoke --plan quick --dwell 0.5 --pcap /tmp/live_test.pcap
+tcpdump -r /tmp/live_test.pcap -c 5
+```
+
+- **Criterion**: Export PCAP with link type `IEEE802_11_RADIO` (127), containing valid Radiotap headers with rate (CCK/OFDM), MCS (HT), VHT, and HE data words matching upstream definitions without malformed errors in `tcpdump` or Wireshark.
+- **Result**: `tcpdump` parses capture records without errors, showing rates (`11.0 Mb/s`, `1.0 Mb/s`), frequency, and RSSI.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

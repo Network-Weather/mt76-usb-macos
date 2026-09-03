@@ -46,7 +46,6 @@ static uint16_t freq_for(const char *band, uint8_t chan) {
 }
 
 int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
-    (void)rxv1;
     if (!phy) return -1;
     memset(phy, 0, sizeof(*phy));
 
@@ -58,6 +57,9 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
     uint32_t stbc = (rxv0 >> 22) & 0x3;
     uint32_t mode = (rxv0 >> 24) & 0xF;
     bool dcm = (idx & (1U << 4)) != 0;
+
+    /* Extract Connac2 HE RU allocation: DW0 bits 31..28 and DW1 bits 3..0 */
+    uint32_t ru = ((rxv1 & 0x0F) << 4) | ((rxv0 >> 28) & 0x0F);
 
     uint32_t nss = nsts + 1;
     if (stbc && nss > 1) {
@@ -86,6 +88,7 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
     phy->stbc = stbc != 0;
     phy->ldpc = ldpc;
     phy->dcm = dcm;
+    phy->ru_alloc = (uint8_t)ru;
 
     switch (mode) {
         case MT_PHY_TYPE_CCK:
@@ -125,26 +128,26 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
             phy->mode_name = "EHT-MU";
             break;
         default:
-            phy->mode_name = "unknown";
+            phy->mode_name = "UNKNOWN";
             break;
     }
 
     static const struct {
         double bits;
         double coding;
-    } mcs_params[] = {
-        {1.0, 1.0 / 2.0},  /* 0 */
-        {2.0, 1.0 / 2.0},  /* 1 */
-        {2.0, 3.0 / 4.0},  /* 2 */
-        {4.0, 1.0 / 2.0},  /* 3 */
-        {4.0, 3.0 / 4.0},  /* 4 */
-        {6.0, 2.0 / 3.0},  /* 5 */
-        {6.0, 3.0 / 4.0},  /* 6 */
-        {6.0, 5.0 / 6.0},  /* 7 */
-        {8.0, 3.0 / 4.0},  /* 8 */
-        {8.0, 5.0 / 6.0},  /* 9 */
-        {10.0, 3.0 / 4.0}, /* 10 */
-        {10.0, 5.0 / 6.0}, /* 11 */
+    } mcs_params[12] = {
+        {1.0, 1.0 / 2.0},  /* MCS 0: BPSK 1/2 */
+        {2.0, 1.0 / 2.0},  /* MCS 1: QPSK 1/2 */
+        {2.0, 3.0 / 4.0},  /* MCS 2: QPSK 3/4 */
+        {4.0, 1.0 / 2.0},  /* MCS 3: 16-QAM 1/2 */
+        {4.0, 3.0 / 4.0},  /* MCS 4: 16-QAM 3/4 */
+        {6.0, 2.0 / 3.0},  /* MCS 5: 64-QAM 2/3 */
+        {6.0, 3.0 / 4.0},  /* MCS 6: 64-QAM 3/4 */
+        {6.0, 5.0 / 6.0},  /* MCS 7: 64-QAM 5/6 */
+        {8.0, 3.0 / 4.0},  /* MCS 8: 256-QAM 3/4 */
+        {8.0, 5.0 / 6.0},  /* MCS 9: 256-QAM 5/6 */
+        {10.0, 3.0 / 4.0}, /* MCS 10: 1024-QAM 3/4 */
+        {10.0, 5.0 / 6.0}  /* MCS 11: 1024-QAM 5/6 */
     };
 
     double rate = 0.0;
@@ -186,9 +189,55 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
             double bits = mcs_params[mcs].bits;
             double coding = mcs_params[mcs].coding;
             if (dcm) {
-                bits = (bits / 2.0 >= 1.0) ? (double)((int)(bits / 2.0)) : 1.0;
+                /* DCM modulates each bit onto 2 subcarriers; halves payload rate */
+                bits /= 2.0;
             }
-            double nsd = (bw_mhz == 160) ? 1960.0 : ((bw_mhz == 80) ? 980.0 : ((bw_mhz == 40) ? 468.0 : 234.0));
+
+            double nsd = 234.0;
+            uint16_t ru_tones = 242;
+
+            if (mode == MT_PHY_TYPE_HE_MU || mode == MT_PHY_TYPE_HE_TB) {
+                if (ru <= 36) {
+                    ru_tones = 26;
+                    nsd = 24.0;
+                } else if (ru <= 52) {
+                    ru_tones = 52;
+                    nsd = 48.0;
+                } else if (ru <= 60) {
+                    ru_tones = 106;
+                    nsd = 102.0;
+                } else if (ru <= 64) {
+                    ru_tones = 242;
+                    nsd = 234.0;
+                } else if (ru <= 66) {
+                    ru_tones = 484;
+                    nsd = 468.0;
+                } else if (ru == 67) {
+                    ru_tones = 996;
+                    nsd = 980.0;
+                } else if (ru == 68) {
+                    ru_tones = 1992;
+                    nsd = 1960.0;
+                } else {
+                    ru_tones = (bw_mhz == 160) ? 1992 : ((bw_mhz == 80) ? 996 : ((bw_mhz == 40) ? 484 : 242));
+                    nsd = (bw_mhz == 160) ? 1960.0 : ((bw_mhz == 80) ? 980.0 : ((bw_mhz == 40) ? 468.0 : 234.0));
+                }
+            } else if (mode == MT_PHY_TYPE_HE_EXT_SU) {
+                if (rxv0 & (1U << 5)) { /* MT_PRXV_TX_ER_SU_106T */
+                    ru_tones = 106;
+                    nsd = 102.0;
+                } else {
+                    ru_tones = 242;
+                    nsd = 234.0;
+                }
+            } else {
+                /* HE_SU uses full channel bandwidth */
+                ru_tones = (bw_mhz == 160) ? 1992 : ((bw_mhz == 80) ? 996 : ((bw_mhz == 40) ? 484 : 242));
+                nsd = (bw_mhz == 160) ? 1960.0 : ((bw_mhz == 80) ? 980.0 : ((bw_mhz == 40) ? 468.0 : 234.0));
+            }
+
+            phy->ru_tones = ru_tones;
+
             double tsym = (gi == 0) ? 13.6 : ((gi == 1) ? 14.4 : 16.0);
             rate = (nsd * bits * coding * nss) / tsym;
         }
@@ -419,23 +468,47 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
     /* Bit 23: HE (12 bytes, align 2) */
     if (has_he) {
         if (off & 1) rt_buf[off++] = 0;
-        uint16_t he_data1 = (rf->phy.mode == MT_PHY_TYPE_HE_EXT_SU) ? 1 :
-                            ((rf->phy.mode == MT_PHY_TYPE_HE_MU) ? 2 :
-                            ((rf->phy.mode == MT_PHY_TYPE_HE_TB) ? 3 : 0));
-        uint8_t he_bw = (rf->phy.bw_mhz == 160) ? 3 : ((rf->phy.bw_mhz == 80) ? 2 : ((rf->phy.bw_mhz == 40) ? 1 : 0));
-        uint16_t he_data2 = (he_bw & 0x0F) | ((rf->phy.gi & 0x03) << 4);
-        uint16_t he_data3 = (rf->phy.mcs & 0x0F) | (rf->phy.dcm ? (1 << 4) : 0) | (rf->phy.ldpc ? (1 << 5) : 0);
-        uint16_t he_data4 = ((rf->phy.nss > 0 ? rf->phy.nss - 1 : 0) & 0x07) | (rf->phy.stbc ? (1 << 3) : 0);
+        uint16_t format = (rf->phy.mode == MT_PHY_TYPE_HE_EXT_SU) ? 1 :
+                          ((rf->phy.mode == MT_PHY_TYPE_HE_MU) ? 2 :
+                          ((rf->phy.mode == MT_PHY_TYPE_HE_TB) ? 3 : 0));
+
+        /* Upstream radiotap struct ieee80211_radiotap_he { __le16 data1..6; } */
+        /* data1: format (bits 0..1) + known flags: MCS(bit 5), DCM(bit 6), CODING(bit 7), STBC(bit 9), BW/RU(bit 14) */
+        uint16_t he_data1 = format | 0x0020 | 0x0040 | 0x0080 | 0x0200 | 0x4000;
+
+        /* data2: GI_KNOWN (bit 1) */
+        uint16_t he_data2 = 0x0002;
+
+        /* data3: bits 8..11 = MCS, bit 12 = DCM, bit 13 = CODING/LDPC, bit 15 = STBC */
+        uint16_t he_data3 = ((rf->phy.mcs & 0x0F) << 8) |
+                            (rf->phy.dcm ? (1U << 12) : 0) |
+                            (rf->phy.ldpc ? (1U << 13) : 0) |
+                            (rf->phy.stbc ? (1U << 15) : 0);
+
+        /* data4: spatial reuse / MU STA ID (0) */
+        uint16_t he_data4 = 0;
+
+        /* data5: bits 0..3 = DATA_BW_RU_ALLOC, bits 4..5 = GI */
+        uint8_t he_bw = (rf->phy.bw_mhz == 160) ? 3 :
+                        ((rf->phy.bw_mhz == 80) ? 2 :
+                        ((rf->phy.bw_mhz == 40) ? 1 : 0));
+        uint16_t he_data5 = (he_bw & 0x0F) | ((rf->phy.gi & 0x03) << 4);
+
+        /* data6: bits 0..3 = NSTS (stream count) */
+        uint16_t he_data6 = (rf->phy.nss > 0 ? rf->phy.nss : 1) & 0x0F;
 
         uint16_t le_d1 = CFSwapInt16HostToLittle(he_data1);
         uint16_t le_d2 = CFSwapInt16HostToLittle(he_data2);
         uint16_t le_d3 = CFSwapInt16HostToLittle(he_data3);
         uint16_t le_d4 = CFSwapInt16HostToLittle(he_data4);
+        uint16_t le_d5 = CFSwapInt16HostToLittle(he_data5);
+        uint16_t le_d6 = CFSwapInt16HostToLittle(he_data6);
         memcpy(rt_buf + off + 0, &le_d1, 2);
         memcpy(rt_buf + off + 2, &le_d2, 2);
         memcpy(rt_buf + off + 4, &le_d3, 2);
         memcpy(rt_buf + off + 6, &le_d4, 2);
-        memset(rt_buf + off + 8, 0, 4);
+        memcpy(rt_buf + off + 8, &le_d5, 2);
+        memcpy(rt_buf + off + 10, &le_d6, 2);
         off += 12;
     }
 

@@ -373,6 +373,11 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    if (inject_count > 0 && (strcmp(plan_name, "5") == 0 || strcmp(plan_name, "6") == 0)) {
+        fprintf(stderr, "Error: packet injection is restricted to 2.4 GHz (1 Mbps CCK); plan '%s' has no 2.4 GHz channels\n", plan_name);
+        return 1;
+    }
+
     if (dwell < 0.05) dwell = 0.05;
     if (dwell > 10.0) dwell = 10.0;
 
@@ -578,6 +583,7 @@ int main(int argc, char **argv) {
     }
 
     uint8_t raw_buf[8192];
+    uint32_t total_injected_count = 0;
 
     for (size_t i = 0; i < plan_count; i++) {
         const chan_spec_t *spec = &plan_chans[i];
@@ -616,12 +622,13 @@ int main(int argc, char **argv) {
 
         usleep(50000); /* 50ms settling */
 
-        /* Optional packet injection test */
-        if (inject_count > 0) {
+        /* Optional packet injection test: restricted strictly to 2.4 GHz channels where 1 Mbps CCK is valid */
+        if (inject_count > 0 && spec->band_idx == 0 && total_injected_count < inject_count) {
+            uint32_t to_inject = inject_count - total_injected_count;
             uint8_t dummy_mac[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x01 };
             uint8_t pbuf[128];
-            for (uint32_t k = 0; k < inject_count; k++) {
-                int plen = mt7921_build_probe_request(pbuf, sizeof(pbuf), dummy_mac, "", (uint16_t)k);
+            for (uint32_t k = 0; k < to_inject; k++) {
+                int plen = mt7921_build_probe_request(pbuf, sizeof(pbuf), dummy_mac, "", (uint16_t)(total_injected_count + k));
                 if (plen <= 0) {
                     mt7921_dev_close(&dev);
                     free(all_chans);
@@ -634,7 +641,7 @@ int main(int argc, char **argv) {
                               get_time_sec() - t0);
                     return 1;
                 }
-                int iret = mt7921_inject(&dev, pbuf, (size_t)plen, 0, (uint16_t)k, 0);
+                int iret = mt7921_inject(&dev, pbuf, (size_t)plen, 0, (uint16_t)(total_injected_count + k), 0);
                 if (iret != 0) {
                     bs->usb_errors++;
                     mt7921_dev_close(&dev);
@@ -650,6 +657,7 @@ int main(int argc, char **argv) {
                 }
                 usleep(INJECT_PACE_US);
             }
+            total_injected_count += to_inject;
             if (!mt7921_is_alive(&dev)) {
                 mt7921_dev_close(&dev);
                 free(all_chans);

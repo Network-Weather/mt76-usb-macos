@@ -75,6 +75,8 @@ tcpdump -r capture.pcap -c 10
 
 ## Hardware Validation Baseline
 
+Detailed dated test criteria, commands, and results are documented in [`docs/TESTING.md`](../docs/TESTING.md#attached-hardware-validation-pure-c-driver-2026-09-02).
+
 Validated live on macOS against ALFA AWUS036AXML (`0e8d:7961`):
 - Cold & warm bringup: Verified (including retained `FW_STATE` WFSYS reset recovery)
 - 2.4 GHz, 5 GHz, and 6 GHz PSC capture: Verified (1,333 frames decoded across all 43 channels on `--plan all`)

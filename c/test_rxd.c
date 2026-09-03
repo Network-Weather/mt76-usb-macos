@@ -185,13 +185,53 @@ static void test_pcap_writer(void) {
 
     pcap_writer_close(f);
 
-    /* Verify file exists and is non-empty */
+    /* Verify file exists, read back, and validate exact radiotap HE bytes */
     FILE *chk = fopen(tmp_pcap, "rb");
     assert(chk != NULL);
-    fseek(chk, 0, SEEK_END);
-    long sz = ftell(chk);
+    uint8_t pcap_buf[1024];
+    size_t rd = fread(pcap_buf, 1, sizeof(pcap_buf), chk);
     fclose(chk);
-    assert(sz > 0);
+    assert(rd > 24);
+
+    /* PCAP global header is 24 bytes. Skip first 3 packets (OFDM, HT, VHT) to inspect HE packet */
+    size_t off = 24;
+    for (int p = 0; p < 3; p++) {
+        assert(off + 16 <= rd);
+        uint32_t incl_len = CFSwapInt32LittleToHost(*(uint32_t*)(pcap_buf + off + 8));
+        off += 16 + incl_len;
+    }
+
+    /* 4th packet is HE */
+    assert(off + 16 <= rd);
+    uint32_t he_incl_len = CFSwapInt32LittleToHost(*(uint32_t*)(pcap_buf + off + 8));
+    assert(off + 16 + he_incl_len <= rd);
+
+    uint8_t *rt = pcap_buf + off + 16;
+    uint16_t rt_len = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 2));
+    uint32_t rt_present = CFSwapInt32LittleToHost(*(uint32_t*)(rt + 4));
+
+    /* Confirm RT_HE (bit 23) is present */
+    assert(rt_present & (1U << 23));
+    assert(rt_len >= 28);
+
+    /* Radiotap HE struct is 12 bytes at offset 16 */
+    uint16_t d1 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 16));
+    uint16_t d2 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 18));
+    uint16_t d3 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 20));
+    uint16_t d4 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 22));
+    uint16_t d5 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 24));
+    uint16_t d6 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 26));
+
+    /* Verify HE data words match upstream radiotap definitions */
+    assert((d1 & 0x0020) != 0);       /* DATA_MCS_KNOWN (bit 5) */
+    assert((d1 & 0x4000) != 0);       /* BW_RU_ALLOC_KNOWN (bit 14) */
+    assert((d2 & 0x0002) != 0);       /* GI_KNOWN (bit 1) */
+    assert(((d3 >> 8) & 0x0F) == 11); /* DATA_MCS == 11 */
+    assert(d4 == 0);
+    assert((d5 & 0x0F) == 3);         /* DATA_BW_RU_ALLOC == 3 (160 MHz) */
+    assert(((d5 >> 4) & 0x03) == 0);  /* GI == 0 (0.8us) */
+    assert((d6 & 0x0F) == 2);         /* NSTS == 2 */
+
     unlink(tmp_pcap);
     printf("PASS: test_pcap_writer\n");
 }
@@ -331,6 +371,34 @@ static void test_decode_phy_telemetry(void) {
     assert(phy.nss == 2);
     assert(phy.bw_mhz == 160);
     assert(phy.rate_mbps == 2402.0);
+
+    /* HE-SU MCS 0 without DCM (20MHz, 1 stream, 0.8us GI) -> 8.6 Mbps */
+    uint32_t rxv_he_mcs0 = (8U << 24) | (0U << 15) | (0U << 12) | (0U << 7) | 0U;
+    ret = mt7921_decode_rxv(rxv_he_mcs0, 0, &phy);
+    assert(ret == 0);
+    assert(!phy.dcm);
+    assert(phy.rate_mbps == 8.6);
+
+    /* HE-SU MCS 0 WITH DCM -> 4.3 Mbps (verifies DCM halves MCS 0 without clamping to 1) */
+    uint32_t rxv_he_mcs0_dcm = (8U << 24) | (0U << 15) | (0U << 12) | (0U << 7) | (1U << 4) | 0U;
+    ret = mt7921_decode_rxv(rxv_he_mcs0_dcm, 0, &phy);
+    assert(ret == 0);
+    assert(phy.dcm);
+    assert(phy.rate_mbps == 4.3);
+
+    /* HE-MU MCS 0 on 26-tone RU (ru=0) -> 0.9 Mbps */
+    uint32_t rxv_he_mu = (11U << 24) | (0U << 15) | (0U << 12) | (0U << 7) | 0U;
+    ret = mt7921_decode_rxv(rxv_he_mu, 0, &phy);
+    assert(ret == 0);
+    assert(phy.ru_tones == 26);
+    assert(phy.rate_mbps == 0.9);
+
+    /* HE-EXT-SU MCS 0 on 106-tone RU (bit 5 in rxv0 set) -> 3.8 Mbps */
+    uint32_t rxv_he_er = (9U << 24) | (1U << 5) | (0U << 15) | (0U << 12) | (0U << 7) | 0U;
+    ret = mt7921_decode_rxv(rxv_he_er, 0, &phy);
+    assert(ret == 0);
+    assert(phy.ru_tones == 106);
+    assert(phy.rate_mbps == 3.8);
 
     printf("PASS: test_decode_phy_telemetry\n");
 }

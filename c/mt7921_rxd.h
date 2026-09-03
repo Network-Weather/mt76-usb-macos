@@ -38,6 +38,8 @@ typedef struct {
     bool stbc;             /* Space-Time Block Coding */
     bool ldpc;             /* Low-Density Parity-Check */
     bool dcm;              /* Dual Carrier Modulation */
+    uint16_t ru_tones;     /* HE RU allocation size in tones (26, 52, 106, 242, 484, 996, 1992) */
+    uint8_t ru_alloc;      /* Raw HE RU allocation index */
     double rate_mbps;      /* Nominal PHY data rate in Mbps */
 } mt7921_phy_info_t;
 
