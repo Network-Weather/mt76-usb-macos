@@ -511,6 +511,32 @@ tshark -r out.pcap -Y "_ws.malformed || _ws.expert.severity==error" -T fields -e
 The MT7921 reference adapter was not attached; the C driver's MT7921 path is covered by the
 unchanged offline tests (connac2 decode, TXWI, pcap writer) and by the MT7921 profile tests.
 
+## EHT radiotap on the MT7925U: 2026-09-03
+
+Same host, adapter, and firmware. Both pcap writers now emit the radiotap TLV section (present
+bit 28) with a U-SIG item (type 33: bandwidth) and an EHT item (type 34: GI, RU/MRU size, one
+user's MCS, NSS, coding) for EHT-SU/TRIG/MU frames, laid out per radiotap.org/fields/{TLV,U-SIG,EHT}.
+An 802.11be client was active on the 160 MHz 6 GHz BSS during the runs.
+
+```bash
+./.venv/bin/python -m pytest -q tests/test_pcap.py      # includes a tshark round trip of a synthetic EHT pcap
+./.venv/bin/python examples/sniff_to_pcap.py 53 30 out.pcap 6GHz --width 160 --center 47
+./c/mt7921_smoke --channel 6GHz:53:47:160 --dwell 10 --fw firmware --pcap c.pcap
+tshark -r out.pcap -Y "wlan_radio.phy == 12" -T fields -e wlan_radio.11be.mcs -e wlan_radio.11be.nsts -e wlan_radio.data_rate -e radiotap.u_sig.common.bw
+```
+
+- **Criterion**: tshark (4.6.8) dissects every EHT frame as `wlan_radio.phy == 12` (802.11be)
+  with MCS, NSTS, bandwidth, and a data rate, and flags no frame malformed.
+- **Result**: Python writer, 30 s: 8236 frames, **973 EHT** (7251 OFDM, 12 HE), all QoS Data or
+  Action; MCS 0 to 5, NSTS 1 or 2, U-SIG bandwidth code 3 (160 MHz), data rates 68.1 to 864.8 Mb/s
+  (for example MCS 4, 1 stream: 432.4; MCS 3, 2 streams: 576.4); **0 malformed of 8236**. C writer,
+  10 s: 2774 frames, **336 EHT**, MCS 2 to 5, NSTS 1 or 2, bandwidth 160, **0 malformed of 2774**.
+  Offline, the synthetic EHT pcap (MCS 11, 2 streams, 80 MHz, 1.6 µs GI) reads back as phy 12,
+  MCS 11, NSTS 2, 1134.x Mb/s, bandwidth code 2.
+
+The MT7921 cannot receive EHT PPDUs wider than its configuration and no MT7921 was attached; the
+writers' HT/VHT/HE output is unchanged and covered by the existing offline tests.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

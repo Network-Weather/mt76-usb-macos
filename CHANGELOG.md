@@ -5,6 +5,14 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.3.0] - 2026-09-03
+
+The pure C driver gains MT7925U support, and both pcap writers emit radiotap EHT and U-SIG fields
+so Wireshark shows rate, MCS, streams, and bandwidth for Wi-Fi 7 frames. Hardware claims are
+evidence-gated in [docs/TESTING.md](docs/TESTING.md).
+
 ### Added
 
 - C driver MT7925U support (roadmap R26): `c/mt7921_chip.c` holds the supported USB-id table and a
@@ -14,8 +22,17 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
   RX-filter commands as UNI TLVs; `mt7921_tune` tunes either chip; `c/mt7921_rxd_connac3.c`
   decodes the connac3 descriptor with EHT rates; `mt7921_smoke` reports `device.chip` and takes
   `--usb-id`. The Nighthawk A9000 passes the 43-channel sweep ([docs/TESTING.md](docs/TESTING.md)).
+- Radiotap EHT and U-SIG fields (roadmap R27) in `examples/sniff_to_pcap.py` and the C pcap
+  writer: EHT frames carry the TLV present bit with a U-SIG item (bandwidth) and an EHT item (GI,
+  RU/MRU size, one user's MCS, NSS, and coding), the layout radiotap.org defines and Wireshark 4.6
+  reads back as an 802.11be frame with its data rate. Live: 973 EHT frames in 30 s on a 160 MHz
+  6 GHz channel with the Python writer and 336 in 10 s with the C writer, all dissected, zero
+  malformed ([docs/TESTING.md](docs/TESTING.md)).
+- `c/mt7921_smoke --channel BAND:CTRL[:CENTER[:WIDTH]]` captures one channel at 20/40/80/160 MHz
+  instead of a plan.
 - `tests/test_release_docs.py`: a version bump without a matching CHANGELOG section, README release
-  line, PUBLISHING mention, and C version string fails CI.
+  line, PUBLISHING mention, and C version string fails CI. `tests/test_pcap.py` round-trips a
+  synthetic EHT pcap through tshark when it is installed.
 
 ### Changed
 
@@ -148,6 +165,7 @@ MT7925U port planned. Hardware claims are evidence-gated in [docs/TESTING.md](do
 - Offline tests for the roam watcher's BSSID bookkeeping: channel from the frame, not the sweep
   target; DS Parameter Set over descriptor; strongest RSSI; k/v/r flags.
 
-[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Network-Weather/mt76-usb-macos/releases/tag/v0.1.0

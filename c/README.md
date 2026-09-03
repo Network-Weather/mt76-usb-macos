@@ -20,6 +20,7 @@ This driver focuses strictly on MediaTek chipset-specific primitives:
 - MCU command framing (standard and UNI formats) with per-chip geometry: connac2 (MT7921) or connac3 (MT7925) TXD word 1, reply header length, and the UNI ack option
 - Firmware scatter download, and the capability query and efuse calibration push in their CE/EXT (MT7921) or UNI (MT7925) encodings
 - Connac2 TXWI (transmit) descriptor formatting and frame injection (MT7921 only)
+- Radiotap pcap writing through EHT: legacy rate, HT MCS, VHT, HE, and for Wi-Fi 7 frames the U-SIG and EHT TLVs Wireshark 4.6 reads as 802.11be
 - Connac2 and connac3 RXD/RXV (receive) processing and **hardware PHY telemetry** (P-RXV decoding: PHY generation CCK/OFDM/HT/VHT/HE/EHT, MCS index incl. EHT 12/13, spatial streams NSS, bandwidth incl. 160 MHz, guard interval, and calculated data rate in Mbps)
 - Hardware monitor drop filters and tuning (`mt7921_tune`: CHANNEL_SWITCH plus the sniffer TLV on the MT7921, the TLV alone on the MT7925)
 - On-die thermal monitoring and raw efuse block access (MT7921 only)
@@ -63,6 +64,9 @@ Requires a supported adapter and the firmware blobs in `./firmware` (or `--fw <d
 
 # Capture live frames to radiotap pcap
 ./mt7921_smoke --plan quick --dwell 1.0 --pcap capture.pcap
+
+# One channel at 160 MHz (MT7925) instead of a plan
+./mt7921_smoke --channel 6GHz:53:47:160 --dwell 10 --pcap wide.pcap
 tcpdump -r capture.pcap -c 10
 
 # Test experimental packet injection (rate-limited, requires explicit acknowledgement)

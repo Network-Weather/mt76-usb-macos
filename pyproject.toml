@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mt76-usb-macos"
-version = "0.2.0"
+version = "0.3.0"
 description = "Userspace MediaTek mt76 USB (MT7921U, MT7925U) Wi-Fi 6E/7 monitor-mode driver for macOS"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -1,7 +1,8 @@
 # Publication checklist
 
 The repository is a research-grade publication, not a production driver claim. Releases so
-far: `0.1.0` (2026-09-02, MT7921U) and `0.2.0` (2026-09-03, MT7925U and 160 MHz). Before
+far: `0.1.0` (2026-09-02, MT7921U), `0.2.0` (2026-09-03, MT7925U and 160 MHz), and `0.3.0`
+(2026-09-03, C driver MT7925U and EHT radiotap). Before
 tagging a release:
 
 - verify the macOS-only GitHub Actions matrix is green;

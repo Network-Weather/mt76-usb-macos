@@ -18,6 +18,23 @@
 #define RT_MCS                       (1U << 19)
 #define RT_VHT                       (1U << 21)
 #define RT_HE                        (1U << 23)
+/* radiotap.org/fields/TLV: bit 28 makes the rest of the header a 4-aligned type-length-value
+ * list; U-SIG and EHT exist only as TLV types 33 and 34 (radiotap.org/fields/U-SIG, /EHT). */
+#define RT_TLV                       (1U << 28)
+#define RT_TLV_U_SIG                 33
+#define RT_TLV_EHT                   34
+#define USIG_BW_KNOWN                0x00000002U
+#define USIG_BW_SHIFT                15   /* 0=20, 1=40, 2=80, 3=160, 4=320-1 */
+#define EHT_KNOWN_GI                 0x00000004U
+#define EHT_KNOWN_RU_MRU_SIZE        0x00400000U
+#define EHT_DATA0_GI_SHIFT           7    /* 0=0.8us, 1=1.6us, 2=3.2us */
+#define EHT_USER_MCS_KNOWN           0x00000002U
+#define EHT_USER_CODING_KNOWN        0x00000004U
+#define EHT_USER_NSS_KNOWN           0x00000010U
+#define EHT_USER_CAPTURED            0x00000080U
+#define EHT_USER_CODING_LDPC         0x00080000U
+#define EHT_USER_MCS_SHIFT           20
+#define EHT_USER_NSS_SHIFT           24   /* NSS - 1 */
 #define RT_FLAG_BADFCS               0x40
 #define CH_FLAG_CCK                  0x0020
 #define CH_FLAG_OFDM                 0x0040
@@ -442,18 +459,21 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
     gettimeofday(&tv, NULL);
 
     /* Radiotap header */
-    uint8_t rt_buf[64] = {0};
+    uint8_t rt_buf[128] = {0};
     uint32_t present = RT_FLAGS | RT_CHANNEL | RT_DBM_ANTSIGNAL;
 
     bool has_rate = rf->has_phy && (rf->phy.mode == MT_PHY_TYPE_CCK || rf->phy.mode == MT_PHY_TYPE_OFDM) && rf->phy.rate_mbps > 0;
     bool has_mcs = rf->has_phy && (rf->phy.mode == MT_PHY_TYPE_HT || rf->phy.mode == MT_PHY_TYPE_HT_GF);
     bool has_vht = rf->has_phy && (rf->phy.mode == MT_PHY_TYPE_VHT);
     bool has_he = rf->has_phy && (rf->phy.mode >= MT_PHY_TYPE_HE_SU && rf->phy.mode <= MT_PHY_TYPE_HE_MU);
+    bool has_eht = rf->has_phy && (rf->phy.mode == MT_PHY_TYPE_EHT_SU || rf->phy.mode == MT_PHY_TYPE_EHT_TRIG ||
+                                   rf->phy.mode == MT_PHY_TYPE_EHT_MU);
 
     if (has_rate) present |= RT_RATE;
     if (has_mcs) present |= RT_MCS;
     if (has_vht) present |= RT_VHT;
     if (has_he) present |= RT_HE;
+    if (has_eht) present |= RT_TLV;
 
     uint16_t freq = freq_for(rf->band, rf->channel);
     uint16_t ch_flags = (strcmp(rf->band, "2.4GHz") == 0) ? (CH_FLAG_2GHZ | CH_FLAG_CCK) : (CH_FLAG_5GHZ | CH_FLAG_OFDM);
@@ -565,6 +585,42 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
         memcpy(rt_buf + off + 8, &le_d5, 2);
         memcpy(rt_buf + off + 10, &le_d6, 2);
         off += 12;
+    }
+
+    /* TLV section (bit 28), 4-aligned from the header start: U-SIG (bandwidth) then EHT
+     * (GI, RU/MRU size, one user's MCS/NSS/coding). Wireshark reads a fixed 40 bytes of EHT data
+     * plus a 4-byte user_info, so both are emitted in full. */
+    if (has_eht) {
+        while (off & 3) rt_buf[off++] = 0;
+        uint32_t usig_common = 0;
+        uint32_t bw_code = 0, ru_code = 0;
+        bool bw_known = true;
+        switch (rf->phy.bw_mhz) {
+            case 20: bw_code = 0; ru_code = 3; break;   /* 242-tone RU */
+            case 40: bw_code = 1; ru_code = 4; break;   /* 484 */
+            case 80: bw_code = 2; ru_code = 5; break;   /* 996 */
+            case 160: bw_code = 3; ru_code = 6; break;  /* 2x996 */
+            case 320: bw_code = 4; ru_code = 7; break;  /* 4x996 */
+            default: bw_known = false; break;
+        }
+        if (bw_known) usig_common = USIG_BW_KNOWN | (bw_code << USIG_BW_SHIFT);
+        uint32_t usig[3] = { usig_common, 0, 0 };
+        uint16_t t = CFSwapInt16HostToLittle(RT_TLV_U_SIG), l = CFSwapInt16HostToLittle(12);
+        memcpy(rt_buf + off, &t, 2); memcpy(rt_buf + off + 2, &l, 2); off += 4;
+        for (int i = 0; i < 3; i++) { uint32_t le = CFSwapInt32HostToLittle(usig[i]); memcpy(rt_buf + off, &le, 4); off += 4; }
+
+        uint32_t eht[11] = {0};
+        eht[0] = EHT_KNOWN_GI;
+        eht[1] = ((uint32_t)(rf->phy.gi & 0x3)) << EHT_DATA0_GI_SHIFT;  /* data[0] */
+        if (bw_known) { eht[0] |= EHT_KNOWN_RU_MRU_SIZE; eht[2] = ru_code; }  /* data[1] */
+        uint32_t nss = rf->phy.nss > 0 ? rf->phy.nss : 1;
+        eht[10] = EHT_USER_MCS_KNOWN | EHT_USER_CODING_KNOWN | EHT_USER_NSS_KNOWN | EHT_USER_CAPTURED
+                | (((uint32_t)rf->phy.mcs & 0xF) << EHT_USER_MCS_SHIFT)
+                | (((nss - 1) & 0xF) << EHT_USER_NSS_SHIFT)
+                | (rf->phy.ldpc ? EHT_USER_CODING_LDPC : 0);
+        t = CFSwapInt16HostToLittle(RT_TLV_EHT); l = CFSwapInt16HostToLittle(44);
+        memcpy(rt_buf + off, &t, 2); memcpy(rt_buf + off + 2, &l, 2); off += 4;
+        for (int i = 0; i < 11; i++) { uint32_t le = CFSwapInt32HostToLittle(eht[i]); memcpy(rt_buf + off, &le, 4); off += 4; }
     }
 
     uint16_t rt_len = (uint16_t)off;

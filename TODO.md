@@ -8,8 +8,8 @@ least two APs on one SSID.
 
 - ~~R26 C driver MT7925: device table, class-based interface selection, chip profiles, UNI
   commands, connac3 decoder; `c/mt7921_smoke --plan all` passes on the A9000.~~
-- [ ] **R27 EHT radiotap.** Radiotap EHT and U-SIG fields in both pcap writers for EHT-SU/TRIG/MU
-  frames, synthetic fixtures checked with tshark; live evidence when an EHT transmitter is on air.
+- ~~R27 EHT radiotap: U-SIG and EHT TLVs in both writers; 973 live EHT frames dissected by
+  tshark at 160 MHz; 0.3.0.~~
 
 ## Measure before building
 

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 /* Version string reported in JSON output; must equal mt7921u.__version__ (tests check). */
-#define MT76_USB_MACOS_VERSION      "0.2.0"
+#define MT76_USB_MACOS_VERSION      "0.3.0"
 
 /* The MT7921 reference adapter (ALFA AWUS036AXML). The supported-device table lives in
  * mt7921_chip.c; these two remain as the reference values used by tests. */

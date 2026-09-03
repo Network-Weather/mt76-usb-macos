@@ -163,11 +163,10 @@ scripts whatever the outcome.
 
 ## Track B: community capture source
 
-### R27. EHT radiotap
+### ~~R27. EHT radiotap~~ (landed 2026-09-03)
 
-Next up (2026-09-03), together with R26. Evidence needs an EHT transmitter on air; the
-reference house's clients are 802.11ax, so the first landing may rest on synthetic
-fixtures plus tshark dissection of a synthetic pcap, stated as such.
+Done: both writers emit U-SIG and EHT TLVs; live EHT frames from an 802.11be client on the
+160 MHz 6 GHz channel dissect in tshark with rate, MCS, streams, and bandwidth.
 
 `rxd_connac3` decodes EHT-SU/TRIG/MU frames (mode, MCS up to 13, NSS, width) but the pcap writer
 emits only Flags/Channel/dBm for them, so Wireshark shows no rate. Add the radiotap EHT and
@@ -251,6 +250,11 @@ cover multi-subframe inputs, and the capture output behavior is documented.
 descriptor-driven interface selection, the `mt7925u.py` MCU geometry and UNI commands, and a
 connac3 `mt7921_rxd_decode` sibling, checked against the same synthetic fixtures. Done when
 `c/mt7921_smoke` passes on the A9000 with the evidence format used for the Python driver.
+
+### ~~R29. Publish 0.3.0~~ (tagged 2026-09-03)
+
+C driver MT7925U support and EHT radiotap, released after the 43-channel C and Python smoke
+sweeps passed on the release commit with the A9000.
 
 ### ~~R28. Publish 0.2.0~~ (tagged 2026-09-03)
 

@@ -764,6 +764,47 @@ static void test_mt7925_mcu_txd_builders(void) {
     printf("PASS: test_mt7925_mcu_txd_builders\n");
 }
 
+
+static void test_pcap_writer_eht_tlvs(void) {
+    const char *path = "/tmp/test_c_writer_eht.pcap";
+    FILE *f = NULL;
+    assert(pcap_writer_open(path, &f) == 0);
+    uint8_t frame[32] = { 0x88, 0x41 };
+    mt7921_rxd_frame_t rf;
+    memset(&rf, 0, sizeof(rf));
+    strncpy(rf.band, "6GHz", sizeof(rf.band));
+    rf.channel = 53; rf.rssi = -50; rf.frame = frame; rf.frame_len = sizeof(frame); rf.has_phy = true;
+    rf.phy.mode = MT_PHY_TYPE_EHT_MU; rf.phy.mcs = 13; rf.phy.nss = 2; rf.phy.nsts = 2; rf.phy.bw_mhz = 160;
+    rf.phy.gi = 1; rf.phy.ldpc = true;
+    assert(pcap_writer_write_frame(f, &rf) == 0);
+    pcap_writer_close(f);
+
+    FILE *in = fopen(path, "rb");
+    assert(in);
+    uint8_t buf[512];
+    size_t n = fread(buf, 1, sizeof(buf), in);
+    fclose(in);
+    unlink(path);
+    assert(n > 24 + 16);
+    const uint8_t *rt = buf + 24 + 16;
+    uint16_t rt_len = read_le16(rt + 2);
+    uint32_t present = read_le32(rt + 4);
+    assert(present == ((1U << 1) | (1U << 3) | (1U << 5) | (1U << 28)));
+    /* Flags @8, pad @9, Channel @10..13, dBm @14, pad @15, TLVs from 16 */
+    assert(read_le16(rt + 16) == 33 && read_le16(rt + 18) == 12);
+    assert(read_le32(rt + 20) == (0x2U | (3U << 15)));          /* U-SIG: BW known, 160 MHz */
+    assert(read_le32(rt + 24) == 0 && read_le32(rt + 28) == 0);
+    assert(read_le16(rt + 32) == 34 && read_le16(rt + 34) == 44);
+    assert(read_le32(rt + 36) == (0x4U | 0x400000U));           /* EHT known: GI, RU/MRU size */
+    assert(((read_le32(rt + 40) >> 7) & 0x3) == 1);              /* data[0]: GI 1.6 us */
+    assert((read_le32(rt + 44) & 0x1F) == 6);                    /* data[1]: 2x996-tone RU */
+    uint32_t user = read_le32(rt + 36 + 40);  /* known + data[0..8] precede user_info */
+    assert((user & 0xFF) == (0x02 | 0x04 | 0x10 | 0x80));
+    assert(((user >> 20) & 0xF) == 13 && ((user >> 24) & 0xF) == 1 && (user & 0x80000));
+    assert(rt_len == 32 + 4 + 44);  /* EHT TLV header at 32, then known + 9 data + 1 user */
+    printf("PASS: test_pcap_writer_eht_tlvs\n");
+}
+
 int main(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--keep-pcap") == 0) {
@@ -790,6 +831,7 @@ int main(int argc, char **argv) {
     test_connac3_prxv_rates_and_rssi();
     test_chip_table_and_profiles();
     test_mt7925_mcu_txd_builders();
+    test_pcap_writer_eht_tlvs();
     printf("All offline unit tests passed successfully!\n");
     return 0;
 }
