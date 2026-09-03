@@ -155,9 +155,10 @@ def test_radiotap_eht_frames_carry_usig_and_eht_tlvs():
     assert (t_type, t_len) == (capture.RT_TLV_EHT, 44)
     words = struct.unpack_from("<11I", header, tlv + 4)
     known, data, user = words[0], words[1:10], words[10]
-    assert known == capture.EHT_KNOWN_GI | capture.EHT_KNOWN_RU_MRU_SIZE
+    # EHT-MU: the user's RU may be smaller than the PPDU, so RU/MRU size is not claimed.
+    assert known == capture.EHT_KNOWN_GI
     assert (data[0] >> 7) & 0x3 == 1  # GI 1.6 us
-    assert data[1] & 0x1F == 6  # 2x996-tone RU = 160 MHz
+    assert data[1] == 0  # RU/MRU size left unknown for MU
     assert user & 0xFF == 0x02 | 0x04 | 0x10 | 0x80
     assert (user >> 20) & 0xF == 13
     assert (user >> 24) & 0xF == 1  # NSS 2 encodes as 1
@@ -173,6 +174,7 @@ def test_radiotap_eht_20mhz_single_stream():
     common = struct.unpack_from("<I", header, 20)[0]
     assert common == capture.USIG_BW_KNOWN  # BW code 0
     words = struct.unpack_from("<11I", header, 36)
+    assert words[0] == capture.EHT_KNOWN_GI | capture.EHT_KNOWN_RU_MRU_SIZE  # SU: full-width RU
     assert words[2] & 0x1F == 3  # data[1]: 242-tone RU
     assert (words[10] >> 20) & 0xF == 0
     assert (words[10] >> 24) & 0xF == 0
@@ -224,6 +226,6 @@ def test_eht_pcap_dissects_in_tshark(tmp_path):
     assert fields[0] == "12", out.stdout  # PHDR_802_11_PHY_11BE
     assert fields[1] == "11"
     assert fields[2] == "2"
-    assert fields[3].startswith("1134.")  # MCS 11, 2 streams, 80 MHz, 1.6 us GI
+    assert fields[3].startswith("1134.")  # MCS 11, 2 streams, 80 MHz (from U-SIG BW), 1.6 us GI
     assert int(fields[4], 0) == 2  # U-SIG BW code for 80 MHz
     assert len(fields) < 6 or fields[5] == ""

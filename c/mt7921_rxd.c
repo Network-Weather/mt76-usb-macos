@@ -612,7 +612,9 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
         uint32_t eht[11] = {0};
         eht[0] = EHT_KNOWN_GI;
         eht[1] = ((uint32_t)(rf->phy.gi & 0x3)) << EHT_DATA0_GI_SHIFT;  /* data[0] */
-        if (bw_known) { eht[0] |= EHT_KNOWN_RU_MRU_SIZE; eht[2] = ru_code; }  /* data[1] */
+        /* Only EHT-SU fills its bandwidth with one RU; in EHT-MU/TRIG the user's RU can be
+         * smaller than the PPDU and the P-RXV does not say which, so leave it unknown. */
+        if (bw_known && rf->phy.mode == MT_PHY_TYPE_EHT_SU) { eht[0] |= EHT_KNOWN_RU_MRU_SIZE; eht[2] = ru_code; }  /* data[1] */
         uint32_t nss = rf->phy.nss > 0 ? rf->phy.nss : 1;
         eht[10] = EHT_USER_MCS_KNOWN | EHT_USER_CODING_KNOWN | EHT_USER_NSS_KNOWN | EHT_USER_CAPTURED
                 | (((uint32_t)rf->phy.mcs & 0xF) << EHT_USER_MCS_SHIFT)

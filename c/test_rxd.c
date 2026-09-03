@@ -795,13 +795,28 @@ static void test_pcap_writer_eht_tlvs(void) {
     assert(read_le32(rt + 20) == (0x2U | (3U << 15)));          /* U-SIG: BW known, 160 MHz */
     assert(read_le32(rt + 24) == 0 && read_le32(rt + 28) == 0);
     assert(read_le16(rt + 32) == 34 && read_le16(rt + 34) == 44);
-    assert(read_le32(rt + 36) == (0x4U | 0x400000U));           /* EHT known: GI, RU/MRU size */
+    assert(read_le32(rt + 36) == 0x4U);                          /* EHT known: GI only (MU: RU unknown) */
     assert(((read_le32(rt + 40) >> 7) & 0x3) == 1);              /* data[0]: GI 1.6 us */
-    assert((read_le32(rt + 44) & 0x1F) == 6);                    /* data[1]: 2x996-tone RU */
+    assert(read_le32(rt + 44) == 0);                             /* data[1]: RU/MRU size not claimed */
     uint32_t user = read_le32(rt + 36 + 40);  /* known + data[0..8] precede user_info */
     assert((user & 0xFF) == (0x02 | 0x04 | 0x10 | 0x80));
     assert(((user >> 20) & 0xF) == 13 && ((user >> 24) & 0xF) == 1 && (user & 0x80000));
     assert(rt_len == 32 + 4 + 44);  /* EHT TLV header at 32, then known + 9 data + 1 user */
+
+    /* EHT-SU claims the full-width RU. */
+    assert(pcap_writer_open(path, &f) == 0);
+    rf.phy.mode = MT_PHY_TYPE_EHT_SU; rf.phy.bw_mhz = 80;
+    assert(pcap_writer_write_frame(f, &rf) == 0);
+    pcap_writer_close(f);
+    in = fopen(path, "rb");
+    assert(in);
+    n = fread(buf, 1, sizeof(buf), in);
+    fclose(in);
+    unlink(path);
+    rt = buf + 24 + 16;
+    assert(read_le32(rt + 36) == (0x4U | 0x400000U));
+    assert((read_le32(rt + 44) & 0x1F) == 5);                    /* 996-tone RU = 80 MHz */
+    assert(read_le32(rt + 20) == (0x2U | (2U << 15)));           /* U-SIG BW 80 */
     printf("PASS: test_pcap_writer_eht_tlvs\n");
 }
 

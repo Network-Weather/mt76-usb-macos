@@ -438,6 +438,10 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Error: --channel band must be 2.4GHz, 5GHz, or 6GHz\n");
             return 1;
         }
+        if (inject_count > 0 && bidx != 0) {
+            fprintf(stderr, "Error: packet injection is restricted to 2.4 GHz (1 Mbps CCK); --channel %s is not 2.4 GHz\n", single_channel);
+            return 1;
+        }
         single.band = single_band; single.channel = (uint8_t)ctl; single.band_idx = (uint8_t)bidx;
         single.center = n >= 3 ? (uint8_t)cen : 0; single.width = (uint16_t)wid;
         plan_chans = &single; plan_count = 1; plan_name = "channel";

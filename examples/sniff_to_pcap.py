@@ -223,7 +223,11 @@ def eht_tlvs(phy: dict) -> bytes:
     known = EHT_KNOWN_GI
     data = [0] * 9
     data[0] = (phy.get("gi", 0) & 0x3) << EHT_DATA0_GI_SHIFT
-    if bw in EHT_RU_MRU_SIZE_CODE:
+    # Only an EHT-SU PPDU occupies its whole bandwidth with one RU. In EHT-MU and EHT-TRIG
+    # (OFDMA) the user's RU can be smaller than the PPDU, and the P-RXV does not tell us
+    # which, so the RU/MRU size stays unknown there; Wireshark still computes the rate from
+    # the U-SIG bandwidth.
+    if phy.get("mode") == rxd.MT_PHY_TYPE_EHT_SU and bw in EHT_RU_MRU_SIZE_CODE:
         known |= EHT_KNOWN_RU_MRU_SIZE
         data[1] = EHT_RU_MRU_SIZE_CODE[bw]
     nss = max(1, phy.get("nss", 1))
