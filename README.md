@@ -27,7 +27,7 @@ Support is per chip and evidence-gated:
 
 | Chip (Linux module) | Adapter tested | Status |
 |---|---|---|
-| MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Working: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz, dated evidence in [docs/TESTING.md](docs/TESTING.md) |
+| MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Working: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz, both drivers, rerun on 0.3.0 with the A9000 attached alongside; dated evidence in [docs/TESTING.md](docs/TESTING.md) |
 | MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | Netgear Nighthawk A9000 (`0846:9072`) | Working: 2.4 / 5 / 6 GHz passive capture at 20, 80, and **160 MHz**, 43-channel smoke pass, dated evidence in [docs/TESTING.md](docs/TESTING.md); the A8500 and MediaTek ids are in the table but untested |
 | MT7663U, MT76x2U, MT76x0U (`mt7663u`, `mt76x2u`, `mt76x0u`) | none | Not attempted: different firmware and MCU models; nothing here has been run on them |
 
@@ -188,8 +188,9 @@ interfaces 0 to 2 are Bluetooth) and on the A9000's single interface 0, the resu
 
 ## Capability and evidence matrix
 
-“Current pass” means rerun on the attached `0e8d:7961` device on 2026-08-31, or on the
-attached `0846:9072` device on 2026-09-03 where a row says MT7925. “Previously observed” is
+“Current pass” means rerun on the attached `0e8d:7961` device on 2026-09-03 (0.3.0 regression
+with both adapters attached), or on the attached `0846:9072` device on 2026-09-03 where a row
+says MT7925. “Previously observed” is
 deliberately weaker: the code has done it on hardware, but it was not proved again in the
 publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTING.md).
 
@@ -204,7 +205,7 @@ publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTIN
 | Per-frame PHY rate, width, MCS, RSSI, retry bit | Previously observed; offline calculations tested |
 | 802.11k/v/r, PMF, EasyMesh, and 802.11s parsing | Synthetic offline tests; opportunistic live coverage |
 | Frame injection | Experimental, previously observed only at low rate; **not current-pass tested** |
-| 40 / 80 MHz capture | MT7921: code paths exist, not release-validated. MT7925: 80 MHz configuration current pass; frames decoded at 80 and 40 MHz during the 160 MHz run |
+| 40 / 80 MHz capture | 80 MHz: current pass on both chips with both drivers (MT7921: 26 frames decoded at 80 MHz in 10 s through the C driver, 7 through Python; MT7925: 513 during the 160 MHz run). 40 MHz: frames decoded at 40 MHz during those runs; no dedicated 40 MHz configuration test |
 | 160 MHz capture | MT7921: not supported (measured zero transfers). **MT7925: current pass**, 1736 frames decoded at 160 MHz in 10 s, 193 HE data frames from a known transmitter |
 | 320 MHz capture | No supported part; decoded as a width, no rate |
 | EHT (Wi-Fi 7) frames in radiotap | **MT7925: current pass**; both pcap writers emit U-SIG and EHT TLVs, tshark 4.6 shows 802.11be with MCS, streams, bandwidth, and data rate; 973 live EHT frames in 30 s at 160 MHz, 0 malformed |

@@ -5,6 +5,12 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+### Documentation
+
+- MT7921U regression on the 0.3.0 code with both adapters attached: both tools refuse an ambiguous
+  open, both 43-channel sweeps pass on the ALFA, thermal and efuse answer, pcaps dissect
+  ([docs/TESTING.md](docs/TESTING.md)).
+
 ### Fixed
 
 - C decoders convert RCPI to dBm as `rcpi / 2 - 110` with integer division, matching upstream

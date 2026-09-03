@@ -21,7 +21,8 @@ def intf(number, cls, eps):
 WIFI = (0xFF, 0xFF, 0xFF)
 BLUETOOTH = (0xE0, 0x01, 0x01)
 
-# ALFA AWUS036AXML (0e8d:7961): Bluetooth on interfaces 0-2, Wi-Fi on interface 3.
+# ALFA AWUS036AXML (0e8d:7961) as read with pyusb on 2026-09-03: Bluetooth on interfaces 0-2,
+# Wi-Fi on interface 3 with eight bulk endpoints then an interrupt endpoint 0x86.
 ALFA_WIFI_EPS = [
     (0x84, BULK),
     (0x85, BULK),
@@ -35,8 +36,8 @@ ALFA_WIFI_EPS = [
 ALFA = [
     intf(0, BLUETOOTH, [(0x81, INTR), (0x82, BULK), (0x02, BULK)]),
     intf(1, BLUETOOTH, [(0x83, 0x01), (0x03, 0x01)]),
-    intf(2, BLUETOOTH, [(0x8A, BULK), (0x0A, BULK)]),
-    intf(3, WIFI, ALFA_WIFI_EPS),
+    intf(2, BLUETOOTH, [(0x8A, INTR), (0x0A, INTR)]),
+    intf(3, WIFI, [*ALFA_WIFI_EPS, (0x86, INTR)]),
 ]
 
 # Netgear A9000 (0846:9072) as read with pyusb on 2026-09-03: one interface, the same
@@ -81,7 +82,7 @@ def test_no_vendor_interface_fails_closed_with_the_interfaces_seen():
     with pytest.raises(m.UnsupportedDevice) as exc:
         m.select_wifi_interface(ALFA[:3])
     assert "intf 0 class e0/01/01" in str(exc.value)
-    assert "intf 2 class e0/01/01 bulk in/out 1/1" in str(exc.value)
+    assert "intf 2 class e0/01/01 bulk in/out 0/0" in str(exc.value)
 
 
 def test_too_few_bulk_endpoints_fails_closed():
