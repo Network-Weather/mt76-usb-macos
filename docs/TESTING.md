@@ -545,6 +545,7 @@ the 0.3.0 code plus the RCPI fix (`0a54dc1`). Host as in the MT7925U sections ab
 ```bash
 ./.venv/bin/python scripts/usb_descriptors.py --chip-id
 ./.venv/bin/python scripts/hardware_smoke.py --plan quick            # no selector: must refuse
+./c/mt7921_smoke --plan quick --fw firmware                           # no selector: must refuse (exit 3)
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python scripts/hardware_smoke.py --plan all
 MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --plan all --dwell 0.75 --fw firmware --pcap out.pcap
 MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --temp --fw firmware
@@ -573,6 +574,8 @@ MT76_USB_ID=0e8d:7961 ./.venv/bin/python examples/sniff_to_pcap.py 53 6 out.pcap
 MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --channel 5GHz:132:138:80 --dwell 10 --fw firmware --pcap c80.pcap
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python examples/sniff_to_pcap.py 132 10 py80.pcap 5GHz --width 80 --center 138
 tshark -r c80.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 2 || radiotap.vht.bw == 4" -T fields -e wlan_radio.phy -e wlan_radio.data_rate
+tshark -r py80.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 2 || radiotap.vht.bw == 4" | wc -l
+tshark -r py80.pcap -Y "_ws.malformed || _ws.expert.severity==error" | wc -l
 ```
 
 - **Criterion**: with the sniffer configured for 80 MHz (control 132, center 138), each driver's
@@ -587,7 +590,7 @@ tshark -r c80.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 2 || radiotap
 - control-frame receive;
 - per-frame PHY width/MCS/rate/retry reporting across all modes;
 - hardware good-MPDU and FCS-error counters;
-- 40 and 80 MHz capture paths; and
+- the 40 MHz capture path (80 MHz was rerun on both drivers in the 0.3.0 regression above); and
 - low-rate Probe Request injection: 60 Probe Requests at 50 ms spacing on one 2.4 GHz channel,
   the chip alive after every 20, 677 directed Probe Responses received from 6 BSSIDs. Sustained
   or high-rate transmit was not attempted, then or since.
