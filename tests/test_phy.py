@@ -41,6 +41,48 @@ def test_phy_rate_known_points(mode, mcs, nss, bw, gi, expected):
     assert rxd.phy_rate_mbps(mode, mcs, nss, bw, gi) == expected
 
 
+def test_he_dcm_and_ru_rates():
+    # HE MCS 0 with DCM in 20 MHz: 4.3 Mbps
+    assert rxd.phy_rate_mbps(rxd.MT_PHY_TYPE_HE_SU, 0, 1, 20, 0, dcm=True) == 4.3
+    # HE-ER-SU MCS 0 on 106-tone RU: 3.8 Mbps
+    assert rxd.phy_rate_mbps(rxd.MT_PHY_TYPE_HE_EXT_SU, 0, 1, 40, 0, ru_tones=106) == 3.8
+    # HE-ER-SU MCS 0 on full 40 MHz (484-tone): 17.2 Mbps
+    assert rxd.phy_rate_mbps(rxd.MT_PHY_TYPE_HE_EXT_SU, 0, 1, 40, 0, ru_tones=484) == 17.2
+    # HE-MU MCS 5 on 52-tone RU: 14.1 Mbps
+    assert rxd.phy_rate_mbps(rxd.MT_PHY_TYPE_HE_MU, 5, 1, 20, 0, ru_tones=52) == 14.1
+
+
+def test_decode_rxv_phy_telemetry():
+    # STBC halves NSS but preserves NSTS
+    rxv_stbc = (8 << 24) | (1 << 22) | (1 << 15) | (2 << 12) | (1 << 7) | 7
+    dec = rxd.decode_rxv(rxv_stbc, 0)
+    assert dec["stbc"] is True
+    assert dec["nss"] == 1
+    assert dec["nsts"] == 2
+    assert dec["rate_mbps"] == 340.3
+
+    # HE-MU 52-tone RU allocation (ru=40)
+    rxv0_mu = (11 << 24) | (8 << 28) | (0 << 15) | (0 << 12) | (0 << 7) | 5
+    rxv1_mu = 2
+    dec_mu = rxd.decode_rxv(rxv0_mu, rxv1_mu)
+    assert dec_mu["ru_alloc"] == 40
+    assert dec_mu["ru_tones"] == 52
+    assert dec_mu["ru_offset"] == 3
+
+    # HE-ER-SU 40 MHz with 106-tone flag (bit 5)
+    rxv_er106 = (9 << 24) | (1 << 5) | (0 << 15) | (1 << 12) | (0 << 7) | 0
+    dec_er106 = rxd.decode_rxv(rxv_er106, 0)
+    assert dec_er106["ru_tones"] == 106
+    assert dec_er106["rate_mbps"] == 3.8
+
+    # HE-ER-SU 40 MHz without 106-tone flag -> full 40 MHz
+    rxv_er40 = (9 << 24) | (0 << 15) | (1 << 12) | (0 << 7) | 0
+    dec_er40 = rxd.decode_rxv(rxv_er40, 0)
+    assert dec_er40["bw_mhz"] == 40
+    assert dec_er40["ru_tones"] == 484
+    assert dec_er40["rate_mbps"] == 17.2
+
+
 def test_unknown_rate_returns_none():
     assert rxd.phy_rate_mbps(99, 0, 1, 20, 0) is None
     assert rxd.phy_rate_mbps(rxd.MT_PHY_TYPE_VHT, 12, 1, 20, 0) is None

@@ -1048,13 +1048,22 @@ MCS_PARAMS = {
 # Data subcarriers per bandwidth
 NSD_HT_VHT = {20: 52, 40: 108, 80: 234, 160: 468}
 NSD_HE = {20: 234, 40: 468, 80: 980, 160: 1960}
+NSD_HE_RU = {
+    26: 24,
+    52: 48,
+    106: 102,
+    242: 234,
+    484: 468,
+    996: 980,
+    1992: 1960,
+}
 
 # Symbol duration in microseconds, including guard interval
 TSYM_HT_VHT = {0: 4.0, 1: 3.6}  # long GI, short GI
 TSYM_HE = {0: 13.6, 1: 14.4, 2: 16.0, 3: 16.0}  # 0.8 / 1.6 / 3.2 us GI
 
 
-def phy_rate_mbps(mode, mcs, nss, bw_mhz, gi, dcm=False):
+def phy_rate_mbps(mode, mcs, nss, bw_mhz, gi, dcm=False, ru_tones=None):
     """PHY data rate from the standard formula, not a lookup table."""
     if mode == MT_PHY_TYPE_CCK:
         return CCK_HW_TO_MBPS.get(mcs & ~0x4)  # bit 2 is short preamble
@@ -1087,8 +1096,11 @@ def phy_rate_mbps(mode, mcs, nss, bw_mhz, gi, dcm=False):
             return None
         bits, coding = MCS_PARAMS[mcs]
         if dcm:
-            bits = max(1, bits // 2)
-        nsd = NSD_HE.get(bw_mhz)
+            bits = bits * 0.5
+        if ru_tones is not None:
+            nsd = NSD_HE_RU.get(ru_tones, NSD_HE.get(bw_mhz))
+        else:
+            nsd = NSD_HE.get(bw_mhz)
         tsym = TSYM_HE.get(gi, 13.6)
         return nsd and round(nsd * bits * coding * nss / tsym, 1)
     return None
@@ -1119,7 +1131,7 @@ def airtime_us(frame_len, mode, rate_mbps):
     return round(pre + (frame_len * 8) / rate_mbps, 1)
 
 
-def decode_rxv(rxv0, rxv2=0):
+def decode_rxv(rxv0, rxv1=0):
     """Decode the P-RXV rate words into something reportable."""
     idx = fget(rxv0, MT_PRXV_TX_RATE)
     nsts = fget(rxv0, MT_PRXV_NSTS)
@@ -1145,17 +1157,59 @@ def decode_rxv(rxv0, rxv2=0):
         mcs = idx & 0xF
 
     bw_mhz = BW_MHZ.get(bw)
-    rate = phy_rate_mbps(mode, mcs, nss, bw_mhz, gi, dcm)
+
+    # Extract Connac2 HE RU allocation: DW0 bits 31..28 and DW1 bits 3..0
+    ru = ((rxv1 & 0x0F) << 4) | ((rxv0 >> 28) & 0x0F)
+    offs = 0
+    if mode in (MT_PHY_TYPE_HE_MU, MT_PHY_TYPE_HE_TB):
+        if ru <= 36:
+            ru_tones = 26
+            offs = ru
+        elif ru <= 52:
+            ru_tones = 52
+            offs = ru - 37
+        elif ru <= 60:
+            ru_tones = 106
+            offs = ru - 53
+        elif ru <= 64:
+            ru_tones = 242
+            offs = ru - 61
+        elif ru <= 66:
+            ru_tones = 484
+            offs = ru - 65
+        elif ru == 67:
+            ru_tones = 996
+            offs = 0
+        elif ru == 68:
+            ru_tones = 1992
+            offs = 0
+        else:
+            ru_tones = (
+                1992 if bw_mhz == 160 else (996 if bw_mhz == 80 else (484 if bw_mhz == 40 else 242))
+            )
+            offs = 0
+    elif mode == MT_PHY_TYPE_HE_EXT_SU:
+        ru_tones = 106 if bw_mhz == 40 and (rxv0 & (1 << 5)) else (484 if bw_mhz == 40 else 242)
+    else:
+        ru_tones = (
+            1992 if bw_mhz == 160 else (996 if bw_mhz == 80 else (484 if bw_mhz == 40 else 242))
+        )
+
+    rate = phy_rate_mbps(mode, mcs, nss, bw_mhz, gi, dcm, ru_tones)
     return {
         "mode": mode,
         "mode_name": PHY_MODE_NAMES.get(mode, f"mode{mode}"),
         "mcs": mcs,
         "nss": nss,
+        "nsts": nsts + 1,
         "bw_mhz": bw_mhz,
         "gi": gi,
         "stbc": bool(stbc),
         "ldpc": ldpc,
         "dcm": dcm,
+        "ru_tones": ru_tones,
+        "ru_offset": offs,
+        "ru_alloc": ru,
         "rate_mbps": rate,
     }
 
