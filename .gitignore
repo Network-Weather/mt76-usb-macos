@@ -22,3 +22,8 @@ dist/
 *.pcap
 *.pcapng
 .DS_Store
+
+# C build artifacts
+*.o
+c/mt7921_smoke
+c/test_rxd

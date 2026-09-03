@@ -416,7 +416,14 @@ int main(int argc, char **argv) {
     FILE *pcap_f = NULL;
     if (pcap_file) {
         if (pcap_writer_open(pcap_file, &pcap_f) != 0) {
-            fprintf(stderr, "warning: failed to open pcap file %s\n", pcap_file);
+            free(all_chans);
+            free(patch_blob);
+            free(ram_blob);
+            emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                      NULL, NULL, NULL, patch_sha, ram_sha, false,
+                      "IOError", "failed to open requested pcap file",
+                      get_time_sec() - t0);
+            return 1;
         }
     }
 
@@ -477,12 +484,32 @@ int main(int argc, char **argv) {
 
         bs->channels_attempted++;
         if (mt7921_set_chan_info(&dev, spec->channel, spec->channel, CMD_CBW_20MHZ, spec->band_idx) != 0) {
-            bs->usb_errors++;
-            continue;
+            mt7921_dev_close(&dev);
+            free(all_chans);
+            free(patch_blob);
+            free(ram_blob);
+            if (pcap_f) pcap_writer_close(pcap_f);
+            char err_buf[128];
+            snprintf(err_buf, sizeof(err_buf), "failed to set channel info for %s channel %u", spec->band, spec->channel);
+            emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                      &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                      "RuntimeError", err_buf,
+                      get_time_sec() - t0);
+            return 1;
         }
         if (mt7921_config_sniffer(&dev, spec->channel, spec->channel, spec->band, SNIFFER_BW_20) != 0) {
-            bs->usb_errors++;
-            continue;
+            mt7921_dev_close(&dev);
+            free(all_chans);
+            free(patch_blob);
+            free(ram_blob);
+            if (pcap_f) pcap_writer_close(pcap_f);
+            char err_buf[128];
+            snprintf(err_buf, sizeof(err_buf), "failed to configure sniffer for %s channel %u", spec->band, spec->channel);
+            emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                      &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                      "RuntimeError", err_buf,
+                      get_time_sec() - t0);
+            return 1;
         }
 
         usleep(50000); /* 50ms settling */
