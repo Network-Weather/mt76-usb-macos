@@ -40,7 +40,7 @@ Hardware runs (attached adapter required; firmware dir overridable with `MT7921_
 
 ## Architecture
 
-Three flat modules, no package:
+Four flat modules, no package:
 
 - `mt7921u.py` is three stacked classes. `Mt7921u` owns libusb: vendor control transfers,
   register `rr`/`wr`/`rmw`, bulk I/O. `Mt7921uMcu` adds MCU TXD framing, sequence numbers,
@@ -58,16 +58,18 @@ Three flat modules, no package:
   declared after the bindings, so it inherits every bound method. `open_device()` in
   `mt7921u.py` returns the right class for the attached USB id. `tests/golden_mt7921_frames.json`
   freezes the MT7921 on-wire frames; regenerate it only for a deliberate wire change.
-- `rxd.py` is pure Python with no USB dependency: RX descriptor `decode()`, `parse_80211()`
-  and IE parsers (RSN, 802.11k/v/r, Multi-AP, mesh), PHY rate/airtime, A-MPDU aggregation
-  tracking. Its tests need no fakes at all.
+- `rxd.py` is pure Python with no USB dependency: connac2 RX descriptor `decode()`,
+  `parse_80211()` and IE parsers (RSN, 802.11k/v/r, Multi-AP, mesh), PHY rate/airtime,
+  A-MPDU aggregation tracking. Its tests need no fakes at all.
+- `rxd_connac3.py` is the connac3 (MT7925) `decode()`, same dict keys, reusing everything in
+  `rxd.py` below the descriptor. Callers get the right one from `mt7921u.decoder_for(dev)`.
 
 Capture pipeline, in the order the examples call it:
 `dev = open_device()` → `load_firmware(dev.CHIP)` → `bringup(patch, ram)` (ends by pushing
 efuse calibration, without which 5/6 GHz are silent) → `set_monitor_mode()` →
 `set_sniffer(True)` → per channel `tune(band, control, center, width_mhz)` (MT7921:
 `set_chan_info` + `config_sniffer`; MT7925: `config_sniffer` only) → `rx_read()` →
-`rxd.decode(raw)` → `rxd.parse_80211(frame)`.
+`decoder_for(dev)(raw)` → `rxd.parse_80211(frame)`.
 
 Tests fake the USB boundary by subclassing `Mt7921uMcu` and overriding `bulk_out` /
 `mcu_wait` (see `RecordingMcu` in `tests/test_driver.py`). `conftest.py` puts the repo

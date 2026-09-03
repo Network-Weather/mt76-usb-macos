@@ -38,6 +38,16 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 - `scripts/firmware_boot.py --rx SECONDS --channel BAND:CH[:CENTER[:WIDTH]]` counts receive
   transfers by RXD packet type without needing a descriptor decoder.
 
+- `rxd_connac3.py`: the connac3 (MT7925) RX descriptor decoder, returning the same dict as
+  `rxd.decode` so the 802.11 parsers, pcap writer, and scripts are chip-agnostic. 32-byte fixed
+  header, group bits at RXD1 16..20, FCS error in RXD3, 16-byte groups with the 96-byte C-RXV
+  stepped over only inside group 3, rate and RCPI from P-RXV words 0, 2, and 3. Synthetic
+  fixtures cover every group combination; the fuzz test includes it. `decoder_for(dev)` picks
+  the decoder from the device class. On the A9000: 607 of 607 frames dissected by tshark with
+  zero malformed ([docs/TESTING.md](docs/TESTING.md)).
+- `rxd.py` rate tables gain EHT: MCS 12 and 13 (4096-QAM) for the EHT modes only, and
+  preamble entries; 320 MHz is decoded as a width but has no rate.
+
 ### Changed
 
 - `scripts/retune_drops.py` reports one `tune_ms` per retune instead of `chan_switch_ms` and

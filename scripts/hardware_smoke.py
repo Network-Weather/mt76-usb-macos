@@ -26,7 +26,6 @@ sys.path.insert(0, str(REPO_ROOT))
 import usb.core  # noqa: E402
 
 import mt7921u as m  # noqa: E402
-import rxd  # noqa: E402
 
 FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
 
@@ -200,7 +199,7 @@ def main() -> int:
                         continue
                     channel_transfers += 1
                     counters["usb_transfers"] += 1
-                    decoded = rxd.decode(raw)
+                    decoded = m.decoder_for(dev)(raw)
                     frame = decoded.get("frame") if decoded is not None else None
                     if not frame:
                         counters["undecoded_transfers"] += 1

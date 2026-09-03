@@ -76,7 +76,7 @@ def frames(dev: m.Mt7921uDevice, seconds: float):
             # A transport failure means events can be missed; say so rather than hide it.
             print(f"usb error, frames may be missing: {exc}", file=sys.stderr)
             continue
-        d = rxd.decode(raw)
+        d = m.decoder_for(dev)(raw)
         if not d or not d.get("frame") or len(d["frame"]) < 10:
             continue
         yield d, rxd.parse_80211(d["frame"])

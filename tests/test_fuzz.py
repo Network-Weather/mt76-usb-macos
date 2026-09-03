@@ -14,6 +14,7 @@ import random
 import pytest
 
 import rxd
+import rxd_connac3
 
 # Deterministic so a failure reproduces from the printed seed and index.
 SEED = 20260901
@@ -23,7 +24,7 @@ LENGTHS = (0, 1, 2, 3, 4, 7, 8, 10, 15, 16, 23, 24, 25, 30, 31, 32, 36, 40, 64, 
 ROUNDS = 2000
 
 
-@pytest.mark.parametrize("parser", [rxd.decode, rxd.parse_80211, rxd.parse_ies])
+@pytest.mark.parametrize("parser", [rxd.decode, rxd_connac3.decode, rxd.parse_80211, rxd.parse_ies])
 def test_random_bytes_never_raise(parser):
     rng = random.Random(SEED)  # noqa: S311 - test input, not security
     for index in range(ROUNDS):

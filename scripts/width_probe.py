@@ -93,7 +93,7 @@ def probe(dev: m.Mt7921uDevice, band: str, control: int, center: int, width: int
             usb_errors += 1
             print(f"usb error: {exc}", file=sys.stderr)
             continue
-        d = rxd.decode(raw)
+        d = m.decoder_for(dev)(raw)
         if not d or not d.get("frame") or len(d["frame"]) < 10:
             continue
         frames += 1

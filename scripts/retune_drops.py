@@ -36,7 +36,6 @@ sys.path.insert(0, REPO_ROOT)
 import usb.core  # noqa: E402
 
 import mt7921u as m  # noqa: E402
-import rxd  # noqa: E402
 
 FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
 CHAN_BAND = m.CHAN_BAND
@@ -92,7 +91,7 @@ def drain(dev: m.Mt7921uDevice, seconds: float) -> dict:
             usb_errors += 1  # a real transport failure; the sample is incomplete
             print(f"usb error during drain: {exc}", file=sys.stderr)
             continue
-        decoded = rxd.decode(raw)
+        decoded = m.decoder_for(dev)(raw)
         if decoded and decoded.get("frame"):
             frames += 1
     return {"frames": frames, "timeouts": timeouts, "usb_errors": usb_errors, "seconds": seconds}

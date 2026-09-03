@@ -26,7 +26,7 @@ Support is per chip and evidence-gated:
 | Chip (Linux module) | Adapter tested | Status |
 |---|---|---|
 | MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Working: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz, dated evidence in [docs/TESTING.md](docs/TESTING.md) |
-| MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | Netgear Nighthawk A9000 | In progress: boots firmware, enters monitor mode, and receives on 2.4 / 5 / 6 GHz ([docs/TESTING.md](docs/TESTING.md)); the connac3 descriptor decoder and 160 MHz are the next stages in [docs/MT7925.md](docs/MT7925.md) |
+| MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | Netgear Nighthawk A9000 | In progress: boots, receives on 2.4 / 5 / 6 GHz, decodes to radiotap pcap with 0 malformed in tshark, and accepts 20/80/160 MHz configurations ([docs/TESTING.md](docs/TESTING.md)); a frame decoded at 160 MHz is the remaining stage in [docs/MT7925.md](docs/MT7925.md) |
 | MT7663U, MT76x2U, MT76x0U (`mt7663u`, `mt76x2u`, `mt76x0u`) | none | Not attempted: different firmware and MCU models; nothing here has been run on them |
 
 **Lineage:** the driver logic is transcribed from the BSD-3-Clause-Clear
@@ -108,8 +108,9 @@ The codebase includes both a high-level Python library and a zero-dependency C d
 | Component | What it does |
 |---|---|
 | `mt7921u.py` | Python driver: USB vendor transfers, register I/O, MCU command framing, firmware download, channel and sniffer setup, receive, and injection; device table, descriptor discovery, and the `open_device()` factory |
-| `mt7925u.py` | MT7925U (connac3) subclass: its WFSYS reset, MCU framing geometry, UNI capability/efuse/RX-filter commands, and TLV-only tuning. Boots and receives on the Nighthawk A9000; the connac3 descriptor decoder is the next stage |
-| `rxd.py` | Python RX descriptor decode and 802.11 frame parsing (IE analysis, AKM suites, airtime accounting) |
+| `mt7925u.py` | MT7925U (connac3) subclass: its WFSYS reset, MCU framing geometry, UNI capability/efuse/RX-filter commands, and TLV-only tuning. Boots, receives, and writes radiotap pcap on the Nighthawk A9000 |
+| `rxd.py` | Python connac2 (MT7921) RX descriptor decode and the shared 802.11 frame parsing (IE analysis, AKM suites, PHY rate, airtime accounting) |
+| `rxd_connac3.py` | connac3 (MT7925) RX descriptor decode producing the same dict, so everything downstream of the descriptor is chip-agnostic |
 | [`c/`](c/README.md) | Pure C driver: native macOS IOKit USB transport (zero external dependencies), MCU framing, TXWI injection, PCAP writer, and `mt7921_smoke` CLI |
 
 ## Pure C driver (zero dependencies)
@@ -271,7 +272,7 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 116 offline tests for firmware parsing, MCU framing (both chips, with
+The macOS-only CI runs 142 offline tests for firmware parsing, MCU framing (both chips, with
 the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.

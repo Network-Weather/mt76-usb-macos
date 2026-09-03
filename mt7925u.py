@@ -127,6 +127,7 @@ class Mt7925uDevice(m.Mt7921uDevice):
 
     CHIP = m.CHIP_MT7925
     CHIP_IDS = (0x7925,)  # 0x6639 (MT7927) needs the mt7927/ blobs and is refused
+    DECODER_MODULE = "rxd_connac3"
 
     TXD1 = MT7925_TXD1
     MCU_RXD_LEN = MT7925_MCU_RXD_LEN

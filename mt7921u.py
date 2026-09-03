@@ -17,7 +17,9 @@ high-rate transmit is untested.
 
 from __future__ import annotations
 
+import functools
 import hashlib
+import importlib
 import os
 import struct
 import time
@@ -395,6 +397,8 @@ class Mt7921u:
     # mt76_chip(): rr(MT_HW_CHIPID) is the chip number itself (mt7925/usb.c:215-217,
     # mt7921/usb.c:206-208 at c5a3bd91). Values this class accepts from chip_id().
     CHIP_IDS: tuple[int, ...] = (0x7961,)
+    # Module whose decode() understands this chip's RX descriptor (see decoder_for()).
+    DECODER_MODULE = "rxd"
 
     def __init__(self, verbose: bool = False, usb_id: str | None = None):
         self.dev = None
@@ -1973,6 +1977,17 @@ Mt7921uDevice.read_efuse = _read_efuse
 # ---------------------------------------------------------------------------
 # Device factory: pick the driver class from the attached device's USB id
 # ---------------------------------------------------------------------------
+
+
+@functools.cache
+def _decoder(module_name: str):
+    return importlib.import_module(module_name).decode
+
+
+def decoder_for(dev) -> callable:
+    """The RX descriptor decode() for a device object: rxd.decode for connac2 (MT7921),
+    rxd_connac3.decode for connac3 (MT7925). Both return the same dict shape."""
+    return _decoder(dev.DECODER_MODULE)
 
 
 def device_class_for(chip: str):

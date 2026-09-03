@@ -396,8 +396,31 @@ decoder.
 
   Each run started from a chip already reporting `FW_N9_RDY` and took the WFSYS reset path.
 
-Not yet attempted on this device: decoding those transfers (the connac3 descriptor), 80 and
-160 MHz, and pcap output.
+### connac3 decode, radiotap pcap, and width configuration, same day
+
+Same host, adapter, and firmware. `rxd_connac3.decode` is selected by the device class.
+
+```bash
+./.venv/bin/python examples/sniff_to_pcap.py 53 6 out.pcap 6GHz
+tshark -r out.pcap -q -z io,phs
+tshark -r out.pcap -Y "_ws.malformed || _ws.expert.severity==error" | wc -l
+./.venv/bin/python scripts/width_probe.py 6GHz:53 6GHz:53:55:80 6GHz:53:47:160 --seconds 6
+```
+
+- **Criterion**: every transfer decodes to a frame, tshark dissects every frame as
+  `radiotap/wlan_radio/wlan` with zero malformed packets, radiotap carries a rate for
+  legacy-rate frames, and the sniffer accepts 20, 80, and 160 MHz configurations on 6 GHz
+  without going silent.
+- **Result**: 607 transfers, 607 frames written, 607 dissected (122 Beacon, 485 Action),
+  **0 malformed**; radiotap `datarate` 6 Mbps and `wlan_radio.phy` OFDM on all 607, RSSI
+  populated from P-RXV word 3. Width probe, 6 s each: 20 MHz 585 frames, 80 MHz (center 55)
+  587, **160 MHz (center 47) 587**, all decoded at 20 MHz because only management traffic
+  from two 160 MHz APs was on air (beacons advertise `he6 160 ccfs0 55 ccfs1 47`). The MT7921
+  returned zero transfers under the same 160 MHz configuration
+  ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)); the MT7925 keeps receiving.
+
+Not yet shown on this device: a frame decoded at 80 or 160 MHz width. That needs a client
+transmitting on the wide channel, which is the next stage.
 
 ## Previously observed, not rerun in the current validation
 

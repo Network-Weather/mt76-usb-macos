@@ -104,7 +104,7 @@ def main() -> int:
                 except usb.core.USBError:
                     continue
                 n += 1
-                d = rxd.decode(raw)
+                d = m.decoder_for(dev)(raw)
                 if d is None:
                     continue
                 f = d.get("frame")
