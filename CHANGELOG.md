@@ -29,6 +29,19 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 - The MCU reply-header geometry, TXD word 1, UNI option, and WFSYS reset registers are class
   attributes with the MT7921 values as defaults; `tests/golden_mt7921_frames.json` freezes every
   MT7921 command's on-wire bytes so those seams cannot move them.
+- `tune(band, control, center=None, width_mhz=20)` on both device classes: the MT7921 sends
+  `CHANNEL_SWITCH` then the sniffer CONFIG TLV, the MT7925 sends the TLV alone (it has no
+  channel-switch command). Every example and script tunes through it and opens the adapter
+  through `open_device()`, so they run unchanged on either chip once a decoder exists for it.
+- MT7925 monitor mode: UNI `BAND_CONFIG` RX filter and `set_monitor_mode()`. The A9000 receives
+  frames on 2.4, 5, and 6 GHz ([docs/TESTING.md](docs/TESTING.md)).
+- `scripts/firmware_boot.py --rx SECONDS --channel BAND:CH[:CENTER[:WIDTH]]` counts receive
+  transfers by RXD packet type without needing a descriptor decoder.
+
+### Changed
+
+- `scripts/retune_drops.py` reports one `tune_ms` per retune instead of `chan_switch_ms` and
+  `sniffer_cfg_ms`, because a retune is one command on the MT7925.
 
 ### Fixed
 

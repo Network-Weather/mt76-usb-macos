@@ -41,7 +41,7 @@ import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
 FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+CHAN_BAND = m.CHAN_BAND
 # Sweep set for --find: the 2.4 GHz non-overlapping channels, every 5 GHz 20 MHz channel
 # an AP in the US can sit on, and the 6 GHz preferred scanning channels.
 SWEEP = (
@@ -56,14 +56,12 @@ READ_TIMEOUT_MS = 250
 FTYPE_DATA = 2
 
 
-def load_firmware() -> tuple[bytes, bytes]:
-    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
-    return patch, ram
+def load_firmware(chip: str) -> tuple[bytes, bytes]:
+    return m.load_firmware(chip, FW_DIR)
 
 
 def tune(dev: m.Mt7921uDevice, band: str, chan: int) -> None:
-    dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-    dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band, bw=m.SNIFFER_BW_20)
+    dev.tune(band, chan)
 
 
 def frames(dev: m.Mt7921uDevice, seconds: float):
@@ -229,8 +227,9 @@ def main() -> int:
         parser.error("--duration must be between 1 and 3600 seconds")
     client = args.client.lower() if args.client else None
 
-    patch, ram = load_firmware()
-    with m.Mt7921uDevice() as dev:
+    dev = m.open_device()
+    patch, ram = load_firmware(dev.CHIP)
+    with dev:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)

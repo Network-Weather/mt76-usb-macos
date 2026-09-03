@@ -275,3 +275,79 @@ def test_firmware_files_for_mt7925_are_the_mt7925_blobs():
     (patch, _), (ram, _) = m.FIRMWARE_FILES[m25.Mt7925uDevice.CHIP]
     assert patch == "mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin"
     assert ram == "mt7925/WIFI_RAM_CODE_MT7925_1_1.bin"
+
+
+def test_set_rxfilter_wire_bytes_and_monitor_mode():
+    # mt7925_mcu_set_rxfilter: band_idx, rsv1[3], tag=0x0C, len=68, mode, rsv2[3], fif, bit_map,
+    # bit_op, pad[51]; mt7925_configure_filter passes ENABLE|FCSFAIL|CONTROL|OTHER_BSS.
+    dev = Recording()
+    dev.msg_seq = 0
+    dev.set_monitor_mode()
+    assert len(dev.frames) == 1  # no RFCR bitmap edit on this chip
+    txd_payload = unpad(dev.frames[0][1])
+    assert struct.unpack_from("<HH", txd_payload, 34)[0] == m25.MCU_UNI_CMD_BAND_CONFIG
+    payload = txd_payload[m.MCU_UNI_TXD_LEN :]
+    assert len(payload) == 72
+    assert payload[:8] == bytes.fromhex("000000000c004400")
+    assert payload[8] == 0  # mode 0: fif given
+    assert struct.unpack_from("<II", payload, 12) == (0x80000064, 0)
+    assert payload[20] == 0
+    assert payload[21:] == b"\x00" * 51
+
+    dev.frames.clear()
+    dev.set_rxfilter(0, bit_op=2, bit_map=0x1234)
+    payload = unpad(dev.frames[0][1])[m.MCU_UNI_TXD_LEN :]
+    assert payload[8] == 1  # mode 1: bitmap edit
+    assert struct.unpack_from("<II", payload, 12) == (0, 0x1234)
+    assert payload[20] == 2
+
+
+def test_tune_sends_only_the_sniffer_config_tlv():
+    dev = Recording()
+    dev.msg_seq = 0
+    dev.tune("6GHz", 53, 47, 160)
+    assert len(dev.frames) == 1
+    txd_payload = unpad(dev.frames[0][1])
+    assert struct.unpack_from("<HH", txd_payload, 34)[0] == m.MCU_UNI_CMD_SNIFFER
+    payload = txd_payload[m.MCU_UNI_TXD_LEN :]
+    # hdr band_idx=0, then tag=1 len=16 aid=0 band=3 bw=2(160) control=53 sco=3(SCB) center=47
+    assert payload == bytes.fromhex("00000000010010000000030235032f0001000000")
+    dev.frames.clear()
+    dev.tune("2.4GHz", 6)  # center defaults to control, width to 20
+    payload = unpad(dev.frames[0][1])[m.MCU_UNI_TXD_LEN :]
+    assert payload[10:16] == bytes([1, 0, 6, 0, 6, 0])  # band 1, bw 0, ch 6, sco 0, center 6
+    with pytest.raises(ValueError, match="band must be"):
+        dev.tune("7GHz", 1)
+    with pytest.raises(ValueError, match="width must be"):
+        dev.tune("5GHz", 36, 42, 320)
+
+
+def test_mt7921_tune_is_chan_info_then_sniffer_config():
+    import json
+    from pathlib import Path
+
+    golden = json.loads((Path(__file__).with_name("golden_mt7921_frames.json")).read_text())[
+        "cases"
+    ]
+
+    class Rec(m.Mt7921uDevice):
+        def __init__(self):
+            super().__init__()
+            self.frames = []
+
+        def bulk_out(self, ep, data, timeout=1000):
+            self.frames.append([ep, bytes(data).hex()])
+            return len(data)
+
+        def mcu_wait(self, seq, cid, timeout=3000):
+            return b"\x00" * 64
+
+    dev = Rec()
+    dev.msg_seq = 0
+    dev.tune("5GHz", 36, 42, 80)
+    # Same bytes as the two golden commands, with sequence numbers 1 and 2.
+    assert dev.frames[0] == golden["set_chan_info_5g_36_80"][0]
+    expected_sniffer = bytearray.fromhex(golden["config_sniffer_5g_36_80"][0][1])
+    expected_sniffer[4 + 39] = 2  # uni_txd.seq for the second command in this sequence
+    assert dev.frames[1] == [golden["config_sniffer_5g_36_80"][0][0], expected_sniffer.hex()]
+    assert m.WIDTH_TO_SNIFFER_BW[40] == m.SNIFFER_BW_20  # 40 MHz rides on sco, per ch_width[]

@@ -67,7 +67,7 @@ PLANS = {
     "6": [("6GHz", c) for c in CH_6_PSC],
 }
 PLANS["all"] = PLANS["2.4"] + PLANS["5"] + PLANS["6"]
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+CHAN_BAND = m.CHAN_BAND
 
 
 def main() -> int:
@@ -79,10 +79,11 @@ def main() -> int:
         parser.error("--dwell must be between 0.05 and 10 seconds")
     plan = PLANS[args.plan]
 
-    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
+    dev = m.open_device()
+    patch, ram = m.load_firmware(dev.CHIP, FW_DIR)
 
     bss = OrderedDict()
-    with m.Mt7921uDevice() as dev:
+    with dev:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)
@@ -92,8 +93,7 @@ def main() -> int:
         )
 
         for band, ch in plan:
-            dev.set_chan_info(control_ch=ch, center_ch=ch, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-            dev.config_sniffer(control_ch=ch, center_ch=ch, band_name=band, bw=m.SNIFFER_BW_20)
+            dev.tune(band, ch)
             time.sleep(0.05)
             kinds = Counter()
             n = 0

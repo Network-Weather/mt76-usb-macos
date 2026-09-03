@@ -370,7 +370,34 @@ Same host and adapter. Firmware: `mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin`
   twice with the same result; the second run started from a chip already reporting
   `FW_N9_RDY` and took the WFSYS reset path.
 
-Not yet attempted on this device: RX filter, sniffer mode, tuning, and receive.
+### Monitor mode and receive on three bands, same day
+
+Same host, adapter, and firmware. After `bringup()`: UNI `BAND_CONFIG` RX filter
+(`fif = 0x80000064`), UNI `SNIFFER` enable, then the sniffer CONFIG TLV as the only channel
+command (`Mt7925uDevice.tune`). Transfers are counted by the RXD packet type in the first
+descriptor word, which is the same on both chip generations, so this run needs no connac3
+decoder.
+
+```bash
+./.venv/bin/python scripts/firmware_boot.py --rx 5 --channel 2.4GHz:6
+./.venv/bin/python scripts/firmware_boot.py --rx 5 --channel 5GHz:36
+./.venv/bin/python scripts/firmware_boot.py --rx 5 --channel 6GHz:53
+```
+
+- **Criterion**: on each band at least one bulk transfer of packet type `NORMAL` arrives
+  within 5 s, with zero USB errors; a 6 GHz result proves the UNI efuse push worked.
+- **Result**:
+
+  | Channel | `NORMAL` transfers in 5 s | Other types | USB timeouts / errors | Transfer bytes min / median / max |
+  |---|---|---|---|---|
+  | 2.4 GHz ch 6 | 150 | 0 | 0 / 0 | 492 / 492 / 492 |
+  | 5 GHz ch 36 | 261 | 0 | 0 / 0 | 284 / 428 / 460 |
+  | 6 GHz ch 53 (PSC) | 495 | 0 | 0 / 0 | 252 / 252 / 604 |
+
+  Each run started from a chip already reporting `FW_N9_RDY` and took the WFSYS reset path.
+
+Not yet attempted on this device: decoding those transfers (the connac3 descriptor), 80 and
+160 MHz, and pcap output.
 
 ## Previously observed, not rerun in the current validation
 

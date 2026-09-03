@@ -34,10 +34,9 @@ import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
 FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+CHAN_BAND = m.CHAN_BAND
 # Channel-switch and sniffer commands encode width differently (mt7921/mcu.c).
-CMD_CBW = {20: m.CMD_CBW_20MHZ, 40: m.CMD_CBW_40MHZ, 80: m.CMD_CBW_80MHZ, 160: m.CMD_CBW_160MHZ}
-SNIFFER_BW = {20: m.SNIFFER_BW_20, 40: m.SNIFFER_BW_20, 80: m.SNIFFER_BW_80, 160: m.SNIFFER_BW_160}
+WIDTHS = sorted(m.WIDTH_TO_SNIFFER_BW)  # 20, 40, 80, 160 MHz
 READ_TIMEOUT_MS = 250
 # IEEE 802.11-2020 9.4.2.158 VHT Operation: Channel Width 0=20/40, 1=80/160/80+80 (with CCFS1).
 VHT_WIDTH = {0: "20/40", 1: "80 or 160", 2: "160", 3: "80+80"}
@@ -55,8 +54,8 @@ def parse_target(text: str) -> tuple[str, int, int, int]:
     control = int(parts[1])
     center = int(parts[2]) if len(parts) > 2 else control
     width = int(parts[3]) if len(parts) > 3 else 20
-    if width not in CMD_CBW:
-        raise argparse.ArgumentTypeError(f"width {width} not in {sorted(CMD_CBW)}")
+    if width not in WIDTHS:
+        raise argparse.ArgumentTypeError(f"width {width} not in {WIDTHS}")
     return parts[0], control, center, width
 
 
@@ -79,8 +78,7 @@ def advertised_width(ie_list) -> str | None:
 
 
 def probe(dev: m.Mt7921uDevice, band: str, control: int, center: int, width: int, secs: float):
-    dev.set_chan_info(control_ch=control, center_ch=center, bw=CMD_CBW[width], band=CHAN_BAND[band])
-    dev.config_sniffer(control_ch=control, center_ch=center, band_name=band, bw=SNIFFER_BW[width])
+    dev.tune(band, control, center, width)
     by_width = collections.Counter()
     by_kind = collections.Counter()
     aps: dict[str, str | None] = {}
@@ -125,9 +123,10 @@ def main() -> int:
     args = parser.parse_args()
     if not 1 <= args.seconds <= 60:
         parser.error("--seconds must be between 1 and 60")
-    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
+    dev = m.open_device()
+    patch, ram = m.load_firmware(dev.CHIP, FW_DIR)
     results = []
-    with m.Mt7921uDevice() as dev:
+    with dev:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)

@@ -1716,11 +1716,43 @@ def _config_sniffer(
     self.mcu_uni(MCU_UNI_CMD_SNIFFER, hdr + tlv)
 
 
+# Channel tuning shared by both chips. Width in MHz maps to two different enums:
+# CMD_CBW_* for mt7921_mcu_set_chan_info and the sniffer TLV's own table, in which 40 MHz
+# is encoded as 20 with the offset carried by sco (mt7921/mt7925 mcu_config_sniffer ch_width[]).
+CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}  # channel_band field of set_chan_info
+WIDTH_TO_CMD_CBW = {20: CMD_CBW_20MHZ, 40: CMD_CBW_40MHZ, 80: CMD_CBW_80MHZ, 160: CMD_CBW_160MHZ}
+WIDTH_TO_SNIFFER_BW = {20: SNIFFER_BW_20, 40: SNIFFER_BW_20, 80: SNIFFER_BW_80, 160: SNIFFER_BW_160}
+
+
+def _tune(self, band_name: str, control_ch: int, center_ch: int | None = None, width_mhz: int = 20):
+    """Put the sniffer on one channel: mt7921 needs CHANNEL_SWITCH then the sniffer CONFIG
+    TLV; mt7925 overrides this with the TLV alone. center_ch defaults to control_ch."""
+    if band_name not in CHAN_BAND:
+        raise ValueError(f"band must be one of {sorted(CHAN_BAND)}, got {band_name!r}")
+    if width_mhz not in WIDTH_TO_SNIFFER_BW:
+        raise ValueError(f"width must be one of {sorted(WIDTH_TO_SNIFFER_BW)} MHz, got {width_mhz}")
+    if center_ch is None:
+        center_ch = control_ch
+    self.set_chan_info(
+        control_ch=control_ch,
+        center_ch=center_ch,
+        bw=WIDTH_TO_CMD_CBW[width_mhz],
+        band=CHAN_BAND[band_name],
+    )
+    self.config_sniffer(
+        control_ch=control_ch,
+        center_ch=center_ch,
+        band_name=band_name,
+        bw=WIDTH_TO_SNIFFER_BW[width_mhz],
+    )
+
+
 Mt7921uDevice.uni_option = _uni_option
 Mt7921uDevice._build_uni_txd = _build_uni_txd
 Mt7921uDevice.mcu_uni = _mcu_uni
 Mt7921uDevice.set_sniffer = _set_sniffer
 Mt7921uDevice.config_sniffer = _config_sniffer
+Mt7921uDevice.tune = _tune
 
 
 # ---------------------------------------------------------------------------

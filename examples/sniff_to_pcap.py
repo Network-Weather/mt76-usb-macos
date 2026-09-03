@@ -28,7 +28,7 @@ import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
 FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+CHAN_BAND = m.CHAN_BAND
 
 LINKTYPE_IEEE802_11_RADIOTAP = 127
 
@@ -196,15 +196,15 @@ def main() -> int:
     out = args.output
     band = args.band
 
-    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
+    dev = m.open_device()
+    patch, ram = m.load_firmware(dev.CHIP, FW_DIR)
 
     mode = "wb" if args.overwrite else "xb"
-    with m.Mt7921uDevice() as dev, open(out, mode) as fh:
+    with dev, open(out, mode) as fh:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)
-        dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-        dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band, bw=m.SNIFFER_BW_20)
+        dev.tune(band, chan)
         time.sleep(0.2)
         fh.write(pcap_header())
         print(f"channel {chan} ({band}), {secs:g}s -> {out}")

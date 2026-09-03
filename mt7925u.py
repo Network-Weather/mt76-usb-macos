@@ -51,6 +51,7 @@ MCU_UNI_CMD_EFUSE_CTRL = 0x2D
 # mt7925/mcu.h tag enums
 UNI_CHIP_CONFIG_NIC_CAPA = 0x3
 UNI_EFUSE_BUFFER_MODE = 0x2
+UNI_BAND_CONFIG_RX_FILTER = 0x0C  # UNI_BAND_CONFIG_SET_MAC80211_RX_FILTER
 
 # mt7925_mcu_parse_response returns event->status for these UNI commands; every other
 # reply is success once its sequence number matched.
@@ -201,6 +202,49 @@ class Mt7925uDevice(m.Mt7921uDevice):
 
     def cap_names(self) -> list[str]:
         return [m.NIC_CAP_NAMES.get(tag, f"0x{tag:02x}") for tag in sorted(self.nic_caps)]
+
+    # ---- monitor mode (mt7925_configure_filter, mt7925_change_chanctx) -----
+
+    def set_rxfilter(self, fif: int, bit_op: int = 0, bit_map: int = 0) -> None:
+        """mt7925_mcu_set_rxfilter: MCU_UNI_CMD(BAND_CONFIG) tag SET_MAC80211_RX_FILTER.
+
+        struct (72 bytes, mt7925/mcu.c:4031-4060 at c5a3bd91): band_idx, rsv1[3], tag,
+        len = sizeof(req) - 4 = 68, mode, rsv2[3], fif, bit_map, bit_op, pad[51]; mode is 0
+        when fif is given and 1 for a bitmap edit. Waits for the reply, as the driver does.
+        """
+        body = struct.pack("<B3x", 0 if fif else 1)
+        body += struct.pack("<IIB", fif & 0xFFFFFFFF, bit_map & 0xFFFFFFFF, bit_op & 0xFF)
+        body += b"\x00" * 51
+        req = struct.pack("<B3x", 0) + struct.pack("<HH", UNI_BAND_CONFIG_RX_FILTER, 4 + len(body))
+        req += body
+        if len(req) != 72:
+            raise RuntimeError(f"internal RX filter length {len(req)}, expected 72")
+        self.mcu_uni(MCU_UNI_CMD_BAND_CONFIG, req)
+
+    def set_monitor_mode(self) -> None:
+        """mt7925_configure_filter for a monitor interface: one fif write, ENABLE |
+        FCSFAIL | CONTROL | OTHER_BSS. There is no RFCR bitmap edit on this chip."""
+        self.set_rxfilter(m.MONITOR_FILTER)
+
+    def tune(
+        self, band_name: str, control_ch: int, center_ch: int | None = None, width_mhz: int = 20
+    ) -> None:
+        """mt7925_change_chanctx for a monitor vif: the sniffer CONFIG TLV is the channel
+        command; there is no CHANNEL_SWITCH on this chip."""
+        if band_name not in m.CHAN_BAND:
+            raise ValueError(f"band must be one of {sorted(m.CHAN_BAND)}, got {band_name!r}")
+        if width_mhz not in m.WIDTH_TO_SNIFFER_BW:
+            raise ValueError(
+                f"width must be one of {sorted(m.WIDTH_TO_SNIFFER_BW)} MHz, got {width_mhz}"
+            )
+        if center_ch is None:
+            center_ch = control_ch
+        self.config_sniffer(
+            control_ch=control_ch,
+            center_ch=center_ch,
+            band_name=band_name,
+            bw=m.WIDTH_TO_SNIFFER_BW[width_mhz],
+        )
 
     # ---- not ported --------------------------------------------------------
 

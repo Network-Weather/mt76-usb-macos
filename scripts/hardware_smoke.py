@@ -29,7 +29,6 @@ import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
 FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
-CHIP = m.CHIP_MT7921  # the chip this smoke test drives; firmware pins come from the module
 
 CH_24 = [1, 6, 11]
 CH_5 = [
@@ -68,7 +67,6 @@ PLANS = {
     "6": [("6GHz", channel) for channel in CH_6_PSC],
 }
 PLANS["all"] = PLANS["2.4"] + PLANS["5"] + PLANS["6"]
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
 
 
 def sha256_file(path: Path) -> str:
@@ -136,7 +134,6 @@ def frame_family(frame: bytes) -> str:
 def main() -> int:
     args = arguments()
     started = time.monotonic()
-    patch_path, ram_path = m.firmware_paths(CHIP, FW_DIR)
     requested_bands = sorted({band for band, _ in PLANS[args.plan]})
     result = {
         "schema_version": 1,
@@ -162,15 +159,17 @@ def main() -> int:
 
     device_opened = False
     try:
+        dev = m.open_device(args.usb_id)  # picks the class; nothing is claimed yet
+        patch_path, ram_path = m.firmware_paths(dev.CHIP, FW_DIR)
         if not patch_path.is_file() or not ram_path.is_file():
             raise FileNotFoundError("required firmware is missing; run bash setup.sh")
         result["firmware"] = {
             "patch_sha256": sha256_file(patch_path),
             "ram_sha256": sha256_file(ram_path),
         }
-        patch, ram = m.load_firmware(CHIP, FW_DIR)  # raises on a pin mismatch
+        patch, ram = m.load_firmware(dev.CHIP, FW_DIR)  # raises on a pin mismatch
 
-        with m.Mt7921uDevice(usb_id=args.usb_id) as dev:
+        with dev:
             device_opened = True
             result["device"] = {
                 "chip": dev.layout.chip,
@@ -185,18 +184,7 @@ def main() -> int:
             for band, channel in PLANS[args.plan]:
                 counters = result["bands"][band]
                 counters["channels_attempted"] += 1
-                dev.set_chan_info(
-                    control_ch=channel,
-                    center_ch=channel,
-                    bw=m.CMD_CBW_20MHZ,
-                    band=CHAN_BAND[band],
-                )
-                dev.config_sniffer(
-                    control_ch=channel,
-                    center_ch=channel,
-                    band_name=band,
-                    bw=m.SNIFFER_BW_20,
-                )
+                dev.tune(band, channel)
                 time.sleep(0.05)
                 channel_transfers = 0
                 channel_frames = 0
