@@ -52,15 +52,15 @@ int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *
 
     uint32_t ptype = (rxd0 >> 27) & 0x1F;
     uint32_t pflag = (rxd0 >> RXD0_PKT_FLAG_SHIFT) & RXD0_PKT_FLAG_MASK;
-    if (ptype == PKT_TYPE_RX_EVENT && pflag == 0x01) {
-        ptype = PKT_FLAG_NORMAL_MCU; /* 17 */
+    if (ptype == PKT_TYPE_RX_EVENT && pflag == PKT_FLAG_NORMAL_MCU) {
+        ptype = PKT_TYPE_NORMAL_MCU; /* 17 */
     }
     out->pkt_type = ptype;
     out->dma_len = rxd0 & 0xFFFF;
     out->fcs_err = (rxd1 & MT_RXD1_NORMAL_FCS_ERR) != 0;
     out->icv_err = (rxd1 & MT_RXD1_NORMAL_ICV_ERR) != 0;
 
-    if (ptype != PKT_TYPE_NORMAL && ptype != PKT_FLAG_NORMAL_MCU) {
+    if (ptype != PKT_TYPE_NORMAL && ptype != PKT_TYPE_NORMAL_MCU) {
         return -1;
     }
     if (rxd2 & (MT_RXD2_NORMAL_AMSDU_ERR | MT_RXD2_NORMAL_MAX_LEN_ERROR)) {

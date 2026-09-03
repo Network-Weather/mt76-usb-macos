@@ -198,8 +198,14 @@ int mt7921_bringup(mt7921_dev_t *dev, const uint8_t *patch_blob, size_t patch_le
     mt7921_clear_bits(&dev->usb, MT_UDMA_TX_QSEL, MT_FW_DL_EN);
     if (log_fn) log_fn("firmware is running\n");
 
-    mt7921_get_nic_capability(&dev->mcu);
-    mt7921_set_eeprom(&dev->mcu);
+    if (mt7921_get_nic_capability(&dev->mcu) != 0) {
+        if (log_fn) log_fn("  failed to get nic capability\n");
+        return -1;
+    }
+    if (mt7921_set_eeprom(&dev->mcu) != 0) {
+        if (log_fn) log_fn("  failed to push efuse calibration\n");
+        return -1;
+    }
     if (log_fn) log_fn("efuse pushed\n");
 
     return 0;

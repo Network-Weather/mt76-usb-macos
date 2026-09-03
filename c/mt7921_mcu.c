@@ -297,8 +297,9 @@ int mt7921_parse_ram(const uint8_t *blob, size_t len, ram_trailer_t *out) {
     memset(out, 0, sizeof(*out));
 
     size_t t = len - 36;
-    out->n_region = blob[t + 2];
-    if (out->n_region > MAX_RAM_REGIONS) out->n_region = MAX_RAM_REGIONS;
+    uint8_t n_region = blob[t + 2];
+    if (n_region == 0 || n_region > MAX_RAM_REGIONS) return -1;
+    out->n_region = n_region;
 
     memcpy(out->fw_ver, blob + t + 7, 10);
     out->fw_ver[10] = '\0';
@@ -307,6 +308,8 @@ int mt7921_parse_ram(const uint8_t *blob, size_t len, ram_trailer_t *out) {
 
     size_t metadata_len = 36 + (size_t)out->n_region * 40;
     if (metadata_len > len) return -1;
+    size_t available_payload = len - metadata_len;
+    size_t total_payload = 0;
 
     for (uint32_t i = 0; i < out->n_region; i++) {
         size_t base = t - (size_t)(out->n_region - i) * 40;
@@ -315,6 +318,11 @@ int mt7921_parse_ram(const uint8_t *blob, size_t len, ram_trailer_t *out) {
         out->regions[i].len = CFSwapInt32LittleToHost(*(uint32_t*)(rg + 20));
         out->regions[i].feature_set = rg[24];
         out->regions[i].type = rg[25];
+
+        if (out->regions[i].len > available_payload - total_payload) {
+            return -1;
+        }
+        total_payload += out->regions[i].len;
     }
     return 0;
 }
@@ -467,6 +475,7 @@ int mt7921_load_ram(mt7921_mcu_t *mcu, const uint8_t *blob, size_t len,
             offset += rg->len;
             continue;
         }
+        if (offset + rg->len > len - (36 + (size_t)r.n_region * 40)) return -1;
         if (log_fn) log_fn("  region %u: addr=0x%08x len=%u mode=0x%08x\n", i, rg->addr, rg->len, mode);
         if (init_download(mcu, rg->addr, rg->len, mode) != 0) return -1;
         if (send_firmware(mcu, blob + offset, rg->len) != 0) return -1;

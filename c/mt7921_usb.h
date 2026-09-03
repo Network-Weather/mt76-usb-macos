@@ -16,6 +16,10 @@
 
 #include "mt7921_regs.h"
 
+#define MT7921_OK           0
+#define MT7921_ERR_TIMEOUT  1
+#define MT7921_ERR_IO      -1
+
 typedef struct {
     IOUSBDeviceInterface **dev;
     IOUSBInterfaceInterface **intf;

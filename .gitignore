@@ -1,5 +1,6 @@
 # MediaTek firmware blobs are licensed and MUST NOT be committed (fetched by setup.sh)
 firmware/
+firmware
 *.bin
 
 # Python

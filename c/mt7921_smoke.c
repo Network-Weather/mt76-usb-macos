@@ -10,10 +10,15 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <sys/utsname.h>
+#include <sys/sysctl.h>
 #include <time.h>
+#include <CommonCrypto/CommonDigest.h>
 
 #define PATCH_NAME "WIFI_MT7961_patch_mcu_1_2_hdr.bin"
 #define RAM_NAME   "WIFI_RAM_CODE_MT7961_1.bin"
+#define PATCH_SHA256 "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6"
+#define RAM_SHA256   "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
 
 typedef struct {
     const char *band;
@@ -65,7 +70,7 @@ typedef struct {
     uint32_t frame_other;
 } band_stats_t;
 
-static uint8_t *read_file(const char *path, size_t *out_len) {
+static uint8_t *read_file(const char *path, size_t *out_len, char *out_sha256) {
     FILE *f = fopen(path, "rb");
     if (!f) return NULL;
     fseek(f, 0, SEEK_END);
@@ -87,6 +92,16 @@ static uint8_t *read_file(const char *path, size_t *out_len) {
     }
     fclose(f);
     *out_len = (size_t)sz;
+
+    if (out_sha256) {
+        unsigned char md[CC_SHA256_DIGEST_LENGTH];
+        CC_SHA256(buf, (CC_LONG)sz, md);
+        for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) {
+            sprintf(out_sha256 + (i * 2), "%02x", md[i]);
+        }
+        out_sha256[64] = '\0';
+    }
+
     return buf;
 }
 
@@ -105,6 +120,184 @@ static void log_stderr(const char *fmt, ...) {
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
     va_end(ap);
+}
+
+static void get_iso_time(char *out, size_t max_len) {
+    time_t now = time(NULL);
+    struct tm tm_utc;
+    gmtime_r(&now, &tm_utc);
+    strftime(out, max_len, "%Y-%m-%dT%H:%M:%SZ", &tm_utc);
+}
+
+static void emit_json(const char *status,
+                      const char *plan_name,
+                      double dwell,
+                      size_t total_channels,
+                      bool req_24,
+                      bool req_5,
+                      bool req_6,
+                      const band_stats_t *s24,
+                      const band_stats_t *s5,
+                      const band_stats_t *s6,
+                      const char *patch_sha,
+                      const char *ram_sha,
+                      bool device_opened,
+                      const char *err_type,
+                      const char *err_msg,
+                      double duration) {
+    char iso_time[64];
+    get_iso_time(iso_time, sizeof(iso_time));
+
+    struct utsname uts;
+    memset(&uts, 0, sizeof(uts));
+    uname(&uts);
+
+    char macos_ver[64] = "unknown";
+    size_t sz = sizeof(macos_ver);
+    sysctlbyname("kern.osproductversion", macos_ver, &sz, NULL, 0);
+
+    printf("{\n");
+    printf("  \"bands\": {\n");
+
+    bool has_printed_band = false;
+    if (req_24) {
+        printf("    \"2.4GHz\": {\n");
+        printf("      \"channels_attempted\": %u,\n", s24 ? s24->channels_attempted : 0);
+        printf("      \"channels_with_frames\": %u,\n", s24 ? s24->channels_with_frames : 0);
+        printf("      \"channels_with_transfers\": %u,\n", s24 ? s24->channels_with_transfers : 0);
+        printf("      \"decoded_frames\": %u,\n", s24 ? s24->decoded_frames : 0);
+        printf("      \"frame_types\": {\n");
+        printf("        \"control\": %u,\n", s24 ? s24->frame_ctrl : 0);
+        printf("        \"data\": %u,\n", s24 ? s24->frame_data : 0);
+        printf("        \"management\": %u,\n", s24 ? s24->frame_mgmt : 0);
+        printf("        \"other\": %u\n", s24 ? s24->frame_other : 0);
+        printf("      },\n");
+        printf("      \"undecoded_transfers\": %u,\n", s24 ? s24->undecoded_transfers : 0);
+        printf("      \"usb_errors\": %u,\n", s24 ? s24->usb_errors : 0);
+        printf("      \"usb_timeouts\": %u,\n", s24 ? s24->usb_timeouts : 0);
+        printf("      \"usb_transfers\": %u\n", s24 ? s24->usb_transfers : 0);
+        printf("    }");
+        has_printed_band = true;
+    }
+    if (req_5) {
+        if (has_printed_band) printf(",\n");
+        printf("    \"5GHz\": {\n");
+        printf("      \"channels_attempted\": %u,\n", s5 ? s5->channels_attempted : 0);
+        printf("      \"channels_with_frames\": %u,\n", s5 ? s5->channels_with_frames : 0);
+        printf("      \"channels_with_transfers\": %u,\n", s5 ? s5->channels_with_transfers : 0);
+        printf("      \"decoded_frames\": %u,\n", s5 ? s5->decoded_frames : 0);
+        printf("      \"frame_types\": {\n");
+        printf("        \"control\": %u,\n", s5 ? s5->frame_ctrl : 0);
+        printf("        \"data\": %u,\n", s5 ? s5->frame_data : 0);
+        printf("        \"management\": %u,\n", s5 ? s5->frame_mgmt : 0);
+        printf("        \"other\": %u\n", s5 ? s5->frame_other : 0);
+        printf("      },\n");
+        printf("      \"undecoded_transfers\": %u,\n", s5 ? s5->undecoded_transfers : 0);
+        printf("      \"usb_errors\": %u,\n", s5 ? s5->usb_errors : 0);
+        printf("      \"usb_timeouts\": %u,\n", s5 ? s5->usb_timeouts : 0);
+        printf("      \"usb_transfers\": %u\n", s5 ? s5->usb_transfers : 0);
+        printf("    }");
+        has_printed_band = true;
+    }
+    if (req_6) {
+        if (has_printed_band) printf(",\n");
+        printf("    \"6GHz\": {\n");
+        printf("      \"channels_attempted\": %u,\n", s6 ? s6->channels_attempted : 0);
+        printf("      \"channels_with_frames\": %u,\n", s6 ? s6->channels_with_frames : 0);
+        printf("      \"channels_with_transfers\": %u,\n", s6 ? s6->channels_with_transfers : 0);
+        printf("      \"decoded_frames\": %u,\n", s6 ? s6->decoded_frames : 0);
+        printf("      \"frame_types\": {\n");
+        printf("        \"control\": %u,\n", s6 ? s6->frame_ctrl : 0);
+        printf("        \"data\": %u,\n", s6 ? s6->frame_data : 0);
+        printf("        \"management\": %u,\n", s6 ? s6->frame_mgmt : 0);
+        printf("        \"other\": %u\n", s6 ? s6->frame_other : 0);
+        printf("      },\n");
+        printf("      \"undecoded_transfers\": %u,\n", s6 ? s6->undecoded_transfers : 0);
+        printf("      \"usb_errors\": %u,\n", s6 ? s6->usb_errors : 0);
+        printf("      \"usb_timeouts\": %u,\n", s6 ? s6->usb_timeouts : 0);
+        printf("      \"usb_transfers\": %u\n", s6 ? s6->usb_transfers : 0);
+        printf("    }");
+    }
+    printf("\n  },\n");
+
+    if (device_opened) {
+        printf("  \"device\": {\n");
+        printf("    \"driver\": \"mt7921_c_iokit\",\n");
+        printf("    \"usb_id\": \"0e8d:7961\",\n");
+        printf("    \"usb_speed_code\": 4,\n");
+        printf("    \"wifi_interface\": 3\n");
+        printf("  },\n");
+    } else {
+        printf("  \"device\": null,\n");
+    }
+
+    printf("  \"duration_seconds\": %.3f,\n", duration);
+
+    if (err_type && err_msg) {
+        printf("  \"error\": {\n");
+        printf("    \"message\": \"%s\",\n", err_msg);
+        printf("    \"type\": \"%s\"\n", err_type);
+        printf("  },\n");
+    }
+
+    if (patch_sha && ram_sha) {
+        printf("  \"firmware\": {\n");
+        printf("    \"patch_sha256\": \"%s\",\n", patch_sha);
+        printf("    \"ram_sha256\": \"%s\"\n", ram_sha);
+        printf("  },\n");
+    } else {
+        printf("  \"firmware\": {},\n");
+    }
+
+    printf("  \"generated_at_utc\": \"%s\",\n", iso_time);
+    printf("  \"host\": {\n");
+    printf("    \"machine\": \"%s\",\n", uts.machine);
+    printf("    \"macos\": \"%s\"\n", macos_ver);
+    printf("  },\n");
+
+    printf("  \"plan\": {\n");
+    printf("    \"channels\": %zu,\n", total_channels);
+    printf("    \"dwell_seconds\": %.2f,\n", dwell);
+    printf("    \"name\": \"%s\",\n", plan_name);
+    printf("    \"requested_bands\": [\n");
+    bool first_req = true;
+    if (req_24) {
+        printf("      \"2.4GHz\"");
+        first_req = false;
+    }
+    if (req_5) {
+        if (!first_req) printf(",\n");
+        printf("      \"5GHz\"");
+        first_req = false;
+    }
+    if (req_6) {
+        if (!first_req) printf(",\n");
+        printf("      \"6GHz\"");
+    }
+    printf("\n    ]\n");
+    printf("  },\n");
+
+    printf("  \"schema_version\": 1,\n");
+    printf("  \"software\": {\n");
+    printf("    \"c_driver\": \"mt7921_c_iokit\",\n");
+    printf("    \"mt76_usb_macos\": \"0.1.0\"\n");
+    printf("  },\n");
+    printf("  \"status\": \"%s\",\n", status);
+
+    uint32_t tot_decoded = (s24 ? s24->decoded_frames : 0) + (s5 ? s5->decoded_frames : 0) + (s6 ? s6->decoded_frames : 0);
+    uint32_t tot_undecoded = (s24 ? s24->undecoded_transfers : 0) + (s5 ? s5->undecoded_transfers : 0) + (s6 ? s6->undecoded_transfers : 0);
+    uint32_t tot_errors = (s24 ? s24->usb_errors : 0) + (s5 ? s5->usb_errors : 0) + (s6 ? s6->usb_errors : 0);
+    uint32_t tot_timeouts = (s24 ? s24->usb_timeouts : 0) + (s5 ? s5->usb_timeouts : 0) + (s6 ? s6->usb_timeouts : 0);
+    uint32_t tot_transfers = (s24 ? s24->usb_transfers : 0) + (s5 ? s5->usb_transfers : 0) + (s6 ? s6->usb_transfers : 0);
+
+    printf("  \"totals\": {\n");
+    printf("    \"decoded_frames\": %u,\n", tot_decoded);
+    printf("    \"undecoded_transfers\": %u,\n", tot_undecoded);
+    printf("    \"usb_errors\": %u,\n", tot_errors);
+    printf("    \"usb_timeouts\": %u,\n", tot_timeouts);
+    printf("    \"usb_transfers\": %u\n", tot_transfers);
+    printf("  }\n");
+    printf("}\n");
 }
 
 int main(int argc, char **argv) {
@@ -134,36 +327,21 @@ int main(int argc, char **argv) {
     if (dwell < 0.05) dwell = 0.05;
     if (dwell > 10.0) dwell = 10.0;
 
+    /* Resolve firmware path */
     if (!fw_dir) {
         fw_dir = getenv("MT7921_FW_DIR");
-        if (!fw_dir) fw_dir = "./firmware";
+        if (!fw_dir) {
+            if (access("./firmware", F_OK) == 0) {
+                fw_dir = "./firmware";
+            } else if (access("../firmware", F_OK) == 0) {
+                fw_dir = "../firmware";
+            } else {
+                fw_dir = "./firmware";
+            }
+        }
     }
 
     double t0 = get_time_sec();
-
-    /* Load firmware files */
-    char patch_path[1024], ram_path[1024];
-    snprintf(patch_path, sizeof(patch_path), "%s/%s", fw_dir, PATCH_NAME);
-    snprintf(ram_path, sizeof(ram_path), "%s/%s", fw_dir, RAM_NAME);
-
-    size_t patch_len = 0, ram_len = 0;
-    uint8_t *patch_blob = read_file(patch_path, &patch_len);
-    uint8_t *ram_blob = read_file(ram_path, &ram_len);
-
-    if (!patch_blob || !ram_blob) {
-        fprintf(stderr, "Error: missing firmware files in %s\n", fw_dir);
-        free(patch_blob);
-        free(ram_blob);
-        return 1;
-    }
-
-    /* Open PCAP if requested */
-    FILE *pcap_f = NULL;
-    if (pcap_file) {
-        if (pcap_writer_open(pcap_file, &pcap_f) != 0) {
-            fprintf(stderr, "Error: failed to open pcap file %s\n", pcap_file);
-        }
-    }
 
     /* Select channel plan */
     const chan_spec_t *plan_chans = NULL;
@@ -202,17 +380,60 @@ int main(int argc, char **argv) {
         req_24 = req_5 = req_6 = true;
     }
 
+    /* Check firmware files */
+    char patch_path[1024], ram_path[1024];
+    snprintf(patch_path, sizeof(patch_path), "%s/%s", fw_dir, PATCH_NAME);
+    snprintf(ram_path, sizeof(ram_path), "%s/%s", fw_dir, RAM_NAME);
+
+    size_t patch_len = 0, ram_len = 0;
+    char patch_sha[65] = {0}, ram_sha[65] = {0};
+    uint8_t *patch_blob = read_file(patch_path, &patch_len, patch_sha);
+    uint8_t *ram_blob = read_file(ram_path, &ram_len, ram_sha);
+
+    if (!patch_blob || !ram_blob) {
+        free(all_chans);
+        free(patch_blob);
+        free(ram_blob);
+        emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                  NULL, NULL, NULL, NULL, NULL, false,
+                  "FileNotFoundError", "required firmware is missing; run bash setup.sh",
+                  get_time_sec() - t0);
+        return 1;
+    }
+
+    if (strcmp(patch_sha, PATCH_SHA256) != 0 || strcmp(ram_sha, RAM_SHA256) != 0) {
+        free(all_chans);
+        free(patch_blob);
+        free(ram_blob);
+        emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                  NULL, NULL, NULL, patch_sha, ram_sha, false,
+                  "RuntimeError", "firmware checksum mismatch; run bash setup.sh",
+                  get_time_sec() - t0);
+        return 1;
+    }
+
+    /* Open PCAP if requested */
+    FILE *pcap_f = NULL;
+    if (pcap_file) {
+        if (pcap_writer_open(pcap_file, &pcap_f) != 0) {
+            fprintf(stderr, "warning: failed to open pcap file %s\n", pcap_file);
+        }
+    }
+
     band_stats_t stats_24 = {0};
     band_stats_t stats_5 = {0};
     band_stats_t stats_6 = {0};
 
     mt7921_dev_t dev;
     if (mt7921_dev_open(&dev) != 0) {
-        fprintf(stderr, "Error: MT7921 device not found via IOKit\n");
         free(all_chans);
         free(patch_blob);
         free(ram_blob);
         if (pcap_f) pcap_writer_close(pcap_f);
+        emit_json("unsupported", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                  NULL, NULL, NULL, patch_sha, ram_sha, false,
+                  "RuntimeError", "device 0e8d:7961 not found",
+                  get_time_sec() - t0);
         return 3; /* unsupported */
     }
 
@@ -222,17 +443,30 @@ int main(int argc, char **argv) {
 
     void (*log_fn)(const char *fmt, ...) = verbose ? log_stderr : log_dummy;
     if (mt7921_bringup(&dev, patch_blob, patch_len, ram_blob, ram_len, log_fn) != 0) {
-        fprintf(stderr, "Error: Bringup failed\n");
         mt7921_dev_close(&dev);
         free(all_chans);
         free(patch_blob);
         free(ram_blob);
         if (pcap_f) pcap_writer_close(pcap_f);
+        emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                  &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                  "RuntimeError", "bringup or calibration failed",
+                  get_time_sec() - t0);
         return 1;
     }
 
-    mt7921_set_monitor_mode(&dev);
-    mt7921_set_sniffer(&dev, true, 0);
+    if (mt7921_set_monitor_mode(&dev) != 0 || mt7921_set_sniffer(&dev, true, 0) != 0) {
+        mt7921_dev_close(&dev);
+        free(all_chans);
+        free(patch_blob);
+        free(ram_blob);
+        if (pcap_f) pcap_writer_close(pcap_f);
+        emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                  &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                  "RuntimeError", "failed to set monitor or sniffer mode",
+                  get_time_sec() - t0);
+        return 1;
+    }
 
     uint8_t raw_buf[8192];
 
@@ -242,8 +476,14 @@ int main(int argc, char **argv) {
                            (spec->band_idx == 1) ? &stats_5 : &stats_6;
 
         bs->channels_attempted++;
-        mt7921_set_chan_info(&dev, spec->channel, spec->channel, CMD_CBW_20MHZ, spec->band_idx);
-        mt7921_config_sniffer(&dev, spec->channel, spec->channel, spec->band, SNIFFER_BW_20);
+        if (mt7921_set_chan_info(&dev, spec->channel, spec->channel, CMD_CBW_20MHZ, spec->band_idx) != 0) {
+            bs->usb_errors++;
+            continue;
+        }
+        if (mt7921_config_sniffer(&dev, spec->channel, spec->channel, spec->band, SNIFFER_BW_20) != 0) {
+            bs->usb_errors++;
+            continue;
+        }
 
         usleep(50000); /* 50ms settling */
 
@@ -254,8 +494,11 @@ int main(int argc, char **argv) {
         while (get_time_sec() < deadline) {
             uint32_t read_len = sizeof(raw_buf);
             int ret = mt7921_rx_read(&dev, raw_buf, &read_len, 250);
-            if (ret != 0) {
+            if (ret == MT7921_ERR_TIMEOUT) {
                 bs->usb_timeouts++;
+                continue;
+            } else if (ret != MT7921_OK) {
+                bs->usb_errors++;
                 continue;
             }
 
@@ -300,92 +543,9 @@ int main(int argc, char **argv) {
     if (req_6 && stats_6.decoded_frames == 0) pass = false;
     const char *status = pass ? "pass" : "inconclusive";
 
-    /* Emit JSON summary */
-    printf("{\n");
-    printf("  \"bands\": {\n");
-    if (req_24) {
-        printf("    \"2.4GHz\": {\n");
-        printf("      \"channels_attempted\": %u,\n", stats_24.channels_attempted);
-        printf("      \"channels_with_frames\": %u,\n", stats_24.channels_with_frames);
-        printf("      \"channels_with_transfers\": %u,\n", stats_24.channels_with_transfers);
-        printf("      \"decoded_frames\": %u,\n", stats_24.decoded_frames);
-        printf("      \"frame_types\": {\n");
-        printf("        \"control\": %u,\n", stats_24.frame_ctrl);
-        printf("        \"data\": %u,\n", stats_24.frame_data);
-        printf("        \"management\": %u,\n", stats_24.frame_mgmt);
-        printf("        \"other\": %u\n", stats_24.frame_other);
-        printf("      },\n");
-        printf("      \"undecoded_transfers\": %u,\n", stats_24.undecoded_transfers);
-        printf("      \"usb_errors\": %u,\n", stats_24.usb_errors);
-        printf("      \"usb_timeouts\": %u,\n", stats_24.usb_timeouts);
-        printf("      \"usb_transfers\": %u\n", stats_24.usb_transfers);
-        printf("    }%s\n", (req_5 || req_6) ? "," : "");
-        first_band = false;
-    }
-    if (req_5) {
-        printf("    \"5GHz\": {\n");
-        printf("      \"channels_attempted\": %u,\n", stats_5.channels_attempted);
-        printf("      \"channels_with_frames\": %u,\n", stats_5.channels_with_frames);
-        printf("      \"channels_with_transfers\": %u,\n", stats_5.channels_with_transfers);
-        printf("      \"decoded_frames\": %u,\n", stats_5.decoded_frames);
-        printf("      \"frame_types\": {\n");
-        printf("        \"control\": %u,\n", stats_5.frame_ctrl);
-        printf("        \"data\": %u,\n", stats_5.frame_data);
-        printf("        \"management\": %u,\n", stats_5.frame_mgmt);
-        printf("        \"other\": %u\n", stats_5.frame_other);
-        printf("      },\n");
-        printf("      \"undecoded_transfers\": %u,\n", stats_5.undecoded_transfers);
-        printf("      \"usb_errors\": %u,\n", stats_5.usb_errors);
-        printf("      \"usb_timeouts\": %u,\n", stats_5.usb_timeouts);
-        printf("      \"usb_transfers\": %u\n", stats_5.usb_transfers);
-        printf("    }%s\n", req_6 ? "," : "");
-    }
-    if (req_6) {
-        printf("    \"6GHz\": {\n");
-        printf("      \"channels_attempted\": %u,\n", stats_6.channels_attempted);
-        printf("      \"channels_with_frames\": %u,\n", stats_6.channels_with_frames);
-        printf("      \"channels_with_transfers\": %u,\n", stats_6.channels_with_transfers);
-        printf("      \"decoded_frames\": %u,\n", stats_6.decoded_frames);
-        printf("      \"frame_types\": {\n");
-        printf("        \"control\": %u,\n", stats_6.frame_ctrl);
-        printf("        \"data\": %u,\n", stats_6.frame_data);
-        printf("        \"management\": %u,\n", stats_6.frame_mgmt);
-        printf("        \"other\": %u\n", stats_6.frame_other);
-        printf("      },\n");
-        printf("      \"undecoded_transfers\": %u,\n", stats_6.undecoded_transfers);
-        printf("      \"usb_errors\": %u,\n", stats_6.usb_errors);
-        printf("      \"usb_timeouts\": %u,\n", stats_6.usb_timeouts);
-        printf("      \"usb_transfers\": %u\n", stats_6.usb_transfers);
-        printf("    }\n");
-    }
-    printf("  },\n");
-
-    uint32_t tot_decoded = stats_24.decoded_frames + stats_5.decoded_frames + stats_6.decoded_frames;
-    uint32_t tot_undecoded = stats_24.undecoded_transfers + stats_5.undecoded_transfers + stats_6.undecoded_transfers;
-    uint32_t tot_errors = stats_24.usb_errors + stats_5.usb_errors + stats_6.usb_errors;
-    uint32_t tot_timeouts = stats_24.usb_timeouts + stats_5.usb_timeouts + stats_6.usb_timeouts;
-    uint32_t tot_transfers = stats_24.usb_transfers + stats_5.usb_transfers + stats_6.usb_transfers;
-
-    printf("  \"device\": {\n");
-    printf("    \"driver\": \"mt7921_c_iokit\",\n");
-    printf("    \"usb_id\": \"0e8d:7961\",\n");
-    printf("    \"wifi_interface\": 3\n");
-    printf("  },\n");
-    printf("  \"duration_seconds\": %.3f,\n", duration);
-    printf("  \"plan\": {\n");
-    printf("    \"channels\": %zu,\n", plan_count);
-    printf("    \"dwell_seconds\": %.2f,\n", dwell);
-    printf("    \"name\": \"%s\"\n", plan_name);
-    printf("  },\n");
-    printf("  \"status\": \"%s\",\n", status);
-    printf("  \"totals\": {\n");
-    printf("    \"decoded_frames\": %u,\n", tot_decoded);
-    printf("    \"undecoded_transfers\": %u,\n", tot_undecoded);
-    printf("    \"usb_errors\": %u,\n", tot_errors);
-    printf("    \"usb_timeouts\": %u,\n", tot_timeouts);
-    printf("    \"usb_transfers\": %u\n", tot_transfers);
-    printf("  }\n");
-    printf("}\n");
+    emit_json(status, plan_name, dwell, plan_count, req_24, req_5, req_6,
+              &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+              NULL, NULL, duration);
 
     return pass ? 0 : 2;
 }

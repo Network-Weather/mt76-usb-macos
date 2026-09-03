@@ -3,6 +3,7 @@
 /* Offline unit test for mt7921_rxd without hardware. */
 
 #include "mt7921_rxd.h"
+#include "mt7921_mcu.h"
 #include "mt7921_regs.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -10,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <unistd.h>
 
 static void test_decode_24ghz_beacon(void) {
     uint8_t buf[128] = {0};
@@ -78,11 +80,13 @@ static void test_decode_5ghz_data(void) {
     mt7921_rxd_frame_t out;
     int ret = mt7921_rxd_decode(buf, 24 + frame_len, &out);
     assert(ret == 0);
+    assert(out.pkt_type == PKT_TYPE_NORMAL_MCU);
+    assert(out.pkt_type == 17);
     assert(strcmp(out.band, "5GHz") == 0);
     assert(out.channel == 36);
     assert(out.frame_family == FRAME_FAMILY_DATA);
     assert(out.frame_len == frame_len);
-    printf("PASS: test_decode_5ghz_data\n");
+    printf("PASS: test_decode_5ghz_data (normalized PKT_TYPE_NORMAL_MCU = 17)\n");
 }
 
 static void test_decode_6ghz_psc(void) {
@@ -152,12 +156,50 @@ static void test_pcap_writer(void) {
     printf("PASS: test_pcap_writer\n");
 }
 
+static void test_parse_ram_bounds_check(void) {
+    /* Create a simulated RAM image: 4 payload bytes + 1 region (40 bytes) + trailer (36 bytes) = 80 bytes total */
+    uint8_t bad_blob[80] = {0};
+    size_t t = sizeof(bad_blob) - 36;
+    bad_blob[t + 2] = 1; /* n_region = 1 */
+    size_t base = t - 40;
+    uint32_t addr = CFSwapInt32HostToLittle(0x00915000);
+    /* Declare region len = 5 (exceeds the 4 payload bytes) -> must fail! */
+    uint32_t bad_len = CFSwapInt32HostToLittle(5);
+    memcpy(bad_blob + base + 16, &addr, 4);
+    memcpy(bad_blob + base + 20, &bad_len, 4);
+
+    ram_trailer_t r;
+    int ret = mt7921_parse_ram(bad_blob, sizeof(bad_blob), &r);
+    assert(ret == -1);
+
+    /* Test n_region = 0 -> must fail */
+    bad_blob[t + 2] = 0;
+    ret = mt7921_parse_ram(bad_blob, sizeof(bad_blob), &r);
+    assert(ret == -1);
+
+    /* Test n_region > MAX_RAM_REGIONS (e.g. 17) -> must fail */
+    bad_blob[t + 2] = 17;
+    ret = mt7921_parse_ram(bad_blob, sizeof(bad_blob), &r);
+    assert(ret == -1);
+
+    /* Test with region len = 4 (exact match for 4 payload bytes) -> must succeed */
+    bad_blob[t + 2] = 1;
+    uint32_t good_len = CFSwapInt32HostToLittle(4);
+    memcpy(bad_blob + base + 20, &good_len, 4);
+    ret = mt7921_parse_ram(bad_blob, sizeof(bad_blob), &r);
+    assert(ret == 0);
+    assert(r.n_region == 1);
+    assert(r.regions[0].len == 4);
+    printf("PASS: test_parse_ram_bounds_check\n");
+}
+
 int main(void) {
     printf("Running mt7921_rxd offline unit tests...\n");
     test_decode_24ghz_beacon();
     test_decode_5ghz_data();
     test_decode_6ghz_psc();
     test_pcap_writer();
+    test_parse_ram_bounds_check();
     printf("All offline unit tests passed successfully!\n");
     return 0;
 }

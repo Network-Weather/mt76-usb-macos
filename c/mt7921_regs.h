@@ -177,6 +177,7 @@
 #define RXD_STATUS_OFFSET           32
 #define PKT_TYPE_RX_EVENT           7
 #define PKT_TYPE_NORMAL             2
+#define PKT_TYPE_NORMAL_MCU         17
 #define RXD0_PKT_FLAG_SHIFT         16
 #define RXD0_PKT_FLAG_MASK          0xFU
 #define PKT_FLAG_NORMAL_MCU         1

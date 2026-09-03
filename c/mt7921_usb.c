@@ -319,11 +319,17 @@ int mt7921_bulk_out(mt7921_usb_t *usb, uint8_t ep, const void *data, uint32_t le
 }
 
 int mt7921_bulk_in(mt7921_usb_t *usb, uint8_t ep, void *data, uint32_t *len, uint32_t timeout_ms) {
-    if (!usb || !usb->intf || !data || !len) return -1;
+    if (!usb || !usb->intf || !data || !len) return MT7921_ERR_IO;
     UInt8 pipe = pipe_for_ep(usb, ep);
-    if (!pipe) return -1;
+    if (!pipe) return MT7921_ERR_IO;
     UInt32 size = *len;
     kern_return_t kr = (*usb->intf)->ReadPipeTO(usb->intf, pipe, data, &size, timeout_ms, timeout_ms);
     *len = size;
-    return (kr == KERN_SUCCESS) ? 0 : -1;
+    if (kr == KERN_SUCCESS) {
+        return MT7921_OK;
+    }
+    if (kr == kIOUSBTransactionTimeout || kr == kIOReturnTimeout) {
+        return MT7921_ERR_TIMEOUT;
+    }
+    return MT7921_ERR_IO;
 }
