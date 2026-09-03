@@ -115,7 +115,7 @@ The codebase includes both a high-level Python library and a zero-dependency C d
 | `mt7925u.py` | MT7925U (connac3) subclass: its WFSYS reset, MCU framing geometry, UNI capability/efuse/RX-filter commands, and TLV-only tuning. Boots, receives, and writes radiotap pcap on the Nighthawk A9000 |
 | `rxd.py` | Python connac2 (MT7921) RX descriptor decode and the shared 802.11 frame parsing (IE analysis, AKM suites, PHY rate, airtime accounting) |
 | `rxd_connac3.py` | connac3 (MT7925) RX descriptor decode producing the same dict, so everything downstream of the descriptor is chip-agnostic |
-| [`c/`](c/README.md) | Pure C driver: native macOS IOKit USB transport (zero external dependencies), MCU framing, TXWI injection, PCAP writer, and `mt7921_smoke` CLI |
+| [`c/`](c/README.md) | Pure C driver for both chips: native macOS IOKit USB transport (zero external dependencies), chip profiles, MCU framing, connac2 and connac3 decoders, TXWI injection (MT7921), PCAP writer, and `mt7921_smoke` CLI |
 
 ## Pure C driver (zero dependencies)
 
@@ -279,7 +279,7 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 146 offline tests for firmware parsing, MCU framing (both chips, with
+The macOS-only CI runs 147 offline tests for firmware parsing, MCU framing (both chips, with
 the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.

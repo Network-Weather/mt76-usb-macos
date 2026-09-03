@@ -36,8 +36,17 @@ static inline uint32_t mcu_read_le32(const void *p) {
 void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb) {
     memset(mcu, 0, sizeof(*mcu));
     mcu->usb = usb;
+    mcu->prof = mt7921_chip_profile(usb ? (mt7921_chip_t)usb->chip : MT_CHIP_MT7921);
+    if (!mcu->prof) mcu->prof = mt7921_chip_profile(MT_CHIP_MT7921);
     mcu->msg_seq = 0;
     mcu->evt_ep4 = false;
+}
+
+const uint8_t *mt7921_mcu_reply_body(const mt7921_mcu_t *mcu, const uint8_t *resp, uint32_t resp_len,
+                                     uint32_t *body_len) {
+    if (!mcu || !resp || resp_len < mcu->prof->mcu_rxd_len) return NULL;
+    if (body_len) *body_len = resp_len - mcu->prof->mcu_rxd_len;
+    return resp + mcu->prof->mcu_rxd_len;
 }
 
 uint8_t mt7921_mcu_next_seq(mt7921_mcu_t *mcu) {
@@ -48,13 +57,13 @@ uint8_t mt7921_mcu_next_seq(mt7921_mcu_t *mcu) {
     return mcu->msg_seq;
 }
 
-static void build_mcu_txd(uint8_t *out, uint32_t total_len, uint8_t cid, uint8_t seq,
-                          uint8_t ext_cid, uint8_t set_query, uint8_t s2d) {
+void mt7921_mcu_build_txd(const mt7921_mcu_t *mcu, uint8_t *out, uint32_t total_len, uint8_t cid,
+                          uint8_t seq, uint8_t ext_cid, uint8_t set_query, uint8_t s2d) {
     uint32_t txd[8] = {0};
     txd[0] = (total_len & 0xFFFF)
            | ((MT_TX_TYPE_CMD & 0x3) << 23)
            | ((MT_TX_MCU_PORT_RX_Q0 & 0x7F) << 25);
-    txd[1] = (1U << 31) | ((MT_HDR_FORMAT_CMD & 0x3) << 16);
+    txd[1] = mcu->prof->txd1; /* connac2: LONG_FORMAT | HDR_FORMAT_CMD << 16; connac3: << 14 only */
 
     for (int i = 0; i < 8; i++) {
         uint32_t le = CFSwapInt32HostToLittle(txd[i]);
@@ -82,12 +91,13 @@ static void build_mcu_txd(uint8_t *out, uint32_t total_len, uint8_t cid, uint8_t
     memset(out + 44, 0, 20); /* rsv[5] */
 }
 
-static void build_uni_txd(uint8_t *out, uint32_t total_len, uint8_t cid, uint8_t seq) {
+void mt7921_mcu_build_uni_txd(const mt7921_mcu_t *mcu, uint8_t *out, uint32_t total_len,
+                              uint8_t cid, uint8_t seq, bool query) {
     uint32_t txd[8] = {0};
     txd[0] = (total_len & 0xFFFF)
            | ((MT_TX_TYPE_CMD & 0x3) << 23)
            | ((MT_TX_MCU_PORT_RX_Q0 & 0x7F) << 25);
-    txd[1] = (1U << 31) | ((MT_HDR_FORMAT_CMD & 0x3) << 16);
+    txd[1] = mcu->prof->txd1;
 
     for (int i = 0; i < 8; i++) {
         uint32_t le = CFSwapInt32HostToLittle(txd[i]);
@@ -109,7 +119,7 @@ static void build_uni_txd(uint8_t *out, uint32_t total_len, uint8_t cid, uint8_t
     uint16_t rsv0 = 0;
     memcpy(out + 40, &rsv0, 2);
     out[42] = MCU_S2D_H2N;
-    out[43] = MCU_CMD_UNI_EXT_ACK;
+    out[43] = mt7921_uni_option(mcu->prof, cid, query);
     memset(out + 44, 0, 4);
 }
 
@@ -117,14 +127,14 @@ int mt7921_mcu_send(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
                     uint32_t payload_len, bool wait, uint8_t *resp_buf,
                     uint32_t *resp_len, uint32_t timeout_ms) {
     uint8_t seq = mt7921_mcu_next_seq(mcu);
-    uint8_t ep = EP_OUT_INBAND_CMD;
+    uint8_t ep = MT_ROLE_INBAND_CMD;
 
     uint32_t body_len = 0;
     uint8_t *frame = NULL;
     uint32_t frame_alloc = 0;
 
     if (cid == MCU_CMD_FW_SCATTER) {
-        ep = EP_OUT_AC_BE;
+        ep = MT_ROLE_AC_BE;
         body_len = payload_len;
         frame_alloc = 4 + body_len + 8;
         frame = (uint8_t*)malloc(frame_alloc);
@@ -142,7 +152,7 @@ int mt7921_mcu_send(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
         if (!frame) return -1;
         uint32_t sdio_hdr = CFSwapInt32HostToLittle(body_len & 0xFFFF);
         memcpy(frame, &sdio_hdr, 4);
-        build_mcu_txd(frame + 4, total, cid, seq, 0, MCU_Q_NA, MCU_S2D_H2N);
+        mt7921_mcu_build_txd(mcu, frame + 4, total, cid, seq, 0, MCU_Q_NA, MCU_S2D_H2N);
         if (payload && payload_len) {
             memcpy(frame + 4 + MCU_TXD_LEN, payload, payload_len);
         }
@@ -180,7 +190,7 @@ int mt7921_mcu_cmd_word(mt7921_mcu_t *mcu, uint32_t cmd, const void *payload,
 
     uint32_t sdio_hdr = CFSwapInt32HostToLittle(total & 0xFFFF);
     memcpy(frame, &sdio_hdr, 4);
-    build_mcu_txd(frame + 4, total, cid, seq, ext_cid, set_query, s2d);
+    mt7921_mcu_build_txd(mcu, frame + 4, total, cid, seq, ext_cid, set_query, s2d);
     if (payload && payload_len) {
         memcpy(frame + 4 + MCU_TXD_LEN, payload, payload_len);
     }
@@ -190,7 +200,7 @@ int mt7921_mcu_cmd_word(mt7921_mcu_t *mcu, uint32_t cmd, const void *payload,
     memset(frame + frame_len, 0, pad);
     uint32_t send_len = frame_len + pad;
 
-    int ret = mt7921_bulk_out(mcu->usb, EP_OUT_INBAND_CMD, frame, send_len, timeout_ms);
+    int ret = mt7921_bulk_out(mcu->usb, MT_ROLE_INBAND_CMD, frame, send_len, timeout_ms);
     free(frame);
     if (ret != 0) return -1;
 
@@ -198,9 +208,25 @@ int mt7921_mcu_cmd_word(mt7921_mcu_t *mcu, uint32_t cmd, const void *payload,
     return mt7921_mcu_wait(mcu, seq, cid, resp_buf, resp_len, timeout_ms);
 }
 
+static int mcu_uni_common(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
+                          uint32_t payload_len, bool wait, bool query, uint8_t *resp_buf,
+                          uint32_t *resp_len, uint32_t timeout_ms);
+
 int mt7921_mcu_uni(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
                    uint32_t payload_len, bool wait, uint8_t *resp_buf,
                    uint32_t *resp_len, uint32_t timeout_ms) {
+    return mcu_uni_common(mcu, cid, payload, payload_len, wait, false, resp_buf, resp_len, timeout_ms);
+}
+
+int mt7921_mcu_uni_query(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
+                         uint32_t payload_len, bool wait, uint8_t *resp_buf,
+                         uint32_t *resp_len, uint32_t timeout_ms) {
+    return mcu_uni_common(mcu, cid, payload, payload_len, wait, true, resp_buf, resp_len, timeout_ms);
+}
+
+static int mcu_uni_common(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
+                          uint32_t payload_len, bool wait, bool query, uint8_t *resp_buf,
+                          uint32_t *resp_len, uint32_t timeout_ms) {
     uint8_t seq = mt7921_mcu_next_seq(mcu);
     uint32_t total = MCU_UNI_TXD_LEN + payload_len;
     uint32_t frame_alloc = 4 + total + 8;
@@ -209,7 +235,7 @@ int mt7921_mcu_uni(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
 
     uint32_t sdio_hdr = CFSwapInt32HostToLittle(total & 0xFFFF);
     memcpy(frame, &sdio_hdr, 4);
-    build_uni_txd(frame + 4, total, cid, seq);
+    mt7921_mcu_build_uni_txd(mcu, frame + 4, total, cid, seq, query);
     if (payload && payload_len) {
         memcpy(frame + 4 + MCU_UNI_TXD_LEN, payload, payload_len);
     }
@@ -219,7 +245,7 @@ int mt7921_mcu_uni(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
     memset(frame + frame_len, 0, pad);
     uint32_t send_len = frame_len + pad;
 
-    int ret = mt7921_bulk_out(mcu->usb, EP_OUT_INBAND_CMD, frame, send_len, timeout_ms);
+    int ret = mt7921_bulk_out(mcu->usb, MT_ROLE_INBAND_CMD, frame, send_len, timeout_ms);
     free(frame);
     if (ret != 0) return -1;
 
@@ -230,7 +256,7 @@ int mt7921_mcu_uni(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
 int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
                     uint8_t *resp_buf, uint32_t *resp_len, uint32_t timeout_ms) {
     (void)cid;
-    uint8_t ep = mcu->evt_ep4 ? EP_IN_PKT_RX : EP_IN_CMD_RESP;
+    uint8_t ep = mcu->evt_ep4 ? MT_ROLE_PKT_RX : MT_ROLE_CMD_RESP;
     uint64_t deadline = current_time_ms() + (uint64_t)timeout_ms * 4;
 
     uint8_t raw[4096];
@@ -241,7 +267,7 @@ int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
             usleep(5000);
             continue;
         }
-        if (read_len < MCU_RXD_LEN) {
+        if (read_len < mcu->prof->mcu_rxd_len) {
             continue;
         }
 
@@ -258,7 +284,7 @@ int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
             continue;
         }
 
-        uint8_t rseq = raw[RXD_SEQ_OFFSET];
+        uint8_t rseq = raw[mcu->prof->rxd_seq_offset];
         if (rseq == seq) {
             if (resp_buf && resp_len) {
                 uint32_t copy_len = (*resp_len < read_len) ? *resp_len : read_len;
@@ -382,8 +408,8 @@ static int patch_sem_ctrl(mt7921_mcu_t *mcu, bool get) {
     uint8_t resp[64];
     uint32_t resp_len = sizeof(resp);
     int ret = mt7921_mcu_send(mcu, MCU_CMD_PATCH_SEM_CONTROL, &op, 4, true, resp, &resp_len, 3000);
-    if (ret != 0 || resp_len <= RXD_STATUS_OFFSET) return -1;
-    return resp[RXD_STATUS_OFFSET];
+    if (ret != 0 || resp_len <= mcu->prof->rxd_status_offset) return -1;
+    return resp[mcu->prof->rxd_status_offset];
 }
 
 static int init_download(mt7921_mcu_t *mcu, uint32_t addr, uint32_t length, uint32_t mode) {
@@ -412,8 +438,8 @@ static int start_patch(mt7921_mcu_t *mcu) {
     uint8_t resp[64];
     uint32_t resp_len = sizeof(resp);
     int ret = mt7921_mcu_send(mcu, MCU_CMD_PATCH_FINISH_REQ, zeros, 4, true, resp, &resp_len, 3000);
-    if (ret != 0 || resp_len <= RXD_STATUS_OFFSET) return -1;
-    return resp[RXD_STATUS_OFFSET];
+    if (ret != 0 || resp_len <= mcu->prof->rxd_status_offset) return -1;
+    return resp[mcu->prof->rxd_status_offset];
 }
 
 static int start_firmware(mt7921_mcu_t *mcu, uint32_t override, uint32_t option) {
@@ -512,19 +538,58 @@ int mt7921_nic_power_ctrl(mt7921_mcu_t *mcu, uint8_t power_mode) {
     return mt7921_mcu_send(mcu, MCU_CMD_NIC_POWER_CTRL, payload, 4, false, NULL, NULL, 3000);
 }
 
+static void parse_nic_cap_elements(mt7921_mcu_t *mcu, const uint8_t *body, uint32_t body_len) {
+    /* mt7925_mcu_get_nic_capability: struct mt76_connac_cap_hdr { le16 n_element; u8 rsv[2]; }
+     * then TLVs { le16 tag; le16 len; data } where len includes the 4-byte TLV header. */
+    if (body_len < 4) return;
+    uint32_t n = body[0] | ((uint32_t)body[1] << 8);
+    uint32_t off = 4;
+    for (uint32_t i = 0; i < n; i++) {
+        if (off + 4 > body_len) break;
+        uint32_t tag = body[off] | ((uint32_t)body[off + 1] << 8);
+        uint32_t tlen = body[off + 2] | ((uint32_t)body[off + 3] << 8);
+        if (tlen < 4 || off + tlen > body_len) break;
+        const uint8_t *data = body + off + 4;
+        uint32_t dlen = tlen - 4;
+        if (tag == MT_NIC_CAP_PHY && dlen >= 13) {
+            mcu->phy_nss = data[4]; /* struct mt7925_mcu_phy_cap.nss */
+        } else if (tag == MT_NIC_CAP_6G && dlen >= 1) {
+            mcu->has_6ghz = data[0] != 0;
+        }
+        off += tlen;
+    }
+}
+
 int mt7921_get_nic_capability(mt7921_mcu_t *mcu) {
-    uint8_t resp[256];
+    uint8_t resp[1024];
     uint32_t resp_len = sizeof(resp);
+    if (mcu->prof->chip == MT_CHIP_MT7925) {
+        /* MCU_UNI_CMD(CHIP_CONFIG) tag UNI_CHIP_CONFIG_NIC_CAPA: [4 rsv][le16 tag][le16 len=4] */
+        uint8_t req[8] = {0, 0, 0, 0, UNI_CHIP_CONFIG_NIC_CAPA, 0, 4, 0};
+        int ret = mt7921_mcu_uni(mcu, MCU_UNI_CMD_CHIP_CONFIG, req, sizeof(req), true, resp, &resp_len, 3000);
+        if (ret != 0) return ret;
+        uint32_t body_len = 0;
+        const uint8_t *body = mt7921_mcu_reply_body(mcu, resp, resp_len, &body_len);
+        if (body) parse_nic_cap_elements(mcu, body, body_len);
+        return 0;
+    }
     return mt7921_mcu_cmd_word(mcu, MCU_CE_CMD(MCU_CE_CMD_GET_NIC_CAPAB), NULL, 0, true, resp, &resp_len, 3000);
 }
 
 int mt7921_set_eeprom(mt7921_mcu_t *mcu) {
+    if (mcu->prof->chip == MT_CHIP_MT7925) {
+        /* mt7925_mcu_set_eeprom: MCU_UNI_CMD(EFUSE_CTRL) tag UNI_EFUSE_BUFFER_MODE, 12 bytes:
+         * [4 rsv][tag=2][len=8][buffer_mode=EFUSE][format=WHOLE][le16 buf_len=0] */
+        uint8_t req[12] = {0, 0, 0, 0, UNI_EFUSE_BUFFER_MODE, 0, 8, 0, EE_MODE_EFUSE, EE_FORMAT_WHOLE, 0, 0};
+        return mt7921_mcu_uni(mcu, MCU_UNI_CMD_EFUSE_CTRL, req, sizeof(req), true, NULL, NULL, 3000);
+    }
     uint8_t req[4] = { EE_MODE_EFUSE, EE_FORMAT_WHOLE, 0, 0 };
     return mt7921_mcu_cmd_word(mcu, MCU_EXT_CMD(MCU_EXT_CMD_EFUSE_BUFFER_MODE), req, 4, true, NULL, NULL, 3000);
 }
 
 int mt7921_get_temperature(mt7921_mcu_t *mcu, int32_t *temp_c) {
     if (!mcu || !temp_c) return -1;
+    if (mcu->prof->chip != MT_CHIP_MT7921) return MT7921_ERR_UNSUPPORTED; /* MT7925: UNI THERMAL 0x35, not ported */
     uint8_t req[8] = {0};
     req[0] = THERMAL_SENSOR_TEMP_QUERY;
 
@@ -532,15 +597,16 @@ int mt7921_get_temperature(mt7921_mcu_t *mcu, int32_t *temp_c) {
     uint32_t resp_len = sizeof(resp);
     uint32_t cmd = MCU_EXT_CMD(MCU_EXT_CMD_THERMAL_CTRL);
     int ret = mt7921_mcu_cmd_word(mcu, cmd, req, sizeof(req), true, resp, &resp_len, 3000);
-    if (ret != 0 || resp_len < MCU_RXD_LEN + 8) return -1;
+    if (ret != 0 || resp_len < mcu->prof->mcu_rxd_len + 8) return -1;
 
-    uint8_t *body = resp + MCU_RXD_LEN;
+    uint8_t *body = resp + mcu->prof->mcu_rxd_len;
     *temp_c = (int32_t)mcu_read_le32(body + 4);
     return 0;
 }
 
 int mt7921_read_efuse(mt7921_mcu_t *mcu, uint32_t offset, uint8_t data[16], uint32_t *valid) {
     if (!mcu || !data) return -1;
+    if (mcu->prof->chip != MT_CHIP_MT7921) return MT7921_ERR_UNSUPPORTED; /* MT7925: UNI EFUSE_CTRL tag 1, not ported */
     uint32_t base = offset & ~(MT7921_EEPROM_BLOCK_SIZE - 1);
     uint8_t req[8 + MT7921_EEPROM_BLOCK_SIZE] = {0};
     uint32_t le_base = CFSwapInt32HostToLittle(base);
@@ -550,9 +616,9 @@ int mt7921_read_efuse(mt7921_mcu_t *mcu, uint32_t offset, uint8_t data[16], uint
     uint32_t resp_len = sizeof(resp);
     uint32_t cmd = MCU_EXT_CMD(MCU_EXT_CMD_EFUSE_ACCESS) | MCU_CMD_FIELD_QUERY;
     int ret = mt7921_mcu_cmd_word(mcu, cmd, req, sizeof(req), true, resp, &resp_len, 3000);
-    if (ret != 0 || resp_len < MCU_RXD_LEN + 8 + MT7921_EEPROM_BLOCK_SIZE) return -1;
+    if (ret != 0 || resp_len < mcu->prof->mcu_rxd_len + 8 + MT7921_EEPROM_BLOCK_SIZE) return -1;
 
-    uint8_t *body = resp + MCU_RXD_LEN;
+    uint8_t *body = resp + mcu->prof->mcu_rxd_len;
     if (valid) {
         *valid = mcu_read_le32(body + 4);
     }

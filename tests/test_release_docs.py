@@ -32,3 +32,8 @@ def test_readme_names_the_declared_version_as_current():
 def test_publishing_checklist_lists_the_declared_version():
     publishing = (ROOT / "docs" / "PUBLISHING.md").read_text()
     assert f"`{m.__version__}`" in publishing, "docs/PUBLISHING.md does not mention the release"
+
+
+def test_c_driver_reports_the_declared_version():
+    regs = (ROOT / "c" / "mt7921_regs.h").read_text()
+    assert f'#define MT76_USB_MACOS_VERSION      "{m.__version__}"' in regs

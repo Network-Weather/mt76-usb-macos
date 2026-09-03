@@ -5,7 +5,22 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- C driver MT7925U support (roadmap R26): `c/mt7921_chip.c` holds the supported USB-id table and a
+  per-chip profile (MCU geometry, WFSYS reset descriptor, firmware files and pins); the USB layer
+  picks the interface by class `ff/ff/ff` and assigns endpoint roles positionally; the MCU layer
+  builds TXDs and parses replies from the profile and encodes the MT7925 capability, efuse, and
+  RX-filter commands as UNI TLVs; `mt7921_tune` tunes either chip; `c/mt7921_rxd_connac3.c`
+  decodes the connac3 descriptor with EHT rates; `mt7921_smoke` reports `device.chip` and takes
+  `--usb-id`. The Nighthawk A9000 passes the 43-channel sweep ([docs/TESTING.md](docs/TESTING.md)).
+- `tests/test_release_docs.py`: a version bump without a matching CHANGELOG section, README release
+  line, PUBLISHING mention, and C version string fails CI.
+
+### Changed
+
+- `c/mt7921_smoke` opens the adapter before loading firmware, reads `$MT76_FW_DIR` (then
+  `$MT7921_FW_DIR`), and refuses `--inject`, `--temp`, and `--read-efuse` on the MT7925.
 
 ## [0.2.0] - 2026-09-03
 

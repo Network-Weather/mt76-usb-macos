@@ -47,11 +47,15 @@ typedef struct {
 
 typedef struct {
     mt7921_usb_t *usb;
+    const mt7921_chip_profile_t *prof; /* MCU geometry and command encodings for usb->chip */
     uint8_t msg_seq;
     bool evt_ep4;
     uint32_t dropped_frames;
     uint32_t stale_events;
     uint32_t other_packets;
+    /* From the NIC capability reply (MT7925 element list): 0 when not reported. */
+    uint8_t phy_nss;
+    bool has_6ghz;
 } mt7921_mcu_t;
 
 void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb);
@@ -68,6 +72,19 @@ int mt7921_mcu_cmd_word(mt7921_mcu_t *mcu, uint32_t cmd, const void *payload,
 int mt7921_mcu_uni(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
                    uint32_t payload_len, bool wait, uint8_t *resp_buf,
                    uint32_t *resp_len, uint32_t timeout_ms);
+/* Same, marking a __MCU_CMD_FIELD_QUERY command word (affects the MT7925 option byte). */
+int mt7921_mcu_uni_query(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
+                         uint32_t payload_len, bool wait, uint8_t *resp_buf,
+                         uint32_t *resp_len, uint32_t timeout_ms);
+
+/* TXD builders, exposed for offline tests. total_len includes the TXD itself. */
+void mt7921_mcu_build_txd(const mt7921_mcu_t *mcu, uint8_t *out, uint32_t total_len, uint8_t cid,
+                          uint8_t seq, uint8_t ext_cid, uint8_t set_query, uint8_t s2d);
+void mt7921_mcu_build_uni_txd(const mt7921_mcu_t *mcu, uint8_t *out, uint32_t total_len,
+                              uint8_t cid, uint8_t seq, bool query);
+/* Reply payload after the chip's MCU reply header, or NULL when the reply is too short. */
+const uint8_t *mt7921_mcu_reply_body(const mt7921_mcu_t *mcu, const uint8_t *resp, uint32_t resp_len,
+                                     uint32_t *body_len);
 
 int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
                     uint8_t *resp_buf, uint32_t *resp_len, uint32_t timeout_ms);
@@ -85,6 +102,8 @@ int mt7921_nic_power_ctrl(mt7921_mcu_t *mcu, uint8_t power_mode);
 int mt7921_get_nic_capability(mt7921_mcu_t *mcu);
 int mt7921_set_eeprom(mt7921_mcu_t *mcu);
 
+/* Housekeeping queries are MT7921-only; both return MT7921_ERR_UNSUPPORTED on the MT7925. */
+#define MT7921_ERR_UNSUPPORTED -2
 int mt7921_get_temperature(mt7921_mcu_t *mcu, int32_t *temp_c);
 int mt7921_read_efuse(mt7921_mcu_t *mcu, uint32_t offset, uint8_t data[16], uint32_t *valid);
 

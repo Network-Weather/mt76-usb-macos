@@ -245,9 +245,7 @@ cover multi-subframe inputs, and the capture output behavior is documented.
 
 ## Track C: researcher reference and discoverability
 
-### R26. C driver: MT7925 support
-
-Next up (2026-09-03), together with R27.
+### ~~R26. C driver: MT7925 support~~ (landed 2026-09-03)
 
 `c/` still matches only `0e8d:7961` on interface 3 and decodes connac2. Port the Python port:
 descriptor-driven interface selection, the `mt7925u.py` MCU geometry and UNI commands, and a

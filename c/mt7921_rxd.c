@@ -4,6 +4,7 @@
 
 #include "mt7921_rxd.h"
 #include "mt7921_regs.h"
+#include "mt7921_chip.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <string.h>
@@ -143,10 +144,16 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
             break;
     }
 
+    mt7921_phy_fill_rate(phy, ru, (rxv0 & (1U << 5)) != 0);
+    return 0;
+}
+
+void mt7921_phy_fill_rate(mt7921_phy_info_t *phy, uint32_t ru, bool er_su_106t) {
+    /* MCS -> (bits per subcarrier per stream, coding rate). 12 and 13 are EHT's 4096-QAM. */
     static const struct {
         double bits;
         double coding;
-    } mcs_params[12] = {
+    } mcs_params[14] = {
         {1.0, 1.0 / 2.0},  /* MCS 0: BPSK 1/2 */
         {2.0, 1.0 / 2.0},  /* MCS 1: QPSK 1/2 */
         {2.0, 3.0 / 4.0},  /* MCS 2: QPSK 3/4 */
@@ -158,8 +165,13 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
         {8.0, 3.0 / 4.0},  /* MCS 8: 256-QAM 3/4 */
         {8.0, 5.0 / 6.0},  /* MCS 9: 256-QAM 5/6 */
         {10.0, 3.0 / 4.0}, /* MCS 10: 1024-QAM 3/4 */
-        {10.0, 5.0 / 6.0}  /* MCS 11: 1024-QAM 5/6 */
+        {10.0, 5.0 / 6.0}, /* MCS 11: 1024-QAM 5/6 */
+        {12.0, 3.0 / 4.0}, /* MCS 12: 4096-QAM 3/4 (EHT) */
+        {12.0, 5.0 / 6.0}  /* MCS 13: 4096-QAM 5/6 (EHT) */
     };
+    uint32_t mode = phy->mode, mcs = phy->mcs, nss = phy->nss, gi = phy->gi;
+    uint16_t bw_mhz = phy->bw_mhz;
+    bool dcm = phy->dcm;
 
     double rate = 0.0;
     if (mode == MT_PHY_TYPE_CCK) {
@@ -188,15 +200,19 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
             rate = (nsd * bits * coding * streams) / tsym;
         }
     } else if (mode == MT_PHY_TYPE_VHT) {
-        if (mcs <= 9) {
+        if (mcs <= 11) {
             double bits = mcs_params[mcs].bits;
             double coding = mcs_params[mcs].coding;
             double nsd = (bw_mhz == 160) ? 468.0 : ((bw_mhz == 80) ? 234.0 : ((bw_mhz == 40) ? 108.0 : 52.0));
             double tsym = (gi != 0) ? 3.6 : 4.0;
             rate = (nsd * bits * coding * nss) / tsym;
         }
-    } else if (mode >= MT_PHY_TYPE_HE_SU && mode <= MT_PHY_TYPE_HE_MU) {
-        if (mcs <= 11) {
+    } else if ((mode >= MT_PHY_TYPE_HE_SU && mode <= MT_PHY_TYPE_HE_MU) ||
+               mode == MT_PHY_TYPE_EHT_SU || mode == MT_PHY_TYPE_EHT_TRIG || mode == MT_PHY_TYPE_EHT_MU) {
+        bool is_eht = mode >= MT_PHY_TYPE_EHT_SU;
+        /* EHT keeps HE's tone plan and symbol timing for 20 to 160 MHz and adds MCS 12/13;
+         * 320 MHz has no tone entry here (not a capability of the supported chips). */
+        if (mcs <= (is_eht ? 13u : 11u) && bw_mhz != 320) {
             double bits = mcs_params[mcs].bits;
             double coding = mcs_params[mcs].coding;
             if (dcm) {
@@ -234,7 +250,7 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
                     nsd = (bw_mhz == 160) ? 1960.0 : ((bw_mhz == 80) ? 980.0 : ((bw_mhz == 40) ? 468.0 : 234.0));
                 }
             } else if (mode == MT_PHY_TYPE_HE_EXT_SU) {
-                if (bw_mhz == 40 && (rxv0 & (1U << 5))) { /* MT_PRXV_TX_ER_SU_106T */
+                if (bw_mhz == 40 && er_su_106t) {
                     ru_tones = 106;
                     nsd = 102.0;
                 } else {
@@ -242,7 +258,7 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
                     nsd = (bw_mhz == 40) ? 468.0 : 234.0;
                 }
             } else {
-                /* HE_SU uses full channel bandwidth */
+                /* HE_SU and the EHT modes use the full channel bandwidth */
                 ru_tones = (bw_mhz == 160) ? 1992 : ((bw_mhz == 80) ? 996 : ((bw_mhz == 40) ? 484 : 242));
                 nsd = (bw_mhz == 160) ? 1960.0 : ((bw_mhz == 80) ? 980.0 : ((bw_mhz == 40) ? 468.0 : 234.0));
             }
@@ -255,7 +271,10 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
     }
 
     phy->rate_mbps = (double)((int)(rate * 10.0 + 0.5)) / 10.0;
-    return 0;
+}
+
+mt7921_rxd_decoder_t mt7921_rxd_decoder_for_chip(int chip) {
+    return chip == MT_CHIP_MT7925 ? mt7921_rxd_decode_connac3 : mt7921_rxd_decode;
 }
 
 static inline uint32_t rxd_read_le32(const void *p) {

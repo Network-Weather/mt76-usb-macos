@@ -34,13 +34,13 @@ typedef struct {
     uint8_t mcs;           /* Modulation and Coding Scheme */
     uint8_t nss;           /* Spatial streams (1..4) used for data rate */
     uint8_t nsts;          /* Space-time streams (1..4) for radiotap NSTS */
-    uint16_t bw_mhz;       /* 20, 40, 80, 160 */
+    uint16_t bw_mhz;       /* 20, 40, 80, 160, 320 (320 decodes as a width; no rate) */
     uint8_t gi;            /* Guard Interval */
     bool stbc;             /* Space-Time Block Coding */
     bool ldpc;             /* Low-Density Parity-Check */
     bool dcm;              /* Dual Carrier Modulation */
     uint16_t ru_tones;     /* HE RU allocation size in tones (26, 52, 106, 242, 484, 996, 1992) */
-    uint8_t ru_alloc;      /* Raw HE RU allocation index */
+    uint16_t ru_alloc;     /* Raw HE RU allocation index (9 bits on connac3) */
     uint8_t ru_offset;     /* HE RU allocation offset for radiotap data2 */
     double rate_mbps;      /* Nominal PHY data rate in Mbps */
 } mt7921_phy_info_t;
@@ -63,7 +63,18 @@ typedef struct {
 
 int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy);
 int mt7921_frame_family(const uint8_t *frame, uint32_t len);
+/* connac2 (MT7921) descriptor */
 int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *out);
+/* connac3 (MT7925) descriptor; same output struct (mt7921_rxd_connac3.c) */
+int mt7921_rxd_decode_connac3(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *out);
+int mt7921_decode_prxv3(uint32_t v0, uint32_t v2, mt7921_phy_info_t *phy);
+/* The decoder for a chip (mt7921_chip_t value); connac2 for anything unknown. */
+typedef int (*mt7921_rxd_decoder_t)(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *out);
+mt7921_rxd_decoder_t mt7921_rxd_decoder_for_chip(int chip);
+
+/* Shared PHY rate arithmetic (HT/VHT/HE/EHT); fills phy->ru_tones and phy->rate_mbps.
+ * er_su_106t is the HE-ER-SU 106-tone flag; ru is the HE RU allocation index. */
+void mt7921_phy_fill_rate(mt7921_phy_info_t *phy, uint32_t ru, bool er_su_106t);
 
 /* Radiotap Pcap writer helpers */
 int pcap_writer_open(const char *filename, FILE **f_out);

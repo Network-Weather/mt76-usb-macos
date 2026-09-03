@@ -7,9 +7,18 @@
 
 #include <stdint.h>
 
+/* Version string reported in JSON output; must equal mt7921u.__version__ (tests check). */
+#define MT76_USB_MACOS_VERSION      "0.2.0"
+
+/* The MT7921 reference adapter (ALFA AWUS036AXML). The supported-device table lives in
+ * mt7921_chip.c; these two remain as the reference values used by tests. */
 #define MT_VID                      0x0E8D
 #define MT_PID                      0x7961
-#define WIFI_INTERFACE              3
+#define WIFI_INTERFACE              3 /* the ALFA's Wi-Fi interface; open() resolves this at runtime */
+
+/* mt76_chip(): rr(MT_HW_CHIPID) low half (mt7921/usb.c, mt7925/usb.c at c5a3bd91). */
+#define MT_CHIP_ID_7961             0x7961
+#define MT_CHIP_ID_7925             0x7925
 
 /* USB request types */
 #define USB_TYPE_VENDOR             0x40
@@ -29,11 +38,32 @@
 #define MT_VEND_WRITE_EXT           0x66
 #define MT_VEND_FEATURE_SET         0x91
 
-/* Endpoints */
+/* Endpoint addresses on both validated adapters (informational; the USB layer resolves the
+ * real ones positionally as mt76u_set_endpoints does and callers address pipes by role). */
 #define EP_OUT_INBAND_CMD           0x08
 #define EP_OUT_AC_BE                0x04
 #define EP_IN_PKT_RX                0x84
 #define EP_IN_CMD_RESP              0x85
+
+/* mt76.h endpoint roles: the first two bulk IN and the first six bulk OUT endpoints of the
+ * vendor-class interface, in descriptor order (usb.c mt76u_set_endpoints). */
+#define MT_EP_IN_PKT_RX             0
+#define MT_EP_IN_CMD_RESP           1
+#define MT_N_BULK_IN                2
+#define MT_EP_OUT_INBAND_CMD        0
+#define MT_EP_OUT_AC_BE             1
+#define MT_EP_OUT_AC_BK             2
+#define MT_EP_OUT_AC_VI             3
+#define MT_EP_OUT_AC_VO             4
+#define MT_EP_OUT_HCCA              5
+#define MT_N_BULK_OUT               6
+/* Role handles passed to mt7921_bulk_in/out: IN roles carry bit 7 like a USB IN address. */
+#define MT_ROLE_IN(n)               (0x80 | (n))
+#define MT_ROLE_OUT(n)              (n)
+#define MT_ROLE_PKT_RX              MT_ROLE_IN(MT_EP_IN_PKT_RX)
+#define MT_ROLE_CMD_RESP            MT_ROLE_IN(MT_EP_IN_CMD_RESP)
+#define MT_ROLE_INBAND_CMD          MT_ROLE_OUT(MT_EP_OUT_INBAND_CMD)
+#define MT_ROLE_AC_BE               MT_ROLE_OUT(MT_EP_OUT_AC_BE)
 
 /* Hardware registers */
 #define MT_HW_CHIPID                0x70010200
@@ -255,9 +285,37 @@
 #define MCU_CMD_UNI                 (1U << 1)
 #define MCU_CMD_SET                 (1U << 2)
 #define MCU_CMD_UNI_EXT_ACK         (MCU_CMD_ACK | MCU_CMD_UNI | MCU_CMD_SET)
+#define MCU_CMD_UNI_QUERY_ACK       (MCU_CMD_ACK | MCU_CMD_UNI)
 
+#define MCU_UNI_CMD_HIF_CTRL        0x07
+#define MCU_UNI_CMD_BAND_CONFIG     0x08
+#define MCU_UNI_CMD_CHIP_CONFIG     0x0E
 #define MCU_UNI_CMD_SNIFFER         0x24
+#define MCU_UNI_CMD_EFUSE_CTRL      0x2D
 #define MCU_UNI_TXD_LEN             48
+
+/* mt7925/mcu.h tag enums */
+#define UNI_CHIP_CONFIG_NIC_CAPA    0x3
+#define UNI_EFUSE_BUFFER_MODE       0x2
+#define UNI_BAND_CONFIG_RX_FILTER   0x0C /* UNI_BAND_CONFIG_SET_MAC80211_RX_FILTER */
+#define MT_NIC_CAP_PHY              0x08 /* mt76_connac_mcu.h MT_NIC_CAP_PHY */
+#define MT_NIC_CAP_6G               0x18
+
+/* MT7925 (connac3) MCU geometry: mt7925/mcu.h struct mt7925_mcu_rxd has rxd[8], so the
+ * reply header is 44 bytes; seq at 37, patch-semaphore status at 40 (skb_pull(44 - 4)).
+ * mt7925_mcu_fill_message writes txd[1] = HDR_FORMAT_CMD << 14 with no LONG_FORMAT bit
+ * (mt76_connac3_mac.h MT_TXD1_HDR_FORMAT GENMASK(15, 14)). */
+#define MT7925_MCU_RXD_LEN          44
+#define MT7925_RXD_SEQ_OFFSET       37
+#define MT7925_RXD_STATUS_OFFSET    40
+#define MT7925_TXD1_HDR_FORMAT_SHIFT 14
+#define MCU_TXD1_CONNAC2            ((1U << 31) | ((MT_HDR_FORMAT_CMD & 0x3) << 16))
+#define MCU_TXD1_CONNAC3            ((MT_HDR_FORMAT_CMD & 0x3) << MT7925_TXD1_HDR_FORMAT_SHIFT)
+
+/* mt792x_regs.h mt7925_wfsys_desc (mt792x_usb.c:384-391 at c5a3bd91) */
+#define MT7925_CBTOP_RGU_WF_SUBSYS_RST 0x70028600
+#define MT7925_WFSYS_INIT_DONE_ADDR 0x184C1604
+#define MT7925_WFSYS_INIT_DONE      0x00001D1E
 
 #define SNIFFER_BAND_24             1
 #define SNIFFER_BAND_5              2
@@ -270,7 +328,25 @@
 #define EE_MODE_EFUSE               0
 #define EE_FORMAT_WHOLE             1
 
-/* RXD flags and masks */
+/* connac3 RXD (mt76_connac3_mac.h): 8 fixed words, group bits 16..20, FCS in RXD3 */
+#define MT_RXD3_NORMAL_GROUP_1      (1U << 16)
+#define MT_RXD3_NORMAL_GROUP_2      (1U << 17)
+#define MT_RXD3_NORMAL_GROUP_3      (1U << 18)
+#define MT_RXD3_NORMAL_GROUP_4      (1U << 19)
+#define MT_RXD3_NORMAL_GROUP_5      (1U << 20)
+#define C3_RXD1_NORMAL_ICV_ERR      (1U << 25)
+#define C3_RXD2_NORMAL_HDR_OFFSET_SHIFT 13
+#define C3_RXD2_NORMAL_HDR_OFFSET_MASK  0x7U
+#define C3_RXD2_NORMAL_AMSDU_ERR    (1U << 23)
+#define C3_RXD2_NORMAL_MAX_LEN_ERROR (1U << 24)
+#define C3_RXD3_NORMAL_FCS_ERR      (1U << 24)
+#define C3_RXD0_SW_PKT_TYPE_MAP     0x380F
+#define C3_RXD0_SW_PKT_TYPE_FRAME   0x3801
+#define C3_RXD_FIXED_LEN            32
+#define C3_GROUP_LEN                16
+#define C3_GROUP5_LEN               96
+
+/* connac2 RXD flags and masks */
 #define MT_RXD1_NORMAL_GROUP_1      (1U << 11)
 #define MT_RXD1_NORMAL_GROUP_2      (1U << 12)
 #define MT_RXD1_NORMAL_GROUP_3      (1U << 13)
