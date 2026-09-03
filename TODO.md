@@ -1,8 +1,17 @@
 # TODO: current sprint
 
-Sprint started 2026-09-01. Items come from [ROADMAP.md](ROADMAP.md); each names its roadmap
+Sprint started 2026-09-01; refocused 2026-09-03 after 0.2.0. Items come from [ROADMAP.md](ROADMAP.md); each names its roadmap
 item. Strike through when merged. Hardware items need the reference adapter attached and at
 least two APs on one SSID.
+
+## Build next (R26, R27)
+
+- [ ] **R26 C driver MT7925.** Descriptor-driven interface selection and a device table in
+  `c/mt7921_usb.c`; the MT7925 MCU geometry, WFSYS descriptor, and UNI commands; a connac3
+  RXD decoder beside the connac2 one; `c/mt7921_smoke` passing on the A9000 with the Python
+  evidence format.
+- [ ] **R27 EHT radiotap.** Radiotap EHT and U-SIG fields in both pcap writers for EHT-SU/TRIG/MU
+  frames, synthetic fixtures checked with tshark; live evidence when an EHT transmitter is on air.
 
 ## Measure before building
 

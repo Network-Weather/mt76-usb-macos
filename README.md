@@ -14,8 +14,8 @@ is independent of its built-in radio: the built-in radio can stay associated (an
 160 MHz evidence, act as a known transmitter) while the adapter watches any channel. Reference
 hosts: an M1 Max for the MT7921 evidence and an M4 for the MT7925 evidence.
 
-> **Status: research-grade passive capture, not a network driver.** The receive path is
-> working on the exact hardware below. Injection is experimental and was not part of the
+> **Status: research-grade passive capture, not a network driver.** Current release 0.2.0
+> (2026-09-03). The receive path is working on the exact hardware below. Injection is experimental and was not part of the
 > current release validation. Read [Testing and evidence](docs/TESTING.md),
 > [Known limits](#known-limits-and-non-goals), [engineering quality](docs/QUALITY.md), and
 > [ROADMAP.md](ROADMAP.md) before relying on it.
@@ -291,7 +291,8 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
 ## Planning
 
 - [ROADMAP.md](ROADMAP.md): stack-ranked work in three tracks (roaming and steering instrument,
-  community capture source, researcher reference). Fresh as of 2026-09-03.
+  community capture source, researcher reference); next up are the C driver's MT7925 port (R26)
+  and EHT radiotap (R27). Fresh as of 2026-09-03.
 - [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-03.
 - [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
   not re-run by accident. Fresh as of 2026-09-03.
