@@ -205,7 +205,7 @@ publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTIN
 | Per-frame PHY rate, width, MCS, RSSI, retry bit | Previously observed; offline calculations tested |
 | 802.11k/v/r, PMF, EasyMesh, and 802.11s parsing | Synthetic offline tests; opportunistic live coverage |
 | Frame injection | Experimental, previously observed only at low rate; **not current-pass tested** |
-| 40 / 80 MHz capture | 80 MHz: current pass on both chips with both drivers (MT7921: 26 frames decoded at 80 MHz in 10 s through the C driver, 7 through Python; MT7925: 513 during the 160 MHz run). 40 MHz: frames decoded at 40 MHz during those runs; no dedicated 40 MHz configuration test |
+| 40 / 80 MHz capture | 80 MHz: current pass on both chips with both drivers. The counts are how many frames on air were 80 MHz PPDUs, not a decode ratio: on the MT7921, 26 of 1026 frames in 10 s through the C driver and 7 of 865 through Python, every frame decoded; on the MT7925, 513 of 3337 during the 160 MHz run. 40 MHz: frames decoded at 40 MHz during those runs; no dedicated 40 MHz configuration test |
 | 160 MHz capture | MT7921: not supported (measured zero transfers). **MT7925: current pass**, 1736 frames decoded at 160 MHz in 10 s, 193 HE data frames from a known transmitter |
 | 320 MHz capture | No supported part; decoded as a width, no rate |
 | EHT (Wi-Fi 7) frames in radiotap | **MT7925: current pass**; both pcap writers emit U-SIG and EHT TLVs, tshark 4.6 shows 802.11be with MCS, streams, bandwidth, and data rate; 973 live EHT frames in 30 s at 160 MHz, 0 malformed |

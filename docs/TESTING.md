@@ -550,7 +550,7 @@ MT76_USB_ID=0e8d:7961 ./.venv/bin/python scripts/hardware_smoke.py --plan all
 MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --plan all --dwell 0.75 --fw firmware --pcap out.pcap
 MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --temp --fw firmware
 MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --read-efuse 0x000 --fw firmware
-MT76_USB_ID=0e8d:7961 ./.venv/bin/python examples/sniff_to_pcap.py 53 6 out.pcap 6GHz
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python examples/sniff_to_pcap.py 53 6 py6g.pcap 6GHz
 ```
 
 - **Criterion**: both tools refuse to open without a selector when two supported adapters are
@@ -580,9 +580,10 @@ tshark -r py80.pcap -Y "_ws.malformed || _ws.expert.severity==error" | wc -l
 
 - **Criterion**: with the sniffer configured for 80 MHz (control 132, center 138), each driver's
   pcap contains frames whose radiotap HE or VHT bandwidth field says 80 MHz.
-- **Result**: C driver, 10 s: pass, 1026 frames, 0 undecoded, 0 USB errors, **0 malformed**; 24 HE
-  frames at 80 MHz (radiotap data rates 1080.9 and 1201 Mb/s) and 2 VHT frames at 80 MHz
-  (866.7 Mb/s). Python driver, 10 s: 865 frames, 7 at 80 MHz; 29 frames flagged by tshark, the
+- **Result**: C driver, 10 s: pass, 1026 frames, all decoded, 0 USB errors, **0 malformed**; 26 of
+  them were 80 MHz PPDUs: 24 HE (radiotap data rates 1080.9 and 1201 Mb/s) and 2 VHT (866.7 Mb/s),
+  the rest 20 MHz legacy-rate control and management frames, as expected on an idle 80 MHz BSS.
+  Python driver, 10 s: 865 frames, 7 of them 80 MHz PPDUs; 29 frames flagged by tshark, the
   VHT NDP Announcement population described above.
 
 ## Previously observed, not rerun in the current validation
