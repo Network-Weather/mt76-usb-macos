@@ -567,6 +567,21 @@ MT76_USB_ID=0e8d:7961 ./.venv/bin/python examples/sniff_to_pcap.py 53 6 out.pcap
   element). Die temperature 32 °C. Efuse block 0x000: `61 79 00 00 xx xx xx xx xx xx 00 ...`,
   valid 1, MAC masked. Python 6 GHz channel 53 pcap: 3948 frames, 0 malformed.
 
+### 80 MHz on the ALFA with both drivers, same run
+
+```bash
+MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --channel 5GHz:132:138:80 --dwell 10 --fw firmware --pcap c80.pcap
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python examples/sniff_to_pcap.py 132 10 py80.pcap 5GHz --width 80 --center 138
+tshark -r c80.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 2 || radiotap.vht.bw == 4" -T fields -e wlan_radio.phy -e wlan_radio.data_rate
+```
+
+- **Criterion**: with the sniffer configured for 80 MHz (control 132, center 138), each driver's
+  pcap contains frames whose radiotap HE or VHT bandwidth field says 80 MHz.
+- **Result**: C driver, 10 s: pass, 1026 frames, 0 undecoded, 0 USB errors, **0 malformed**; 24 HE
+  frames at 80 MHz (radiotap data rates 1080.9 and 1201 Mb/s) and 2 VHT frames at 80 MHz
+  (866.7 Mb/s). Python driver, 10 s: 865 frames, 7 at 80 MHz; 29 frames flagged by tshark, the
+  VHT NDP Announcement population described above.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
