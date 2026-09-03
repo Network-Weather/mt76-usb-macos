@@ -45,10 +45,11 @@ CHIP_MT7925 = "mt7925"
 
 VID, PID = 0x0E8D, 0x7961  # the MT7921 reference adapter (ALFA AWUS036AXML)
 
+# The MT7927 USB id 0e8d:6639 (mt7925/usb.c:13 at c5a3bd91) is deliberately absent: it needs
+# the mt7927/ blobs, which are neither fetched nor validated here (NOTICE.md).
 SUPPORTED_DEVICES: dict[tuple[int, int], str] = {
     (0x0E8D, 0x7961): CHIP_MT7921,
     (0x0E8D, 0x7925): CHIP_MT7925,
-    (0x0E8D, 0x6639): CHIP_MT7925,  # MT7927 USB id; mt7925/usb.c:219 forces chip 0x7927
     (0x0846, 0x9050): CHIP_MT7925,  # Netgear Nighthawk A8500
     (0x0846, 0x9072): CHIP_MT7925,  # Netgear Nighthawk A9000
 }

@@ -487,7 +487,8 @@ as a current release qualification.
 
 - Intel Macs, non-26.6 macOS hardware runs, and non-Apple operating systems;
 - capture on USB ids other than `0e8d:7961` and `0846:9072` (the A8500 `0846:9050` and the
-  MediaTek `0e8d:7925` / `0e8d:6639` ids are in the table but no such device has been attached);
+  MediaTek `0e8d:7925` ids are in the table but no such device has been attached; the MT7927
+  `0e8d:6639` is not in the table at all);
 - 320 MHz (no supported part), 160 MHz on the MT7921U, simultaneous channels, multiple
   adapters in one process, MT7922, PCIe, and SDIO;
 - association, client mode, AP mode, routing, CoreWLAN, and a BSD network interface;

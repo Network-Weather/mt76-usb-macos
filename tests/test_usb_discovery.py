@@ -104,7 +104,7 @@ def test_supported_device_table_covers_both_chips():
     assert m.SUPPORTED_DEVICES[(0x0846, 0x9072)] == m.CHIP_MT7925
     assert m.SUPPORTED_DEVICES[(0x0846, 0x9050)] == m.CHIP_MT7925
     assert m.SUPPORTED_DEVICES[(0x0E8D, 0x7925)] == m.CHIP_MT7925
-    assert m.SUPPORTED_DEVICES[(0x0E8D, 0x6639)] == m.CHIP_MT7925
+    assert (0x0E8D, 0x6639) not in m.SUPPORTED_DEVICES  # MT7927: no blobs, no evidence
 
 
 def test_parse_usb_id():

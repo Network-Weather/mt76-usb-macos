@@ -28,7 +28,7 @@ Support is per chip and evidence-gated:
 | Chip (Linux module) | Adapter tested | Status |
 |---|---|---|
 | MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Working: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz, dated evidence in [docs/TESTING.md](docs/TESTING.md) |
-| MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`, `0e8d:6639`) | Netgear Nighthawk A9000 (`0846:9072`) | Working: 2.4 / 5 / 6 GHz passive capture at 20, 80, and **160 MHz**, 43-channel smoke pass, dated evidence in [docs/TESTING.md](docs/TESTING.md); the A8500 and MediaTek ids are in the table but untested |
+| MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | Netgear Nighthawk A9000 (`0846:9072`) | Working: 2.4 / 5 / 6 GHz passive capture at 20, 80, and **160 MHz**, 43-channel smoke pass, dated evidence in [docs/TESTING.md](docs/TESTING.md); the A8500 and MediaTek ids are in the table but untested |
 | MT7663U, MT76x2U, MT76x0U (`mt7663u`, `mt76x2u`, `mt76x0u`) | none | Not attempted: different firmware and MCU models; nothing here has been run on them |
 
 **Lineage:** the driver logic is transcribed from the BSD-3-Clause-Clear
@@ -60,7 +60,8 @@ capture, libusb access to the otherwise-unclaimed device is enough.
 
 - A USB device whose ID is in `mt7921u.SUPPORTED_DEVICES`: `0e8d:7961` (MT7921AU, for
   example the tested ALFA AWUS036AXML) or the MT7925U ids `0846:9072`, `0846:9050`,
-  `0e8d:7925`, `0e8d:6639`. The Wi-Fi interface and its endpoints are resolved from the USB
+  `0e8d:7925`. The MT7927 (`0e8d:6639`) is not matched: it needs firmware this project does
+  not fetch. The Wi-Fi interface and its endpoints are resolved from the USB
   descriptors the way `mt76u_set_endpoints` does (class `ff/ff/ff`, first 2 bulk IN and 6
   bulk OUT), so interface 3 on the ALFA and interface 0 on the Nighthawk A9000 both work;
   a layout that does not match fails closed with the descriptors it saw.

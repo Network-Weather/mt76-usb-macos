@@ -266,7 +266,8 @@ def test_he_er_su_106_tone_case_and_dcm():
     )
     phy = c3.decode(build(groups=(3,), prxv=prxv))["phy"]
     assert phy["ru_tones"] == 106
-    assert phy["bw_mhz"] == 20
+    assert phy["bw_mhz"] == 40  # descriptor width kept; the RU is in ru_tones
+    assert phy["rate_mbps"] == pytest.approx(102 * 2 * (3 / 4) * 0.5 / 13.6, abs=0.1)
     assert phy["dcm"] is True
     assert phy["mcs"] == 2
 

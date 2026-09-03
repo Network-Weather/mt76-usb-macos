@@ -16,7 +16,7 @@ selection for every supported adapter. Hardware claims are evidence-gated in
 ### Added
 
 - Descriptor-driven device selection (roadmap R2): `SUPPORTED_DEVICES` lists the MT7921U and
-  MT7925U USB ids, and `open()` picks the Wi-Fi interface by class `ff/ff/ff` and endpoint
+  MT7925U USB ids (not the MT7927's, whose firmware is not fetched), and `open()` picks the Wi-Fi interface by class `ff/ff/ff` and endpoint
   shape, assigning endpoint roles positionally as `mt76u_set_endpoints` does. Layouts that do
   not match fail closed with a diagnostic. `MT76_USB_ID` or `usb_id=` selects one adapter when
   several are attached.

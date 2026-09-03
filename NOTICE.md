@@ -61,9 +61,9 @@ For reproducibility, `setup.sh` and `mt7921u.FIRMWARE_FILES` pin linux-firmware 
 - `mt7925/WIFI_RAM_CODE_MT7925_1_1.bin`: `23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120`
 - `mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin`: `8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1`
 
-An MT7925 device whose chip id reads `0x6639` is an MT7927 and needs
-`mt7927/WIFI_RAM_CODE_MT6639_2_1.bin` and `mt7927/WIFI_MT6639_PATCH_MCU_2_1_hdr.bin` instead
-(`mt792x.h` at `c5a3bd91`); no such device has been attached here, so they are not fetched.
+The MT7927 (USB `0e8d:6639`, chip id `0x6639`) needs `mt7927/WIFI_RAM_CODE_MT6639_2_1.bin` and
+`mt7927/WIFI_MT6639_PATCH_MCU_2_1_hdr.bin` instead (`mt792x.h` at `c5a3bd91`); no such device
+has been attached here, so they are not fetched and the id is not in `SUPPORTED_DEVICES`.
 
 These binaries are MediaTek-licensed and covered by `LICENCE.mediatek` in
 [linux-firmware](https://gitlab.com/kernel-firmware/linux-firmware/-/tree/main/mediatek),

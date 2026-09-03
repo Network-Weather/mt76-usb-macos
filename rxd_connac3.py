@@ -118,9 +118,9 @@ def decode_prxv(v0: int, v2: int) -> dict:
     ru_tones = None
     offs = 0
     if mode == rxd.MT_PHY_TYPE_HE_EXT_SU and frame_mode == 1 and (idx & MT_PRXV_TX_ER_SU_106T):
-        # The driver's one RU case in the P-RXV path: HE-ER-SU on the 106-tone RU.
+        # The driver's one RU case in the P-RXV path: HE-ER-SU on the 106-tone RU. The
+        # descriptor width stays 40 MHz (as rxd.decode_rxv reports it); ru_tones carries the RU.
         ru_tones = 106
-        bw_mhz = 20
     elif mode in (rxd.MT_PHY_TYPE_HE_MU, rxd.MT_PHY_TYPE_HE_TB):
         # The HE_RU_ALLOC index follows the connac2 numbering that rxd.decode_rxv maps;
         # the driver itself reads RU details from C-RXV, which is off by default.
