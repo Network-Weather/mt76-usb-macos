@@ -80,7 +80,7 @@ Detailed dated test criteria, commands, and results are documented in [`docs/TES
 Validated live on macOS against ALFA AWUS036AXML (`0e8d:7961`):
 - Cold & warm bringup: Verified (including retained `FW_STATE` WFSYS reset recovery)
 - 2.4 GHz, 5 GHz, and 6 GHz PSC capture: Verified (1,333 frames decoded across all 43 channels on `--plan all`)
-- Packet injection: Research-grade and rate-limited. Low-rate probe request constructor and paced transmit helper implemented; sustained injection across bands remains explicitly untested per `docs/TESTING.md`.
+- Probe request submission to USB: Research-grade and rate-limited. Low-rate probe request constructor and paced bulk submission helper implemented; sustained injection across bands remains explicitly untested per `docs/TESTING.md`.
 - Die temperature: Verified (returns active sensor reading, e.g. 32°C)
 - Raw EFUSE read: Verified (block 0x000 returns MT7961 chip ID `61 79` with valid flag; MAC bytes masked by default)
 - Radiotap pcap export: Verified readable by `tcpdump` and Wireshark with RATE, MCS, VHT, and HE fields

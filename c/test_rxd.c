@@ -14,6 +14,18 @@
 #include <assert.h>
 #include <unistd.h>
 
+static inline uint16_t read_le16(const uint8_t *p) {
+    uint16_t val;
+    memcpy(&val, p, sizeof(val));
+    return CFSwapInt16LittleToHost(val);
+}
+
+static inline uint32_t read_le32(const uint8_t *p) {
+    uint32_t val;
+    memcpy(&val, p, sizeof(val));
+    return CFSwapInt32LittleToHost(val);
+}
+
 static void test_decode_24ghz_beacon(void) {
     uint8_t buf[128] = {0};
     /* Frame payload: 802.11 Beacon (frame[0] = 0x80 -> type 0 = Mgmt, subtype 8 = Beacon) */
@@ -172,14 +184,59 @@ static void test_pcap_writer(void) {
     ret = pcap_writer_write_frame(f, &rf);
     assert(ret == 0);
 
-    /* Fourth frame with HE */
+    /* Fourth frame with HE-SU (160MHz, MCS 11, non-STBC) */
     rf.phy.mode = MT_PHY_TYPE_HE_SU;
     rf.phy.mode_name = "HE-SU";
     rf.phy.mcs = 11;
     rf.phy.nss = 2;
+    rf.phy.nsts = 2;
     rf.phy.bw_mhz = 160;
     rf.phy.gi = 0;
+    rf.phy.stbc = false;
     rf.phy.rate_mbps = 2402.0;
+    ret = pcap_writer_write_frame(f, &rf);
+    assert(ret == 0);
+
+    /* Fifth frame with HE-SU + STBC (80MHz, MCS 7, NSS=1, NSTS=2) */
+    rf.phy.mode = MT_PHY_TYPE_HE_SU;
+    rf.phy.mode_name = "HE-SU";
+    rf.phy.mcs = 7;
+    rf.phy.nss = 1;
+    rf.phy.nsts = 2;
+    rf.phy.bw_mhz = 80;
+    rf.phy.gi = 1;
+    rf.phy.stbc = true;
+    rf.phy.rate_mbps = 286.8;
+    ret = pcap_writer_write_frame(f, &rf);
+    assert(ret == 0);
+
+    /* Sixth frame with HE-MU on 52-tone RU (ru_tones=52, ru_offset=3, MCS 5) */
+    rf.phy.mode = MT_PHY_TYPE_HE_MU;
+    rf.phy.mode_name = "HE-MU";
+    rf.phy.mcs = 5;
+    rf.phy.nss = 1;
+    rf.phy.nsts = 1;
+    rf.phy.bw_mhz = 20;
+    rf.phy.gi = 0;
+    rf.phy.stbc = false;
+    rf.phy.ru_tones = 52;
+    rf.phy.ru_offset = 3;
+    rf.phy.rate_mbps = 14.1;
+    ret = pcap_writer_write_frame(f, &rf);
+    assert(ret == 0);
+
+    /* Seventh frame with HE-ER-SU on 106-tone RU (ru_tones=106, MCS 0) */
+    rf.phy.mode = MT_PHY_TYPE_HE_EXT_SU;
+    rf.phy.mode_name = "HE-ER-SU";
+    rf.phy.mcs = 0;
+    rf.phy.nss = 1;
+    rf.phy.nsts = 1;
+    rf.phy.bw_mhz = 20;
+    rf.phy.gi = 0;
+    rf.phy.stbc = false;
+    rf.phy.ru_tones = 106;
+    rf.phy.ru_offset = 0;
+    rf.phy.rate_mbps = 3.8;
     ret = pcap_writer_write_frame(f, &rf);
     assert(ret == 0);
 
@@ -188,49 +245,94 @@ static void test_pcap_writer(void) {
     /* Verify file exists, read back, and validate exact radiotap HE bytes */
     FILE *chk = fopen(tmp_pcap, "rb");
     assert(chk != NULL);
-    uint8_t pcap_buf[1024];
+    uint8_t pcap_buf[2048];
     size_t rd = fread(pcap_buf, 1, sizeof(pcap_buf), chk);
     fclose(chk);
     assert(rd > 24);
 
-    /* PCAP global header is 24 bytes. Skip first 3 packets (OFDM, HT, VHT) to inspect HE packet */
+    /* PCAP global header is 24 bytes. Skip first 3 packets (OFDM, HT, VHT) using read_le32 to inspect HE packets */
     size_t off = 24;
     for (int p = 0; p < 3; p++) {
         assert(off + 16 <= rd);
-        uint32_t incl_len = CFSwapInt32LittleToHost(*(uint32_t*)(pcap_buf + off + 8));
+        uint32_t incl_len = read_le32(pcap_buf + off + 8);
         off += 16 + incl_len;
     }
 
-    /* 4th packet is HE */
+    /* 4th packet is HE-SU 160MHz (non-STBC) */
     assert(off + 16 <= rd);
-    uint32_t he_incl_len = CFSwapInt32LittleToHost(*(uint32_t*)(pcap_buf + off + 8));
-    assert(off + 16 + he_incl_len <= rd);
+    uint32_t he1_incl_len = read_le32(pcap_buf + off + 8);
+    assert(off + 16 + he1_incl_len <= rd);
 
-    uint8_t *rt = pcap_buf + off + 16;
-    uint16_t rt_len = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 2));
-    uint32_t rt_present = CFSwapInt32LittleToHost(*(uint32_t*)(rt + 4));
+    uint8_t *rt1 = pcap_buf + off + 16;
+    uint16_t rt1_len = read_le16(rt1 + 2);
+    uint32_t rt1_present = read_le32(rt1 + 4);
+    assert(rt1_present & (1U << 23));
+    assert(rt1_len >= 28);
 
-    /* Confirm RT_HE (bit 23) is present */
-    assert(rt_present & (1U << 23));
-    assert(rt_len >= 28);
+    uint16_t he1_d1 = read_le16(rt1 + 16);
+    uint16_t he1_d2 = read_le16(rt1 + 18);
+    uint16_t he1_d3 = read_le16(rt1 + 20);
+    uint16_t he1_d4 = read_le16(rt1 + 22);
+    uint16_t he1_d5 = read_le16(rt1 + 24);
+    uint16_t he1_d6 = read_le16(rt1 + 26);
 
-    /* Radiotap HE struct is 12 bytes at offset 16 */
-    uint16_t d1 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 16));
-    uint16_t d2 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 18));
-    uint16_t d3 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 20));
-    uint16_t d4 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 22));
-    uint16_t d5 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 24));
-    uint16_t d6 = CFSwapInt16LittleToHost(*(uint16_t*)(rt + 26));
+    assert((he1_d1 & 0x0003) == 0);         /* Format: SU */
+    assert((he1_d1 & 0x0020) != 0);         /* DATA_MCS_KNOWN (bit 5) */
+    assert((he1_d1 & 0x4000) != 0);         /* BW_RU_ALLOC_KNOWN (bit 14) */
+    assert((he1_d2 & 0x0002) != 0);         /* GI_KNOWN (bit 1) */
+    assert((he1_d2 & 0x4000) == 0);         /* RU_OFFSET_KNOWN not set for SU */
+    assert(((he1_d3 >> 8) & 0x0F) == 11);   /* DATA_MCS == 11 */
+    assert((he1_d3 & 0x8000) == 0);         /* STBC == 0 */
+    assert(he1_d4 == 0);
+    assert((he1_d5 & 0x0F) == 3);           /* DATA_BW_RU_ALLOC == 3 (160 MHz) */
+    assert(((he1_d5 >> 4) & 0x03) == 0);    /* GI == 0 (0.8us) */
+    assert((he1_d6 & 0x0F) == 2);           /* NSTS == 2 */
+    off += 16 + he1_incl_len;
 
-    /* Verify HE data words match upstream radiotap definitions */
-    assert((d1 & 0x0020) != 0);       /* DATA_MCS_KNOWN (bit 5) */
-    assert((d1 & 0x4000) != 0);       /* BW_RU_ALLOC_KNOWN (bit 14) */
-    assert((d2 & 0x0002) != 0);       /* GI_KNOWN (bit 1) */
-    assert(((d3 >> 8) & 0x0F) == 11); /* DATA_MCS == 11 */
-    assert(d4 == 0);
-    assert((d5 & 0x0F) == 3);         /* DATA_BW_RU_ALLOC == 3 (160 MHz) */
-    assert(((d5 >> 4) & 0x03) == 0);  /* GI == 0 (0.8us) */
-    assert((d6 & 0x0F) == 2);         /* NSTS == 2 */
+    /* 5th packet is HE-SU 80MHz with STBC (NSS=1, NSTS=2) */
+    assert(off + 16 <= rd);
+    uint32_t he2_incl_len = read_le32(pcap_buf + off + 8);
+    assert(off + 16 + he2_incl_len <= rd);
+
+    uint8_t *rt2 = pcap_buf + off + 16;
+    uint16_t he2_d3 = read_le16(rt2 + 20);
+    uint16_t he2_d5 = read_le16(rt2 + 24);
+    uint16_t he2_d6 = read_le16(rt2 + 26);
+
+    assert(((he2_d3 >> 8) & 0x0F) == 7);    /* DATA_MCS == 7 */
+    assert((he2_d3 & 0x8000) != 0);         /* STBC flag set in data3 */
+    assert((he2_d5 & 0x0F) == 2);           /* DATA_BW_RU_ALLOC == 2 (80 MHz) */
+    assert(((he2_d5 >> 4) & 0x03) == 1);    /* GI == 1 (1.6us) */
+    assert((he2_d6 & 0x0F) == 2);           /* NSTS == 2 (preserved for STBC, not halved) */
+    off += 16 + he2_incl_len;
+
+    /* 6th packet is HE-MU on 52-tone RU */
+    assert(off + 16 <= rd);
+    uint32_t he3_incl_len = read_le32(pcap_buf + off + 8);
+    assert(off + 16 + he3_incl_len <= rd);
+
+    uint8_t *rt3 = pcap_buf + off + 16;
+    uint16_t he3_d1 = read_le16(rt3 + 16);
+    uint16_t he3_d2 = read_le16(rt3 + 18);
+    uint16_t he3_d5 = read_le16(rt3 + 24);
+
+    assert((he3_d1 & 0x0003) == 2);         /* Format: HE-MU */
+    assert((he3_d2 & 0x4000) != 0);         /* RU_OFFSET_KNOWN set in data2 */
+    assert(((he3_d2 >> 8) & 0x3F) == 3);    /* RU offset == 3 */
+    assert((he3_d5 & 0x0F) == 5);           /* DATA_BW_RU_ALLOC_52T == 5 */
+    off += 16 + he3_incl_len;
+
+    /* 7th packet is HE-ER-SU on 106-tone RU */
+    assert(off + 16 <= rd);
+    uint32_t he4_incl_len = read_le32(pcap_buf + off + 8);
+    assert(off + 16 + he4_incl_len <= rd);
+
+    uint8_t *rt4 = pcap_buf + off + 16;
+    uint16_t he4_d1 = read_le16(rt4 + 16);
+    uint16_t he4_d5 = read_le16(rt4 + 24);
+
+    assert((he4_d1 & 0x0003) == 1);         /* Format: HE-EXT-SU */
+    assert((he4_d5 & 0x0F) == 6);           /* DATA_BW_RU_ALLOC_106T == 6 */
 
     unlink(tmp_pcap);
     printf("PASS: test_pcap_writer\n");
@@ -398,7 +500,26 @@ static void test_decode_phy_telemetry(void) {
     ret = mt7921_decode_rxv(rxv_he_er, 0, &phy);
     assert(ret == 0);
     assert(phy.ru_tones == 106);
+    assert(phy.ru_offset == 0);
     assert(phy.rate_mbps == 3.8);
+
+    /* HE-SU with STBC (80MHz, 2 space-time streams, STBC=1) */
+    uint32_t rxv_he_stbc = (8U << 24) | (1U << 22) /* STBC */ | (1U << 15) | (2U << 12) | (1U << 7) /* nsts=1 -> 2 */ | 7U;
+    ret = mt7921_decode_rxv(rxv_he_stbc, 0, &phy);
+    assert(ret == 0);
+    assert(phy.stbc);
+    assert(phy.nss == 1);   /* Halved for data rate calculation */
+    assert(phy.nsts == 2);  /* Space-time streams preserved for NSTS radiotap */
+    assert(phy.rate_mbps == 340.3);
+
+    /* HE-MU on 52-tone RU (ru=40: ru_low=8, ru_high=2 -> ru_offset = 40 - 37 = 3) */
+    uint32_t rxv0_mu52 = (11U << 24) | (8U << 28) | (0U << 15) | (0U << 12) | (0U << 7) | 5U;
+    uint32_t rxv1_mu52 = 2U;
+    ret = mt7921_decode_rxv(rxv0_mu52, rxv1_mu52, &phy);
+    assert(ret == 0);
+    assert(phy.ru_alloc == 40);
+    assert(phy.ru_tones == 52);
+    assert(phy.ru_offset == 3);
 
     printf("PASS: test_decode_phy_telemetry\n");
 }

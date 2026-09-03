@@ -32,7 +32,8 @@ typedef struct {
     uint8_t mode;          /* MT_PHY_TYPE_* */
     const char *mode_name; /* "CCK", "OFDM", "HT", "HT-GF", "VHT", "HE-SU", etc. */
     uint8_t mcs;           /* Modulation and Coding Scheme */
-    uint8_t nss;           /* Spatial streams (1..4) */
+    uint8_t nss;           /* Spatial streams (1..4) used for data rate */
+    uint8_t nsts;          /* Space-time streams (1..4) for radiotap NSTS */
     uint16_t bw_mhz;       /* 20, 40, 80, 160 */
     uint8_t gi;            /* Guard Interval */
     bool stbc;             /* Space-Time Block Coding */
@@ -40,6 +41,7 @@ typedef struct {
     bool dcm;              /* Dual Carrier Modulation */
     uint16_t ru_tones;     /* HE RU allocation size in tones (26, 52, 106, 242, 484, 996, 1992) */
     uint8_t ru_alloc;      /* Raw HE RU allocation index */
+    uint8_t ru_offset;     /* HE RU allocation offset for radiotap data2 */
     double rate_mbps;      /* Nominal PHY data rate in Mbps */
 } mt7921_phy_info_t;
 

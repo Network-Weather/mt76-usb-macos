@@ -237,24 +237,73 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 - **Criterion**: Send `MCU_EXT_CMD_EFUSE_ACCESS` (`0x01`) query for block `0x000`, confirm chip ID `0x7961` (`61 79`) in bytes 0–1, `valid=1`, and ensure MAC address bytes (offsets 0x004..0x009) are masked with `xx` unless `--acknowledge-sensitive-raw-efuse` is passed.
 - **Result**: Output `EFUSE [0x000] (valid=0x00000001): 61 79 00 00 xx xx xx xx xx xx 00 00 00 00 00 00 [MAC redacted; pass --acknowledge-sensitive-raw-efuse to display]` (exit code 0).
 
-### Rate-limited 2.4 GHz probe request injection
+### Rate-limited 2.4 GHz probe request submission to USB
 
 ```bash
 ./c/mt7921_smoke --plan quick --dwell 0.5 --inject 3 --acknowledge-experimental-transmit
 ```
 
-- **Criterion**: Send exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and transmit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted, chip alive after transmit, exit 0 (`status: pass`).
-- **Result**: 3 frames transmitted on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-transmit liveness check; 317 ambient frames decoded across all 3 bands; exit code 0 (`status: pass`).
+- **Criterion**: Submit exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and submit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted by USB endpoint without timeout or I/O errors, chip alive after submission, exit 0 (`status: pass`).
+- **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
+*(Note: Without firmware TX status reporting enabled or an independent RF receiver recording over-the-air packets, bulk-write acceptance establishes successful host-to-device USB delivery and firmware acceptance, but does not prove over-the-air RF radiation.)*
 
 ### Radiotap PCAP export with Rate, MCS, VHT, and HE metadata
 
 ```bash
+# Capture live frames across bands
 ./c/mt7921_smoke --plan quick --dwell 0.5 --pcap /tmp/live_test.pcap
 tcpdump -r /tmp/live_test.pcap -c 5
 ```
 
 - **Criterion**: Export PCAP with link type `IEEE802_11_RADIO` (127), containing valid Radiotap headers with rate (CCK/OFDM), MCS (HT), VHT, and HE data words matching upstream definitions without malformed errors in `tcpdump` or Wireshark.
-- **Result**: `tcpdump` parses capture records without errors, showing rates (`11.0 Mb/s`, `1.0 Mb/s`), frequency, and RSSI.
+- **Result**:
+  - Live legacy and HT frames captured over the air and verified via `tcpdump` and `tshark`:
+    ```text
+    $ tcpdump -r /tmp/live_test.pcap -c 2
+    reading from file /tmp/live_test.pcap, link-type IEEE802_11_RADIO (802.11 plus radiotap header)
+    20:15:42.673550 1.0 Mb/s 2412 MHz 11b -39dBm signal Data IV:ffc7 Pad 20 KeyID 1
+    20:15:42.673653 1.0 Mb/s 2412 MHz 11b -69dBm signal Beacon ([REDACTED_SSID]) [5.5* 11.0* 1.0* 2.0* 6.0 12.0 24.0 48.0 Mbit]
+    ```
+    ```text
+    $ tshark -r /tmp/live_test.pcap -Y "radiotap.mcs" -O radiotap
+    MCS information
+        Known MCS information: 0x07, Bandwidth, MCS index, Guard interval
+        Bandwidth: 20 MHz (0)
+        Guard interval: short (1)
+        MCS index: 3
+    [Data Rate: 28.9 Mb/s]
+    ```
+  - Standard HT, VHT, HE-SU, HE-SU+STBC, HE-MU (52-tone RU), and HE-ER-SU (106-tone RU) metadata verified by unit tests ([`c/test_rxd.c`](../c/test_rxd.c)) and disassembled by `tshark`:
+    ```text
+    $ tshark -r /tmp/test_c_writer.pcap -O radiotap
+    # Frame 3: VHT (80 MHz, MCS 9, NSS 2, SGI)
+    VHT information
+        Known VHT information: 0x0045, STBC, Guard interval, Bandwidth
+        STBC: Off
+        Guard interval: short (1)
+        Bandwidth: 80 MHz (4)
+        User 0: MCS 9, Spatial streams 0: 2, Data Rate: 866.6 Mb/s
+
+    # Frame 5: HE-SU with STBC (80 MHz, MCS 7, NSS 1, NSTS 2)
+    HE information
+        HE Data 3: STBC known, STBC: 0x1
+        HE Data 5: 80 MHz, GI: 1.6us
+        HE Data 6: 2 space-time streams (0x2)
+
+    # Frame 6: HE-MU on 52-tone RU (RU offset 3, MCS 5)
+    HE information
+        HE Data 1: PPDU Format: HE_MU (0x2)
+        HE Data 2: RU allocation offset: 0x03, RU allocation offset known: Known
+        HE Data 3: data MCS: 0x5
+        HE Data 5: data Bandwidth/RU allocation: 52-tone RU (0x5)
+        HE Data 6: 1 space-time stream (0x1)
+
+    # Frame 7: HE-ER-SU on 106-tone RU (MCS 0)
+    HE information
+        HE Data 1: PPDU Format: HE_EXT_SU (0x1)
+        HE Data 5: data Bandwidth/RU allocation: 106-tone RU (0x6)
+        HE Data 6: 1 space-time stream (0x1)
+    ```
 
 ## Previously observed, not rerun in the current validation
 

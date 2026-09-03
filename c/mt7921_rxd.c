@@ -83,12 +83,23 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
     phy->mode = (uint8_t)mode;
     phy->mcs = (uint8_t)mcs;
     phy->nss = (uint8_t)nss;
+    phy->nsts = (uint8_t)(nsts + 1);
     phy->bw_mhz = bw_mhz;
     phy->gi = (uint8_t)gi;
     phy->stbc = stbc != 0;
     phy->ldpc = ldpc;
     phy->dcm = dcm;
     phy->ru_alloc = (uint8_t)ru;
+
+    uint8_t offs = 0;
+    if (mode == MT_PHY_TYPE_HE_MU || mode == MT_PHY_TYPE_HE_TB) {
+        if (ru <= 36) offs = (uint8_t)ru;
+        else if (ru <= 52) offs = (uint8_t)(ru - 37);
+        else if (ru <= 60) offs = (uint8_t)(ru - 53);
+        else if (ru <= 64) offs = (uint8_t)(ru - 61);
+        else if (ru <= 66) offs = (uint8_t)(ru - 65);
+    }
+    phy->ru_offset = offs;
 
     switch (mode) {
         case MT_PHY_TYPE_CCK:
@@ -476,8 +487,11 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
         /* data1: format (bits 0..1) + known flags: MCS(bit 5), DCM(bit 6), CODING(bit 7), STBC(bit 9), BW/RU(bit 14) */
         uint16_t he_data1 = format | 0x0020 | 0x0040 | 0x0080 | 0x0200 | 0x4000;
 
-        /* data2: GI_KNOWN (bit 1) */
+        /* data2: GI_KNOWN (bit 1), RU_OFFSET (bits 8..13), RU_OFFSET_KNOWN (bit 14) */
         uint16_t he_data2 = 0x0002;
+        if (rf->phy.mode == MT_PHY_TYPE_HE_MU || rf->phy.mode == MT_PHY_TYPE_HE_TB) {
+            he_data2 |= 0x4000 | ((rf->phy.ru_offset & 0x3F) << 8);
+        }
 
         /* data3: bits 8..11 = MCS, bit 12 = DCM, bit 13 = CODING/LDPC, bit 15 = STBC */
         uint16_t he_data3 = ((rf->phy.mcs & 0x0F) << 8) |
@@ -489,13 +503,26 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
         uint16_t he_data4 = 0;
 
         /* data5: bits 0..3 = DATA_BW_RU_ALLOC, bits 4..5 = GI */
-        uint8_t he_bw = (rf->phy.bw_mhz == 160) ? 3 :
-                        ((rf->phy.bw_mhz == 80) ? 2 :
-                        ((rf->phy.bw_mhz == 40) ? 1 : 0));
-        uint16_t he_data5 = (he_bw & 0x0F) | ((rf->phy.gi & 0x03) << 4);
+        uint8_t he_bw_ru = 0;
+        if (rf->phy.mode == MT_PHY_TYPE_HE_MU || rf->phy.mode == MT_PHY_TYPE_HE_TB) {
+            if (rf->phy.ru_tones == 26) he_bw_ru = 4;
+            else if (rf->phy.ru_tones == 52) he_bw_ru = 5;
+            else if (rf->phy.ru_tones == 106) he_bw_ru = 6;
+            else if (rf->phy.ru_tones == 242) he_bw_ru = 7;
+            else if (rf->phy.ru_tones == 484) he_bw_ru = 8;
+            else if (rf->phy.ru_tones == 996) he_bw_ru = 9;
+            else if (rf->phy.ru_tones == 1992) he_bw_ru = 10;
+            else he_bw_ru = (rf->phy.bw_mhz == 160) ? 3 : ((rf->phy.bw_mhz == 80) ? 2 : ((rf->phy.bw_mhz == 40) ? 1 : 0));
+        } else if (rf->phy.mode == MT_PHY_TYPE_HE_EXT_SU) {
+            he_bw_ru = (rf->phy.ru_tones == 106) ? 6 : 0;
+        } else {
+            he_bw_ru = (rf->phy.bw_mhz == 160) ? 3 : ((rf->phy.bw_mhz == 80) ? 2 : ((rf->phy.bw_mhz == 40) ? 1 : 0));
+        }
+        uint16_t he_data5 = (he_bw_ru & 0x0F) | ((rf->phy.gi & 0x03) << 4);
 
-        /* data6: bits 0..3 = NSTS (stream count) */
-        uint16_t he_data6 = (rf->phy.nss > 0 ? rf->phy.nss : 1) & 0x0F;
+        /* data6: bits 0..3 = NSTS (actual space-time streams, not halved for STBC) */
+        uint8_t nsts_val = rf->phy.nsts > 0 ? rf->phy.nsts : (rf->phy.nss > 0 ? rf->phy.nss : 1);
+        uint16_t he_data6 = nsts_val & 0x0F;
 
         uint16_t le_d1 = CFSwapInt16HostToLittle(he_data1);
         uint16_t le_d2 = CFSwapInt16HostToLittle(he_data2);

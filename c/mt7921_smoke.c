@@ -358,7 +358,7 @@ int main(int argc, char **argv) {
             printf("  --dwell <sec>                Dwell time per channel in seconds (default: 0.75)\n");
             printf("  --fw <dir>                   Firmware directory (default: checks ./firmware, ../firmware)\n");
             printf("  --pcap <file>                Export radiotap PCAP file\n");
-            printf("  --inject <N>                 Inject 1..10 probe requests per channel during dwell\n");
+            printf("  --inject <N>                 Inject 1..10 probe requests total (2.4 GHz only, global cap)\n");
             printf("  --acknowledge-experimental-transmit  Required flag when using --inject\n");
             printf("  --temp                       Query and print on-die temperature and exit\n");
             printf("  --read-efuse <hex_offset>    Read and print 16-byte efuse block and exit\n");
