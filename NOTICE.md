@@ -46,24 +46,30 @@ its license must be reviewed and recorded before merging.
 
 ## MediaTek firmware (NOT distributed here)
 
-This driver requires two MediaTek firmware blobs at runtime. They are **not included
-in this repository** and are **never committed** (see `.gitignore`). `setup.sh` fetches
-them from the `linux-firmware` project:
+This driver requires two MediaTek firmware blobs per chip at runtime. They are **not
+included in this repository** and are **never committed** (see `.gitignore`). `setup.sh`
+fetches them from the `linux-firmware` project's `mediatek/` directory:
 
-- `WIFI_RAM_CODE_MT7961_1.bin`
-- `WIFI_MT7961_patch_mcu_1_2_hdr.bin`
+- MT7921U: `WIFI_RAM_CODE_MT7961_1.bin`, `WIFI_MT7961_patch_mcu_1_2_hdr.bin`
+- MT7925U: `mt7925/WIFI_RAM_CODE_MT7925_1_1.bin`, `mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin`
 
-For reproducibility, `setup.sh` pins linux-firmware commit
-`e981caea6ed33c48d25b7dbf473327dbd01df163` and verifies these SHA-256 hashes:
+For reproducibility, `setup.sh` and `mt7921u.FIRMWARE_FILES` pin linux-firmware commit
+`e981caea6ed33c48d25b7dbf473327dbd01df163` and verify these SHA-256 hashes:
 
 - `WIFI_RAM_CODE_MT7961_1.bin`: `b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9`
 - `WIFI_MT7961_patch_mcu_1_2_hdr.bin`: `a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6`
+- `mt7925/WIFI_RAM_CODE_MT7925_1_1.bin`: `23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120`
+- `mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin`: `8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1`
+
+The MT7927 (USB `0e8d:6639`, chip id `0x6639`) needs `mt7927/WIFI_RAM_CODE_MT6639_2_1.bin` and
+`mt7927/WIFI_MT6639_PATCH_MCU_2_1_hdr.bin` instead (`mt792x.h` at `c5a3bd91`); no such device
+has been attached here, so they are not fetched and the id is not in `SUPPORTED_DEVICES`.
 
 These binaries are MediaTek-licensed and covered by `LICENCE.mediatek` in
 [linux-firmware](https://gitlab.com/kernel-firmware/linux-firmware/-/tree/main/mediatek),
 which permits redistribution for use with devices containing MediaTek chipsets. Do not
-fetch or load `BT_RAM_CODE_MT7961_1_2_hdr.bin`; the Bluetooth function is unused and
-loading it can destabilize the composite device.
+fetch or load `BT_RAM_CODE_MT7961_1_2_hdr.bin` or `mt7925/BT_RAM_CODE_MT7925_1_1_hdr.bin`; the
+Bluetooth function is unused and loading it can destabilize a composite device.
 
 ## Runtime dependencies
 

@@ -7,6 +7,64 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 Nothing yet.
 
+## [0.2.0] - 2026-09-03
+
+MT7925U (Wi-Fi 7, 160 MHz) support on the Netgear Nighthawk A9000, and descriptor-driven device
+selection for every supported adapter. Hardware claims are evidence-gated in
+[docs/TESTING.md](docs/TESTING.md).
+
+### Added
+
+- Descriptor-driven device selection (roadmap R2): `SUPPORTED_DEVICES` lists the MT7921U and
+  MT7925U USB ids (not the MT7927's, whose firmware is not fetched), and `open()` picks the Wi-Fi interface by class `ff/ff/ff` and endpoint
+  shape, assigning endpoint roles positionally as `mt76u_set_endpoints` does. Layouts that do
+  not match fail closed with a diagnostic. `MT76_USB_ID` or `usb_id=` selects one adapter when
+  several are attached.
+- `scripts/usb_descriptors.py`: redacted dump of each supported adapter's interfaces and
+  endpoints, the roles the driver resolves, and with `--chip-id` the identity registers.
+- Firmware files and their pinned SHA-256s live in `mt7921u.FIRMWARE_FILES`, loaded through
+  `load_firmware(chip)`; `setup.sh` also fetches the MT7925 blobs. `MT76_FW_DIR` replaces
+  `MT7921_FW_DIR`, which still works.
+- First MT7925 hardware record: the Netgear Nighthawk A9000 enumerates, resolves to interface 0,
+  and reads chip id `0x7925` ([docs/TESTING.md](docs/TESTING.md)).
+- `mt7925u.py`: `Mt7925uDevice`, a subclass of the MT7921 device with the connac3 WFSYS reset
+  descriptor, the 44-byte MCU reply header, MCU TXD without `LONG_FORMAT`, the per-command UNI
+  ack option, and UNI `CHIP_CONFIG` capability and `EFUSE_CTRL` buffer-mode commands. Boots
+  the MT7925 firmware on the A9000 to `N9_RDY` and parses its capability element list
+  ([docs/TESTING.md](docs/TESTING.md)). `open_device()` picks the class from the USB id.
+- `scripts/firmware_boot.py`: boot firmware on whichever supported adapter is attached and
+  report chip id, firmware hashes, and capabilities as redacted JSON.
+- The MCU reply-header geometry, TXD word 1, UNI option, and WFSYS reset registers are class
+  attributes with the MT7921 values as defaults; `tests/golden_mt7921_frames.json` freezes every
+  MT7921 command's on-wire bytes so those seams cannot move them.
+- `tune(band, control, center=None, width_mhz=20)` on both device classes: the MT7921 sends
+  `CHANNEL_SWITCH` then the sniffer CONFIG TLV, the MT7925 sends the TLV alone (it has no
+  channel-switch command). Every example and script tunes through it and opens the adapter
+  through `open_device()`, so they run unchanged on either chip once a decoder exists for it.
+- MT7925 monitor mode: UNI `BAND_CONFIG` RX filter and `set_monitor_mode()`. The A9000 receives
+  frames on 2.4, 5, and 6 GHz ([docs/TESTING.md](docs/TESTING.md)).
+- `scripts/firmware_boot.py --rx SECONDS --channel BAND:CH[:CENTER[:WIDTH]]` counts receive
+  transfers by RXD packet type without needing a descriptor decoder.
+
+- `rxd_connac3.py`: the connac3 (MT7925) RX descriptor decoder, returning the same dict as
+  `rxd.decode` so the 802.11 parsers, pcap writer, and scripts are chip-agnostic. 32-byte fixed
+  header, group bits at RXD1 16..20, FCS error in RXD3, 16-byte groups with the 96-byte C-RXV
+  stepped over only inside group 3, rate and RCPI from P-RXV words 0, 2, and 3. Synthetic
+  fixtures cover every group combination; the fuzz test includes it. `decoder_for(dev)` picks
+  the decoder from the device class. On the A9000: 607 of 607 frames dissected by tshark with
+  zero malformed ([docs/TESTING.md](docs/TESTING.md)).
+- `rxd.py` rate tables gain EHT: MCS 12 and 13 (4096-QAM) for the EHT modes only, and
+  preamble entries; 320 MHz is decoded as a width but has no rate.
+
+### Changed
+
+- `scripts/retune_drops.py` reports one `tune_ms` per retune instead of `chan_switch_ms` and
+  `sniffer_cfg_ms`, because a retune is one command on the MT7925.
+
+### Fixed
+
+- `chip_id()` returned the high half of `MT_HW_CHIPID`; the chip number is the low half.
+
 ## [0.1.0] - 2026-09-02
 
 First release: a research-grade passive capture instrument for the MT7921U on macOS, with the
@@ -75,5 +133,6 @@ MT7925U port planned. Hardware claims are evidence-gated in [docs/TESTING.md](do
 - Offline tests for the roam watcher's BSSID bookkeeping: channel from the frame, not the sweep
   target; DS Parameter Set over descriptor; strongest RSSI; k/v/r flags.
 
-[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Network-Weather/mt76-usb-macos/releases/tag/v0.1.0

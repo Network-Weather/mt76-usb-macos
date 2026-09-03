@@ -9,7 +9,8 @@ count (from the BSS Load IE). Nothing here transmits.
 
 Usage: scan.py [2.4|5|6|all]
 
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 import argparse
@@ -26,7 +27,7 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
 DWELL = float(os.environ.get("DWELL_SECONDS", "1.5"))
 
 CH_24 = [1, 6, 11]
@@ -66,7 +67,7 @@ PLANS = {
     "6": [("6GHz", c) for c in CH_6_PSC],
 }
 PLANS["all"] = PLANS["2.4"] + PLANS["5"] + PLANS["6"]
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+CHAN_BAND = m.CHAN_BAND
 
 
 def main() -> int:
@@ -78,13 +79,11 @@ def main() -> int:
         parser.error("--dwell must be between 0.05 and 10 seconds")
     plan = PLANS[args.plan]
 
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
+    dev = m.open_device()
+    patch, ram = m.load_firmware(dev.CHIP, FW_DIR)
 
     bss = OrderedDict()
-    with m.Mt7921uDevice() as dev:
+    with dev:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)
@@ -94,8 +93,7 @@ def main() -> int:
         )
 
         for band, ch in plan:
-            dev.set_chan_info(control_ch=ch, center_ch=ch, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-            dev.config_sniffer(control_ch=ch, center_ch=ch, band_name=band, bw=m.SNIFFER_BW_20)
+            dev.tune(band, ch)
             time.sleep(0.05)
             kinds = Counter()
             n = 0
@@ -106,7 +104,7 @@ def main() -> int:
                 except usb.core.USBError:
                     continue
                 n += 1
-                d = rxd.decode(raw)
+                d = m.decoder_for(dev)(raw)
                 if d is None:
                     continue
                 f = d.get("frame")

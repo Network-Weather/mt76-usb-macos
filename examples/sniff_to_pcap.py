@@ -9,7 +9,8 @@ works on them and our decode can be checked against an independent one.
 Usage: sniff_to_pcap.py <channel> <duration_seconds> [out.pcap] [band]
        band is 2.4GHz | 5GHz | 6GHz (default 2.4GHz)
 
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 import argparse
@@ -26,8 +27,8 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
+CHAN_BAND = m.CHAN_BAND
 
 LINKTYPE_IEEE802_11_RADIOTAP = 127
 
@@ -185,7 +186,21 @@ def main() -> int:
     parser.add_argument("output", nargs="?", default="capture.pcap")
     parser.add_argument("band", nargs="?", choices=sorted(CHAN_BAND), default="2.4GHz")
     parser.add_argument("--overwrite", action="store_true", help="replace an existing output file")
+    parser.add_argument(
+        "--width",
+        type=int,
+        choices=sorted(m.WIDTH_TO_SNIFFER_BW),
+        default=20,
+        help="sniffer bandwidth in MHz (default 20); wider needs --center",
+    )
+    parser.add_argument(
+        "--center",
+        type=int,
+        help="center channel for --width above 20 (defaults to the control channel)",
+    )
     args = parser.parse_args()
+    if args.width > 20 and args.center is None:
+        parser.error("--center is required when --width is above 20 MHz")
     if not 1 <= args.channel <= 255:
         parser.error("channel must be between 1 and 255")
     if not 0 < args.duration <= 86400:
@@ -195,21 +210,18 @@ def main() -> int:
     out = args.output
     band = args.band
 
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
+    dev = m.open_device()
+    patch, ram = m.load_firmware(dev.CHIP, FW_DIR)
 
     mode = "wb" if args.overwrite else "xb"
-    with m.Mt7921uDevice() as dev, open(out, mode) as fh:
+    with dev, open(out, mode) as fh:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)
-        dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-        dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band, bw=m.SNIFFER_BW_20)
+        dev.tune(band, chan, args.center, args.width)
         time.sleep(0.2)
         fh.write(pcap_header())
-        print(f"channel {chan} ({band}), {secs:g}s -> {out}")
+        print(f"channel {chan} ({band}, {args.width} MHz), {secs:g}s -> {out}")
 
         freq = freq_for(band, chan)
         n = written = 0
@@ -220,7 +232,7 @@ def main() -> int:
             except usb.core.USBError:
                 continue
             n += 1
-            d = rxd.decode(raw)
+            d = m.decoder_for(dev)(raw)
             if d is None:
                 continue
             frame = d.get("frame")

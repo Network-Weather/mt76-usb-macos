@@ -8,9 +8,9 @@
 #
 # Creates:
 #   .venv/           python venv with pyusb           (gitignored)
-#   firmware/*.bin   MediaTek MT7961 blobs, fetched   (gitignored; NOT committed, licensed)
+#   firmware/        MediaTek MT7961 and MT7925 blobs, fetched (gitignored; NOT committed, licensed)
 #
-# Examples default MT7921_FW_DIR to ./firmware, so no env var is needed after this.
+# Examples default MT76_FW_DIR to ./firmware, so no env var is needed after this.
 set -eu
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT" || { echo "cannot cd to repo root"; exit 1; }
@@ -46,17 +46,22 @@ fi
 
 # --- firmware (MediaTek-licensed; fetched, never committed) ---
 FW="$ROOT/firmware"; mkdir -p "$FW"
-# Pinned for repeatability. Update the commit and both hashes together, then
-# record the hardware validation in docs/TESTING.md.
+# Pinned for repeatability. The same commit and hashes are declared in
+# mt7921u.FIRMWARE_FILES, which load_firmware() checks at runtime; update both
+# together, then record the hardware validation in docs/TESTING.md. Paths are
+# relative to linux-firmware's mediatek/ directory (MT7925 blobs live in mt7925/).
 LINUX_FIRMWARE_COMMIT="e981caea6ed33c48d25b7dbf473327dbd01df163"
 BASE="https://gitlab.com/kernel-firmware/linux-firmware/-/raw/$LINUX_FIRMWARE_COMMIT/mediatek"
 need=0
 for entry in \
   "WIFI_RAM_CODE_MT7961_1.bin b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9" \
-  "WIFI_MT7961_patch_mcu_1_2_hdr.bin a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6"; do
+  "WIFI_MT7961_patch_mcu_1_2_hdr.bin a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6" \
+  "mt7925/WIFI_RAM_CODE_MT7925_1_1.bin 23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120" \
+  "mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin 8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1"; do
   f=${entry%% *}
   expected=${entry#* }
   actual=""
+  mkdir -p "$(dirname "$FW/$f")"
   if [ -s "$FW/$f" ]; then
     actual=$(shasum -a 256 "$FW/$f" | awk '{print $1}')
   fi

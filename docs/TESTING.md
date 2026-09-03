@@ -324,6 +324,152 @@ tshark -r /tmp/test_c_writer.pcap -O radiotap
         HE Data 6: 1 space-time stream (0x1)
     ```
 
+## MT7925U descriptor discovery and chip identity: 2026-09-03
+
+Day one with a Netgear Nighthawk A9000, before any firmware was loaded. Host: Apple M4
+MacBook Pro, macOS 26.6 (Darwin 25.6.0), Python 3.14.7, PyUSB with Homebrew libusb 1.0.30,
+unprivileged user. The MT7921 reference adapter was not attached.
+
+```bash
+./.venv/bin/python scripts/usb_descriptors.py --chip-id
+```
+
+- **Criterion**: the device enumerates as a supported USB id, `select_wifi_interface` resolves
+  exactly one interface with class `ff/ff/ff` and at least 2 bulk IN plus 6 bulk OUT endpoints,
+  and `MT_HW_CHIPID` reads a chip id the firmware table knows.
+- **Result**: `0846:9072`, USB 3.2 (`bcdUSB 0x0320`), one configuration, **one interface**
+  (number 0, class `ff/ff/ff`, 9 endpoints: bulk `0x84 0x85 0x08 0x04 0x05 0x06 0x07 0x09` in
+  that order, then interrupt `0x86`). Positional assignment gives `EP_IN_PKT_RX=0x84`,
+  `EP_IN_CMD_RESP=0x85`, `EP_OUT_INBAND_CMD=0x08`, `EP_OUT_AC_BE=0x04`, the same roles the
+  MT7921 reference adapter exposes on its interface 3. `chip_id=0x7925`, `MT_HW_REV=0x00008a00`,
+  `MT_CONN_ON_MISC=0` (no firmware running). The device has no Bluetooth interface, and macOS
+  had matched no driver to it (`ioreg`: `!matched`).
+
+### Firmware boot, same day
+
+Same host and adapter. Firmware: `mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin`
+`8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1`,
+`mt7925/WIFI_RAM_CODE_MT7925_1_1.bin`
+`23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120`, linux-firmware
+`e981caea6ed33c48d25b7dbf473327dbd01df163`.
+
+```bash
+./.venv/bin/python scripts/firmware_boot.py
+```
+
+- **Criterion**: `bringup()` through `Mt7925uDevice` (connac3 WFSYS descriptor, 44-byte MCU
+  reply header, TXD without LONG_FORMAT, UNI CHIP_CONFIG capability query, UNI EFUSE_CTRL
+  buffer mode) ends with `MT_CONN_ON_MISC` reporting `FW_N9_RDY`, the capability query
+  answered with a parseable element list, and the efuse push acknowledged; exit 0.
+- **Result**: `status=pass`, exit 0, in 1.5 s. Patch `20260813113015a` (2 sections), RAM
+  `20260813113118` (5 regions, one `NON_DL`), `MT_CONN_ON_MISC=0x00000003`. Capability
+  elements reported: TX_RESOURCE, SINGLE_SKU, CSUM_OFFLOAD, HW_VER, SW_VER, MAC_ADDR, PHY, MAC,
+  FRAME_BUF, BEAM_FORM, LOCATION, MUMIMO, BUFFER_MODE_INFO, HW_ADIE_VERSION, 6G, CHIP_CAP,
+  EML_CAP, and unnamed tags `0x15 0x1b 0x1d 0x28 0x38 0x39 0x48`. PHY capability: `nss=2`
+  (antenna mask `0x3`), `max_bw=4`, HT/VHT/HE/EHT all 1, `hw_path=0x0f`, DBDC 1. Repeated
+  twice with the same result; the second run started from a chip already reporting
+  `FW_N9_RDY` and took the WFSYS reset path.
+
+### Monitor mode and receive on three bands, same day
+
+Same host, adapter, and firmware. After `bringup()`: UNI `BAND_CONFIG` RX filter
+(`fif = 0x80000064`), UNI `SNIFFER` enable, then the sniffer CONFIG TLV as the only channel
+command (`Mt7925uDevice.tune`). Transfers are counted by the RXD packet type in the first
+descriptor word, which is the same on both chip generations, so this run needs no connac3
+decoder.
+
+```bash
+./.venv/bin/python scripts/firmware_boot.py --rx 5 --channel 2.4GHz:6
+./.venv/bin/python scripts/firmware_boot.py --rx 5 --channel 5GHz:36
+./.venv/bin/python scripts/firmware_boot.py --rx 5 --channel 6GHz:53
+```
+
+- **Criterion**: on each band at least one bulk transfer of packet type `NORMAL` arrives
+  within 5 s, with zero USB errors; a 6 GHz result proves the UNI efuse push worked.
+- **Result**:
+
+  | Channel | `NORMAL` transfers in 5 s | Other types | USB timeouts / errors | Transfer bytes min / median / max |
+  |---|---|---|---|---|
+  | 2.4 GHz ch 6 | 150 | 0 | 0 / 0 | 492 / 492 / 492 |
+  | 5 GHz ch 36 | 261 | 0 | 0 / 0 | 284 / 428 / 460 |
+  | 6 GHz ch 53 (PSC) | 495 | 0 | 0 / 0 | 252 / 252 / 604 |
+
+  Each run started from a chip already reporting `FW_N9_RDY` and took the WFSYS reset path.
+
+### connac3 decode, radiotap pcap, and width configuration, same day
+
+Same host, adapter, and firmware. `rxd_connac3.decode` is selected by the device class.
+
+```bash
+./.venv/bin/python examples/sniff_to_pcap.py 53 6 out.pcap 6GHz
+tshark -r out.pcap -q -z io,phs
+tshark -r out.pcap -Y "_ws.malformed || _ws.expert.severity==error" | wc -l
+./.venv/bin/python scripts/width_probe.py 6GHz:53 6GHz:53:55:80 6GHz:53:47:160 --seconds 6
+```
+
+- **Criterion**: every transfer decodes to a frame, tshark dissects every frame as
+  `radiotap/wlan_radio/wlan` with zero malformed packets, radiotap carries a rate for
+  legacy-rate frames, and the sniffer accepts 20, 80, and 160 MHz configurations on 6 GHz
+  without going silent.
+- **Result**: 607 transfers, 607 frames written, 607 dissected (122 Beacon, 485 Action),
+  **0 malformed**; radiotap `datarate` 6 Mbps and `wlan_radio.phy` OFDM on all 607, RSSI
+  populated from P-RXV word 3. Width probe, 6 s each: 20 MHz 585 frames, 80 MHz (center 55)
+  587, **160 MHz (center 47) 587**, all decoded at 20 MHz because only management traffic
+  from two 160 MHz APs was on air (beacons advertise `he6 160 ccfs0 55 ccfs1 47`). The MT7921
+  returned zero transfers under the same 160 MHz configuration
+  ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)); the MT7925 keeps receiving.
+
+### 160 MHz capture with a controlled transmitter, same day
+
+Same host, adapter, and firmware. The host's built-in Wi-Fi (Broadcom `14e4:4388`, 802.11ax)
+was joined to a 6 GHz BSS on channel 53 operating at 160 MHz (its link reported
+`Channel: 53 (6GHz, 160MHz)`, transmit rate 2401 Mb/s, MCS 11) and generated traffic bound to
+that interface (an HTTPS download loop and a 1200-byte ping at 50 per second to the gateway)
+while the A9000 captured the same channel configured for 160 MHz (control 53, center 47). The
+capture host's wired link carried everything else. Counts only; the SSID and addresses stay
+out of this repository.
+
+```bash
+./.venv/bin/python scripts/width_probe.py 6GHz:53:47:160 --seconds 10
+./.venv/bin/python examples/sniff_to_pcap.py 53 10 out.pcap 6GHz --width 160 --center 47
+tshark -r out.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 3 && wlan.ta == <mac>" | wc -l
+```
+
+- **Criterion**: frames decoded with a PHY width of 160 MHz > 0; HE data frames at 160 MHz
+  whose transmitter address is the built-in Wi-Fi's MAC > 0; tshark dissects the pcap with
+  zero malformed frames.
+- **Result**: width probe, 10 s: **3337 frames, 1736 decoded at 160 MHz**, 513 at 80, 1066 at
+  20, 22 at 40; kinds BlockAck 894, Action 781, RTS 565, CTS 510, Beacon 196, QoS Data 147,
+  VHT-NDPA 73, ActionNoAck 73, Data 65, ACK 17, Null 15; 0 USB errors. pcap, 10 s: 3764
+  transfers, 3764 frames, **0 malformed**; **193 HE frames at 160 MHz (radiotap HE bandwidth
+  code 3), all 193 transmitted by the built-in Wi-Fi's MAC**, all QoS Data at HE MCS 8 (76)
+  and MCS 9 (117), radiotap data rates 1633 to 1922 Mb/s; 1186 frames in total from that MAC
+  (RTS 458, BlockAck 449, QoS Data 193, others 86). Frames addressed to that MAC were CTS,
+  BlockAck, and control only: the AP's downlink data to it was not decoded, consistent with
+  beamformed downlink being outside what a third radio can receive
+  ([README](../README.md#known-limits-and-non-goals)).
+
+### Full passive sweep and retune drops, same day
+
+```bash
+./.venv/bin/python scripts/hardware_smoke.py --plan all
+./.venv/bin/python scripts/retune_drops.py --retunes 20 --dwell 1
+```
+
+- **Criterion**: `hardware_smoke` exits 0 with decoded frames on every band and no
+  undecoded transfers; `retune_drops` completes 20 retunes with counts only.
+- **Result**: `status=pass`, exit 0, 48.2 s for 43 channels: 991 transfers, 991 decoded
+  frames, 0 undecoded, 0 USB errors, 67 USB timeouts (quiet channels). 2.4 GHz 3/3 channels
+  with frames (233: 129 management, 56 data, 48 control); 5 GHz 16/25 (527: 327 / 22 / 178);
+  6 GHz 4/15 PSCs (231: 227 / 4 / 0). Redacted output in
+  [hardware-smoke-reference-mt7925.json](hardware-smoke-reference-mt7925.json). Retune drops on
+  the two busiest 2.4 GHz channels, 20 retunes: median 1 frame lost per retune, min 0, max 3,
+  18 total, at 127 to 296 frames per 1 s dwell; median retune 5.7 ms (one MCU command on this
+  chip); 0 USB errors.
+
+The MT7921 reference adapter was not attached on 2026-09-03; nothing above reruns its
+evidence, and the MT7921 on-wire framing is held fixed by `tests/golden_mt7921_frames.json`.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
@@ -340,8 +486,11 @@ as a current release qualification.
 ## Explicitly untested or unsupported
 
 - Intel Macs, non-26.6 macOS hardware runs, and non-Apple operating systems;
-- USB IDs other than `0e8d:7961` or layouts whose Wi-Fi function is not interface 3;
-- 160/320 MHz, simultaneous channels, multiple adapters, MT7922, PCIe, and SDIO;
+- capture on USB ids other than `0e8d:7961` and `0846:9072` (the A8500 `0846:9050` and the
+  MediaTek `0e8d:7925` ids are in the table but no such device has been attached; the MT7927
+  `0e8d:6639` is not in the table at all);
+- 320 MHz (no supported part), 160 MHz on the MT7921U, simultaneous channels, multiple
+  adapters in one process, MT7922, PCIe, and SDIO;
 - association, client mode, AP mode, routing, CoreWLAN, and a BSD network interface;
 - Bluetooth firmware or coexistence;
 - decryption and complete capture of beamformed downlink or A-MSDU inner frames;

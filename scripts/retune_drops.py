@@ -15,7 +15,8 @@ two commands discarded. Output is one JSON document of counts only: no frames, S
 BSSIDs, client addresses, or payloads.
 
 Usage: retune_drops.py [--retunes 10] [--dwell 2] [--candidates 2.4GHz:1,2.4GHz:6,...]
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 from __future__ import annotations
@@ -35,10 +36,9 @@ sys.path.insert(0, REPO_ROOT)
 import usb.core  # noqa: E402
 
 import mt7921u as m  # noqa: E402
-import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
+CHAN_BAND = m.CHAN_BAND
 DEFAULT_CANDIDATES = "2.4GHz:1,2.4GHz:6,2.4GHz:11,5GHz:36,5GHz:44,5GHz:149,5GHz:157"
 # How long the census listens on each candidate. Long enough for several beacon
 # intervals (102.4 ms nominal) from every AP on the channel.
@@ -58,21 +58,22 @@ def parse_candidates(text: str) -> list[tuple[str, int]]:
 
 
 def retune(dev: m.Mt7921uDevice, band: str, chan: int) -> dict:
-    """Retune and return what the two MCU commands discarded, with wall time."""
+    """Retune and return what the MCU command(s) discarded, with wall time.
+
+    tune() is two commands on the MT7921 (CHANNEL_SWITCH, then the sniffer CONFIG TLV)
+    and one on the MT7925, so the time is reported for the whole retune.
+    """
     dropped0, stale0 = dev.mcu_wait_dropped_frames, dev.mcu_wait_stale_events
     other0 = dev.mcu_wait_other_packets
     t0 = time.monotonic()
-    dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
+    dev.tune(band, chan)
     t1 = time.monotonic()
-    dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band, bw=m.SNIFFER_BW_20)
-    t2 = time.monotonic()
     return {
         "to": f"{band}:{chan}",
         "dropped_frames": dev.mcu_wait_dropped_frames - dropped0,
         "stale_events": dev.mcu_wait_stale_events - stale0,
         "other_packets": dev.mcu_wait_other_packets - other0,
-        "chan_switch_ms": round((t1 - t0) * 1000, 1),
-        "sniffer_cfg_ms": round((t2 - t1) * 1000, 1),
+        "tune_ms": round((t1 - t0) * 1000, 1),
     }
 
 
@@ -90,7 +91,7 @@ def drain(dev: m.Mt7921uDevice, seconds: float) -> dict:
             usb_errors += 1  # a real transport failure; the sample is incomplete
             print(f"usb error during drain: {exc}", file=sys.stderr)
             continue
-        decoded = rxd.decode(raw)
+        decoded = m.decoder_for(dev)(raw)
         if decoded and decoded.get("frame"):
             frames += 1
     return {"frames": frames, "timeouts": timeouts, "usb_errors": usb_errors, "seconds": seconds}
@@ -127,10 +128,8 @@ def main() -> int:
     if len(args.candidates) < 2:
         parser.error("need at least two candidates")
 
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
+    dev = m.open_device()
+    patch, ram = m.load_firmware(dev.CHIP, FW_DIR)
 
     result = {
         "tool": "retune_drops",
@@ -142,7 +141,7 @@ def main() -> int:
         "dwell_seconds": args.dwell,
     }
 
-    with m.Mt7921uDevice() as dev:
+    with dev:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)

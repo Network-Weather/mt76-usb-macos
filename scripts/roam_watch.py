@@ -19,7 +19,8 @@ Two modes:
 
 This is a diagnostic for the operator's own network. Output includes MAC addresses and
 SSIDs; treat the terminal output as sensitive and do not commit it.
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 from __future__ import annotations
@@ -39,8 +40,8 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
+CHAN_BAND = m.CHAN_BAND
 # Sweep set for --find: the 2.4 GHz non-overlapping channels, every 5 GHz 20 MHz channel
 # an AP in the US can sit on, and the 6 GHz preferred scanning channels.
 SWEEP = (
@@ -55,17 +56,12 @@ READ_TIMEOUT_MS = 250
 FTYPE_DATA = 2
 
 
-def load_firmware() -> tuple[bytes, bytes]:
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
-    return patch, ram
+def load_firmware(chip: str) -> tuple[bytes, bytes]:
+    return m.load_firmware(chip, FW_DIR)
 
 
 def tune(dev: m.Mt7921uDevice, band: str, chan: int) -> None:
-    dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-    dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band, bw=m.SNIFFER_BW_20)
+    dev.tune(band, chan)
 
 
 def frames(dev: m.Mt7921uDevice, seconds: float):
@@ -80,7 +76,7 @@ def frames(dev: m.Mt7921uDevice, seconds: float):
             # A transport failure means events can be missed; say so rather than hide it.
             print(f"usb error, frames may be missing: {exc}", file=sys.stderr)
             continue
-        d = rxd.decode(raw)
+        d = m.decoder_for(dev)(raw)
         if not d or not d.get("frame") or len(d["frame"]) < 10:
             continue
         yield d, rxd.parse_80211(d["frame"])
@@ -231,8 +227,9 @@ def main() -> int:
         parser.error("--duration must be between 1 and 3600 seconds")
     client = args.client.lower() if args.client else None
 
-    patch, ram = load_firmware()
-    with m.Mt7921uDevice() as dev:
+    dev = m.open_device()
+    patch, ram = load_firmware(dev.CHIP)
+    with dev:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)

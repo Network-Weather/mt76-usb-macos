@@ -1043,7 +1043,11 @@ MCS_PARAMS = {
     9: (8, 5 / 6),
     10: (10, 3 / 4),
     11: (10, 5 / 6),
+    # EHT (802.11be) adds 4096-QAM; MCS 14 and 15 are DCM variants and are not decoded.
+    12: (12, 3 / 4),
+    13: (12, 5 / 6),
 }
+EHT_MODES = (MT_PHY_TYPE_EHT_SU, MT_PHY_TYPE_EHT_TRIG, MT_PHY_TYPE_EHT_MU)
 
 # Data subcarriers per bandwidth
 NSD_HT_VHT = {20: 52, 40: 108, 80: 234, 160: 468}
@@ -1080,7 +1084,7 @@ def phy_rate_mbps(mode, mcs, nss, bw_mhz, gi, dcm=False, ru_tones=None):
         tsym = TSYM_HT_VHT.get(1 if gi else 0, 4.0)
         return nsd and round(nsd * bits * coding * streams / tsym, 1)
     if mode == MT_PHY_TYPE_VHT:
-        if mcs not in MCS_PARAMS:
+        if mcs not in MCS_PARAMS or mcs > 11:  # 12 and 13 exist only in EHT
             return None
         bits, coding = MCS_PARAMS[mcs]
         nsd = NSD_HT_VHT.get(bw_mhz)
@@ -1091,8 +1095,11 @@ def phy_rate_mbps(mode, mcs, nss, bw_mhz, gi, dcm=False, ru_tones=None):
         MT_PHY_TYPE_HE_EXT_SU,
         MT_PHY_TYPE_HE_TB,
         MT_PHY_TYPE_HE_MU,
+        *EHT_MODES,
     ):
-        if mcs not in MCS_PARAMS:
+        # EHT keeps HE's tone plan and symbol timing for 20 to 160 MHz and adds MCS 12/13;
+        # 320 MHz would need its own tone count and is not a capability of the MT7925.
+        if mcs not in MCS_PARAMS or (mcs > 11 and mode not in EHT_MODES):
             return None
         bits, coding = MCS_PARAMS[mcs]
         if dcm:
@@ -1118,6 +1125,10 @@ PREAMBLE_US = {
     MT_PHY_TYPE_HE_EXT_SU: 52,
     MT_PHY_TYPE_HE_TB: 52,
     MT_PHY_TYPE_HE_MU: 60,
+    # EHT preambles carry U-SIG in place of HE-SIG-A; the same order of magnitude.
+    MT_PHY_TYPE_EHT_SU: 52,
+    MT_PHY_TYPE_EHT_TRIG: 52,
+    MT_PHY_TYPE_EHT_MU: 60,
 }
 SIFS_US = 16
 SLOT_US = 9

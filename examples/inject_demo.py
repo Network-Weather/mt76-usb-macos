@@ -20,7 +20,8 @@
 
 Usage: inject_demo.py [channel] [band] --acknowledge-experimental-transmit
 
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 import argparse
@@ -37,8 +38,8 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
+CHAN_BAND = m.CHAN_BAND
 
 # Rate limit: a handful of frames, spaced out. Do NOT raise these.
 PROBES = 3
@@ -85,10 +86,7 @@ def main() -> int:
     chan = args.channel
     band = args.band
 
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
+    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
 
     with m.Mt7921uDevice() as dev:
         dev.bringup(patch, ram, log=lambda *a: None)
@@ -99,8 +97,7 @@ def main() -> int:
 
         dev.set_monitor_mode()
         dev.set_sniffer(True)
-        dev.set_chan_info(control_ch=chan, center_ch=chan, bw=m.CMD_CBW_20MHZ, band=CHAN_BAND[band])
-        dev.config_sniffer(control_ch=chan, center_ch=chan, band_name=band, bw=m.SNIFFER_BW_20)
+        dev.tune(band, chan)
         time.sleep(0.2)
 
         base, _ = listen(dev, mac_str, 1.0)
@@ -113,7 +110,7 @@ def main() -> int:
         try:
             for _ in range(PROBES):
                 seq += 1
-                dev.inject(frame, m.TX_ENDPOINTS[0], seq)
+                dev.inject(frame, dev.ep_out_ac_be, seq)
                 time.sleep(PROBE_GAP)
         except Exception as exc:
             sent_ok = False

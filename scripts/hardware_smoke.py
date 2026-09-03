@@ -12,7 +12,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import platform
 import sys
 import time
@@ -27,13 +26,8 @@ sys.path.insert(0, str(REPO_ROOT))
 import usb.core  # noqa: E402
 
 import mt7921u as m  # noqa: E402
-import rxd  # noqa: E402
 
-FW_DIR = Path(os.environ.get("MT7921_FW_DIR", REPO_ROOT / "firmware"))
-PATCH_NAME = "WIFI_MT7961_patch_mcu_1_2_hdr.bin"
-RAM_NAME = "WIFI_RAM_CODE_MT7961_1.bin"
-PATCH_SHA256 = "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6"
-RAM_SHA256 = "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
 
 CH_24 = [1, 6, 11]
 CH_5 = [
@@ -72,7 +66,6 @@ PLANS = {
     "6": [("6GHz", channel) for channel in CH_6_PSC],
 }
 PLANS["all"] = PLANS["2.4"] + PLANS["5"] + PLANS["6"]
-CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
 
 
 def sha256_file(path: Path) -> str:
@@ -105,6 +98,11 @@ def arguments() -> argparse.Namespace:
         metavar="SECONDS",
         help="time to listen on each channel (0.05 through 10; default: 0.75)",
     )
+    parser.add_argument(
+        "--usb-id",
+        metavar="VVVV:PPPP",
+        help="adapter to use when several are attached (default: $MT76_USB_ID or the only one)",
+    )
     args = parser.parse_args()
     if not 0.05 <= args.dwell <= 10:
         parser.error("--dwell must be between 0.05 and 10 seconds")
@@ -135,8 +133,6 @@ def frame_family(frame: bytes) -> str:
 def main() -> int:
     args = arguments()
     started = time.monotonic()
-    patch_path = FW_DIR / PATCH_NAME
-    ram_path = FW_DIR / RAM_NAME
     requested_bands = sorted({band for band, _ in PLANS[args.plan]})
     result = {
         "schema_version": 1,
@@ -162,21 +158,22 @@ def main() -> int:
 
     device_opened = False
     try:
+        dev = m.open_device(args.usb_id)  # picks the class; nothing is claimed yet
+        patch_path, ram_path = m.firmware_paths(dev.CHIP, FW_DIR)
         if not patch_path.is_file() or not ram_path.is_file():
             raise FileNotFoundError("required firmware is missing; run bash setup.sh")
-        patch_sha256 = sha256_file(patch_path)
-        ram_sha256 = sha256_file(ram_path)
-        result["firmware"] = {"patch_sha256": patch_sha256, "ram_sha256": ram_sha256}
-        if patch_sha256 != PATCH_SHA256 or ram_sha256 != RAM_SHA256:
-            raise RuntimeError("firmware checksum mismatch; run bash setup.sh")
-        patch = patch_path.read_bytes()
-        ram = ram_path.read_bytes()
+        result["firmware"] = {
+            "patch_sha256": sha256_file(patch_path),
+            "ram_sha256": sha256_file(ram_path),
+        }
+        patch, ram = m.load_firmware(dev.CHIP, FW_DIR)  # raises on a pin mismatch
 
-        with m.Mt7921uDevice() as dev:
+        with dev:
             device_opened = True
             result["device"] = {
-                "usb_id": f"{m.VID:04x}:{m.PID:04x}",
-                "wifi_interface": m.WIFI_INTERFACE,
+                "chip": dev.layout.chip,
+                "usb_id": dev.layout.usb_id,
+                "wifi_interface": dev.layout.interface,
                 "usb_speed_code": getattr(dev.dev, "speed", None),
             }
             dev.bringup(patch, ram, log=lambda *_: None)
@@ -186,18 +183,7 @@ def main() -> int:
             for band, channel in PLANS[args.plan]:
                 counters = result["bands"][band]
                 counters["channels_attempted"] += 1
-                dev.set_chan_info(
-                    control_ch=channel,
-                    center_ch=channel,
-                    bw=m.CMD_CBW_20MHZ,
-                    band=CHAN_BAND[band],
-                )
-                dev.config_sniffer(
-                    control_ch=channel,
-                    center_ch=channel,
-                    band_name=band,
-                    bw=m.SNIFFER_BW_20,
-                )
+                dev.tune(band, channel)
                 time.sleep(0.05)
                 channel_transfers = 0
                 channel_frames = 0
@@ -213,7 +199,7 @@ def main() -> int:
                         continue
                     channel_transfers += 1
                     counters["usb_transfers"] += 1
-                    decoded = rxd.decode(raw)
+                    decoded = m.decoder_for(dev)(raw)
                     frame = decoded.get("frame") if decoded is not None else None
                     if not frame:
                         counters["undecoded_transfers"] += 1
@@ -243,7 +229,7 @@ def main() -> int:
             else "inconclusive"
         )
     except Exception as exc:
-        if not device_opened and isinstance(exc, RuntimeError) and "not found" in str(exc):
+        if not device_opened and isinstance(exc, m.UnsupportedDevice):
             result["status"] = "unsupported"
         message = str(exc).replace(str(REPO_ROOT), "<repo>").replace(str(FW_DIR), "<firmware>")
         result["error"] = {"type": type(exc).__name__, "message": message}

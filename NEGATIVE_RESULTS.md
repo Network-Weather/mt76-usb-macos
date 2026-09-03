@@ -34,7 +34,7 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   probe.
 - **Consequence:** RSSI alone is reported. It must not be presented as SNR.
 
-## 160 MHz sniffer configuration on MT7921U returns nothing
+## 160 MHz sniffer configuration on MT7921U returns nothing (MT7925U does not share this)
 
 - **Tried:** `set_chan_info` with `CMD_CBW_160MHZ` and `config_sniffer` with `SNIFFER_BW_160`
   on 6 GHz primary channel 53, center 47, on 2026-09-02 with the reference adapter, while an
@@ -46,6 +46,8 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   unsupported for this part; upstream advertises it unconditionally for the MT7925
   (`mt7925/init.c:290-292` at `c5a3bd91`), which is why that chip is the port target.
 - **Code:** `scripts/width_probe.py`; the run is recorded in [docs/TESTING.md](docs/TESTING.md#channel-width-and-6-ghz-access-points-2026-09-02).
-- **Consequence:** data frames from clients on a 160 MHz AP are invisible to this adapter, and
-  only their 20 MHz management frames can be observed. This is the reason for the MT7925 port
-  ([docs/MT7925.md](docs/MT7925.md)).
+- **Consequence:** data frames from clients on a 160 MHz AP are invisible to the MT7921U, and
+  only their 20 MHz management frames can be observed. The MT7925U (Nighthawk A9000) receives
+  and decodes them under the same configuration: 1736 frames at 160 MHz in 10 s, including HE
+  data from a known transmitter ([docs/TESTING.md](docs/TESTING.md#160-mhz-capture-with-a-controlled-transmitter-same-day)),
+  so this entry is a per-chip limit, not a driver one.
