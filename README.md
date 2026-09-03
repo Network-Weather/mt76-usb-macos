@@ -61,8 +61,8 @@ capture, libusb access to the otherwise-unclaimed device is enough.
   rebadged IDs and single-interface MT7921AU devices are not supported yet.
 - macOS on Apple Silicon. Hardware-validated on an M1 Max running macOS 26.6. Intel macOS
   and other macOS releases are plausible but **not hardware-tested by this project**.
-- Homebrew `libusb`: `brew install libusb`.
-- Python 3.10+.
+- For the Python driver: Homebrew `libusb` (`brew install libusb`) and Python 3.10+.
+- For the pure C driver: Apple Command Line Tools (`clang`)—**no Homebrew, libusb, or Python required**.
 - **No root required.** macOS leaves the adapter unclaimed, so a normal user process can
   take the interface.
 
@@ -96,12 +96,47 @@ terms and the one blob you must not fetch.
 sensitive. `hardware_smoke.py` reports only aggregate counts, software/device capability,
 and firmware hashes. It never emits captured identifiers or payloads.
 
-The library is two flat modules:
+The codebase includes both a high-level Python library and a zero-dependency C driver:
 
-| File | What it does |
+| Component | What it does |
 |---|---|
-| `mt7921u.py` | The driver: USB vendor transfers, register I/O, MCU command framing, firmware download, channel and sniffer setup, receive, and (see caveat) injection |
-| `rxd.py` | RX descriptor decode and 802.11 frame parsing |
+| `mt7921u.py` | Python driver: USB vendor transfers, register I/O, MCU command framing, firmware download, channel and sniffer setup, receive, and injection |
+| `rxd.py` | Python RX descriptor decode and 802.11 frame parsing (IE analysis, AKM suites, airtime accounting) |
+| [`c/`](c/README.md) | Pure C driver: native macOS IOKit USB transport (zero external dependencies), MCU framing, TXWI injection, PCAP writer, and `mt7921_smoke` CLI |
+
+## Pure C driver (zero dependencies)
+
+Under [`c/`](c/README.md) is a pure C (C11) monitor-mode driver and hardware validator. It uses native Apple system frameworks (`IOKit` and `CoreFoundation`) with **zero external dependencies**—no Homebrew, no `libusb`, and no Python required.
+
+Building and running offline unit tests:
+```bash
+make -C c all
+make -C c test
+```
+
+Capabilities and CLI options:
+```bash
+# Quick 3-band sweep (channels 1, 36, 53)
+./c/mt7921_smoke --plan quick --dwell 0.75
+
+# Full 43-channel sweep emitting schema-compliant JSON
+./c/mt7921_smoke --plan all --dwell 0.75
+
+# Capture live frames to standard IEEE 802.11 radiotap PCAP
+./c/mt7921_smoke --plan quick --dwell 1.0 --pcap /tmp/capture.pcap
+tcpdump -r /tmp/capture.pcap -c 10
+
+# Test experimental packet injection (rate-limited, requires explicit acknowledgement)
+./c/mt7921_smoke --plan quick --dwell 0.5 --inject 3 --acknowledge-experimental-transmit
+
+# Query on-die temperature sensor
+./c/mt7921_smoke --temp
+
+# Read a raw 16-byte efuse block (MAC address masked by default)
+./c/mt7921_smoke --read-efuse 0x000
+```
+
+> **Design Note:** The C driver focuses strictly on MediaTek chipset-specific primitives (Connac2 TXWI injection, P-RXV hardware PHY telemetry decoding, MCU commands, USB transport, efuse, and thermal sensing). Hardware PHY telemetry (mode, MCS, NSS, bandwidth, GI, and Mbps data rate) is decoded directly from the baseband descriptors and recorded into Radiotap PCAP headers. Generic 802.11 Information Element (IE) parsing is intentionally omitted from the C driver, delegating upper-layer protocol dissection to tools such as Wireshark and `tcpdump`.
 
 ## What the driver source does not tell you
 

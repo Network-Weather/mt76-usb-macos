@@ -295,3 +295,138 @@ int mt7921_set_chan_info(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_c
 int mt7921_rx_read(mt7921_dev_t *dev, void *buf, uint32_t *len, uint32_t timeout_ms) {
     return mt7921_bulk_in(&dev->usb, EP_IN_PKT_RX, buf, len, timeout_ms);
 }
+
+int mt7921_build_probe_request(uint8_t *buf, size_t max_len, const uint8_t src_mac[6], const char *ssid, uint16_t seq) {
+    if (!buf || !src_mac) return -1;
+    size_t ssid_len = ssid ? strlen(ssid) : 0;
+    if (ssid_len > 32) return -1;
+    size_t total_len = 24 + 2 + ssid_len + 6;
+    if (max_len < total_len) return -1;
+
+    memset(buf, 0, total_len);
+    /* Frame Control: 0x0040 (type 0 mgmt, subtype 4 probe req) */
+    uint16_t fc = CFSwapInt16HostToLittle(0x0040);
+    memcpy(buf + 0, &fc, 2);
+    /* Duration: 0 */
+    memset(buf + 2, 0, 2);
+    /* Addr1: Broadcast (FF:FF:FF:FF:FF:FF) */
+    memset(buf + 4, 0xFF, 6);
+    /* Addr2: Source MAC */
+    memcpy(buf + 10, src_mac, 6);
+    /* Addr3: Broadcast (FF:FF:FF:FF:FF:FF) */
+    memset(buf + 16, 0xFF, 6);
+    /* Sequence Control: (seq & 0xFFF) << 4 */
+    uint16_t sc = CFSwapInt16HostToLittle((seq & 0x0FFF) << 4);
+    memcpy(buf + 22, &sc, 2);
+
+    /* Tag 0: SSID parameter set */
+    buf[24] = 0;
+    buf[25] = (uint8_t)ssid_len;
+    if (ssid_len > 0) {
+        memcpy(buf + 26, ssid, ssid_len);
+    }
+
+    /* Tag 1: Supported Rates (1M, 2M, 5.5M, 11M basic rates) */
+    size_t rate_off = 26 + ssid_len;
+    buf[rate_off + 0] = 1;
+    buf[rate_off + 1] = 4;
+    buf[rate_off + 2] = 0x82;
+    buf[rate_off + 3] = 0x84;
+    buf[rate_off + 4] = 0x8B;
+    buf[rate_off + 5] = 0x96;
+
+    return (int)total_len;
+}
+
+int mt7921_build_txwi(uint8_t *txwi_out, const uint8_t *frame, size_t frame_len, uint16_t seq, uint8_t pid) {
+    if (!txwi_out || !frame || frame_len < 24) return -1;
+
+    uint16_t fc = CFSwapInt16LittleToHost(*(const uint16_t*)frame);
+    uint32_t fc_type = (fc >> 2) & 0x3;
+    uint32_t fc_stype = (fc >> 4) & 0xF;
+    uint32_t hdrlen = 24;
+    bool multicast = (frame[4] & 0x01) != 0;
+
+    uint32_t txwi[16] = {0};
+
+    txwi[0] = (((uint32_t)frame_len + MT_SDIO_TXD_SIZE) & MT_TXD0_TX_BYTES_M)
+            | (((uint32_t)MT_TX_TYPE_SF & 0x3) << 23)
+            | (((uint32_t)MT_LMAC_ALTX0 & 0x7F) << 25);
+
+    txwi[1] = MT_TXD1_LONG_FORMAT
+            | (GLOBAL_WCID & 0x3FF)
+            | (0 << MT_TXD1_OWN_MAC_SHIFT)
+            | (MT_HDR_FORMAT_802_11 << MT_TXD1_HDR_FORMAT_SHIFT)
+            | ((hdrlen / 2) << MT_TXD1_HDR_INFO_SHIFT);
+
+    txwi[2] = (fc_type << MT_TXD2_FRAME_TYPE_SHIFT)
+            | (fc_stype << MT_TXD2_SUB_TYPE_SHIFT)
+            | (multicast ? MT_TXD2_MULTICAST : 0)
+            | MT_TXD2_FIX_RATE
+            | MT_TXD2_HTC_VLD;
+
+    txwi[3] = (15 << MT_TXD3_REM_TX_COUNT_SHIFT)
+            | MT_TXD3_NO_ACK
+            | MT_TXD3_BA_DISABLE
+            | MT_TXD3_SN_VALID
+            | (((uint32_t)seq & 0xFFF) << MT_TXD3_SEQ_SHIFT);
+
+    txwi[5] = pid & 0xFF;
+    if (pid >= MT_PACKET_ID_FIRST) {
+        txwi[5] |= MT_TXD5_TX_STATUS_HOST;
+    }
+
+    txwi[6] = MT_TXD6_FIXED_BW | (TX_RATE_1M_CCK << MT_TXD6_TX_RATE_SHIFT);
+
+    txwi[8] = (fc_type << MT_TXD8_L_TYPE_SHIFT) | (fc_stype << MT_TXD8_L_SUB_TYPE_SHIFT);
+
+    for (int i = 0; i < 16; i++) {
+        uint32_t le = CFSwapInt32HostToLittle(txwi[i]);
+        memcpy(txwi_out + (i * 4), &le, 4);
+    }
+    return MT_SDIO_TXD_SIZE;
+}
+
+int mt7921_inject(mt7921_dev_t *dev, const uint8_t *frame, size_t frame_len, uint8_t ep, uint16_t seq, uint8_t pid) {
+    if (!dev || !frame || frame_len < 24) return -1;
+    if (ep == 0) ep = EP_OUT_AC_BE;
+
+    uint8_t txwi[MT_SDIO_TXD_SIZE];
+    if (mt7921_build_txwi(txwi, frame, frame_len, seq, pid) != MT_SDIO_TXD_SIZE) {
+        return -1;
+    }
+
+    size_t body_len = MT_SDIO_TXD_SIZE + frame_len;
+    size_t out_len = 4 + body_len;
+    size_t pad = (((out_len + 3) & ~3) - out_len) + 4;
+    size_t total_alloc = out_len + pad;
+
+    uint8_t *packet = (uint8_t*)malloc(total_alloc);
+    if (!packet) return -1;
+
+    uint32_t sdio_hdr = CFSwapInt32HostToLittle((uint32_t)body_len & 0xFFFF);
+    memcpy(packet, &sdio_hdr, 4);
+    memcpy(packet + 4, txwi, MT_SDIO_TXD_SIZE);
+    memcpy(packet + 4 + MT_SDIO_TXD_SIZE, frame, frame_len);
+    memset(packet + out_len, 0, pad);
+
+    int ret = mt7921_bulk_out(&dev->usb, ep, packet, (uint32_t)total_alloc, 1000);
+    free(packet);
+    return ret;
+}
+
+bool mt7921_is_alive(mt7921_dev_t *dev) {
+    if (!dev) return false;
+    uint32_t chipid = mt7921_rr(&dev->usb, MT_HW_CHIPID);
+    return (chipid & 0xFFFF) == 0x7961;
+}
+
+int mt7921_dev_get_temperature(mt7921_dev_t *dev, int32_t *temp_c) {
+    if (!dev) return -1;
+    return mt7921_get_temperature(&dev->mcu, temp_c);
+}
+
+int mt7921_dev_read_efuse(mt7921_dev_t *dev, uint32_t offset, uint8_t data[16], uint32_t *valid) {
+    if (!dev) return -1;
+    return mt7921_read_efuse(&dev->mcu, offset, data, valid);
+}

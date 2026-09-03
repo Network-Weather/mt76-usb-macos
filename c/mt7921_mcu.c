@@ -504,3 +504,40 @@ int mt7921_set_eeprom(mt7921_mcu_t *mcu) {
     uint8_t req[4] = { EE_MODE_EFUSE, EE_FORMAT_WHOLE, 0, 0 };
     return mt7921_mcu_cmd_word(mcu, MCU_EXT_CMD(MCU_EXT_CMD_EFUSE_BUFFER_MODE), req, 4, true, NULL, NULL, 3000);
 }
+
+int mt7921_get_temperature(mt7921_mcu_t *mcu, int32_t *temp_c) {
+    if (!mcu || !temp_c) return -1;
+    uint8_t req[8] = {0};
+    req[0] = THERMAL_SENSOR_TEMP_QUERY;
+
+    uint8_t resp[128];
+    uint32_t resp_len = sizeof(resp);
+    uint32_t cmd = MCU_EXT_CMD(MCU_EXT_CMD_THERMAL_CTRL);
+    int ret = mt7921_mcu_cmd_word(mcu, cmd, req, sizeof(req), true, resp, &resp_len, 3000);
+    if (ret != 0 || resp_len < MCU_RXD_LEN + 8) return -1;
+
+    uint8_t *body = resp + MCU_RXD_LEN;
+    *temp_c = (int32_t)CFSwapInt32LittleToHost(*(uint32_t*)(body + 4));
+    return 0;
+}
+
+int mt7921_read_efuse(mt7921_mcu_t *mcu, uint32_t offset, uint8_t data[16], uint32_t *valid) {
+    if (!mcu || !data) return -1;
+    uint32_t base = offset & ~(MT7921_EEPROM_BLOCK_SIZE - 1);
+    uint8_t req[8 + MT7921_EEPROM_BLOCK_SIZE] = {0};
+    uint32_t le_base = CFSwapInt32HostToLittle(base);
+    memcpy(req, &le_base, 4);
+
+    uint8_t resp[128];
+    uint32_t resp_len = sizeof(resp);
+    uint32_t cmd = MCU_EXT_CMD(MCU_EXT_CMD_EFUSE_ACCESS) | MCU_CMD_FIELD_QUERY;
+    int ret = mt7921_mcu_cmd_word(mcu, cmd, req, sizeof(req), true, resp, &resp_len, 3000);
+    if (ret != 0 || resp_len < MCU_RXD_LEN + 8 + MT7921_EEPROM_BLOCK_SIZE) return -1;
+
+    uint8_t *body = resp + MCU_RXD_LEN;
+    if (valid) {
+        *valid = CFSwapInt32LittleToHost(*(uint32_t*)(body + 4));
+    }
+    memcpy(data, body + 8, MT7921_EEPROM_BLOCK_SIZE);
+    return 0;
+}

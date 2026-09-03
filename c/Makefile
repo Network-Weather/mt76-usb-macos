@@ -6,7 +6,7 @@ CFLAGS ?= -Wall -Wextra -O2 -std=c11
 FRAMEWORKS = -framework IOKit -framework CoreFoundation
 
 SMOKE_OBJS = mt7921_smoke.o mt7921_dev.o mt7921_mcu.o mt7921_usb.o mt7921_rxd.o
-TEST_OBJS = test_rxd.o mt7921_rxd.o mt7921_mcu.o mt7921_usb.o
+TEST_OBJS = test_rxd.o mt7921_rxd.o mt7921_mcu.o mt7921_usb.o mt7921_dev.o
 
 all: mt7921_smoke test_rxd
 

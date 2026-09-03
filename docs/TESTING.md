@@ -194,6 +194,117 @@ Result `pass` on all 43 channels with 1,244 decoded frames: 377 on 2.4 GHz, 683 
 6 GHz. The aggregate-only result is [hardware-smoke-reference.json](hardware-smoke-reference.json),
 which replaces the 2026-08-31 reference file; that earlier run's numbers remain above.
 
+## Attached-hardware validation: Pure C driver: 2026-09-02
+
+### Test bed
+
+| Item | Value |
+|---|---|
+| Host | Apple M1 Max |
+| OS | macOS 26.6, build 25G72 |
+| Compiler | Apple clang 17.0.0 (clang-1700.0.13.5), C11, `-Wall -Wextra -O2` |
+| USB device | MediaTek `Wireless_Device`, `0e8d:7961`, USB SuperSpeed (speed code 4) |
+| Driver access | Native IOKit (`IOUSBDeviceInterface500`, `IOUSBInterfaceInterface500`), unprivileged user |
+| RAM firmware SHA-256 | `b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9` |
+| Patch firmware SHA-256 | `a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6` |
+
+No Python runtime, PyUSB, or libusb was linked or invoked.
+
+### Passive tri-band sweep (`--plan all`)
+
+```bash
+./c/mt7921_smoke --plan all --dwell 0.5
+```
+
+- **Criterion**: Exit code 0 (`status: pass`), all 43 channels scanned, zero non-timeout USB errors, zero undecoded transfers.
+- **Result**: `status: "pass"` across 43 channels (2.4 GHz, 5 GHz, and 6 GHz PSC) with 1,333 decoded frames: 282 on 2.4 GHz, 893 on 5 GHz, and 158 on 6 GHz. Zero undecoded transfers, zero non-timeout USB errors.
+
+### On-die thermal telemetry
+
+```bash
+./c/mt7921_smoke --temp
+```
+
+- **Criterion**: Send `MCU_EXT_CMD_THERMAL_CTRL` (`0x2c`), read signed temperature in °C, check non-negative and within operating limits (20°C–80°C), exit 0.
+- **Result**: Output `Die temperature: 32 C` (exit code 0).
+
+### Raw EFUSE block query and sensitive data masking
+
+```bash
+./c/mt7921_smoke --read-efuse 0x000
+```
+
+- **Criterion**: Send `MCU_EXT_CMD_EFUSE_ACCESS` (`0x01`) query for block `0x000`, confirm chip ID `0x7961` (`61 79`) in bytes 0–1, `valid=1`, and ensure MAC address bytes (offsets 0x004..0x009) are masked with `xx` unless `--acknowledge-sensitive-raw-efuse` is passed.
+- **Result**: Output `EFUSE [0x000] (valid=0x00000001): 61 79 00 00 xx xx xx xx xx xx 00 00 00 00 00 00 [MAC redacted; pass --acknowledge-sensitive-raw-efuse to display]` (exit code 0).
+
+### Rate-limited 2.4 GHz probe request submission to USB
+
+```bash
+./c/mt7921_smoke --plan quick --dwell 0.5 --inject 3 --acknowledge-experimental-transmit
+```
+
+- **Criterion**: Submit exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and submit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted by USB endpoint without timeout or I/O errors, chip alive after submission, exit 0 (`status: pass`).
+- **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
+*(Note: Without firmware TX status reporting enabled or an independent RF receiver recording over-the-air packets, bulk-write acceptance establishes successful host-to-device USB delivery and firmware acceptance, but does not prove over-the-air RF radiation.)*
+
+### Radiotap PCAP export with Rate, MCS, VHT, and HE metadata
+
+```bash
+# Capture live frames across bands
+./c/mt7921_smoke --plan quick --dwell 0.5 --pcap /tmp/live_test.pcap
+tcpdump -r /tmp/live_test.pcap -c 5
+```
+
+- **Criterion**: Export PCAP with link type `IEEE802_11_RADIO` (127), containing valid Radiotap headers with rate (CCK/OFDM), MCS (HT), VHT, and HE data words matching upstream definitions without malformed errors in `tcpdump` or Wireshark.
+- **Result**:
+  - Live legacy and HT frames captured over the air and verified via `tcpdump` and `tshark`:
+    ```text
+    $ tcpdump -r /tmp/live_test.pcap -c 2
+    reading from file /tmp/live_test.pcap, link-type IEEE802_11_RADIO (802.11 plus radiotap header)
+    20:15:42.673550 1.0 Mb/s 2412 MHz 11b -39dBm signal Data IV:ffc7 Pad 20 KeyID 1
+    20:15:42.673653 1.0 Mb/s 2412 MHz 11b -69dBm signal Beacon ([REDACTED_SSID]) [5.5* 11.0* 1.0* 2.0* 6.0 12.0 24.0 48.0 Mbit]
+    ```
+    ```text
+    $ tshark -r /tmp/live_test.pcap -Y "radiotap.mcs" -O radiotap
+    MCS information
+        Known MCS information: 0x07, Bandwidth, MCS index, Guard interval
+        Bandwidth: 20 MHz (0)
+        Guard interval: short (1)
+        MCS index: 3
+    [Data Rate: 28.9 Mb/s]
+    ```
+  - Standard HT, VHT, HE-SU, HE-SU+STBC, HE-MU (52-tone RU), and HE-ER-SU (106-tone RU) metadata verified by unit tests ([`c/test_rxd.c`](../c/test_rxd.c)) and disassembled by `tshark`:
+    ```text
+    $ tshark -r /tmp/test_c_writer.pcap -O radiotap
+    # Frame 3: VHT (80 MHz, MCS 9, NSS 2, SGI)
+    VHT information
+        Known VHT information: 0x0045, STBC, Guard interval, Bandwidth
+        STBC: Off
+        Guard interval: short (1)
+        Bandwidth: 80 MHz (4)
+        User 0: MCS 9, Spatial streams 0: 2, Data Rate: 866.6 Mb/s
+
+    # Frame 5: HE-SU with STBC (80 MHz, MCS 7, NSS 1, NSTS 2)
+    HE information
+        HE Data 3: STBC known, STBC: 0x1
+        HE Data 5: 80 MHz, GI: 1.6us
+        HE Data 6: 2 space-time streams (0x2)
+
+    # Frame 6: HE-MU on 52-tone RU (RU offset 3, MCS 5)
+    HE information
+        HE Data 1: PPDU Format: HE_MU (0x2)
+        HE Data 2: RU allocation offset: 0x03, RU allocation offset known: Known
+        HE Data 3: data MCS: 0x5
+        HE Data 5: data Bandwidth/RU allocation: 52-tone RU (0x5)
+        HE Data 6: 1 space-time stream (0x1)
+
+    # Frame 7: HE-ER-SU on 106-tone RU (MCS 0)
+    HE information
+        HE Data 1: PPDU Format: HE_EXT_SU (0x1)
+        HE Data 5: data Bandwidth/RU allocation: 106-tone RU (0x6)
+        HE Data 6: 1 space-time stream (0x1)
+    ```
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

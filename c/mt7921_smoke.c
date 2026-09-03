@@ -142,6 +142,7 @@ static void emit_json(const char *status,
                       const char *patch_sha,
                       const char *ram_sha,
                       bool device_opened,
+                      int32_t temp_c,
                       const char *err_type,
                       const char *err_msg,
                       double duration) {
@@ -223,6 +224,9 @@ static void emit_json(const char *status,
     if (device_opened) {
         printf("  \"device\": {\n");
         printf("    \"driver\": \"mt7921_c_iokit\",\n");
+        if (temp_c >= 0) {
+            printf("    \"temperature_c\": %d,\n", temp_c);
+        }
         printf("    \"usb_id\": \"0e8d:7961\",\n");
         printf("    \"usb_speed_code\": 4,\n");
         printf("    \"wifi_interface\": 3\n");
@@ -300,12 +304,20 @@ static void emit_json(const char *status,
     printf("}\n");
 }
 
+#define MAX_INJECT_COUNT 10
+#define INJECT_PACE_US   50000
+
 int main(int argc, char **argv) {
     const char *plan_name = "all";
     double dwell = 0.75;
     const char *fw_dir = NULL;
     const char *pcap_file = NULL;
     bool verbose = false;
+    uint32_t inject_count = 0;
+    bool ack_experimental_tx = false;
+    bool ack_sensitive_efuse = false;
+    bool cmd_temp_only = false;
+    int32_t cmd_efuse_offset = -1;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--plan") == 0 && i + 1 < argc) {
@@ -316,12 +328,54 @@ int main(int argc, char **argv) {
             fw_dir = argv[++i];
         } else if (strcmp(argv[i], "--pcap") == 0 && i + 1 < argc) {
             pcap_file = argv[++i];
+        } else if (strcmp(argv[i], "--inject") == 0 && i + 1 < argc) {
+            char *endptr = NULL;
+            long val = strtol(argv[++i], &endptr, 10);
+            if (!endptr || *endptr != '\0' || val <= 0 || val > MAX_INJECT_COUNT) {
+                fprintf(stderr, "Error: --inject count must be an integer between 1 and %d\n", MAX_INJECT_COUNT);
+                return 1;
+            }
+            inject_count = (uint32_t)val;
+        } else if (strcmp(argv[i], "--acknowledge-experimental-transmit") == 0) {
+            ack_experimental_tx = true;
+        } else if (strcmp(argv[i], "--acknowledge-sensitive-raw-efuse") == 0) {
+            ack_sensitive_efuse = true;
+        } else if (strcmp(argv[i], "--temp") == 0) {
+            cmd_temp_only = true;
+        } else if (strcmp(argv[i], "--read-efuse") == 0 && i + 1 < argc) {
+            char *endptr = NULL;
+            long val = strtol(argv[++i], &endptr, 0);
+            if (!endptr || *endptr != '\0' || val < 0 || val > 0x1000) {
+                fprintf(stderr, "Error: --read-efuse offset must be a non-negative integer (e.g. 0x000)\n");
+                return 1;
+            }
+            cmd_efuse_offset = (int32_t)val;
         } else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") == 0) {
             verbose = true;
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-            printf("Usage: %s [--plan quick|2.4|5|6|all] [--dwell <sec>] [--fw <fw_dir>] [--pcap <file>] [-v]\n", argv[0]);
+            printf("Usage: %s [options]\n", argv[0]);
+            printf("  --plan <quick|2.4|5|6|all>   Channel plan (default: all)\n");
+            printf("  --dwell <sec>                Dwell time per channel in seconds (default: 0.75)\n");
+            printf("  --fw <dir>                   Firmware directory (default: checks ./firmware, ../firmware)\n");
+            printf("  --pcap <file>                Export radiotap PCAP file\n");
+            printf("  --inject <N>                 Inject 1..10 probe requests total (2.4 GHz only, global cap)\n");
+            printf("  --acknowledge-experimental-transmit  Required flag when using --inject\n");
+            printf("  --temp                       Query and print on-die temperature and exit\n");
+            printf("  --read-efuse <hex_offset>    Read and print 16-byte efuse block and exit\n");
+            printf("  --acknowledge-sensitive-raw-efuse    Display unmasked MAC bytes in raw efuse output\n");
+            printf("  -v, --verbose                Verbose debug output\n");
             return 0;
         }
+    }
+
+    if (inject_count > 0 && !ack_experimental_tx) {
+        fprintf(stderr, "Error: packet injection is experimental and rate-limited; pass --acknowledge-experimental-transmit\n");
+        return 1;
+    }
+
+    if (inject_count > 0 && (strcmp(plan_name, "5") == 0 || strcmp(plan_name, "6") == 0)) {
+        fprintf(stderr, "Error: packet injection is restricted to 2.4 GHz (1 Mbps CCK); plan '%s' has no 2.4 GHz channels\n", plan_name);
+        return 1;
     }
 
     if (dwell < 0.05) dwell = 0.05;
@@ -395,7 +449,7 @@ int main(int argc, char **argv) {
         free(patch_blob);
         free(ram_blob);
         emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                  NULL, NULL, NULL, NULL, NULL, false,
+                  NULL, NULL, NULL, NULL, NULL, false, -1,
                   "FileNotFoundError", "required firmware is missing; run bash setup.sh",
                   get_time_sec() - t0);
         return 1;
@@ -406,7 +460,7 @@ int main(int argc, char **argv) {
         free(patch_blob);
         free(ram_blob);
         emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                  NULL, NULL, NULL, patch_sha, ram_sha, false,
+                  NULL, NULL, NULL, patch_sha, ram_sha, false, -1,
                   "RuntimeError", "firmware checksum mismatch; run bash setup.sh",
                   get_time_sec() - t0);
         return 1;
@@ -420,7 +474,7 @@ int main(int argc, char **argv) {
             free(patch_blob);
             free(ram_blob);
             emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                      NULL, NULL, NULL, patch_sha, ram_sha, false,
+                      NULL, NULL, NULL, patch_sha, ram_sha, false, -1,
                       "IOError", "failed to open requested pcap file",
                       get_time_sec() - t0);
             return 1;
@@ -438,7 +492,7 @@ int main(int argc, char **argv) {
         free(ram_blob);
         if (pcap_f) pcap_writer_close(pcap_f);
         emit_json("unsupported", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                  NULL, NULL, NULL, patch_sha, ram_sha, false,
+                  NULL, NULL, NULL, patch_sha, ram_sha, false, -1,
                   "RuntimeError", "device 0e8d:7961 not found",
                   get_time_sec() - t0);
         return 3; /* unsupported */
@@ -456,10 +510,63 @@ int main(int argc, char **argv) {
         free(ram_blob);
         if (pcap_f) pcap_writer_close(pcap_f);
         emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                  &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                  &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, -1,
                   "RuntimeError", "bringup or calibration failed",
                   get_time_sec() - t0);
         return 1;
+    }
+
+    /* Query on-die temperature */
+    int32_t temp_c = -1;
+    int tret = mt7921_dev_get_temperature(&dev, &temp_c);
+
+    if (cmd_temp_only) {
+        mt7921_dev_close(&dev);
+        free(all_chans);
+        free(patch_blob);
+        free(ram_blob);
+        if (pcap_f) pcap_writer_close(pcap_f);
+        if (tret != 0 || temp_c < 0) {
+            fprintf(stderr, "Error: failed to query on-die temperature from MCU\n");
+            return 1;
+        }
+        printf("Die temperature: %d C\n", temp_c);
+        return 0;
+    }
+
+    if (cmd_efuse_offset >= 0) {
+        uint8_t blk[16];
+        uint32_t val = 0;
+        int eret = mt7921_dev_read_efuse(&dev, (uint32_t)cmd_efuse_offset, blk, &val);
+        mt7921_dev_close(&dev);
+        free(all_chans);
+        free(patch_blob);
+        free(ram_blob);
+        if (pcap_f) pcap_writer_close(pcap_f);
+
+        if (eret != 0) {
+            fprintf(stderr, "Error: failed to read efuse block at 0x%03x\n", cmd_efuse_offset);
+            return 1;
+        }
+
+        uint32_t base = (uint32_t)cmd_efuse_offset & ~15;
+        printf("EFUSE [0x%03x] (valid=0x%08x):", base, val);
+        bool redacted = false;
+        for (int b = 0; b < 16; b++) {
+            uint32_t byte_addr = base + b;
+            bool is_mac = (byte_addr >= 0x004 && byte_addr <= 0x009);
+            if (is_mac && !ack_sensitive_efuse) {
+                printf(" xx");
+                redacted = true;
+            } else {
+                printf(" %02x", blk[b]);
+            }
+        }
+        if (redacted) {
+            printf(" [MAC redacted; pass --acknowledge-sensitive-raw-efuse to display]");
+        }
+        printf("\n");
+        return 0;
     }
 
     if (mt7921_set_monitor_mode(&dev) != 0 || mt7921_set_sniffer(&dev, true, 0) != 0) {
@@ -469,13 +576,14 @@ int main(int argc, char **argv) {
         free(ram_blob);
         if (pcap_f) pcap_writer_close(pcap_f);
         emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                  &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                  &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
                   "RuntimeError", "failed to set monitor or sniffer mode",
                   get_time_sec() - t0);
         return 1;
     }
 
     uint8_t raw_buf[8192];
+    uint32_t total_injected_count = 0;
 
     for (size_t i = 0; i < plan_count; i++) {
         const chan_spec_t *spec = &plan_chans[i];
@@ -492,7 +600,7 @@ int main(int argc, char **argv) {
             char err_buf[128];
             snprintf(err_buf, sizeof(err_buf), "failed to set channel info for %s channel %u", spec->band, spec->channel);
             emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                      &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                      &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
                       "RuntimeError", err_buf,
                       get_time_sec() - t0);
             return 1;
@@ -506,13 +614,63 @@ int main(int argc, char **argv) {
             char err_buf[128];
             snprintf(err_buf, sizeof(err_buf), "failed to configure sniffer for %s channel %u", spec->band, spec->channel);
             emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                      &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+                      &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
                       "RuntimeError", err_buf,
                       get_time_sec() - t0);
             return 1;
         }
 
         usleep(50000); /* 50ms settling */
+
+        /* Optional packet injection test: restricted strictly to 2.4 GHz channels where 1 Mbps CCK is valid */
+        if (inject_count > 0 && spec->band_idx == 0 && total_injected_count < inject_count) {
+            uint32_t to_inject = inject_count - total_injected_count;
+            uint8_t dummy_mac[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x01 };
+            uint8_t pbuf[128];
+            for (uint32_t k = 0; k < to_inject; k++) {
+                int plen = mt7921_build_probe_request(pbuf, sizeof(pbuf), dummy_mac, "", (uint16_t)(total_injected_count + k));
+                if (plen <= 0) {
+                    mt7921_dev_close(&dev);
+                    free(all_chans);
+                    free(patch_blob);
+                    free(ram_blob);
+                    if (pcap_f) pcap_writer_close(pcap_f);
+                    emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                              &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
+                              "RuntimeError", "failed to build probe request frame",
+                              get_time_sec() - t0);
+                    return 1;
+                }
+                int iret = mt7921_inject(&dev, pbuf, (size_t)plen, 0, (uint16_t)(total_injected_count + k), 0);
+                if (iret != 0) {
+                    bs->usb_errors++;
+                    mt7921_dev_close(&dev);
+                    free(all_chans);
+                    free(patch_blob);
+                    free(ram_blob);
+                    if (pcap_f) pcap_writer_close(pcap_f);
+                    emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                              &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
+                              "RuntimeError", "bulk write for packet injection failed",
+                              get_time_sec() - t0);
+                    return 1;
+                }
+                usleep(INJECT_PACE_US);
+            }
+            total_injected_count += to_inject;
+            if (!mt7921_is_alive(&dev)) {
+                mt7921_dev_close(&dev);
+                free(all_chans);
+                free(patch_blob);
+                free(ram_blob);
+                if (pcap_f) pcap_writer_close(pcap_f);
+                emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                          &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
+                          "RuntimeError", "chip died following packet injection",
+                          get_time_sec() - t0);
+                return 1;
+            }
+        }
 
         double deadline = get_time_sec() + dwell;
         uint32_t ch_transfers = 0;
@@ -571,7 +729,7 @@ int main(int argc, char **argv) {
     const char *status = pass ? "pass" : "inconclusive";
 
     emit_json(status, plan_name, dwell, plan_count, req_24, req_5, req_6,
-              &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true,
+              &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
               NULL, NULL, duration);
 
     return pass ? 0 : 2;
