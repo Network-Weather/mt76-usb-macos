@@ -341,7 +341,7 @@ int mt7921_build_probe_request(uint8_t *buf, size_t max_len, const uint8_t src_m
 int mt7921_build_txwi(uint8_t *txwi_out, const uint8_t *frame, size_t frame_len, uint16_t seq, uint8_t pid) {
     if (!txwi_out || !frame || frame_len < 24) return -1;
 
-    uint16_t fc = CFSwapInt16LittleToHost(*(const uint16_t*)frame);
+    uint16_t fc = (uint16_t)(frame[0] | ((uint16_t)frame[1] << 8));
     uint32_t fc_type = (fc >> 2) & 0x3;
     uint32_t fc_stype = (fc >> 4) & 0xF;
     uint32_t hdrlen = 24;

@@ -258,14 +258,20 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
     return 0;
 }
 
+static inline uint32_t rxd_read_le32(const void *p) {
+    uint32_t val;
+    memcpy(&val, p, sizeof(val));
+    return CFSwapInt32LittleToHost(val);
+}
+
 int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *out) {
     if (!buf || buf_len < 24 || !out) return -1;
     memset(out, 0, sizeof(*out));
 
-    uint32_t rxd0 = CFSwapInt32LittleToHost(*(const uint32_t*)(buf + 0));
-    uint32_t rxd1 = CFSwapInt32LittleToHost(*(const uint32_t*)(buf + 4));
-    uint32_t rxd2 = CFSwapInt32LittleToHost(*(const uint32_t*)(buf + 8));
-    uint32_t rxd3 = CFSwapInt32LittleToHost(*(const uint32_t*)(buf + 12));
+    uint32_t rxd0 = rxd_read_le32(buf + 0);
+    uint32_t rxd1 = rxd_read_le32(buf + 4);
+    uint32_t rxd2 = rxd_read_le32(buf + 8);
+    uint32_t rxd3 = rxd_read_le32(buf + 12);
 
     uint32_t ptype = (rxd0 >> 27) & 0x1F;
     uint32_t pflag = (rxd0 >> RXD0_PKT_FLAG_SHIFT) & RXD0_PKT_FLAG_MASK;
@@ -305,7 +311,7 @@ int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *
 
     if (rxd1 & MT_RXD1_NORMAL_GROUP_4) {
         if (off + 16 > buf_len) return -1;
-        out->fc_rxd = (uint16_t)(CFSwapInt32LittleToHost(*(const uint32_t*)(buf + off)) & 0xFFFF);
+        out->fc_rxd = (uint16_t)(rxd_read_le32(buf + off) & 0xFFFF);
         off += 16;
     }
     if (rxd1 & MT_RXD1_NORMAL_GROUP_1) {
@@ -317,15 +323,15 @@ int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *
     if (rxd1 & MT_RXD1_NORMAL_GROUP_3) {
         if (off + 8 <= buf_len) {
             have_rxv_group3 = true;
-            rxv_group3[0] = CFSwapInt32LittleToHost(*(const uint32_t*)(buf + off));
-            rxv_group3[1] = CFSwapInt32LittleToHost(*(const uint32_t*)(buf + off + 4));
+            rxv_group3[0] = rxd_read_le32(buf + off);
+            rxv_group3[1] = rxd_read_le32(buf + off + 4);
         }
         off += 8;
         if (rxd1 & MT_RXD1_NORMAL_GROUP_5) {
             off += 24;
             if (off + 4 <= buf_len) {
                 have_rxv_group5 = true;
-                rxv_group5 = CFSwapInt32LittleToHost(*(const uint32_t*)(buf + off));
+                rxv_group5 = rxd_read_le32(buf + off);
             }
             off += 48;
         }
@@ -395,13 +401,16 @@ int pcap_writer_open(const char *filename, FILE **f_out) {
     uint32_t le_snap = CFSwapInt32HostToLittle(snaplen);
     uint32_t le_link = CFSwapInt32HostToLittle(linktype);
 
-    fwrite(&le_magic, 4, 1, f);
-    fwrite(&le_major, 2, 1, f);
-    fwrite(&le_minor, 2, 1, f);
-    fwrite(&le_zone, 4, 1, f);
-    fwrite(&le_sig, 4, 1, f);
-    fwrite(&le_snap, 4, 1, f);
-    fwrite(&le_link, 4, 1, f);
+    if (fwrite(&le_magic, 4, 1, f) != 1 ||
+        fwrite(&le_major, 2, 1, f) != 1 ||
+        fwrite(&le_minor, 2, 1, f) != 1 ||
+        fwrite(&le_zone, 4, 1, f) != 1 ||
+        fwrite(&le_sig, 4, 1, f) != 1 ||
+        fwrite(&le_snap, 4, 1, f) != 1 ||
+        fwrite(&le_link, 4, 1, f) != 1) {
+        fclose(f);
+        return -1;
+    }
 
     *f_out = f;
     return 0;
@@ -554,13 +563,14 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
     uint32_t le_usec = CFSwapInt32HostToLittle((uint32_t)tv.tv_usec);
     uint32_t le_len = CFSwapInt32HostToLittle(total_packet_len);
 
-    fwrite(&le_sec, 4, 1, f);
-    fwrite(&le_usec, 4, 1, f);
-    fwrite(&le_len, 4, 1, f);
-    fwrite(&le_len, 4, 1, f);
-
-    fwrite(rt_buf, rt_len, 1, f);
-    fwrite(rf->frame, rf->frame_len, 1, f);
+    if (fwrite(&le_sec, 4, 1, f) != 1 ||
+        fwrite(&le_usec, 4, 1, f) != 1 ||
+        fwrite(&le_len, 4, 1, f) != 1 ||
+        fwrite(&le_len, 4, 1, f) != 1 ||
+        fwrite(rt_buf, rt_len, 1, f) != 1 ||
+        fwrite(rf->frame, rf->frame_len, 1, f) != 1) {
+        return -1;
+    }
     return 0;
 }
 

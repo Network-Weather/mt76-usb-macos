@@ -96,8 +96,10 @@ static uint8_t *read_file(const char *path, size_t *out_len, char *out_sha256) {
     if (out_sha256) {
         unsigned char md[CC_SHA256_DIGEST_LENGTH];
         CC_SHA256(buf, (CC_LONG)sz, md);
+        static const char hex_digits[] = "0123456789abcdef";
         for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) {
-            sprintf(out_sha256 + (i * 2), "%02x", md[i]);
+            out_sha256[i * 2] = hex_digits[(md[i] >> 4) & 0x0F];
+            out_sha256[i * 2 + 1] = hex_digits[md[i] & 0x0F];
         }
         out_sha256[64] = '\0';
     }

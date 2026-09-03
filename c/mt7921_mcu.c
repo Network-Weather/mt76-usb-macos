@@ -15,6 +15,24 @@ static uint64_t current_time_ms(void) {
     return (uint64_t)tv.tv_sec * 1000ULL + (uint64_t)tv.tv_usec / 1000ULL;
 }
 
+static inline uint16_t mcu_read_be16(const void *p) {
+    uint16_t val;
+    memcpy(&val, p, sizeof(val));
+    return CFSwapInt16BigToHost(val);
+}
+
+static inline uint32_t mcu_read_be32(const void *p) {
+    uint32_t val;
+    memcpy(&val, p, sizeof(val));
+    return CFSwapInt32BigToHost(val);
+}
+
+static inline uint32_t mcu_read_le32(const void *p) {
+    uint32_t val;
+    memcpy(&val, p, sizeof(val));
+    return CFSwapInt32LittleToHost(val);
+}
+
 void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb) {
     memset(mcu, 0, sizeof(*mcu));
     mcu->usb = usb;
@@ -227,7 +245,7 @@ int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
             continue;
         }
 
-        uint32_t rxd0 = CFSwapInt32LittleToHost(*(uint32_t*)raw);
+        uint32_t rxd0 = mcu_read_le32(raw);
         uint32_t pkt_type = (rxd0 >> 27) & 0x1F;
         uint32_t pkt_flag = (rxd0 >> RXD0_PKT_FLAG_SHIFT) & RXD0_PKT_FLAG_MASK;
 
@@ -265,11 +283,11 @@ int mt7921_parse_patch(const uint8_t *blob, size_t len, patch_hdr_t *out) {
     memcpy(out->platform, blob + 16, 4);
     out->platform[4] = '\0';
 
-    out->hw_sw_ver = CFSwapInt32BigToHost(*(uint32_t*)(blob + 20));
-    out->patch_ver = CFSwapInt32BigToHost(*(uint32_t*)(blob + 24));
-    out->checksum = CFSwapInt16BigToHost(*(uint16_t*)(blob + 28));
+    out->hw_sw_ver = mcu_read_be32(blob + 20);
+    out->patch_ver = mcu_read_be32(blob + 24);
+    out->checksum = mcu_read_be16(blob + 28);
 
-    out->n_region = CFSwapInt32BigToHost(*(uint32_t*)(blob + 44));
+    out->n_region = mcu_read_be32(blob + 44);
     if (out->n_region > MAX_PATCH_SECTIONS) out->n_region = MAX_PATCH_SECTIONS;
 
     size_t table_end = 96 + (size_t)out->n_region * 64;
@@ -277,13 +295,13 @@ int mt7921_parse_patch(const uint8_t *blob, size_t len, patch_hdr_t *out) {
 
     for (uint32_t i = 0; i < out->n_region; i++) {
         const uint8_t *sec = blob + 96 + (i * 64);
-        out->sections[i].type = CFSwapInt32BigToHost(*(uint32_t*)(sec + 0));
-        out->sections[i].offs = CFSwapInt32BigToHost(*(uint32_t*)(sec + 4));
-        out->sections[i].size = CFSwapInt32BigToHost(*(uint32_t*)(sec + 8));
-        out->sections[i].addr = CFSwapInt32BigToHost(*(uint32_t*)(sec + 12));
-        out->sections[i].len = CFSwapInt32BigToHost(*(uint32_t*)(sec + 16));
-        out->sections[i].sec_key_idx = CFSwapInt32BigToHost(*(uint32_t*)(sec + 20));
-        out->sections[i].align_len = CFSwapInt32BigToHost(*(uint32_t*)(sec + 24));
+        out->sections[i].type = mcu_read_be32(sec + 0);
+        out->sections[i].offs = mcu_read_be32(sec + 4);
+        out->sections[i].size = mcu_read_be32(sec + 8);
+        out->sections[i].addr = mcu_read_be32(sec + 12);
+        out->sections[i].len = mcu_read_be32(sec + 16);
+        out->sections[i].sec_key_idx = mcu_read_be32(sec + 20);
+        out->sections[i].align_len = mcu_read_be32(sec + 24);
 
         if (out->sections[i].offs > len || out->sections[i].len > len - out->sections[i].offs) {
             return -1;
@@ -314,8 +332,8 @@ int mt7921_parse_ram(const uint8_t *blob, size_t len, ram_trailer_t *out) {
     for (uint32_t i = 0; i < out->n_region; i++) {
         size_t base = t - (size_t)(out->n_region - i) * 40;
         const uint8_t *rg = blob + base;
-        out->regions[i].addr = CFSwapInt32LittleToHost(*(uint32_t*)(rg + 16));
-        out->regions[i].len = CFSwapInt32LittleToHost(*(uint32_t*)(rg + 20));
+        out->regions[i].addr = mcu_read_le32(rg + 16);
+        out->regions[i].len = mcu_read_le32(rg + 20);
         out->regions[i].feature_set = rg[24];
         out->regions[i].type = rg[25];
 
@@ -517,7 +535,7 @@ int mt7921_get_temperature(mt7921_mcu_t *mcu, int32_t *temp_c) {
     if (ret != 0 || resp_len < MCU_RXD_LEN + 8) return -1;
 
     uint8_t *body = resp + MCU_RXD_LEN;
-    *temp_c = (int32_t)CFSwapInt32LittleToHost(*(uint32_t*)(body + 4));
+    *temp_c = (int32_t)mcu_read_le32(body + 4);
     return 0;
 }
 
@@ -536,7 +554,7 @@ int mt7921_read_efuse(mt7921_mcu_t *mcu, uint32_t offset, uint8_t data[16], uint
 
     uint8_t *body = resp + MCU_RXD_LEN;
     if (valid) {
-        *valid = CFSwapInt32LittleToHost(*(uint32_t*)(body + 4));
+        *valid = mcu_read_le32(body + 4);
     }
     memcpy(data, body + 8, MT7921_EEPROM_BLOCK_SIZE);
     return 0;

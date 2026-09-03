@@ -96,3 +96,23 @@ Each is documented in full elsewhere; these are the ones that bite.
   here; site-survey orchestration, place or room naming, network-specific verdict rules, and
   anything that identifies a real network (SSIDs, BSSIDs, AP names, controller settings) do
   not. Evidence in docs stays chip-generic.
+
+## Review calibration
+
+- Base the review verdict on merge risk, not on whether any improvement can still be found. A
+  clean review is a valid outcome; do not manufacture requested changes to demonstrate rigor.
+- Separate must-fix findings from optional follow-ups. Correctness failures on supported paths,
+  security or privacy regressions, data loss, broken builds or tests, and violations of an
+  explicit public contract normally block. Narrow edge cases, diagnostic precision, stronger
+  future-proofing, and editorial improvements normally do not unless they materially mislead a
+  user or violate an explicit acceptance criterion.
+- Severity and disposition are related but distinct. For every finding, state the triggering
+  conditions, likely frequency, user impact, and available mitigation; then say explicitly
+  whether it should block the merge or be tracked afterward.
+- On a re-review, first verify that earlier blockers are resolved and avoid expanding scope merely
+  because the original issues are gone. Raise a newly discovered blocker only when its concrete
+  risk justifies delaying the change.
+- Calibrate the final recommendation to the whole evidence set: implementation risk, test and
+  sanitizer results, CI status, hardware or integration evidence where applicable, and remaining
+  uncertainty. When the remaining risk is bounded and non-critical, approve with clearly labeled
+  follow-ups instead of requesting changes.
