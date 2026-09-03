@@ -245,17 +245,20 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 
 - **Criterion**: Submit exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and submit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted by USB endpoint without timeout or I/O errors, chip alive after submission, exit 0 (`status: pass`).
 - **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
-*(Note: Without firmware TX status reporting enabled or an independent RF receiver recording over-the-air packets, bulk-write acceptance establishes successful host-to-device USB delivery and firmware acceptance, but does not prove over-the-air RF radiation.)*
+*(Note: Without firmware TX status reporting enabled or an independent RF receiver recording over-the-air packets, bulk-write acceptance establishes successful host-to-device USB delivery and USB transfer completion, but does not prove over-the-air RF radiation.)*
 
-### Radiotap PCAP export with Rate, MCS, VHT, and HE metadata
+### Radiotap PCAP export (Live Hardware Legacy/HT and Synthetic VHT/HE Writer)
+
+#### 1. Live hardware capture (Legacy and HT rates)
 
 ```bash
 # Capture live frames across bands
 ./c/mt7921_smoke --plan quick --dwell 0.5 --pcap /tmp/live_test.pcap
-tcpdump -r /tmp/live_test.pcap -c 5
+tcpdump -r /tmp/live_test.pcap -c 2
+tshark -r /tmp/live_test.pcap -Y "radiotap.mcs" -O radiotap
 ```
 
-- **Criterion**: Export PCAP with link type `IEEE802_11_RADIO` (127), containing valid Radiotap headers with rate (CCK/OFDM), MCS (HT), VHT, and HE data words matching upstream definitions without malformed errors in `tcpdump` or Wireshark.
+- **Criterion**: Export PCAP with link type `IEEE802_11_RADIO` (127), containing valid Radiotap headers with rate (CCK/OFDM) and MCS (HT) data words matching upstream definitions without malformed errors in `tcpdump` or Wireshark.
 - **Result**:
   - Live legacy and HT frames captured over the air and verified via `tcpdump` and `tshark`:
     ```text
@@ -273,7 +276,17 @@ tcpdump -r /tmp/live_test.pcap -c 5
         MCS index: 3
     [Data Rate: 28.9 Mb/s]
     ```
-  - Standard HT, VHT, HE-SU, HE-SU+STBC, HE-MU (52-tone RU), and HE-ER-SU (106-tone RU) metadata verified by unit tests ([`c/test_rxd.c`](../c/test_rxd.c)) and disassembled by `tshark`:
+
+#### 2. Synthetic writer validation (VHT, HE-SU, HE-SU+STBC, HE-MU, and HE-ER-SU)
+
+```bash
+# Generate reproducible synthetic test PCAP with --keep-pcap
+./c/test_rxd --keep-pcap
+tshark -r /tmp/test_c_writer.pcap -O radiotap
+```
+
+- **Criterion**: Synthetic PCAP writer creates records with VHT (80 MHz MCS 9), HE-SU (160 MHz MCS 11), HE-SU STBC (80 MHz MCS 7 NSTS 2), HE-MU (52-tone RU offset 3), HE-ER-SU (106-tone RU), and HE-ER-SU 40 MHz full-bandwidth without errors in `tshark`.
+- **Result**: `tshark` dissects all synthetic VHT and HE records cleanly:
     ```text
     $ tshark -r /tmp/test_c_writer.pcap -O radiotap
     # Frame 3: VHT (80 MHz, MCS 9, NSS 2, SGI)
@@ -302,6 +315,12 @@ tcpdump -r /tmp/live_test.pcap -c 5
     HE information
         HE Data 1: PPDU Format: HE_EXT_SU (0x1)
         HE Data 5: data Bandwidth/RU allocation: 106-tone RU (0x6)
+        HE Data 6: 1 space-time stream (0x1)
+
+    # Frame 8: HE-ER-SU 40 MHz full-bandwidth (MCS 0, 40 MHz)
+    HE information
+        HE Data 1: PPDU Format: HE_EXT_SU (0x1)
+        HE Data 5: data Bandwidth/RU allocation: 40 (0x1)
         HE Data 6: 1 space-time stream (0x1)
     ```
 

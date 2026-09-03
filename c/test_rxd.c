@@ -14,6 +14,9 @@
 #include <assert.h>
 #include <unistd.h>
 
+static bool g_keep_pcap = false;
+static const char *g_tmp_pcap = "/tmp/test_c_writer.pcap";
+
 static inline uint16_t read_le16(const uint8_t *p) {
     uint16_t val;
     memcpy(&val, p, sizeof(val));
@@ -135,7 +138,7 @@ static void test_decode_6ghz_psc(void) {
 }
 
 static void test_pcap_writer(void) {
-    const char *tmp_pcap = "/tmp/test_c_writer.pcap";
+    const char *tmp_pcap = g_tmp_pcap;
     FILE *f = NULL;
     int ret = pcap_writer_open(tmp_pcap, &f);
     assert(ret == 0 && f != NULL);
@@ -240,6 +243,27 @@ static void test_pcap_writer(void) {
     ret = pcap_writer_write_frame(f, &rf);
     assert(ret == 0);
 
+    /* Frame 8: HE-ER-SU 40 MHz full-bandwidth (non-106T, 484-tone, MCS 0, rate 17.2 Mbps) */
+    memset(&rf, 0, sizeof(rf));
+    rf.frame = frame_body;
+    rf.frame_len = sizeof(frame_body);
+    strncpy(rf.band, "5GHz", sizeof(rf.band));
+    rf.channel = 36;
+    rf.has_phy = true;
+    rf.phy.mode = MT_PHY_TYPE_HE_EXT_SU;
+    rf.phy.mode_name = "HE-ER-SU";
+    rf.phy.mcs = 0;
+    rf.phy.nss = 1;
+    rf.phy.nsts = 1;
+    rf.phy.bw_mhz = 40;
+    rf.phy.gi = 0;
+    rf.phy.stbc = false;
+    rf.phy.ru_tones = 484;
+    rf.phy.ru_offset = 0;
+    rf.phy.rate_mbps = 17.2;
+    ret = pcap_writer_write_frame(f, &rf);
+    assert(ret == 0);
+
     pcap_writer_close(f);
 
     /* Verify file exists, read back, and validate exact radiotap HE bytes */
@@ -333,9 +357,24 @@ static void test_pcap_writer(void) {
 
     assert((he4_d1 & 0x0003) == 1);         /* Format: HE-EXT-SU */
     assert((he4_d5 & 0x0F) == 6);           /* DATA_BW_RU_ALLOC_106T == 6 */
+    off += 16 + he4_incl_len;
 
-    unlink(tmp_pcap);
-    printf("PASS: test_pcap_writer\n");
+    /* 8th packet is HE-ER-SU 40 MHz full-bandwidth (non-106T) */
+    assert(off + 16 <= rd);
+    uint32_t he5_incl_len = read_le32(pcap_buf + off + 8);
+    assert(off + 16 + he5_incl_len <= rd);
+
+    uint8_t *rt5 = pcap_buf + off + 16;
+    uint16_t he5_d1 = read_le16(rt5 + 16);
+    uint16_t he5_d5 = read_le16(rt5 + 24);
+
+    assert((he5_d1 & 0x0003) == 1);         /* Format: HE-EXT-SU */
+    assert((he5_d5 & 0x0F) == 1);           /* DATA_BW_RU_ALLOC_40MHZ == 1 */
+
+    if (!g_keep_pcap) {
+        unlink(tmp_pcap);
+    }
+    printf("PASS: test_pcap_writer%s\n", g_keep_pcap ? " (preserved test PCAP)" : "");
 }
 
 static void test_parse_ram_bounds_check(void) {
@@ -495,8 +534,8 @@ static void test_decode_phy_telemetry(void) {
     assert(phy.ru_tones == 26);
     assert(phy.rate_mbps == 0.9);
 
-    /* HE-EXT-SU MCS 0 on 106-tone RU (bit 5 in rxv0 set) -> 3.8 Mbps */
-    uint32_t rxv_he_er = (9U << 24) | (1U << 5) | (0U << 15) | (0U << 12) | (0U << 7) | 0U;
+    /* HE-EXT-SU MCS 0 on 106-tone RU (bw=40MHz, bit 5 in rxv0 set) -> 3.8 Mbps */
+    uint32_t rxv_he_er = (9U << 24) | (1U << 5) | (0U << 15) | (1U << 12) | (0U << 7) | 0U;
     ret = mt7921_decode_rxv(rxv_he_er, 0, &phy);
     assert(ret == 0);
     assert(phy.ru_tones == 106);
@@ -521,10 +560,31 @@ static void test_decode_phy_telemetry(void) {
     assert(phy.ru_tones == 52);
     assert(phy.ru_offset == 3);
 
+    /* HE-ER-SU 40MHz without 106-tone flag (full 40 MHz, nsd=468, rate=17.2 Mbps at MCS 0, GI 0.8us) */
+    uint32_t rxv_he_er_40mhz = (9U << 24) /* mode 9 */ | (0U << 15) /* GI 0.8us */ | (1U << 12) /* 40 MHz */ | (0U << 7) | 0U /* MCS 0 */;
+    ret = mt7921_decode_rxv(rxv_he_er_40mhz, 0, &phy);
+    assert(ret == 0);
+    assert(phy.mode == MT_PHY_TYPE_HE_EXT_SU);
+    assert(phy.bw_mhz == 40);
+    assert(phy.ru_tones == 484);
+    assert(phy.rate_mbps == 17.2);
+
     printf("PASS: test_decode_phy_telemetry\n");
 }
 
-int main(void) {
+int main(int argc, char **argv) {
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--keep-pcap") == 0) {
+            g_keep_pcap = true;
+        } else if (strcmp(argv[i], "--pcap") == 0 && i + 1 < argc) {
+            g_keep_pcap = true;
+            g_tmp_pcap = argv[++i];
+        }
+    }
+    if (getenv("KEEP_TEST_PCAP")) {
+        g_keep_pcap = true;
+    }
+
     printf("Running mt7921_rxd offline unit tests...\n");
     test_decode_24ghz_beacon();
     test_decode_5ghz_data();

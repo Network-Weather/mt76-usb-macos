@@ -234,12 +234,12 @@ int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy) {
                     nsd = (bw_mhz == 160) ? 1960.0 : ((bw_mhz == 80) ? 980.0 : ((bw_mhz == 40) ? 468.0 : 234.0));
                 }
             } else if (mode == MT_PHY_TYPE_HE_EXT_SU) {
-                if (rxv0 & (1U << 5)) { /* MT_PRXV_TX_ER_SU_106T */
+                if (bw_mhz == 40 && (rxv0 & (1U << 5))) { /* MT_PRXV_TX_ER_SU_106T */
                     ru_tones = 106;
                     nsd = 102.0;
                 } else {
-                    ru_tones = 242;
-                    nsd = 234.0;
+                    ru_tones = (bw_mhz == 40) ? 484 : 242;
+                    nsd = (bw_mhz == 40) ? 468.0 : 234.0;
                 }
             } else {
                 /* HE_SU uses full channel bandwidth */
@@ -523,7 +523,7 @@ int pcap_writer_write_frame(FILE *f, const mt7921_rxd_frame_t *rf) {
             else if (rf->phy.ru_tones == 1992) he_bw_ru = 10;
             else he_bw_ru = (rf->phy.bw_mhz == 160) ? 3 : ((rf->phy.bw_mhz == 80) ? 2 : ((rf->phy.bw_mhz == 40) ? 1 : 0));
         } else if (rf->phy.mode == MT_PHY_TYPE_HE_EXT_SU) {
-            he_bw_ru = (rf->phy.ru_tones == 106) ? 6 : 0;
+            he_bw_ru = (rf->phy.ru_tones == 106) ? 6 : ((rf->phy.bw_mhz == 40) ? 1 : 0);
         } else {
             he_bw_ru = (rf->phy.bw_mhz == 160) ? 3 : ((rf->phy.bw_mhz == 80) ? 2 : ((rf->phy.bw_mhz == 40) ? 1 : 0));
         }
