@@ -5,7 +5,11 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+- C decoders convert RCPI to dBm as `rcpi / 2 - 110` with integer division, matching upstream
+  `to_rssi()` and the Python decoders; the previous `(rcpi - 220) / 2` truncated toward zero and
+  read odd RCPI values 1 dB high.
 
 ## [0.3.0] - 2026-09-03
 

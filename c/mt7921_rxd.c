@@ -379,7 +379,7 @@ int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *
         bool found = false;
         for (int c = 0; c < 4; c++) {
             uint8_t rcpi = (uint8_t)((rcpi_word >> (c * 8)) & 0xFF);
-            int val = ((int)rcpi - 220) / 2;
+            int val = (int)rcpi / 2 - 110; /* to_rssi(): rcpi / 2 - 110, integer division as upstream */
             if (val < 0) {
                 if (!found || val > max_rssi) {
                     max_rssi = (int8_t)val;

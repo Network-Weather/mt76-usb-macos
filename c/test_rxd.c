@@ -658,10 +658,16 @@ static void test_connac3_prxv_rates_and_rssi(void) {
     uint8_t buf[512];
     mt7921_rxd_frame_t rf;
     /* HE-SU MCS 11, NSTS 2, 160 MHz, 0.8 us GI, RCPI 110/90/0/220 -> 2402.0 Mb/s, -55 dBm */
+    /* (odd RCPI 109 must give -56 as rxd.to_rssi does, not the truncated -55; checked below) */
     uint32_t prxv[4] = { prxv0(11, 1, true, 0), 0, prxv2(MT_PHY_TYPE_HE_SU, 3, 0, 0, false), 110 | (90 << 8) | (220u << 24) };
     size_t len = build_c3(buf, MT_RXD3_NORMAL_GROUP_3, false, 0, prxv, 194);
     assert(mt7921_rxd_decode_connac3(buf, (uint32_t)len, &rf) == 0 && rf.has_phy);
     assert(rf.rssi == -55);
+    prxv[3] = 109;
+    len = build_c3(buf, MT_RXD3_NORMAL_GROUP_3, false, 0, prxv, 194);
+    assert(mt7921_rxd_decode_connac3(buf, (uint32_t)len, &rf) == 0 && rf.rssi == -56);
+    prxv[3] = 110 | (90 << 8) | (220u << 24);
+    len = build_c3(buf, MT_RXD3_NORMAL_GROUP_3, false, 0, prxv, 194);
     assert(rf.phy.mode == MT_PHY_TYPE_HE_SU && rf.phy.bw_mhz == 160 && rf.phy.nss == 2 && rf.phy.mcs == 11 && rf.phy.ldpc);
     assert(rf.phy.rate_mbps > 2401.9 && rf.phy.rate_mbps < 2402.1);
     /* EHT-MU MCS 13, 2 streams, 160 MHz -> 2882.4 Mb/s */
