@@ -6,6 +6,10 @@ tagging a release:
 
 - verify the macOS-only GitHub Actions matrix is green;
 - run `pip-audit -r requirements.txt` against the current Python vulnerability database;
+- bring every doc to the release's truth **before** tagging: README status and matrices,
+  ROADMAP strikes and next items, this checklist, CHANGELOG section. `tests/test_release_docs.py`
+  fails the release commit's CI when the CHANGELOG, README, or this file do not name the
+  declared version;
 - review [TESTING.md](TESTING.md) and keep its current/previous/untested distinctions;
 - review [../RELATED_WORK.md](../RELATED_WORK.md) and retain the direct transcription source,
   in-tree Linux integration, firmware source, and both peer projects in release notes and
