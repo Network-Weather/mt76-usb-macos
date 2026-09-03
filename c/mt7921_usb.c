@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <stdarg.h>
 
 #define VEND_TIMEOUT_MS 1000
 #define VEND_RETRIES    10
@@ -18,130 +19,236 @@ static uint64_t current_time_ms(void) {
     return (uint64_t)tv.tv_sec * 1000ULL + (uint64_t)tv.tv_usec / 1000ULL;
 }
 
-int mt7921_usb_open(mt7921_usb_t *usb) {
+static char g_last_error[256];
+
+const char *mt7921_usb_last_error(void) { return g_last_error; }
+
+static void set_error(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(g_last_error, sizeof(g_last_error), fmt, ap);
+    va_end(ap);
+}
+
+static int registry_u16(io_service_t service, CFStringRef key, uint16_t *out) {
+    CFTypeRef ref = IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0);
+    if (!ref) return -1;
+    int ok = -1;
+    if (CFGetTypeID(ref) == CFNumberGetTypeID()) {
+        SInt32 v = 0;
+        if (CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &v)) {
+            *out = (uint16_t)v;
+            ok = 0;
+        }
+    }
+    CFRelease(ref);
+    return ok;
+}
+
+/* Walk one interface's pipes the way mt76u_set_endpoints walks its endpoint descriptors:
+ * bulk endpoints only, positional, first MT_N_BULK_IN IN and MT_N_BULK_OUT OUT. Returns 1 when
+ * the interface qualifies and fills the role tables, 0 when it does not. */
+static int assign_endpoints(IOUSBInterfaceInterface **intf, mt7921_usb_t *out) {
+    UInt8 num_pipes = 0;
+    if ((*intf)->GetNumEndpoints(intf, &num_pipes) != KERN_SUCCESS) return 0;
+    int n_in = 0, n_out = 0;
+    for (UInt8 i = 1; i <= num_pipes; i++) {
+        UInt8 direction = 0, number = 0, transfer_type = 0, interval = 0;
+        UInt16 mps = 0;
+        if ((*intf)->GetPipeProperties(intf, i, &direction, &number, &transfer_type, &mps, &interval) != KERN_SUCCESS) {
+            continue;
+        }
+        if (transfer_type != kUSBBulk) continue;
+        if (direction == kUSBIn) {
+            if (n_in < MT_N_BULK_IN) {
+                out->in_eps[n_in] = (uint8_t)(0x80 | number);
+                out->in_pipes[n_in] = i;
+                n_in++;
+            }
+        } else if (n_out < MT_N_BULK_OUT) {
+            out->out_eps[n_out] = number;
+            out->out_pipes[n_out] = i;
+            n_out++;
+        }
+    }
+    return (n_in == MT_N_BULK_IN && n_out == MT_N_BULK_OUT) ? 1 : 0;
+}
+
+int mt7921_usb_open(mt7921_usb_t *usb, const char *usb_id) {
     if (!usb) return -1;
     memset(usb, 0, sizeof(*usb));
+    g_last_error[0] = '\0';
 
-    CFMutableDictionaryRef matchingDict = IOServiceMatching(kIOUSBDeviceClassName);
-    if (!matchingDict) return -1;
+    uint16_t want_vid = 0, want_pid = 0;
+    bool filter = false;
+    if (!usb_id) usb_id = getenv("MT76_USB_ID");
+    if (usb_id && usb_id[0]) {
+        if (mt7921_parse_usb_id(usb_id, &want_vid, &want_pid) != 0) {
+            set_error("usb id must look like 0e8d:7961, got '%s'", usb_id);
+            return -1;
+        }
+        filter = true;
+    }
 
-    SInt32 vid = MT_VID, pid = MT_PID;
-    CFNumberRef vidNum = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &vid);
-    CFNumberRef pidNum = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &pid);
-    CFDictionarySetValue(matchingDict, CFSTR(kUSBVendorID), vidNum);
-    CFDictionarySetValue(matchingDict, CFSTR(kUSBProductID), pidNum);
-    CFRelease(vidNum);
-    CFRelease(pidNum);
-
+    /* Enumerate every USB device and keep the supported ones (registry properties only;
+     * nothing is opened yet). */
+    CFMutableDictionaryRef matching = IOServiceMatching(kIOUSBDeviceClassName);
+    if (!matching) return -1;
     io_iterator_t iterator;
-    kern_return_t kr = IOServiceGetMatchingServices(kIOMainPortDefault, matchingDict, &iterator);
-    if (kr != KERN_SUCCESS) return -1;
+    if (IOServiceGetMatchingServices(kIOMainPortDefault, matching, &iterator) != KERN_SUCCESS) return -1;
 
-    io_service_t deviceService = IOIteratorNext(iterator);
+    io_service_t chosen = 0;
+    int chosen_chip = -1;
+    uint16_t chosen_vid = 0, chosen_pid = 0;
+    int candidates = 0;
+    char seen[128] = "";
+    io_service_t service;
+    while ((service = IOIteratorNext(iterator)) != 0) {
+        uint16_t vid = 0, pid = 0;
+        if (registry_u16(service, CFSTR("idVendor"), &vid) == 0 && registry_u16(service, CFSTR("idProduct"), &pid) == 0) {
+            int chip = mt7921_chip_for_usb_id(vid, pid);
+            bool wanted = filter ? (vid == want_vid && pid == want_pid) : (chip >= 0);
+            if (wanted && chip >= 0) {
+                candidates++;
+                size_t used = strlen(seen);
+                snprintf(seen + used, sizeof(seen) - used, "%s%04x:%04x", used ? ", " : "", vid, pid);
+                if (!chosen) {
+                    chosen = service;
+                    chosen_chip = chip;
+                    chosen_vid = vid;
+                    chosen_pid = pid;
+                    continue; /* keep the reference */
+                }
+            } else if (wanted) {
+                set_error("device %04x:%04x is not a supported chip", vid, pid);
+            }
+        }
+        IOObjectRelease(service);
+    }
     IOObjectRelease(iterator);
-    if (!deviceService) return -1;
 
-    IOCFPlugInInterface **plugInInterface = NULL;
+    if (!chosen) {
+        if (!g_last_error[0]) {
+            set_error("device not found (looked for %s)", filter ? usb_id : "any supported id");
+        }
+        return -1;
+    }
+    if (candidates > 1) {
+        IOObjectRelease(chosen);
+        set_error("%d supported devices attached (%s); pass --usb-id or set MT76_USB_ID", candidates, seen);
+        return -1;
+    }
+
+    IOCFPlugInInterface **plugin = NULL;
     SInt32 score;
-    kr = IOCreatePlugInInterfaceForService(deviceService,
-                                           kIOUSBDeviceUserClientTypeID,
-                                           kIOCFPlugInInterfaceID,
-                                           &plugInInterface,
-                                           &score);
-    IOObjectRelease(deviceService);
-    if (kr != KERN_SUCCESS || !plugInInterface) return -1;
-
+    kern_return_t kr = IOCreatePlugInInterfaceForService(chosen, kIOUSBDeviceUserClientTypeID,
+                                                         kIOCFPlugInInterfaceID, &plugin, &score);
+    IOObjectRelease(chosen);
+    if (kr != KERN_SUCCESS || !plugin) {
+        set_error("IOCreatePlugInInterfaceForService failed (0x%x)", kr);
+        return -1;
+    }
     IOUSBDeviceInterface **dev = NULL;
-    HRESULT res = (*plugInInterface)->QueryInterface(plugInInterface,
-                                                     CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
-                                                     (LPVOID*)&dev);
-    (*plugInInterface)->Release(plugInInterface);
-    if (res || !dev) return -1;
+    HRESULT res = (*plugin)->QueryInterface(plugin, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID), (LPVOID*)&dev);
+    (*plugin)->Release(plugin);
+    if (res || !dev) {
+        set_error("QueryInterface(kIOUSBDeviceInterfaceID) failed");
+        return -1;
+    }
 
     kr = (*dev)->USBDeviceOpen(dev);
     if (kr != KERN_SUCCESS) {
         kr = (*dev)->USBDeviceOpenSeize(dev);
         if (kr != KERN_SUCCESS) {
             (*dev)->Release(dev);
+            set_error("USBDeviceOpen failed (0x%x)", kr);
             return -1;
         }
     }
     usb->dev = dev;
+    usb->vid = chosen_vid;
+    usb->pid = chosen_pid;
+    usb->chip = chosen_chip;
+    (*dev)->GetDeviceSpeed(dev, &usb->usb_speed);
 
-    /* Find Interface 3 */
+    /* Interface selection: class ff/ff/ff and exactly one interface with the required bulk
+     * endpoint shape (mt7925u_device_table / mt7921u_device_table match on class, and
+     * mt76u_set_endpoints fails unless it finds 2 IN and 6 OUT). */
     IOUSBFindInterfaceRequest request = {
         .bInterfaceClass = kIOUSBFindInterfaceDontCare,
         .bInterfaceSubClass = kIOUSBFindInterfaceDontCare,
         .bInterfaceProtocol = kIOUSBFindInterfaceDontCare,
         .bAlternateSetting = kIOUSBFindInterfaceDontCare
     };
-
-    io_iterator_t intfIterator;
-    kr = (*dev)->CreateInterfaceIterator(dev, &request, &intfIterator);
-    if (kr != KERN_SUCCESS) {
+    io_iterator_t intf_iter;
+    if ((*dev)->CreateInterfaceIterator(dev, &request, &intf_iter) != KERN_SUCCESS) {
         mt7921_usb_close(usb);
+        set_error("CreateInterfaceIterator failed");
         return -1;
     }
 
-    io_service_t intfService;
-    bool found_intf3 = false;
-    while ((intfService = IOIteratorNext(intfIterator)) != 0) {
-        IOCFPlugInInterface **intfPlugIn = NULL;
-        kr = IOCreatePlugInInterfaceForService(intfService,
-                                               kIOUSBInterfaceUserClientTypeID,
-                                               kIOCFPlugInInterfaceID,
-                                               &intfPlugIn,
-                                               &score);
-        IOObjectRelease(intfService);
-        if (kr == KERN_SUCCESS && intfPlugIn) {
-            IOUSBInterfaceInterface **intf = NULL;
-            res = (*intfPlugIn)->QueryInterface(intfPlugIn,
-                                                CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID),
-                                                (LPVOID*)&intf);
-            (*intfPlugIn)->Release(intfPlugIn);
-            if (!res && intf) {
-                UInt8 intfNum = 0;
-                (*intf)->GetInterfaceNumber(intf, &intfNum);
-                if (intfNum == WIFI_INTERFACE) {
-                    kr = (*intf)->USBInterfaceOpen(intf);
-                    if (kr != KERN_SUCCESS) {
-                        kr = (*intf)->USBInterfaceOpenSeize(intf);
-                    }
-                    if (kr == KERN_SUCCESS) {
-                        usb->intf = intf;
-                        found_intf3 = true;
+    int qualifying = 0;
+    char layout[160] = "";
+    io_service_t intf_service;
+    while ((intf_service = IOIteratorNext(intf_iter)) != 0) {
+        IOCFPlugInInterface **intf_plugin = NULL;
+        kr = IOCreatePlugInInterfaceForService(intf_service, kIOUSBInterfaceUserClientTypeID,
+                                               kIOCFPlugInInterfaceID, &intf_plugin, &score);
+        IOObjectRelease(intf_service);
+        if (kr != KERN_SUCCESS || !intf_plugin) continue;
+        IOUSBInterfaceInterface **intf = NULL;
+        res = (*intf_plugin)->QueryInterface(intf_plugin, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID), (LPVOID*)&intf);
+        (*intf_plugin)->Release(intf_plugin);
+        if (res || !intf) continue;
 
-                        /* Discover pipe numbers */
-                        UInt8 numPipes = 0;
-                        (*intf)->GetNumEndpoints(intf, &numPipes);
-                        for (UInt8 i = 1; i <= numPipes; i++) {
-                            UInt8 direction = 0, number = 0, transferType = 0, interval = 0;
-                            UInt16 maxPacketSize = 0;
-                            (*intf)->GetPipeProperties(intf, i, &direction, &number,
-                                                       &transferType, &maxPacketSize, &interval);
-                            uint8_t epAddr = (direction == 1 ? 0x80 : 0x00) | number;
-                            if (epAddr == EP_IN_PKT_RX) usb->pipe_rx = i;
-                            else if (epAddr == EP_IN_CMD_RESP) usb->pipe_cmd_resp = i;
-                            else if (epAddr == EP_OUT_INBAND_CMD) usb->pipe_out_cmd = i;
-                            else if (epAddr == EP_OUT_AC_BE) usb->pipe_out_scatter = i;
-                        }
-                    } else {
-                        (*intf)->Release(intf);
-                    }
-                } else {
-                    (*intf)->Release(intf);
-                }
+        UInt8 number = 0, cls = 0, sub = 0, proto = 0, neps = 0;
+        (*intf)->GetInterfaceNumber(intf, &number);
+        (*intf)->GetInterfaceClass(intf, &cls);
+        (*intf)->GetInterfaceSubClass(intf, &sub);
+        (*intf)->GetInterfaceProtocol(intf, &proto);
+        (*intf)->GetNumEndpoints(intf, &neps);
+        size_t used = strlen(layout);
+        snprintf(layout + used, sizeof(layout) - used, "%sintf %u class %02x/%02x/%02x eps %u",
+                 used ? "; " : "", number, cls, sub, proto, neps);
+
+        if (cls != 0xFF || sub != 0xFF || proto != 0xFF) {
+            (*intf)->Release(intf);
+            continue;
+        }
+        kr = (*intf)->USBInterfaceOpen(intf);
+        if (kr != KERN_SUCCESS) kr = (*intf)->USBInterfaceOpenSeize(intf);
+        if (kr != KERN_SUCCESS) {
+            (*intf)->Release(intf);
+            continue;
+        }
+        mt7921_usb_t probe = *usb;
+        if (assign_endpoints(intf, &probe)) {
+            qualifying++;
+            if (!usb->intf) {
+                memcpy(usb->in_eps, probe.in_eps, sizeof(probe.in_eps));
+                memcpy(usb->out_eps, probe.out_eps, sizeof(probe.out_eps));
+                memcpy(usb->in_pipes, probe.in_pipes, sizeof(probe.in_pipes));
+                memcpy(usb->out_pipes, probe.out_pipes, sizeof(probe.out_pipes));
+                usb->wifi_interface = number;
+                usb->intf = intf;
+                continue;
             }
         }
-        if (found_intf3) break;
+        (*intf)->USBInterfaceClose(intf);
+        (*intf)->Release(intf);
     }
-    IOObjectRelease(intfIterator);
+    IOObjectRelease(intf_iter);
 
-    if (!found_intf3) {
+    if (qualifying != 1 || !usb->intf) {
+        if (qualifying == 0) {
+            set_error("no interface with class ff/ff/ff and %d bulk IN + %d bulk OUT endpoints (%s)",
+                      MT_N_BULK_IN, MT_N_BULK_OUT, layout);
+        } else {
+            set_error("ambiguous layout: %d interfaces qualify (%s)", qualifying, layout);
+        }
         mt7921_usb_close(usb);
         return -1;
     }
-
     return 0;
 }
 
@@ -302,12 +409,11 @@ int mt7921_power_on(mt7921_usb_t *usb) {
     return mt7921_poll(usb, MT_CONN_ON_MISC, MT_TOP_MISC2_FW_PWR_ON, MT_TOP_MISC2_FW_PWR_ON, 500);
 }
 
+/* ep is an MT_ROLE_* handle: bit 7 selects the IN table, the low bits index the role. */
 static UInt8 pipe_for_ep(mt7921_usb_t *usb, uint8_t ep) {
-    if (ep == EP_IN_PKT_RX) return usb->pipe_rx;
-    if (ep == EP_IN_CMD_RESP) return usb->pipe_cmd_resp;
-    if (ep == EP_OUT_INBAND_CMD) return usb->pipe_out_cmd;
-    if (ep == EP_OUT_AC_BE) return usb->pipe_out_scatter;
-    return 0;
+    unsigned idx = ep & 0x7F;
+    if (ep & 0x80) return idx < MT_N_BULK_IN ? usb->in_pipes[idx] : 0;
+    return idx < MT_N_BULK_OUT ? usb->out_pipes[idx] : 0;
 }
 
 int mt7921_bulk_out(mt7921_usb_t *usb, uint8_t ep, const void *data, uint32_t len, uint32_t timeout_ms) {

@@ -1,10 +1,16 @@
 # Publication checklist
 
-The repository is suitable for a research-grade `0.1.0` publication, not a production
-driver claim. Before making it public or tagging a release:
+The repository is a research-grade publication, not a production driver claim. Releases so
+far: `0.1.0` (2026-09-02, MT7921U), `0.2.0` (2026-09-03, MT7925U and 160 MHz), and `0.3.0`
+(2026-09-03, C driver MT7925U and EHT radiotap). Before
+tagging a release:
 
 - verify the macOS-only GitHub Actions matrix is green;
 - run `pip-audit -r requirements.txt` against the current Python vulnerability database;
+- bring every doc to the release's truth **before** tagging: README status and matrices,
+  ROADMAP strikes and next items, this checklist, CHANGELOG section. `tests/test_release_docs.py`
+  fails the release commit's CI when the CHANGELOG, README, or this file do not name the
+  declared version;
 - review [TESTING.md](TESTING.md) and keep its current/previous/untested distinctions;
 - review [../RELATED_WORK.md](../RELATED_WORK.md) and retain the direct transcription source,
   in-tree Linux integration, firmware source, and both peer projects in release notes and
@@ -17,24 +23,24 @@ driver claim. Before making it public or tagging a release:
 - enable GitHub Issues and private vulnerability reporting (both on as of 2026-09-02);
 - add the GitHub description and topics below;
 - protect `main` by requiring CI and review for future changes; and
-- tag `v0.1.0` only after the release commit itself has passed
+- tag `vX.Y.Z` only after the release commit itself has passed
   `scripts/hardware_smoke.py --plan all`. Retain its redacted JSON result with the release
   records. Do not publish the ambient pcap; retain only its hash and aggregate counts.
 
-The `0.1.0` end-user installation is a Git clone plus `setup.sh`; publish a GitHub source
-release. The wheel contains the two importable Python modules but intentionally does not install
+The end-user installation is a Git clone plus `setup.sh`; publish a GitHub source release with
+the redacted smoke JSON attached. The wheel contains the two importable Python modules but intentionally does not install
 firmware or hardware scripts. Do **not** publish it to PyPI as a turnkey application until the
 firmware acquisition, command-line entry points, and supported Python API have a stable install
 contract. Building the wheel in CI currently checks packaging metadata and clean module import.
 
 ## GitHub discovery metadata
 
-The description and topics below were configured before the repository went public on
-2026-09-02 and verified present afterwards.
+The description below was set for 0.2.0 on 2026-09-03; the topics were configured before the
+repository went public on 2026-09-02 and verified present afterwards.
 
 Suggested repository description:
 
-> Userspace MediaTek mt76 USB driver for macOS: MT7921U (AWUS036AXML) working, MT7925U (A9000, Wi-Fi 7, 160 MHz) in progress. Passive 2.4/5/6 GHz radiotap capture via libusb, no kext or VM.
+> Userspace MediaTek mt76 USB driver for macOS: MT7921U (AWUS036AXML) and MT7925U (Nighthawk A9000, Wi-Fi 7, 160 MHz) passive 2.4/5/6 GHz radiotap capture via libusb, no kext or VM.
 
 Suggested topics:
 

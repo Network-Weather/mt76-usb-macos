@@ -1,6 +1,6 @@
-# MT7921U Pure C Monitor-Mode Driver & Smoke Validator
+# MT7921U / MT7925U Pure C Monitor-Mode Driver & Smoke Validator
 
-A userspace monitor-mode driver and hardware smoke validator for the MediaTek MT7921AU (USB `0e8d:7961`, e.g. ALFA AWUS036AXML) on macOS, implemented in pure C (C11) with **zero external dependencies**.
+A userspace monitor-mode driver and hardware smoke validator for the MediaTek MT7921AU (USB `0e8d:7961`, e.g. ALFA AWUS036AXML) and MT7925U (e.g. Netgear Nighthawk A9000, `0846:9072`) on macOS, implemented in pure C (C11) with **zero external dependencies**. The chip is selected from the adapter's USB id (`mt7921_chip.c`), and everything chip-specific reads a profile from it.
 
 ## Design & Zero Dependencies
 
@@ -16,25 +16,28 @@ It compiles with standard Apple `clang` included with Xcode / Command Line Tools
 ## Architectural Boundary
 
 This driver focuses strictly on MediaTek chipset-specific primitives:
-- Native IOKit USB pipe management and control requests
-- MCU command framing (standard and UNI formats)
-- Firmware scatter download and efuse calibration push
-- Connac2 TXWI (transmit) descriptor formatting and frame injection
-- Connac2 RXD/RXV (receive) processing and **hardware PHY telemetry** (P-RXV decoding: PHY generation CCK/OFDM/HT/VHT/HE, MCS index, spatial streams NSS, bandwidth, guard interval, and calculated data rate in Mbps)
-- Hardware monitor drop filters and channel switching
-- On-die thermal monitoring and raw efuse block access
+- Native IOKit USB device selection from a supported-id table, interface selection by class `ff/ff/ff` with positional bulk endpoint roles (as `mt76u_set_endpoints`), pipe management, and control requests
+- MCU command framing (standard and UNI formats) with per-chip geometry: connac2 (MT7921) or connac3 (MT7925) TXD word 1, reply header length, and the UNI ack option
+- Firmware scatter download, and the capability query and efuse calibration push in their CE/EXT (MT7921) or UNI (MT7925) encodings
+- Connac2 TXWI (transmit) descriptor formatting and frame injection (MT7921 only)
+- Radiotap pcap writing through EHT: legacy rate, HT MCS, VHT, HE, and for Wi-Fi 7 frames the U-SIG and EHT TLVs Wireshark 4.6 reads as 802.11be
+- Connac2 and connac3 RXD/RXV (receive) processing and **hardware PHY telemetry** (P-RXV decoding: PHY generation CCK/OFDM/HT/VHT/HE/EHT, MCS index incl. EHT 12/13, spatial streams NSS, bandwidth incl. 160 MHz, guard interval, and calculated data rate in Mbps)
+- Hardware monitor drop filters and tuning (`mt7921_tune`: CHANNEL_SWITCH plus the sniffer TLV on the MT7921, the TLV alone on the MT7925)
+- On-die thermal monitoring and raw efuse block access (MT7921 only)
 
 Generic 802.11 Information Element (IE) parsing intentionally does not belong in this driver. While hardware PHY telemetry is extracted directly from the MediaTek radio descriptors and encoded into standard IEEE 802.11 Radiotap rate/MCS headers, upper-layer protocol analysis is delegated to external tools such as Wireshark, `tcpdump`, or libpcap.
 
 ## Architecture
 
-- `mt7921_regs.h`: Register addresses, bitmasks, endpoint numbers, TXWI layout, and MCU vendor request opcodes transcribed from `mt76`.
+- `mt7921_regs.h`: Register addresses, bitmasks, endpoint roles, TXWI layout, MCU vendor request opcodes, and the MT7925 (connac3) constants transcribed from `mt76`.
+- `mt7921_chip.h` / `mt7921_chip.c`: The supported USB-id table, the per-chip profile (chip id, MCU geometry, WFSYS reset descriptor, firmware files and SHA-256 pins), and the UNI option rule.
+- `mt7921_rxd_connac3.c`: connac3 (MT7925) RX descriptor and P-RXV decoding into the same frame struct as the connac2 decoder.
 - `mt7921_usb.h` / `mt7921_usb.c`: Native IOKit device discovery, interface claim, pipe management, vendor control transfers, and bulk I/O with timeout differentiation (`MT7921_ERR_TIMEOUT` vs `MT7921_ERR_IO`).
 - `mt7921_mcu.h` / `mt7921_mcu.c`: MCU command framing (both non-UNI and UNI), sequence numbering, response demultiplexing on shared RX bulk endpoint, ROM patch parser/downloader, RAM firmware parser/downloader, on-die temperature sensor query, and raw efuse block reads.
-- `mt7921_dev.h` / `mt7921_dev.c`: WFSYS reset, DMA engine initialization, device bringup orchestration, monitor mode filters, channel tuning for 2.4 GHz, 5 GHz, and 6 GHz bands, 802.11 probe request generation, Connac2 TXWI descriptor framing, and packet injection.
-- `mt7921_rxd.h` / `mt7921_rxd.c`: Connac2 RX descriptor decoding, P-RXV hardware PHY telemetry decoding (`mt7921_decode_rxv`), 802.11 frame extraction, RCPI-to-RSSI translation, frame family classification, and radiotap pcap writing with rate and MCS metadata.
+- `mt7921_dev.h` / `mt7921_dev.c`: WFSYS reset (profile-driven), DMA engine initialization, device bringup orchestration, monitor mode filters (CE or UNI), `mt7921_tune` for 2.4 GHz, 5 GHz, and 6 GHz at 20/40/80/160 MHz, 802.11 probe request generation, Connac2 TXWI descriptor framing, and packet injection.
+- `mt7921_rxd.h` / `mt7921_rxd.c`: Connac2 RX descriptor decoding, P-RXV hardware PHY telemetry decoding (`mt7921_decode_rxv`), the shared rate arithmetic (`mt7921_phy_fill_rate`, HT through EHT), the per-chip decoder selector, 802.11 frame extraction, RCPI-to-RSSI translation, frame family classification, and radiotap pcap writing with rate and MCS metadata.
 - `mt7921_smoke.c`: Standalone CLI validator mimicking `scripts/hardware_smoke.py`. Emits structured, redacted JSON telemetry to stdout conforming to `docs/hardware-smoke.schema.json`.
-- `test_rxd.c`: Offline unit test suite validating descriptor parsing, frame extraction, radiotap output, RAM firmware bounds checks, probe request framing, and TXWI descriptor layout without hardware.
+- `test_rxd.c`: Offline unit test suite validating connac2 and connac3 descriptor parsing, frame extraction, radiotap output, RAM firmware bounds checks, probe request framing, TXWI descriptor layout, the chip table and profiles, and the MT7925 MCU TXD builders without hardware.
 
 ## Building
 
@@ -50,7 +53,7 @@ make test
 
 ## Running Hardware Smoke Test
 
-Requires the MT7921AU USB adapter and firmware blobs in `./firmware` (or specified via `--fw <dir>`):
+Requires a supported adapter and the firmware blobs in `./firmware` (or `--fw <dir>`, or `$MT76_FW_DIR`); `bash setup.sh` at the repository root fetches both chips' blobs. With two adapters attached, pick one with `--usb-id vvvv:pppp` or `$MT76_USB_ID`. The temperature, efuse, and injection options are MT7921-only and refuse on the MT7925:
 
 ```bash
 # Quick 3-band smoke test (channel 1 on 2.4 GHz, 36 on 5 GHz, 53 on 6 GHz PSC)
@@ -61,6 +64,9 @@ Requires the MT7921AU USB adapter and firmware blobs in `./firmware` (or specifi
 
 # Capture live frames to radiotap pcap
 ./mt7921_smoke --plan quick --dwell 1.0 --pcap capture.pcap
+
+# One channel at 160 MHz (MT7925) instead of a plan
+./mt7921_smoke --channel 6GHz:53:47:160 --dwell 10 --pcap wide.pcap
 tcpdump -r capture.pcap -c 10
 
 # Test experimental packet injection (rate-limited, requires explicit acknowledgement)
@@ -75,7 +81,9 @@ tcpdump -r capture.pcap -c 10
 
 ## Hardware Validation Baseline
 
-Detailed dated test criteria, commands, and results are documented in [`docs/TESTING.md`](../docs/TESTING.md#attached-hardware-validation-pure-c-driver-2026-09-02).
+Detailed dated test criteria, commands, and results are documented in [`docs/TESTING.md`](../docs/TESTING.md#attached-hardware-validation-pure-c-driver-2026-09-02) for the MT7921U and in [its MT7925U section](../docs/TESTING.md#pure-c-driver-on-the-mt7925u-2026-09-03).
+
+MT7925U, Netgear Nighthawk A9000 (`0846:9072`), 2026-09-03: firmware boot, monitor mode, and the full 43-channel sweep pass (1,825 frames decoded, 0 undecoded transfers, 0 USB errors); the sweep's pcap dissects in tshark; the 37 of 1,825 frames tshark flags are complete VHT NDP Announcements whose 8-bit sounding token Wireshark reads as an HE or Ranging variant, and beacons from one AP that carry a zero-length Supported Rates element (details in TESTING.md).
 
 Validation baseline on macOS against ALFA AWUS036AXML (`0e8d:7961`):
 - Cold & warm bringup: Verified live on hardware (including retained `FW_STATE` WFSYS reset recovery)

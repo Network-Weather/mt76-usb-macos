@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause-Clear */
 /* Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather */
-/* Redacted passive MT7921U hardware smoke validator in pure C. */
+/* Redacted passive MT7921U / MT7925U hardware smoke validator in pure C. */
 
 #include "mt7921_dev.h"
 #include "mt7921_rxd.h"
@@ -15,44 +15,50 @@
 #include <time.h>
 #include <CommonCrypto/CommonDigest.h>
 
-#define PATCH_NAME "WIFI_MT7961_patch_mcu_1_2_hdr.bin"
-#define RAM_NAME   "WIFI_RAM_CODE_MT7961_1.bin"
-#define PATCH_SHA256 "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6"
-#define RAM_SHA256   "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+/* Firmware names and SHA-256 pins come from the chip profile (mt7921_chip.c), chosen after the
+ * device is opened and its USB id is known. */
+
+/* Device identity for the JSON report, filled after mt7921_dev_open. */
+static char g_usb_id[16] = "unknown";
+static const char *g_chip_name = "unknown";
+static int g_wifi_interface = -1;
+static int g_usb_speed = -1;
 
 typedef struct {
     const char *band;
     uint8_t channel;
     uint8_t band_idx; /* 0 = 2.4GHz, 1 = 5GHz, 2 = 6GHz */
+    uint8_t center;   /* 0 = control channel */
+    uint16_t width;   /* 0 = 20 MHz */
 } chan_spec_t;
 
 static const chan_spec_t PLAN_QUICK[] = {
-    {"2.4GHz", 1, 0},
-    {"5GHz", 36, 1},
-    {"6GHz", 53, 2},
+    {"2.4GHz", 1, 0, 0, 0},
+    {"5GHz", 36, 1, 0, 0},
+    {"6GHz", 53, 2, 0, 0},
 };
 
 static const chan_spec_t PLAN_24[] = {
-    {"2.4GHz", 1, 0},
-    {"2.4GHz", 6, 0},
-    {"2.4GHz", 11, 0},
+    {"2.4GHz", 1, 0, 0, 0},
+    {"2.4GHz", 6, 0, 0, 0},
+    {"2.4GHz", 11, 0, 0, 0},
 };
 
 static const chan_spec_t PLAN_5[] = {
-    {"5GHz", 36, 1}, {"5GHz", 40, 1}, {"5GHz", 44, 1}, {"5GHz", 48, 1},
-    {"5GHz", 52, 1}, {"5GHz", 56, 1}, {"5GHz", 60, 1}, {"5GHz", 64, 1},
-    {"5GHz", 100, 1}, {"5GHz", 104, 1}, {"5GHz", 108, 1}, {"5GHz", 112, 1},
-    {"5GHz", 116, 1}, {"5GHz", 120, 1}, {"5GHz", 124, 1}, {"5GHz", 128, 1},
-    {"5GHz", 132, 1}, {"5GHz", 136, 1}, {"5GHz", 140, 1}, {"5GHz", 144, 1},
-    {"5GHz", 149, 1}, {"5GHz", 153, 1}, {"5GHz", 157, 1}, {"5GHz", 161, 1},
-    {"5GHz", 165, 1},
+    {"5GHz", 36, 1, 0, 0}, {"5GHz", 40, 1, 0, 0}, {"5GHz", 44, 1, 0, 0}, {"5GHz", 48, 1, 0, 0},
+    {"5GHz", 52, 1, 0, 0}, {"5GHz", 56, 1, 0, 0}, {"5GHz", 60, 1, 0, 0}, {"5GHz", 64, 1, 0, 0},
+    {"5GHz", 100, 1, 0, 0}, {"5GHz", 104, 1, 0, 0}, {"5GHz", 108, 1, 0, 0}, {"5GHz", 112, 1, 0, 0},
+    {"5GHz", 116, 1, 0, 0}, {"5GHz", 120, 1, 0, 0}, {"5GHz", 124, 1, 0, 0}, {"5GHz", 128, 1, 0, 0},
+    {"5GHz", 132, 1, 0, 0}, {"5GHz", 136, 1, 0, 0}, {"5GHz", 140, 1, 0, 0}, {"5GHz", 144, 1, 0, 0},
+    {"5GHz", 149, 1, 0, 0}, {"5GHz", 153, 1, 0, 0}, {"5GHz", 157, 1, 0, 0}, {"5GHz", 161, 1, 0, 0},
+    {"5GHz", 165, 1, 0, 0},
 };
 
 static const chan_spec_t PLAN_6[] = {
-    {"6GHz", 5, 2}, {"6GHz", 21, 2}, {"6GHz", 37, 2}, {"6GHz", 53, 2},
-    {"6GHz", 69, 2}, {"6GHz", 85, 2}, {"6GHz", 101, 2}, {"6GHz", 117, 2},
-    {"6GHz", 133, 2}, {"6GHz", 149, 2}, {"6GHz", 165, 2}, {"6GHz", 181, 2},
-    {"6GHz", 197, 2}, {"6GHz", 213, 2}, {"6GHz", 229, 2},
+    {"6GHz", 5, 2, 0, 0}, {"6GHz", 21, 2, 0, 0}, {"6GHz", 37, 2, 0, 0}, {"6GHz", 53, 2, 0, 0},
+    {"6GHz", 69, 2, 0, 0}, {"6GHz", 85, 2, 0, 0}, {"6GHz", 101, 2, 0, 0}, {"6GHz", 117, 2, 0, 0},
+    {"6GHz", 133, 2, 0, 0}, {"6GHz", 149, 2, 0, 0}, {"6GHz", 165, 2, 0, 0}, {"6GHz", 181, 2, 0, 0},
+    {"6GHz", 197, 2, 0, 0}, {"6GHz", 213, 2, 0, 0}, {"6GHz", 229, 2, 0, 0},
 };
 
 typedef struct {
@@ -229,9 +235,10 @@ static void emit_json(const char *status,
         if (temp_c >= 0) {
             printf("    \"temperature_c\": %d,\n", temp_c);
         }
-        printf("    \"usb_id\": \"0e8d:7961\",\n");
-        printf("    \"usb_speed_code\": 4,\n");
-        printf("    \"wifi_interface\": 3\n");
+        printf("    \"chip\": \"%s\",\n", g_chip_name);
+        printf("    \"usb_id\": \"%s\",\n", g_usb_id);
+        printf("    \"usb_speed_code\": %d,\n", g_usb_speed);
+        printf("    \"wifi_interface\": %d\n", g_wifi_interface);
         printf("  },\n");
     } else {
         printf("  \"device\": null,\n");
@@ -286,7 +293,7 @@ static void emit_json(const char *status,
     printf("  \"schema_version\": 1,\n");
     printf("  \"software\": {\n");
     printf("    \"c_driver\": \"mt7921_c_iokit\",\n");
-    printf("    \"mt76_usb_macos\": \"0.1.0\"\n");
+    printf("    \"mt76_usb_macos\": \"%s\"\n", MT76_USB_MACOS_VERSION);
     printf("  },\n");
     printf("  \"status\": \"%s\",\n", status);
 
@@ -320,10 +327,16 @@ int main(int argc, char **argv) {
     bool ack_sensitive_efuse = false;
     bool cmd_temp_only = false;
     int32_t cmd_efuse_offset = -1;
+    const char *usb_id = NULL;
+    const char *single_channel = NULL; /* --channel BAND:CTRL[:CENTER[:WIDTH]] */
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--plan") == 0 && i + 1 < argc) {
             plan_name = argv[++i];
+        } else if (strcmp(argv[i], "--usb-id") == 0 && i + 1 < argc) {
+            usb_id = argv[++i];
+        } else if (strcmp(argv[i], "--channel") == 0 && i + 1 < argc) {
+            single_channel = argv[++i];
         } else if (strcmp(argv[i], "--dwell") == 0 && i + 1 < argc) {
             dwell = atof(argv[++i]);
         } else if (strcmp(argv[i], "--fw") == 0 && i + 1 < argc) {
@@ -357,8 +370,10 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             printf("Usage: %s [options]\n", argv[0]);
             printf("  --plan <quick|2.4|5|6|all>   Channel plan (default: all)\n");
+            printf("  --channel BAND:CTRL[:CENTER[:WIDTH]]  One channel instead of a plan, e.g. 6GHz:53:47:160\n");
             printf("  --dwell <sec>                Dwell time per channel in seconds (default: 0.75)\n");
-            printf("  --fw <dir>                   Firmware directory (default: checks ./firmware, ../firmware)\n");
+            printf("  --fw <dir>                   Firmware directory (default: $MT76_FW_DIR, ./firmware, ../firmware)\n");
+            printf("  --usb-id <vvvv:pppp>         Adapter to use when several are attached (default: $MT76_USB_ID)\n");
             printf("  --pcap <file>                Export radiotap PCAP file\n");
             printf("  --inject <N>                 Inject 1..10 probe requests total (2.4 GHz only, global cap)\n");
             printf("  --acknowledge-experimental-transmit  Required flag when using --inject\n");
@@ -385,7 +400,8 @@ int main(int argc, char **argv) {
 
     /* Resolve firmware path */
     if (!fw_dir) {
-        fw_dir = getenv("MT7921_FW_DIR");
+        fw_dir = getenv("MT76_FW_DIR");
+        if (!fw_dir) fw_dir = getenv("MT7921_FW_DIR");
         if (!fw_dir) {
             if (access("./firmware", F_OK) == 0) {
                 fw_dir = "./firmware";
@@ -406,7 +422,31 @@ int main(int argc, char **argv) {
 
     bool req_24 = false, req_5 = false, req_6 = false;
 
-    if (strcmp(plan_name, "quick") == 0) {
+    chan_spec_t single = {0};
+    char single_band[8] = {0};
+    if (single_channel) {
+        unsigned ctl = 0, cen = 0, wid = 20;
+        int n = sscanf(single_channel, "%7[^:]:%u:%u:%u", single_band, &ctl, &cen, &wid);
+        if (n < 2 || ctl == 0 || ctl > 255 || cen > 255 ||
+            (wid != 20 && wid != 40 && wid != 80 && wid != 160)) {
+            fprintf(stderr, "Error: --channel wants BAND:CTRL[:CENTER[:WIDTH]] with width 20/40/80/160\n");
+            return 1;
+        }
+        int bidx = strcmp(single_band, "2.4GHz") == 0 ? 0 : strcmp(single_band, "5GHz") == 0 ? 1 :
+                   strcmp(single_band, "6GHz") == 0 ? 2 : -1;
+        if (bidx < 0) {
+            fprintf(stderr, "Error: --channel band must be 2.4GHz, 5GHz, or 6GHz\n");
+            return 1;
+        }
+        if (inject_count > 0 && bidx != 0) {
+            fprintf(stderr, "Error: packet injection is restricted to 2.4 GHz (1 Mbps CCK); --channel %s is not 2.4 GHz\n", single_channel);
+            return 1;
+        }
+        single.band = single_band; single.channel = (uint8_t)ctl; single.band_idx = (uint8_t)bidx;
+        single.center = n >= 3 ? (uint8_t)cen : 0; single.width = (uint16_t)wid;
+        plan_chans = &single; plan_count = 1; plan_name = "channel";
+        req_24 = bidx == 0; req_5 = bidx == 1; req_6 = bidx == 2;
+    } else if (strcmp(plan_name, "quick") == 0) {
         plan_chans = PLAN_QUICK;
         plan_count = sizeof(PLAN_QUICK) / sizeof(PLAN_QUICK[0]);
         req_24 = req_5 = req_6 = true;
@@ -436,10 +476,35 @@ int main(int argc, char **argv) {
         req_24 = req_5 = req_6 = true;
     }
 
+    /* Open the adapter first: its USB id selects the chip, and the chip selects the firmware. */
+    mt7921_dev_t dev;
+    if (mt7921_dev_open(&dev, usb_id) != 0) {
+        free(all_chans);
+        char err_buf[320];
+        snprintf(err_buf, sizeof(err_buf), "%s", mt7921_usb_last_error());
+        emit_json("unsupported", plan_name, dwell, plan_count, req_24, req_5, req_6,
+                  NULL, NULL, NULL, NULL, NULL, false, -1,
+                  "RuntimeError", err_buf[0] ? err_buf : "no supported device found",
+                  get_time_sec() - t0);
+        return 3; /* unsupported */
+    }
+    const mt7921_chip_profile_t *prof = mt7921_dev_profile(&dev);
+    snprintf(g_usb_id, sizeof(g_usb_id), "%04x:%04x", dev.usb.vid, dev.usb.pid);
+    g_chip_name = prof->name;
+    g_wifi_interface = dev.usb.wifi_interface;
+    g_usb_speed = dev.usb.usb_speed;
+
+    if (inject_count > 0 && prof->chip != MT_CHIP_MT7921) {
+        mt7921_dev_close(&dev);
+        free(all_chans);
+        fprintf(stderr, "Error: packet injection is not ported to the %s\n", prof->name);
+        return 1;
+    }
+
     /* Check firmware files */
     char patch_path[1024], ram_path[1024];
-    snprintf(patch_path, sizeof(patch_path), "%s/%s", fw_dir, PATCH_NAME);
-    snprintf(ram_path, sizeof(ram_path), "%s/%s", fw_dir, RAM_NAME);
+    snprintf(patch_path, sizeof(patch_path), "%s/%s", fw_dir, prof->patch_file);
+    snprintf(ram_path, sizeof(ram_path), "%s/%s", fw_dir, prof->ram_file);
 
     size_t patch_len = 0, ram_len = 0;
     char patch_sha[65] = {0}, ram_sha[65] = {0};
@@ -447,6 +512,7 @@ int main(int argc, char **argv) {
     uint8_t *ram_blob = read_file(ram_path, &ram_len, ram_sha);
 
     if (!patch_blob || !ram_blob) {
+        mt7921_dev_close(&dev);
         free(all_chans);
         free(patch_blob);
         free(ram_blob);
@@ -457,7 +523,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (strcmp(patch_sha, PATCH_SHA256) != 0 || strcmp(ram_sha, RAM_SHA256) != 0) {
+    if (strcmp(patch_sha, prof->patch_sha256) != 0 || strcmp(ram_sha, prof->ram_sha256) != 0) {
+        mt7921_dev_close(&dev);
         free(all_chans);
         free(patch_blob);
         free(ram_blob);
@@ -472,6 +539,7 @@ int main(int argc, char **argv) {
     FILE *pcap_f = NULL;
     if (pcap_file) {
         if (pcap_writer_open(pcap_file, &pcap_f) != 0) {
+            mt7921_dev_close(&dev);
             free(all_chans);
             free(patch_blob);
             free(ram_blob);
@@ -487,18 +555,6 @@ int main(int argc, char **argv) {
     band_stats_t stats_5 = {0};
     band_stats_t stats_6 = {0};
 
-    mt7921_dev_t dev;
-    if (mt7921_dev_open(&dev) != 0) {
-        free(all_chans);
-        free(patch_blob);
-        free(ram_blob);
-        if (pcap_f) pcap_writer_close(pcap_f);
-        emit_json("unsupported", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                  NULL, NULL, NULL, patch_sha, ram_sha, false, -1,
-                  "RuntimeError", "device 0e8d:7961 not found",
-                  get_time_sec() - t0);
-        return 3; /* unsupported */
-    }
 
     if (verbose) {
         fprintf(stderr, "Device opened via IOKit. Starting bringup...\n");
@@ -528,6 +584,10 @@ int main(int argc, char **argv) {
         free(patch_blob);
         free(ram_blob);
         if (pcap_f) pcap_writer_close(pcap_f);
+        if (tret == MT7921_ERR_UNSUPPORTED) {
+            fprintf(stderr, "Error: the temperature query is not ported to the %s\n", prof->name);
+            return 1;
+        }
         if (tret != 0 || temp_c < 0) {
             fprintf(stderr, "Error: failed to query on-die temperature from MCU\n");
             return 1;
@@ -546,6 +606,10 @@ int main(int argc, char **argv) {
         free(ram_blob);
         if (pcap_f) pcap_writer_close(pcap_f);
 
+        if (eret == MT7921_ERR_UNSUPPORTED) {
+            fprintf(stderr, "Error: the raw efuse read is not ported to the %s\n", prof->name);
+            return 1;
+        }
         if (eret != 0) {
             fprintf(stderr, "Error: failed to read efuse block at 0x%03x\n", cmd_efuse_offset);
             return 1;
@@ -586,6 +650,7 @@ int main(int argc, char **argv) {
 
     uint8_t raw_buf[8192];
     uint32_t total_injected_count = 0;
+    mt7921_rxd_decoder_t decode = mt7921_rxd_decoder_for_chip(prof->chip);
 
     for (size_t i = 0; i < plan_count; i++) {
         const chan_spec_t *spec = &plan_chans[i];
@@ -593,28 +658,15 @@ int main(int argc, char **argv) {
                            (spec->band_idx == 1) ? &stats_5 : &stats_6;
 
         bs->channels_attempted++;
-        if (mt7921_set_chan_info(&dev, spec->channel, spec->channel, CMD_CBW_20MHZ, spec->band_idx) != 0) {
+        if (mt7921_tune(&dev, spec->band, spec->channel, spec->center ? spec->center : spec->channel,
+                        spec->width ? spec->width : 20) != 0) {
+            char err_buf[128];
+            snprintf(err_buf, sizeof(err_buf), "failed to tune to %s channel %u", spec->band, spec->channel);
             mt7921_dev_close(&dev);
-            free(all_chans);
+            free(all_chans); /* spec points into all_chans for --plan all; err_buf is built first */
             free(patch_blob);
             free(ram_blob);
             if (pcap_f) pcap_writer_close(pcap_f);
-            char err_buf[128];
-            snprintf(err_buf, sizeof(err_buf), "failed to set channel info for %s channel %u", spec->band, spec->channel);
-            emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
-                      &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
-                      "RuntimeError", err_buf,
-                      get_time_sec() - t0);
-            return 1;
-        }
-        if (mt7921_config_sniffer(&dev, spec->channel, spec->channel, spec->band, SNIFFER_BW_20) != 0) {
-            mt7921_dev_close(&dev);
-            free(all_chans);
-            free(patch_blob);
-            free(ram_blob);
-            if (pcap_f) pcap_writer_close(pcap_f);
-            char err_buf[128];
-            snprintf(err_buf, sizeof(err_buf), "failed to configure sniffer for %s channel %u", spec->band, spec->channel);
             emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
                       &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
                       "RuntimeError", err_buf,
@@ -693,7 +745,7 @@ int main(int argc, char **argv) {
             bs->usb_transfers++;
 
             mt7921_rxd_frame_t rf;
-            if (mt7921_rxd_decode(raw_buf, read_len, &rf) != 0 || !rf.frame || rf.frame_len == 0) {
+            if (decode(raw_buf, read_len, &rf) != 0 || !rf.frame || rf.frame_len == 0) {
                 bs->undecoded_transfers++;
                 continue;
             }

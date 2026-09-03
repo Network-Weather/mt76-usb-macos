@@ -470,6 +470,73 @@ tshark -r out.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 3 && wlan.ta 
 The MT7921 reference adapter was not attached on 2026-09-03; nothing above reruns its
 evidence, and the MT7921 on-wire framing is held fixed by `tests/golden_mt7921_frames.json`.
 
+## Pure C driver on the MT7925U: 2026-09-03
+
+Same host, adapter, and firmware as the Python MT7925U sections above. The C driver selects the
+chip from the USB id, resolves the Wi-Fi interface and endpoint roles from the descriptors, and
+uses the MT7925 MCU geometry, UNI commands, and connac3 decoder (`c/mt7921_chip.c`,
+`c/mt7921_rxd_connac3.c`).
+
+```bash
+make -C c clean all test
+./c/mt7921_smoke --plan quick --dwell 1.0 --fw firmware
+./c/mt7921_smoke --plan all --dwell 0.75 --fw firmware --pcap out.pcap
+tshark -r out.pcap -q -z io,phs
+tshark -r out.pcap -Y "_ws.malformed || _ws.expert.severity==error" -T fields -e wlan.fc.type_subtype -e frame.len | sort | uniq -c
+```
+
+- **Criterion**: the offline suite passes including the connac3, profile, and MT7925 framing
+  tests; the smoke tool opens the A9000 by its USB id, reports `chip=mt7925` and interface 0,
+  boots the MT7925 firmware, and exits 0 with decoded frames on every band and no undecoded
+  transfers; the pcap dissects as `radiotap/wlan_radio/wlan`.
+- **Result**: 12 offline tests pass. `--plan quick`: pass, 397 transfers, 397 decoded, 0 undecoded,
+  0 USB errors, `device.chip=mt7925`, `usb_id=0846:9072`, `wifi_interface=0`, `usb_speed_code=3`
+  (IOKit's SuperSpeed code; the Python tool reports libusb's 4 for the same link). `--plan all`:
+  **pass**, 48.8 s, 1825 transfers, 1825 decoded, 0 undecoded, 0 USB errors, 69 timeouts (quiet
+  channels); 2.4 GHz 3/3 channels (519 frames), 5 GHz 17/25 (1062), 6 GHz 5/15 (244). pcap:
+  1825 frames dissected; tshark 4.6.8 flags 37, none with the bad-FCS flag, and both kinds are
+  frame content rather than capture defects:
+  - 22 are 19-byte VHT NDP Announcements (FC `0x0054`, RA, TA, sounding token, one 2-byte STA
+    Info), complete per 802.11ac. Their transmitters increment the whole token byte, so the low
+    two bits, which Wireshark decodes as the 802.11ax HE / 802.11az Ranging variant, take every
+    value; for variants 1 to 3 the dissector expects 4-byte STA Info and reports "Malformed".
+    A Python-driver capture of 5 GHz channel 56 shows the same population: 300 NDPAs of 34 bytes
+    from two transmitters, variant 0 clean (78), variants 1 to 3 flagged (172), plus 2 genuine
+    36-byte HE NDPAs, clean.
+  - 15 are 490/493-byte beacons from one AP on channel 112 whose Supported Rates element has
+    length 0 ("Tag length 0 too short").
+  Frames carry no FCS: on 418 beacon and data frames from both pcaps the trailing four bytes
+  never equal the CRC-32 of the rest, so the radiotap "FCS at end" flag is correctly absent.
+
+The MT7921 reference adapter was not attached; the C driver's MT7921 path is covered by the
+unchanged offline tests (connac2 decode, TXWI, pcap writer) and by the MT7921 profile tests.
+
+## EHT radiotap on the MT7925U: 2026-09-03
+
+Same host, adapter, and firmware. Both pcap writers now emit the radiotap TLV section (present
+bit 28) with a U-SIG item (type 33: bandwidth) and an EHT item (type 34: GI, RU/MRU size, one
+user's MCS, NSS, coding) for EHT-SU/TRIG/MU frames, laid out per radiotap.org/fields/{TLV,U-SIG,EHT}.
+An 802.11be client was active on the 160 MHz 6 GHz BSS during the runs.
+
+```bash
+./.venv/bin/python -m pytest -q tests/test_pcap.py      # includes a tshark round trip of a synthetic EHT pcap
+./.venv/bin/python examples/sniff_to_pcap.py 53 30 out.pcap 6GHz --width 160 --center 47
+./c/mt7921_smoke --channel 6GHz:53:47:160 --dwell 10 --fw firmware --pcap c.pcap
+tshark -r out.pcap -Y "wlan_radio.phy == 12" -T fields -e wlan_radio.11be.mcs -e wlan_radio.11be.nsts -e wlan_radio.data_rate -e radiotap.u_sig.common.bw
+```
+
+- **Criterion**: tshark (4.6.8) dissects every EHT frame as `wlan_radio.phy == 12` (802.11be)
+  with MCS, NSTS, bandwidth, and a data rate, and flags no frame malformed.
+- **Result**: Python writer, 30 s: 8236 frames, **973 EHT** (7251 OFDM, 12 HE), all QoS Data or
+  Action; MCS 0 to 5, NSTS 1 or 2, U-SIG bandwidth code 3 (160 MHz), data rates 68.1 to 864.8 Mb/s
+  (for example MCS 4, 1 stream: 432.4; MCS 3, 2 streams: 576.4); **0 malformed of 8236**. C writer,
+  10 s: 2774 frames, **336 EHT**, MCS 2 to 5, NSTS 1 or 2, bandwidth 160, **0 malformed of 2774**.
+  Offline, the synthetic EHT pcap (MCS 11, 2 streams, 80 MHz, 1.6 µs GI) reads back as phy 12,
+  MCS 11, NSTS 2, 1134.x Mb/s, bandwidth code 2.
+
+The MT7921 cannot receive EHT PPDUs wider than its configuration and no MT7921 was attached; the
+writers' HT/VHT/HE output is unchanged and covered by the existing offline tests.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

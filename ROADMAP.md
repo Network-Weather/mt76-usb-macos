@@ -13,8 +13,9 @@ The project serves three goals, and the roadmap is organized as one track per go
 
 Items carry stable `R` numbers because other documents cite them; numbers do not imply order.
 Within a track, items are stack-ranked top to bottom. Strike an item through when it merges.
-The evidence behind the current baseline is in [docs/TESTING.md](docs/TESTING.md): the exact
-`0e8d:7961` reference device captures on 2.4, 5, and 6 GHz and writes radiotap pcap. Wider
+The evidence behind the current baseline is in [docs/TESTING.md](docs/TESTING.md): the
+`0e8d:7961` (MT7921U) and `0846:9072` (MT7925U) reference devices capture on 2.4, 5, and 6 GHz
+and write radiotap pcap; the MT7925U also captures 160 MHz. Wider
 claims require wider evidence. The current sprint is in [TODO.md](TODO.md); measured
 negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
@@ -140,19 +141,6 @@ connac3 decoder with synthetic fixtures, and a dated evidence section in docs/TE
 Done: `mt7925u.py`, `rxd_connac3.py`, and the 2026-09-03 evidence in docs/TESTING.md. Two
 follow-ups fall out of it:
 
-### R26. C driver: MT7925 support
-
-`c/` still matches only `0e8d:7961` on interface 3 and decodes connac2. Port the Python port:
-descriptor-driven interface selection, the `mt7925u.py` MCU geometry and UNI commands, and a
-connac3 `mt7921_rxd_decode` sibling, checked against the same synthetic fixtures. Done when
-`c/mt7921_smoke` passes on the A9000 with the evidence format used for the Python driver.
-
-### R27. EHT radiotap
-
-`rxd_connac3` decodes EHT-SU/TRIG/MU frames (mode, MCS up to 13, NSS, width) but the pcap writer
-emits only Flags/Channel/dBm for them, so Wireshark shows no rate. Add the radiotap EHT and
-U-SIG fields. Done when an EHT frame captured on the MT7925 shows its MCS and width in Wireshark.
-
 ### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 
 Both currently read zero and the code that observed the zero is not in the repository (see
@@ -174,6 +162,15 @@ scripts whatever the outcome.
   as SNR.
 
 ## Track B: community capture source
+
+### ~~R27. EHT radiotap~~ (landed 2026-09-03)
+
+Done: both writers emit U-SIG and EHT TLVs; live EHT frames from an 802.11be client on the
+160 MHz 6 GHz channel dissect in tshark with rate, MCS, streams, and bandwidth.
+
+`rxd_connac3` decodes EHT-SU/TRIG/MU frames (mode, MCS up to 13, NSS, width) but the pcap writer
+emits only Flags/Channel/dBm for them, so Wireshark shows no rate. Add the radiotap EHT and
+U-SIG fields. Done when an EHT frame captured on the MT7925 shows its MCS and width in Wireshark.
 
 ### ~~R2. Descriptor discovery and explicit device support~~ (landed 2026-09-03)
 
@@ -246,6 +243,23 @@ Done when malformed length/padding cases cannot overrun input, golden and proper
 cover multi-subframe inputs, and the capture output behavior is documented.
 
 ## Track C: researcher reference and discoverability
+
+### ~~R26. C driver: MT7925 support~~ (landed 2026-09-03)
+
+`c/` still matches only `0e8d:7961` on interface 3 and decodes connac2. Port the Python port:
+descriptor-driven interface selection, the `mt7925u.py` MCU geometry and UNI commands, and a
+connac3 `mt7921_rxd_decode` sibling, checked against the same synthetic fixtures. Done when
+`c/mt7921_smoke` passes on the A9000 with the evidence format used for the Python driver.
+
+### ~~R29. Publish 0.3.0~~ (tagged 2026-09-03)
+
+C driver MT7925U support and EHT radiotap, released after the 43-channel C and Python smoke
+sweeps passed on the release commit with the A9000.
+
+### ~~R28. Publish 0.2.0~~ (tagged 2026-09-03)
+
+MT7925U support and 160 MHz capture, released after the 43-channel smoke sweep passed on the
+release commit with the A9000; the redacted result is attached to the GitHub release.
 
 ### ~~R18. Publish 0.1.0~~ (tagged 2026-09-02)
 

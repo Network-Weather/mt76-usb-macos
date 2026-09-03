@@ -122,3 +122,110 @@ def test_radiotap_with_vht_and_he():
     assert (d1_er & 0x0003) == 1  # Format: HE-EXT-SU
     assert (d5_er & 0x0F) == 1  # 40 MHz BW alloc
     assert (d6_er & 0x0F) == 1  # NSTS 1
+
+
+def test_radiotap_eht_frames_carry_usig_and_eht_tlvs():
+    import rxd
+
+    phy = {
+        "mode": rxd.MT_PHY_TYPE_EHT_MU,
+        "mcs": 13,
+        "nss": 2,
+        "bw_mhz": 160,
+        "gi": 1,
+        "ldpc": True,
+    }
+    header = capture.radiotap(6215, "6GHz", -50, False, phy)
+    _version, _pad, length, present = struct.unpack_from("<BBHI", header)
+    assert (
+        present == capture.RT_FLAGS | capture.RT_CHANNEL | capture.RT_DBM_ANTSIGNAL | capture.RT_TLV
+    )
+    assert present >> 29 == 0  # nothing above the TLV bit (the list consumes the rest)
+    # Flags(1) Rate? no; align; Channel(4) at 10; dBm at 14; pad to 16; then the TLV list.
+    assert header[15] == 0
+    tlv = 16
+    assert tlv % 4 == 0
+    t_type, t_len = struct.unpack_from("<HH", header, tlv)
+    assert (t_type, t_len) == (capture.RT_TLV_U_SIG, 12)
+    common, value, mask = struct.unpack_from("<III", header, tlv + 4)
+    assert common == capture.USIG_BW_KNOWN | (3 << capture.USIG_BW_SHIFT)  # 160 MHz
+    assert (value, mask) == (0, 0)
+    tlv += 16
+    t_type, t_len = struct.unpack_from("<HH", header, tlv)
+    assert (t_type, t_len) == (capture.RT_TLV_EHT, 44)
+    words = struct.unpack_from("<11I", header, tlv + 4)
+    known, data, user = words[0], words[1:10], words[10]
+    # EHT-MU: the user's RU may be smaller than the PPDU, so RU/MRU size is not claimed.
+    assert known == capture.EHT_KNOWN_GI
+    assert (data[0] >> 7) & 0x3 == 1  # GI 1.6 us
+    assert data[1] == 0  # RU/MRU size left unknown for MU
+    assert user & 0xFF == 0x02 | 0x04 | 0x10 | 0x80
+    assert (user >> 20) & 0xF == 13
+    assert (user >> 24) & 0xF == 1  # NSS 2 encodes as 1
+    assert user & capture.EHT_USER_CODING_LDPC
+    assert length == tlv + 48 == len(header)
+
+
+def test_radiotap_eht_20mhz_single_stream():
+    import rxd
+
+    phy = {"mode": rxd.MT_PHY_TYPE_EHT_SU, "mcs": 0, "nss": 1, "bw_mhz": 20, "gi": 0, "ldpc": False}
+    header = capture.radiotap(6215, "6GHz", -50, False, phy)
+    common = struct.unpack_from("<I", header, 20)[0]
+    assert common == capture.USIG_BW_KNOWN  # BW code 0
+    words = struct.unpack_from("<11I", header, 36)
+    assert words[0] == capture.EHT_KNOWN_GI | capture.EHT_KNOWN_RU_MRU_SIZE  # SU: full-width RU
+    assert words[2] & 0x1F == 3  # data[1]: 242-tone RU
+    assert (words[10] >> 20) & 0xF == 0
+    assert (words[10] >> 24) & 0xF == 0
+    assert not words[10] & capture.EHT_USER_CODING_LDPC
+
+
+def test_eht_pcap_dissects_in_tshark(tmp_path):
+    """tshark, when installed, must read the TLVs back as an 802.11be frame with the rate."""
+    import shutil
+    import subprocess
+
+    import rxd
+
+    tshark = shutil.which("tshark")
+    if not tshark:
+        pytest.skip("tshark not installed")
+    phy = {"mode": rxd.MT_PHY_TYPE_EHT_MU, "mcs": 11, "nss": 2, "bw_mhz": 80, "gi": 1, "ldpc": True}
+    frame = bytes.fromhex("88410000") + bytes(18) + bytes(8)  # QoS data header shape
+    header = capture.radiotap(5210, "5GHz", -50, False, phy)
+    pcap = tmp_path / "eht.pcap"
+    record = struct.pack("<IIII", 1, 0, len(header) + len(frame), len(header) + len(frame))
+    pcap.write_bytes(capture.pcap_header() + record + header + frame)
+    out = subprocess.run(  # noqa: S603 - fixed argv, local tshark, no shell
+        [
+            tshark,
+            "-r",
+            str(pcap),
+            "-T",
+            "fields",
+            "-e",
+            "wlan_radio.phy",
+            "-e",
+            "wlan_radio.11be.mcs",
+            "-e",
+            "wlan_radio.11be.nsts",
+            "-e",
+            "wlan_radio.data_rate",
+            "-e",
+            "radiotap.u_sig.common.bw",
+            "-e",
+            "_ws.malformed",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    fields = out.stdout.strip().split("\t")
+    assert fields[0] == "12", out.stdout  # PHDR_802_11_PHY_11BE
+    assert fields[1] == "11"
+    assert fields[2] == "2"
+    assert fields[3].startswith("1134.")  # MCS 11, 2 streams, 80 MHz (from U-SIG BW), 1.6 us GI
+    assert int(fields[4], 0) == 2  # U-SIG BW code for 80 MHz
+    assert len(fields) < 6 or fields[5] == ""

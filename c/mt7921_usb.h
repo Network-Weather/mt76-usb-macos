@@ -15,6 +15,7 @@
 #include <IOKit/usb/IOUSBLib.h>
 
 #include "mt7921_regs.h"
+#include "mt7921_chip.h"
 
 #define MT7921_OK           0
 #define MT7921_ERR_TIMEOUT  1
@@ -23,15 +24,29 @@
 typedef struct {
     IOUSBDeviceInterface **dev;
     IOUSBInterfaceInterface **intf;
-    UInt8 pipe_rx;          /* EP 0x84 IN */
-    UInt8 pipe_cmd_resp;    /* EP 0x85 IN */
-    UInt8 pipe_out_cmd;     /* EP 0x08 OUT */
-    UInt8 pipe_out_scatter; /* EP 0x04 OUT */
+    uint16_t vid;
+    uint16_t pid;
+    int chip;                          /* mt7921_chip_t */
+    uint8_t wifi_interface;            /* bInterfaceNumber of the claimed vendor interface */
+    uint8_t usb_speed;                 /* IOKit kUSBDeviceSpeed* code */
+    /* Endpoint addresses and IOKit pipe refs by mt76 role (usb.c mt76u_set_endpoints:
+     * the first MT_N_BULK_IN bulk IN and MT_N_BULK_OUT bulk OUT endpoints in descriptor
+     * order of the class ff/ff/ff interface). */
+    uint8_t in_eps[MT_N_BULK_IN];
+    uint8_t out_eps[MT_N_BULK_OUT];
+    UInt8 in_pipes[MT_N_BULK_IN];
+    UInt8 out_pipes[MT_N_BULK_OUT];
     bool verbose;
 } mt7921_usb_t;
 
 /* Lifecycle */
-int mt7921_usb_open(mt7921_usb_t *usb);
+/* Open one supported adapter. usb_id is "vvvv:pppp" to pick one when several are attached,
+ * or NULL to honor $MT76_USB_ID and otherwise require exactly one supported device. Fails
+ * closed (-1) on no device, more than one candidate, an unsupported id, or a descriptor layout
+ * without a class ff/ff/ff interface carrying 2 bulk IN and 6 bulk OUT endpoints; the reason is
+ * left in mt7921_usb_last_error(). */
+int mt7921_usb_open(mt7921_usb_t *usb, const char *usb_id);
+const char *mt7921_usb_last_error(void);
 void mt7921_usb_close(mt7921_usb_t *usb);
 int mt7921_usb_reset(mt7921_usb_t *usb);
 
@@ -61,7 +76,7 @@ int mt7921_copy(mt7921_usb_t *usb, uint32_t offset, const uint8_t *data, size_t 
 int mt7921_poll(mt7921_usb_t *usb, uint32_t addr, uint32_t mask, uint32_t expect, uint32_t timeout_ms);
 int mt7921_power_on(mt7921_usb_t *usb);
 
-/* Bulk transfers */
+/* Bulk transfers; ep is an MT_ROLE_* handle, not a raw endpoint address */
 int mt7921_bulk_out(mt7921_usb_t *usb, uint8_t ep, const void *data, uint32_t len, uint32_t timeout_ms);
 int mt7921_bulk_in(mt7921_usb_t *usb, uint8_t ep, void *data, uint32_t *len, uint32_t timeout_ms);
 

@@ -27,3 +27,4 @@ dist/
 *.o
 c/mt7921_smoke
 c/test_rxd
+.venv

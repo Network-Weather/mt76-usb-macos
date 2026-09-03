@@ -3,6 +3,8 @@
 /* Offline unit test for mt7921_rxd without hardware. */
 
 #include "mt7921_rxd.h"
+#include "mt7921_chip.h"
+#include "mt7921_mcu.h"
 #include "mt7921_dev.h"
 #include "mt7921_mcu.h"
 #include "mt7921_regs.h"
@@ -572,6 +574,253 @@ static void test_decode_phy_telemetry(void) {
     printf("PASS: test_decode_phy_telemetry\n");
 }
 
+
+/* ---------------- connac3 (MT7925) and chip-profile tests ---------------- */
+
+static void put_le32(uint8_t *p, uint32_t v) {
+    p[0] = (uint8_t)v; p[1] = (uint8_t)(v >> 8); p[2] = (uint8_t)(v >> 16); p[3] = (uint8_t)(v >> 24);
+}
+
+/* A connac3 descriptor: 8 fixed words, optional groups (4/1/2/3[/5] order), then a beacon. */
+static size_t build_c3(uint8_t *buf, uint32_t rxd1_groups, bool fcs_err, uint8_t hdr_offset,
+                       const uint32_t prxv[4], uint8_t chfreq) {
+    static const uint8_t beacon[] = {
+        0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x10, 0x00,
+        0, 0, 0, 0, 0, 0, 0, 0, 0x64, 0x00, 0x11, 0x04, 0x00, 0x04, 't', 'e', 's', 't', 0x03, 0x01, 0x06,
+        0xde, 0xad, 0xbe, 0xef
+    };
+    size_t off = 32;
+    memset(buf, 0, 512);
+    if (rxd1_groups & MT_RXD3_NORMAL_GROUP_4) { put_le32(buf + off, 0x0080); off += 16; }
+    if (rxd1_groups & MT_RXD3_NORMAL_GROUP_1) { memset(buf + off, 0x11, 16); off += 16; }
+    if (rxd1_groups & MT_RXD3_NORMAL_GROUP_2) { put_le32(buf + off, 0xDEADBEEF); off += 16; }
+    if (rxd1_groups & MT_RXD3_NORMAL_GROUP_3) {
+        for (int i = 0; i < 4; i++) put_le32(buf + off + 4 * i, prxv ? prxv[i] : 0);
+        off += 16;
+        if (rxd1_groups & MT_RXD3_NORMAL_GROUP_5) { memset(buf + off, 0x55, 96); off += 96; }
+    }
+    off += 2 * hdr_offset;
+    memcpy(buf + off, beacon, sizeof(beacon));
+    size_t total = off + sizeof(beacon);
+    put_le32(buf + 0, ((uint32_t)PKT_TYPE_NORMAL << 27) | (uint32_t)total);
+    put_le32(buf + 4, rxd1_groups | 5 /* wlan_idx */ | (1U << 27) /* band_idx 1 */);
+    put_le32(buf + 8, ((uint32_t)hdr_offset << C3_RXD2_NORMAL_HDR_OFFSET_SHIFT) | (1U << 30));
+    put_le32(buf + 12, ((uint32_t)chfreq << 8) | (fcs_err ? C3_RXD3_NORMAL_FCS_ERR : 0));
+    return total + 6; /* trailing padding the transfer carries */
+}
+
+static uint32_t prxv0(uint32_t rate_idx, uint32_t nsts, bool ldpc, uint32_t ru) {
+    return (rate_idx & 0x7F) | ((nsts & 0xF) << 7) | (ldpc ? (1U << 12) : 0) | ((ru & 0x1FF) << 22);
+}
+static uint32_t prxv2(uint32_t mode, uint32_t frame_mode, uint32_t gi, uint32_t stbc, bool dcm) {
+    return (frame_mode & 0x7) | ((gi & 0x3) << 3) | (dcm ? (1U << 5) : 0) | ((stbc & 0x3) << 9) | ((mode & 0xF) << 11);
+}
+
+static void test_connac3_decode_groups_and_fcs(void) {
+    uint8_t buf[512];
+    mt7921_rxd_frame_t rf;
+    static const struct { uint32_t groups; uint32_t gap; } cases[] = {
+        {0, 32},
+        {MT_RXD3_NORMAL_GROUP_4, 48},
+        {MT_RXD3_NORMAL_GROUP_4 | MT_RXD3_NORMAL_GROUP_1 | MT_RXD3_NORMAL_GROUP_2, 80},
+        {MT_RXD3_NORMAL_GROUP_4 | MT_RXD3_NORMAL_GROUP_1 | MT_RXD3_NORMAL_GROUP_2 | MT_RXD3_NORMAL_GROUP_3, 96},
+        {MT_RXD3_NORMAL_GROUP_4 | MT_RXD3_NORMAL_GROUP_1 | MT_RXD3_NORMAL_GROUP_2 | MT_RXD3_NORMAL_GROUP_3 | MT_RXD3_NORMAL_GROUP_5, 192},
+        {MT_RXD3_NORMAL_GROUP_3 | MT_RXD3_NORMAL_GROUP_5, 144},
+    };
+    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+        size_t len = build_c3(buf, cases[i].groups, false, 0, NULL, 6);
+        assert(mt7921_rxd_decode_connac3(buf, (uint32_t)len, &rf) == 0);
+        assert(rf.frame == buf + cases[i].gap);
+        assert(rf.frame_len == 49);           /* beacon (45) + FCS (4); padding excluded via dma_len */
+        assert(rf.frame_family == FRAME_FAMILY_MGMT);
+        assert(strcmp(rf.band, "2.4GHz") == 0 && rf.channel == 6);
+        assert(!rf.fcs_err);
+    }
+    /* FCS error is RXD3 bit 24 on connac3; band index sits where connac2 kept FCS (RXD1 bit 27). */
+    size_t len = build_c3(buf, 0, true, 0, NULL, 6);
+    assert(mt7921_rxd_decode_connac3(buf, (uint32_t)len, &rf) == 0 && rf.fcs_err);
+    len = build_c3(buf, 0, false, 0, NULL, 6);
+    mt7921_rxd_frame_t rf2;
+    assert(mt7921_rxd_decode(buf, (uint32_t)len, &rf2) == 0 && rf2.fcs_err); /* connac2 misreads it */
+    /* header offset pads in two-byte units */
+    len = build_c3(buf, MT_RXD3_NORMAL_GROUP_4, false, 1, NULL, 194);
+    assert(mt7921_rxd_decode_connac3(buf, (uint32_t)len, &rf) == 0);
+    assert(rf.frame == buf + 50 && strcmp(rf.band, "6GHz") == 0 && rf.channel == 53);
+    /* too short, and a non-frame packet type */
+    assert(mt7921_rxd_decode_connac3(buf, 31, &rf) == -1);
+    put_le32(buf, (0u << 27) | 64);
+    assert(mt7921_rxd_decode_connac3(buf, 64, &rf) == -1 && rf.pkt_type == 0);
+    printf("PASS: test_connac3_decode_groups_and_fcs\n");
+}
+
+static void test_connac3_prxv_rates_and_rssi(void) {
+    uint8_t buf[512];
+    mt7921_rxd_frame_t rf;
+    /* HE-SU MCS 11, NSTS 2, 160 MHz, 0.8 us GI, RCPI 110/90/0/220 -> 2402.0 Mb/s, -55 dBm */
+    uint32_t prxv[4] = { prxv0(11, 1, true, 0), 0, prxv2(MT_PHY_TYPE_HE_SU, 3, 0, 0, false), 110 | (90 << 8) | (220u << 24) };
+    size_t len = build_c3(buf, MT_RXD3_NORMAL_GROUP_3, false, 0, prxv, 194);
+    assert(mt7921_rxd_decode_connac3(buf, (uint32_t)len, &rf) == 0 && rf.has_phy);
+    assert(rf.rssi == -55);
+    assert(rf.phy.mode == MT_PHY_TYPE_HE_SU && rf.phy.bw_mhz == 160 && rf.phy.nss == 2 && rf.phy.mcs == 11 && rf.phy.ldpc);
+    assert(rf.phy.rate_mbps > 2401.9 && rf.phy.rate_mbps < 2402.1);
+    /* EHT-MU MCS 13, 2 streams, 160 MHz -> 2882.4 Mb/s */
+    mt7921_phy_info_t phy;
+    assert(mt7921_decode_prxv3(prxv0(13, 1, false, 0), prxv2(MT_PHY_TYPE_EHT_MU, 3, 0, 0, false), &phy) == 0);
+    assert(strcmp(phy.mode_name, "EHT-MU") == 0 && phy.rate_mbps > 2882.3 && phy.rate_mbps < 2882.5);
+    /* frame modes 4 and 5 are both 320 MHz, with no rate */
+    for (uint32_t fm = 4; fm <= 5; fm++) {
+        assert(mt7921_decode_prxv3(prxv0(0, 0, false, 0), prxv2(MT_PHY_TYPE_EHT_SU, fm, 0, 0, false), &phy) == 0);
+        assert(phy.bw_mhz == 320 && phy.rate_mbps == 0.0);
+    }
+    /* VHT MCS 9, 3 streams, 80 MHz, short GI; MCS 12 is refused for VHT */
+    assert(mt7921_decode_prxv3(prxv0(9, 2, false, 0), prxv2(MT_PHY_TYPE_VHT, 2, 1, 0, false), &phy) == 0);
+    assert(phy.nss == 3 && phy.bw_mhz == 80 && phy.rate_mbps > 1299.9 && phy.rate_mbps < 1300.1);
+    assert(mt7921_decode_prxv3(prxv0(12, 0, false, 0), prxv2(MT_PHY_TYPE_VHT, 0, 0, 0, false), &phy) == 0);
+    assert(phy.rate_mbps == 0.0);
+    /* HE-ER-SU 106-tone flag: width stays 40 MHz, RU 106, DCM halves the rate */
+    assert(mt7921_decode_prxv3(prxv0(0x20 | 2, 0, false, 0), prxv2(MT_PHY_TYPE_HE_EXT_SU, 1, 0, 0, true), &phy) == 0);
+    assert(phy.bw_mhz == 40 && phy.ru_tones == 106 && phy.dcm && phy.mcs == 2);
+    /* OFDM 6 Mb/s */
+    assert(mt7921_decode_prxv3(prxv0(11, 0, false, 0), prxv2(MT_PHY_TYPE_OFDM, 0, 0, 0, false), &phy) == 0);
+    assert(phy.rate_mbps == 6.0);
+    printf("PASS: test_connac3_prxv_rates_and_rssi\n");
+}
+
+static void test_chip_table_and_profiles(void) {
+    assert(mt7921_chip_for_usb_id(0x0E8D, 0x7961) == MT_CHIP_MT7921);
+    assert(mt7921_chip_for_usb_id(0x0846, 0x9072) == MT_CHIP_MT7925);
+    assert(mt7921_chip_for_usb_id(0x0846, 0x9050) == MT_CHIP_MT7925);
+    assert(mt7921_chip_for_usb_id(0x0E8D, 0x7925) == MT_CHIP_MT7925);
+    assert(mt7921_chip_for_usb_id(0x0E8D, 0x6639) == -1); /* MT7927: no blobs, not supported */
+    uint16_t vid, pid;
+    assert(mt7921_parse_usb_id("0846:9072", &vid, &pid) == 0 && vid == 0x0846 && pid == 0x9072);
+    assert(mt7921_parse_usb_id("nope", &vid, &pid) == -1);
+    assert(mt7921_parse_usb_id("0846:90721", &vid, &pid) == -1);
+
+    const mt7921_chip_profile_t *p21 = mt7921_chip_profile(MT_CHIP_MT7921);
+    const mt7921_chip_profile_t *p25 = mt7921_chip_profile(MT_CHIP_MT7925);
+    assert(p21 && p25 && mt7921_chip_profile((mt7921_chip_t)7) == NULL);
+    assert(p21->mcu_rxd_len == 36 && p21->rxd_seq_offset == 29 && p21->rxd_status_offset == 32);
+    assert(p21->txd1 == ((1U << 31) | (1U << 16)) && p21->chip_id == 0x7961);
+    assert(p25->mcu_rxd_len == 44 && p25->rxd_seq_offset == 37 && p25->rxd_status_offset == 40);
+    assert(p25->txd1 == 0x4000 && p25->chip_id == 0x7925);
+    assert(p25->wfsys_rst_reg == 0x70028600 && p25->wfsys_done_reg == 0x184C1604);
+    assert(p25->wfsys_done_mask == 0xFFFFFFFFu && p25->wfsys_done_val == 0x1D1E);
+    assert(p25->wfsys_delay_us == 20000 && !p25->wfsys_need_status_sel && p21->wfsys_need_status_sel);
+    assert(strncmp(p25->patch_file, "mt7925/", 7) == 0 && strlen(p25->patch_sha256) == 64);
+
+    /* mt7925_mcu_fill_message option byte vs the mt7921 constant */
+    assert(mt7921_uni_option(p21, MCU_UNI_CMD_CHIP_CONFIG, true) == MCU_CMD_UNI_EXT_ACK);
+    assert(mt7921_uni_option(p25, MCU_UNI_CMD_SNIFFER, false) == 0x7);
+    assert(mt7921_uni_option(p25, MCU_UNI_CMD_EFUSE_CTRL, true) == 0x3);
+    assert(mt7921_uni_option(p25, MCU_UNI_CMD_CHIP_CONFIG, false) == 0x6);
+    assert(mt7921_uni_option(p25, MCU_UNI_CMD_HIF_CTRL, false) == 0x6);
+    assert(mt7921_uni_option(p25, MCU_UNI_CMD_CHIP_CONFIG, true) == 0x2);
+    assert(mt7921_rxd_decoder_for_chip(MT_CHIP_MT7925) == mt7921_rxd_decode_connac3);
+    assert(mt7921_rxd_decoder_for_chip(MT_CHIP_MT7921) == mt7921_rxd_decode);
+    printf("PASS: test_chip_table_and_profiles\n");
+}
+
+static void test_mt7925_mcu_txd_builders(void) {
+    mt7921_usb_t usb;
+    memset(&usb, 0, sizeof(usb));
+    usb.chip = MT_CHIP_MT7925;
+    mt7921_mcu_t mcu;
+    mt7921_mcu_init(&mcu, &usb);
+    assert(mcu.prof->chip == MT_CHIP_MT7925);
+
+    uint8_t txd[64];
+    mt7921_mcu_build_txd(&mcu, txd, 64 + 4, MCU_CMD_PATCH_SEM_CONTROL, 1, 0, MCU_Q_NA, MCU_S2D_H2N);
+    assert(read_le32(txd + 4) == 0x4000);                   /* HDR_FORMAT_CMD << 14, no LONG_FORMAT */
+    assert((read_le32(txd) & 0xFFFF) == 68);
+    assert(read_le16(txd + 32) == 68 - 32 && txd[36] == MCU_CMD_PATCH_SEM_CONTROL && txd[37] == MCU_PKT_ID && txd[39] == 1);
+
+    uint8_t uni[48];
+    mt7921_mcu_build_uni_txd(&mcu, uni, 48 + 12, MCU_UNI_CMD_EFUSE_CTRL, 2, false);
+    assert(read_le32(uni + 4) == 0x4000);
+    assert(read_le16(uni + 34) == MCU_UNI_CMD_EFUSE_CTRL && uni[39] == 2 && uni[42] == MCU_S2D_H2N && uni[43] == 0x7);
+    mt7921_mcu_build_uni_txd(&mcu, uni, 48 + 8, MCU_UNI_CMD_CHIP_CONFIG, 3, false);
+    assert(uni[43] == 0x6);
+    mt7921_mcu_build_uni_txd(&mcu, uni, 48 + 8, MCU_UNI_CMD_EFUSE_CTRL, 4, true);
+    assert(uni[43] == 0x3);
+
+    /* The MT7921 builders are unchanged: connac2 word 1 and the fixed EXT_ACK option. */
+    usb.chip = MT_CHIP_MT7921;
+    mt7921_mcu_init(&mcu, &usb);
+    mt7921_mcu_build_txd(&mcu, txd, 68, MCU_CMD_PATCH_SEM_CONTROL, 1, 0, MCU_Q_NA, MCU_S2D_H2N);
+    assert(read_le32(txd + 4) == ((1U << 31) | (1U << 16)));
+    mt7921_mcu_build_uni_txd(&mcu, uni, 60, MCU_UNI_CMD_CHIP_CONFIG, 2, true);
+    assert(read_le32(uni + 4) == ((1U << 31) | (1U << 16)) && uni[43] == MCU_CMD_UNI_EXT_ACK);
+
+    /* Reply body offset follows the profile. */
+    uint8_t resp[64] = {0};
+    usb.chip = MT_CHIP_MT7925;
+    mt7921_mcu_init(&mcu, &usb);
+    uint32_t body_len = 0;
+    const uint8_t *body = mt7921_mcu_reply_body(&mcu, resp, 60, &body_len);
+    assert(body == resp + 44 && body_len == 16);
+    assert(mt7921_mcu_reply_body(&mcu, resp, 40, &body_len) == NULL);
+    printf("PASS: test_mt7925_mcu_txd_builders\n");
+}
+
+
+static void test_pcap_writer_eht_tlvs(void) {
+    const char *path = "/tmp/test_c_writer_eht.pcap";
+    FILE *f = NULL;
+    assert(pcap_writer_open(path, &f) == 0);
+    uint8_t frame[32] = { 0x88, 0x41 };
+    mt7921_rxd_frame_t rf;
+    memset(&rf, 0, sizeof(rf));
+    strncpy(rf.band, "6GHz", sizeof(rf.band));
+    rf.channel = 53; rf.rssi = -50; rf.frame = frame; rf.frame_len = sizeof(frame); rf.has_phy = true;
+    rf.phy.mode = MT_PHY_TYPE_EHT_MU; rf.phy.mcs = 13; rf.phy.nss = 2; rf.phy.nsts = 2; rf.phy.bw_mhz = 160;
+    rf.phy.gi = 1; rf.phy.ldpc = true;
+    assert(pcap_writer_write_frame(f, &rf) == 0);
+    pcap_writer_close(f);
+
+    FILE *in = fopen(path, "rb");
+    assert(in);
+    uint8_t buf[512];
+    size_t n = fread(buf, 1, sizeof(buf), in);
+    fclose(in);
+    unlink(path);
+    assert(n > 24 + 16);
+    const uint8_t *rt = buf + 24 + 16;
+    uint16_t rt_len = read_le16(rt + 2);
+    uint32_t present = read_le32(rt + 4);
+    assert(present == ((1U << 1) | (1U << 3) | (1U << 5) | (1U << 28)));
+    /* Flags @8, pad @9, Channel @10..13, dBm @14, pad @15, TLVs from 16 */
+    assert(read_le16(rt + 16) == 33 && read_le16(rt + 18) == 12);
+    assert(read_le32(rt + 20) == (0x2U | (3U << 15)));          /* U-SIG: BW known, 160 MHz */
+    assert(read_le32(rt + 24) == 0 && read_le32(rt + 28) == 0);
+    assert(read_le16(rt + 32) == 34 && read_le16(rt + 34) == 44);
+    assert(read_le32(rt + 36) == 0x4U);                          /* EHT known: GI only (MU: RU unknown) */
+    assert(((read_le32(rt + 40) >> 7) & 0x3) == 1);              /* data[0]: GI 1.6 us */
+    assert(read_le32(rt + 44) == 0);                             /* data[1]: RU/MRU size not claimed */
+    uint32_t user = read_le32(rt + 36 + 40);  /* known + data[0..8] precede user_info */
+    assert((user & 0xFF) == (0x02 | 0x04 | 0x10 | 0x80));
+    assert(((user >> 20) & 0xF) == 13 && ((user >> 24) & 0xF) == 1 && (user & 0x80000));
+    assert(rt_len == 32 + 4 + 44);  /* EHT TLV header at 32, then known + 9 data + 1 user */
+
+    /* EHT-SU claims the full-width RU. */
+    assert(pcap_writer_open(path, &f) == 0);
+    rf.phy.mode = MT_PHY_TYPE_EHT_SU; rf.phy.bw_mhz = 80;
+    assert(pcap_writer_write_frame(f, &rf) == 0);
+    pcap_writer_close(f);
+    in = fopen(path, "rb");
+    assert(in);
+    n = fread(buf, 1, sizeof(buf), in);
+    fclose(in);
+    unlink(path);
+    assert(n > 24 + 16 + 80);
+    rt = buf + 24 + 16;
+    assert(read_le32(rt + 36) == (0x4U | 0x400000U));
+    assert((read_le32(rt + 44) & 0x1F) == 5);                    /* 996-tone RU = 80 MHz */
+    assert(read_le32(rt + 20) == (0x2U | (2U << 15)));           /* U-SIG BW 80 */
+    printf("PASS: test_pcap_writer_eht_tlvs\n");
+}
+
 int main(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--keep-pcap") == 0) {
@@ -594,6 +843,11 @@ int main(int argc, char **argv) {
     test_build_probe_request();
     test_build_txwi();
     test_decode_phy_telemetry();
+    test_connac3_decode_groups_and_fcs();
+    test_connac3_prxv_rates_and_rssi();
+    test_chip_table_and_profiles();
+    test_mt7925_mcu_txd_builders();
+    test_pcap_writer_eht_tlvs();
     printf("All offline unit tests passed successfully!\n");
     return 0;
 }

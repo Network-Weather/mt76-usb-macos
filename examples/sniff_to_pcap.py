@@ -40,6 +40,28 @@ RT_DBM_ANTSIGNAL = 1 << 5
 RT_MCS = 1 << 19
 RT_VHT = 1 << 21
 RT_HE = 1 << 23
+# radiotap.org/fields/TLV: bit 28 says the rest of the header is a type-length-value list,
+# 4-byte aligned; U-SIG and EHT exist only as TLV types (33 and 34).
+RT_TLV = 1 << 28
+RT_TLV_U_SIG = 33
+RT_TLV_EHT = 34
+# radiotap.org/fields/U-SIG: common word
+USIG_BW_KNOWN = 0x00000002
+USIG_BW_SHIFT = 15  # 0=20, 1=40, 2=80, 3=160, 4=320-1, 5=320-2
+USIG_BW_CODE = {20: 0, 40: 1, 80: 2, 160: 3, 320: 4}
+# radiotap.org/fields/EHT: known word and data words
+EHT_KNOWN_GI = 0x00000004
+EHT_KNOWN_RU_MRU_SIZE = 0x00400000
+EHT_DATA0_GI_SHIFT = 7  # 0=0.8us, 1=1.6us, 2=3.2us
+EHT_RU_MRU_SIZE_CODE = {20: 3, 40: 4, 80: 5, 160: 6, 320: 7}  # 242, 484, 996, 2x996, 4x996 tones
+EHT_USER_MCS_KNOWN = 0x00000002
+EHT_USER_CODING_KNOWN = 0x00000004
+EHT_USER_NSS_KNOWN = 0x00000010
+EHT_USER_CAPTURED = 0x00000080
+EHT_USER_CODING_LDPC = 0x00080000
+EHT_USER_MCS_SHIFT = 20
+EHT_USER_NSS_SHIFT = 24  # NSS - 1
+EHT_MODES = (rxd.MT_PHY_TYPE_EHT_SU, rxd.MT_PHY_TYPE_EHT_TRIG, rxd.MT_PHY_TYPE_EHT_MU)
 
 RT_FLAG_BADFCS = 0x40
 
@@ -66,6 +88,7 @@ def radiotap(freq: int, band: str, rssi, bad_fcs: bool, phy: dict | None = None)
     has_mcs = False
     has_vht = False
     has_he = False
+    has_eht = False
 
     if phy:
         mode = phy.get("mode")
@@ -87,6 +110,9 @@ def radiotap(freq: int, band: str, rssi, bad_fcs: bool, phy: dict | None = None)
         ):
             has_he = True
             present |= RT_HE
+        elif mode in EHT_MODES:
+            has_eht = True
+            present |= RT_TLV
 
     body = bytearray()
     # Bit 1: Flags (1 byte, align 1)
@@ -171,8 +197,53 @@ def radiotap(freq: int, band: str, rssi, bad_fcs: bool, phy: dict | None = None)
         d6 = nsts & 0x0F
         body.extend(struct.pack("<HHHHHH", d1, d2, d3, d4, d5, d6))
 
+    # TLV section (bit 28): U-SIG then EHT, each 4-byte aligned. Wireshark reads a fixed 40
+    # bytes of EHT data plus one 4-byte user_info, so both are emitted in full.
+    if has_eht:
+        while len(body) % 4:
+            body.append(0)
+        body.extend(eht_tlvs(phy))
+
     hdr = struct.pack("<BBHI", 0, 0, 8 + len(body), present)
     return bytes(hdr + body)
+
+
+def eht_tlvs(phy: dict) -> bytes:
+    """U-SIG (bandwidth) and EHT (GI, RU size, one user's MCS/NSS/coding) TLVs for an EHT
+    frame, from the P-RXV fields the decoder reports. Pads to the 4-byte TLV alignment first;
+    the caller places this at the end of the radiotap body (header offset 8 is aligned)."""
+    out = bytearray()
+    bw = phy.get("bw_mhz") or 20
+    common = 0
+    if bw in USIG_BW_CODE:
+        common = USIG_BW_KNOWN | (USIG_BW_CODE[bw] << USIG_BW_SHIFT)
+    usig = struct.pack("<III", common, 0, 0)  # value and mask: no U-SIG bits are known
+    out += struct.pack("<HH", RT_TLV_U_SIG, len(usig)) + usig
+
+    known = EHT_KNOWN_GI
+    data = [0] * 9
+    data[0] = (phy.get("gi", 0) & 0x3) << EHT_DATA0_GI_SHIFT
+    # Only an EHT-SU PPDU occupies its whole bandwidth with one RU. In EHT-MU and EHT-TRIG
+    # (OFDMA) the user's RU can be smaller than the PPDU, and the P-RXV does not tell us
+    # which, so the RU/MRU size stays unknown there; Wireshark still computes the rate from
+    # the U-SIG bandwidth.
+    if phy.get("mode") == rxd.MT_PHY_TYPE_EHT_SU and bw in EHT_RU_MRU_SIZE_CODE:
+        known |= EHT_KNOWN_RU_MRU_SIZE
+        data[1] = EHT_RU_MRU_SIZE_CODE[bw]
+    nss = max(1, phy.get("nss", 1))
+    user = (
+        EHT_USER_MCS_KNOWN
+        | EHT_USER_CODING_KNOWN
+        | EHT_USER_NSS_KNOWN
+        | EHT_USER_CAPTURED
+        | ((phy.get("mcs", 0) & 0xF) << EHT_USER_MCS_SHIFT)
+        | (((nss - 1) & 0xF) << EHT_USER_NSS_SHIFT)
+        | (EHT_USER_CODING_LDPC if phy.get("ldpc") else 0)
+    )
+    eht = struct.pack("<I9II", known, *data, user)
+    out += struct.pack("<HH", RT_TLV_EHT, len(eht)) + eht
+    # TLV items are 4-aligned: 4 + 12 and 4 + 44 already are.
+    return bytes(out)
 
 
 def pcap_header(snaplen: int = 65535) -> bytes:

@@ -41,6 +41,7 @@ adapters attached, pick one with `MT76_USB_ID=vvvv:pppp`):
 ./.venv/bin/python scripts/hardware_smoke.py --plan all   # redacted; exit 0 pass, 1 fail, 2 inconclusive, 3 unsupported
 ./.venv/bin/python examples/scan.py [2.4|5|6|all]
 ./.venv/bin/python examples/sniff_to_pcap.py <chan> <secs> [out.pcap] [2.4GHz|5GHz|6GHz]
+./c/mt7921_smoke --plan quick --fw firmware [--usb-id vvvv:pppp]   # C driver, either chip
 ```
 
 ## Architecture

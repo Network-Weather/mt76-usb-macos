@@ -1,8 +1,15 @@
 # TODO: current sprint
 
-Sprint started 2026-09-01. Items come from [ROADMAP.md](ROADMAP.md); each names its roadmap
+Sprint started 2026-09-01; refocused 2026-09-03 after 0.2.0. Items come from [ROADMAP.md](ROADMAP.md); each names its roadmap
 item. Strike through when merged. Hardware items need the reference adapter attached and at
 least two APs on one SSID.
+
+## Build next (R26, R27)
+
+- ~~R26 C driver MT7925: device table, class-based interface selection, chip profiles, UNI
+  commands, connac3 decoder; `c/mt7921_smoke --plan all` passes on the A9000.~~
+- ~~R27 EHT radiotap: U-SIG and EHT TLVs in both writers; 973 live EHT frames dissected by
+  tshark at 160 MHz; 0.3.0.~~
 
 ## Measure before building
 

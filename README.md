@@ -14,8 +14,8 @@ is independent of its built-in radio: the built-in radio can stay associated (an
 160 MHz evidence, act as a known transmitter) while the adapter watches any channel. Reference
 hosts: an M1 Max for the MT7921 evidence and an M4 for the MT7925 evidence.
 
-> **Status: research-grade passive capture, not a network driver.** The receive path is
-> working on the exact hardware below. Injection is experimental and was not part of the
+> **Status: research-grade passive capture, not a network driver.** Current release 0.3.0
+> (2026-09-03). The receive path is working on the exact hardware below. Injection is experimental and was not part of the
 > current release validation. Read [Testing and evidence](docs/TESTING.md),
 > [Known limits](#known-limits-and-non-goals), [engineering quality](docs/QUALITY.md), and
 > [ROADMAP.md](ROADMAP.md) before relying on it.
@@ -115,7 +115,7 @@ The codebase includes both a high-level Python library and a zero-dependency C d
 | `mt7925u.py` | MT7925U (connac3) subclass: its WFSYS reset, MCU framing geometry, UNI capability/efuse/RX-filter commands, and TLV-only tuning. Boots, receives, and writes radiotap pcap on the Nighthawk A9000 |
 | `rxd.py` | Python connac2 (MT7921) RX descriptor decode and the shared 802.11 frame parsing (IE analysis, AKM suites, PHY rate, airtime accounting) |
 | `rxd_connac3.py` | connac3 (MT7925) RX descriptor decode producing the same dict, so everything downstream of the descriptor is chip-agnostic |
-| [`c/`](c/README.md) | Pure C driver: native macOS IOKit USB transport (zero external dependencies), MCU framing, TXWI injection, PCAP writer, and `mt7921_smoke` CLI |
+| [`c/`](c/README.md) | Pure C driver for both chips: native macOS IOKit USB transport (zero external dependencies), chip profiles, MCU framing, connac2 and connac3 decoders, TXWI injection (MT7921), radiotap PCAP writer through EHT, and `mt7921_smoke` CLI |
 
 ## Pure C driver (zero dependencies)
 
@@ -207,6 +207,7 @@ publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTIN
 | 40 / 80 MHz capture | MT7921: code paths exist, not release-validated. MT7925: 80 MHz configuration current pass; frames decoded at 80 and 40 MHz during the 160 MHz run |
 | 160 MHz capture | MT7921: not supported (measured zero transfers). **MT7925: current pass**, 1736 frames decoded at 160 MHz in 10 s, 193 HE data frames from a known transmitter |
 | 320 MHz capture | No supported part; decoded as a width, no rate |
+| EHT (Wi-Fi 7) frames in radiotap | **MT7925: current pass**; both pcap writers emit U-SIG and EHT TLVs, tshark 4.6 shows 802.11be with MCS, streams, bandwidth, and data rate; 973 live EHT frames in 30 s at 160 MHz, 0 malformed |
 | Simultaneous multi-channel capture | Not possible with one radio |
 | Hardware CCA busy / noise floor | Not working; reads zero on the reference device |
 
@@ -279,7 +280,7 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 143 offline tests for firmware parsing, MCU framing (both chips, with
+The macOS-only CI runs 150 offline tests for firmware parsing, MCU framing (both chips, with
 the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.
@@ -291,7 +292,8 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
 ## Planning
 
 - [ROADMAP.md](ROADMAP.md): stack-ranked work in three tracks (roaming and steering instrument,
-  community capture source, researcher reference). Fresh as of 2026-09-03.
+  community capture source, researcher reference); next up are the C driver's MT7925 port (R26)
+  and EHT radiotap (R27). Fresh as of 2026-09-03.
 - [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-03.
 - [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
   not re-run by accident. Fresh as of 2026-09-03.

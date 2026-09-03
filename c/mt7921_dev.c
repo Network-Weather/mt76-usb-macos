@@ -8,10 +8,10 @@
 #include <string.h>
 #include <unistd.h>
 
-int mt7921_dev_open(mt7921_dev_t *dev) {
+int mt7921_dev_open(mt7921_dev_t *dev, const char *usb_id) {
     if (!dev) return -1;
     memset(dev, 0, sizeof(*dev));
-    if (mt7921_usb_open(&dev->usb) != 0) {
+    if (mt7921_usb_open(&dev->usb, usb_id) != 0) {
         return -1;
     }
     mt7921_mcu_init(&dev->mcu, &dev->usb);
@@ -121,20 +121,26 @@ static void wait_udma_idle(mt7921_dev_t *dev) {
 }
 
 static int wfsys_reset(mt7921_dev_t *dev) {
+    /* mt792xu_wfsys_reset driven by the chip's struct mt792xu_wfsys_desc (mt792x_usb.c at
+     * c5a3bd91): the reset register is toggled through the UHW vendor pair, then the done
+     * register is polled with the descriptor's mask and value. */
+    const mt7921_chip_profile_t *prof = dev->mcu.prof;
     wait_udma_idle(dev);
     epctl_rst_opt(dev, false);
 
-    uint32_t val = mt7921_uhw_rr(&dev->usb, MT_CBTOP_RGU_WF_SUBSYS_RST);
-    mt7921_uhw_wr(&dev->usb, MT_CBTOP_RGU_WF_SUBSYS_RST, val | MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH);
-    usleep(1000);
-    val = mt7921_uhw_rr(&dev->usb, MT_CBTOP_RGU_WF_SUBSYS_RST);
-    mt7921_uhw_wr(&dev->usb, MT_CBTOP_RGU_WF_SUBSYS_RST, val & ~MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH);
+    uint32_t val = mt7921_uhw_rr(&dev->usb, prof->wfsys_rst_reg);
+    mt7921_uhw_wr(&dev->usb, prof->wfsys_rst_reg, val | MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH);
+    usleep(prof->wfsys_delay_us);
+    val = mt7921_uhw_rr(&dev->usb, prof->wfsys_rst_reg);
+    mt7921_uhw_wr(&dev->usb, prof->wfsys_rst_reg, val & ~MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH);
 
-    mt7921_uhw_wr(&dev->usb, MT_UDMA_CONN_INFRA_STATUS_SEL, 0);
+    if (prof->wfsys_need_status_sel) {
+        mt7921_uhw_wr(&dev->usb, MT_UDMA_CONN_INFRA_STATUS_SEL, 0);
+    }
 
     for (int i = 0; i < MT792x_WFSYS_INIT_RETRY_COUNT; i++) {
-        val = mt7921_uhw_rr(&dev->usb, MT_UDMA_CONN_INFRA_STATUS);
-        if (val & MT_UDMA_CONN_WFSYS_INIT_DONE) return 0;
+        val = mt7921_uhw_rr(&dev->usb, prof->wfsys_done_reg);
+        if ((val & prof->wfsys_done_mask) == prof->wfsys_done_val) return 0;
         usleep(100000);
     }
     return -1;
@@ -212,11 +218,24 @@ int mt7921_bringup(mt7921_dev_t *dev, const uint8_t *patch_blob, size_t patch_le
 }
 
 int mt7921_set_rxfilter(mt7921_dev_t *dev, uint32_t fif, uint8_t bit_op, uint32_t bit_map) {
-    uint8_t data[68] = {0};
-    data[4] = fif ? 1 : 2; /* mode */
-
     uint32_t le_fif = CFSwapInt32HostToLittle(fif);
     uint32_t le_bitmap = CFSwapInt32HostToLittle(bit_map);
+    if (dev->mcu.prof->chip == MT_CHIP_MT7925) {
+        /* mt7925_mcu_set_rxfilter (mt7925/mcu.c:4031-4060 at c5a3bd91): MCU_UNI_CMD(BAND_CONFIG)
+         * tag SET_MAC80211_RX_FILTER; 72 bytes: band_idx, rsv1[3], le16 tag, le16 len = 68,
+         * mode (0 when fif is given, 1 for a bitmap edit), rsv2[3], le32 fif, le32 bit_map,
+         * bit_op, pad[51]. Waits for the reply, as the driver does. */
+        uint8_t req[72] = {0};
+        req[4] = UNI_BAND_CONFIG_RX_FILTER;
+        req[6] = 68;
+        req[8] = fif ? 0 : 1;
+        memcpy(req + 12, &le_fif, 4);
+        memcpy(req + 16, &le_bitmap, 4);
+        req[20] = bit_op;
+        return mt7921_mcu_uni(&dev->mcu, MCU_UNI_CMD_BAND_CONFIG, req, sizeof(req), true, NULL, NULL, 3000);
+    }
+    uint8_t data[68] = {0};
+    data[4] = fif ? 1 : 2; /* mode */
     memcpy(data + 8, &le_fif, 4);
     memcpy(data + 12, &le_bitmap, 4);
     data[16] = bit_op;
@@ -227,6 +246,9 @@ int mt7921_set_rxfilter(mt7921_dev_t *dev, uint32_t fif, uint8_t bit_op, uint32_
 int mt7921_set_monitor_mode(mt7921_dev_t *dev) {
     int ret = mt7921_set_rxfilter(dev, MONITOR_FILTER, 0, 0);
     if (ret != 0) return ret;
+    /* mt7925_configure_filter makes the single fif write above; the RFCR drop-bitmap edit
+     * is an mt7921 command (CE SET_RX_FILTER mode 2). */
+    if (dev->mcu.prof->chip == MT_CHIP_MT7925) return 0;
     return mt7921_set_rxfilter(dev, 0, MT7921_FIF_BIT_CLR, MONITOR_DROP_CLEAR);
 }
 
@@ -277,6 +299,9 @@ int mt7921_config_sniffer(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_
 
 int mt7921_set_chan_info(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_ch,
                          uint8_t bw, uint8_t band) {
+    if (dev->mcu.prof->chip != MT_CHIP_MT7921) {
+        return MT7921_ERR_UNSUPPORTED; /* mt7925 has no CHANNEL_SWITCH; the sniffer TLV tunes */
+    }
     uint8_t req[76] = {0};
     req[0] = control_ch;
     req[1] = center_ch;
@@ -292,8 +317,35 @@ int mt7921_set_chan_info(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_c
     return mt7921_mcu_cmd_word(&dev->mcu, MCU_EXT_CMD(MCU_EXT_CMD_CHANNEL_SWITCH), req, sizeof(req), true, NULL, NULL, 3000);
 }
 
+int mt7921_tune(mt7921_dev_t *dev, const char *band_name, uint8_t control_ch, uint8_t center_ch,
+                uint16_t width_mhz) {
+    /* Width maps to two enums: CMD_CBW_* for CHANNEL_SWITCH and the sniffer TLV's own table,
+     * in which 40 MHz is encoded as 20 with the offset carried by sco (mcu_config_sniffer
+     * ch_width[] on both chips). */
+    uint8_t cbw, sniffer_bw;
+    switch (width_mhz) {
+        case 20: cbw = CMD_CBW_20MHZ; sniffer_bw = SNIFFER_BW_20; break;
+        case 40: cbw = CMD_CBW_40MHZ; sniffer_bw = SNIFFER_BW_20; break;
+        case 80: cbw = CMD_CBW_80MHZ; sniffer_bw = SNIFFER_BW_80; break;
+        case 160: cbw = CMD_CBW_160MHZ; sniffer_bw = SNIFFER_BW_160; break;
+        default: return -1;
+    }
+    uint8_t band;
+    if (strcmp(band_name, "2.4GHz") == 0) band = 0;
+    else if (strcmp(band_name, "5GHz") == 0) band = 1;
+    else if (strcmp(band_name, "6GHz") == 0) band = 2;
+    else return -1;
+    if (center_ch == 0) center_ch = control_ch;
+
+    if (dev->mcu.prof->chip == MT_CHIP_MT7921) {
+        int ret = mt7921_set_chan_info(dev, control_ch, center_ch, cbw, band);
+        if (ret != 0) return ret;
+    }
+    return mt7921_config_sniffer(dev, control_ch, center_ch, band_name, sniffer_bw);
+}
+
 int mt7921_rx_read(mt7921_dev_t *dev, void *buf, uint32_t *len, uint32_t timeout_ms) {
-    return mt7921_bulk_in(&dev->usb, EP_IN_PKT_RX, buf, len, timeout_ms);
+    return mt7921_bulk_in(&dev->usb, MT_ROLE_PKT_RX, buf, len, timeout_ms);
 }
 
 int mt7921_build_probe_request(uint8_t *buf, size_t max_len, const uint8_t src_mac[6], const char *ssid, uint16_t seq) {
@@ -389,7 +441,7 @@ int mt7921_build_txwi(uint8_t *txwi_out, const uint8_t *frame, size_t frame_len,
 
 int mt7921_inject(mt7921_dev_t *dev, const uint8_t *frame, size_t frame_len, uint8_t ep, uint16_t seq, uint8_t pid) {
     if (!dev || !frame || frame_len < 24) return -1;
-    if (ep == 0) ep = EP_OUT_AC_BE;
+    if (ep == 0) ep = MT_ROLE_AC_BE;
 
     uint8_t txwi[MT_SDIO_TXD_SIZE];
     if (mt7921_build_txwi(txwi, frame, frame_len, seq, pid) != MT_SDIO_TXD_SIZE) {
@@ -418,7 +470,7 @@ int mt7921_inject(mt7921_dev_t *dev, const uint8_t *frame, size_t frame_len, uin
 bool mt7921_is_alive(mt7921_dev_t *dev) {
     if (!dev) return false;
     uint32_t chipid = mt7921_rr(&dev->usb, MT_HW_CHIPID);
-    return (chipid & 0xFFFF) == 0x7961;
+    return (chipid & 0xFFFF) == dev->mcu.prof->chip_id;
 }
 
 int mt7921_dev_get_temperature(mt7921_dev_t *dev, int32_t *temp_c) {

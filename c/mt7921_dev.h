@@ -12,7 +12,11 @@ typedef struct {
     mt7921_mcu_t mcu;
 } mt7921_dev_t;
 
-int mt7921_dev_open(mt7921_dev_t *dev);
+/* usb_id: "vvvv:pppp" or NULL (see mt7921_usb_open). */
+int mt7921_dev_open(mt7921_dev_t *dev, const char *usb_id);
+static inline const mt7921_chip_profile_t *mt7921_dev_profile(const mt7921_dev_t *dev) {
+    return dev->mcu.prof;
+}
 void mt7921_dev_close(mt7921_dev_t *dev);
 
 /* Bringup orchestration */
@@ -26,8 +30,14 @@ int mt7921_set_monitor_mode(mt7921_dev_t *dev);
 int mt7921_set_sniffer(mt7921_dev_t *dev, bool enable, uint8_t band_idx);
 int mt7921_config_sniffer(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_ch,
                           const char *band_name, uint8_t bw);
+/* MT7921 only (MCU_EXT_CMD CHANNEL_SWITCH); returns MT7921_ERR_UNSUPPORTED on the MT7925. */
 int mt7921_set_chan_info(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_ch,
                          uint8_t bw, uint8_t band);
+/* Put the sniffer on one channel on either chip: MT7921 sends CHANNEL_SWITCH then the
+ * sniffer CONFIG TLV; MT7925 sends the TLV alone. width_mhz is 20, 40, 80, or 160;
+ * center_ch 0 means the control channel. */
+int mt7921_tune(mt7921_dev_t *dev, const char *band_name, uint8_t control_ch, uint8_t center_ch,
+                uint16_t width_mhz);
 
 int mt7921_rx_read(mt7921_dev_t *dev, void *buf, uint32_t *len, uint32_t timeout_ms);
 
