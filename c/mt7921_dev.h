@@ -31,4 +31,14 @@ int mt7921_set_chan_info(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_c
 
 int mt7921_rx_read(mt7921_dev_t *dev, void *buf, uint32_t *len, uint32_t timeout_ms);
 
+/* Packet Injection & Transmission */
+int mt7921_build_probe_request(uint8_t *buf, size_t max_len, const uint8_t src_mac[6], const char *ssid, uint16_t seq);
+int mt7921_build_txwi(uint8_t *txwi_out, const uint8_t *frame, size_t frame_len, uint16_t seq, uint8_t pid);
+int mt7921_inject(mt7921_dev_t *dev, const uint8_t *frame, size_t frame_len, uint8_t ep, uint16_t seq, uint8_t pid);
+bool mt7921_is_alive(mt7921_dev_t *dev);
+
+/* Housekeeping */
+int mt7921_dev_get_temperature(mt7921_dev_t *dev, int32_t *temp_c);
+int mt7921_dev_read_efuse(mt7921_dev_t *dev, uint32_t offset, uint8_t data[16], uint32_t *valid);
+
 #endif /* MT7921_DEV_H */

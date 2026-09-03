@@ -85,4 +85,7 @@ int mt7921_nic_power_ctrl(mt7921_mcu_t *mcu, uint8_t power_mode);
 int mt7921_get_nic_capability(mt7921_mcu_t *mcu);
 int mt7921_set_eeprom(mt7921_mcu_t *mcu);
 
+int mt7921_get_temperature(mt7921_mcu_t *mcu, int32_t *temp_c);
+int mt7921_read_efuse(mt7921_mcu_t *mcu, uint32_t offset, uint8_t data[16], uint32_t *valid);
+
 #endif /* MT7921_MCU_H */

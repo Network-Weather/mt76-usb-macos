@@ -3,6 +3,7 @@
 /* Offline unit test for mt7921_rxd without hardware. */
 
 #include "mt7921_rxd.h"
+#include "mt7921_dev.h"
 #include "mt7921_mcu.h"
 #include "mt7921_regs.h"
 
@@ -193,6 +194,51 @@ static void test_parse_ram_bounds_check(void) {
     printf("PASS: test_parse_ram_bounds_check\n");
 }
 
+static void test_build_probe_request(void) {
+    uint8_t mac[6] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 };
+    uint8_t frame[128];
+    int len = mt7921_build_probe_request(frame, sizeof(frame), mac, "test_ssid", 42);
+    assert(len == 41);
+
+    const uint8_t expected[] = {
+        0x40, 0x00, 0x00, 0x00,
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        0x00, 0x11, 0x22, 0x33, 0x44, 0x55,
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        0xa0, 0x02,
+        0x00, 0x09, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x73, 0x73, 0x69, 0x64,
+        0x01, 0x04, 0x82, 0x84, 0x8b, 0x96
+    };
+    assert(sizeof(expected) == 41);
+    assert(memcmp(frame, expected, 41) == 0);
+    printf("PASS: test_build_probe_request\n");
+}
+
+static void test_build_txwi(void) {
+    uint8_t mac[6] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 };
+    uint8_t frame[128];
+    int frame_len = mt7921_build_probe_request(frame, sizeof(frame), mac, "test_ssid", 42);
+    assert(frame_len == 41);
+
+    uint8_t txwi[64];
+    int txwi_len = mt7921_build_txwi(txwi, frame, frame_len, 42, 5);
+    assert(txwi_len == 64);
+
+    const uint8_t expected_txwi[] = {
+        0x69, 0x00, 0x80, 0x20, 0x00, 0x60, 0x02, 0x80,
+        0x04, 0x24, 0x00, 0x80, 0x01, 0x78, 0x2a, 0x90,
+        0x00, 0x00, 0x00, 0x00, 0x05, 0x04, 0x00, 0x00,
+        0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+    assert(sizeof(expected_txwi) == 64);
+    assert(memcmp(txwi, expected_txwi, 64) == 0);
+    printf("PASS: test_build_txwi\n");
+}
+
 int main(void) {
     printf("Running mt7921_rxd offline unit tests...\n");
     test_decode_24ghz_beacon();
@@ -200,6 +246,8 @@ int main(void) {
     test_decode_6ghz_psc();
     test_pcap_writer();
     test_parse_ram_bounds_check();
+    test_build_probe_request();
+    test_build_txwi();
     printf("All offline unit tests passed successfully!\n");
     return 0;
 }

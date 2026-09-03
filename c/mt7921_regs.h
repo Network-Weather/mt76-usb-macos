@@ -283,4 +283,50 @@
 #define MT_RXD2_NORMAL_AMSDU_ERR    (1U << 23)
 #define MT_RXD2_NORMAL_MAX_LEN_ERROR (1U << 24)
 
+/* TXWI (Transmit Wireless Information) definitions */
+#define MT_TXD_SIZE                 32
+#define MT_SDIO_TXD_SIZE            64
+
+#define MT_TXD0_TX_BYTES_M          0xFFFF
+#define MT_TX_TYPE_SF               1
+#define MT_LMAC_ALTX0               0x10
+
+#define MT_TXD1_LONG_FORMAT         (1U << 31)
+#define MT_TXD1_OWN_MAC_SHIFT       24
+#define MT_TXD1_TID_SHIFT           20
+#define MT_TXD1_HDR_FORMAT_SHIFT    16
+#define MT_TXD1_HDR_INFO_SHIFT      11
+#define MT_HDR_FORMAT_802_11        2
+
+#define MT_TXD2_FIX_RATE            (1U << 31)
+#define MT_TXD2_HTC_VLD             (1U << 13)
+#define MT_TXD2_MULTICAST           (1U << 10)
+#define MT_TXD2_FRAME_TYPE_SHIFT    4
+#define MT_TXD2_SUB_TYPE_SHIFT      0
+
+#define MT_TXD3_SN_VALID            (1U << 31)
+#define MT_TXD3_BA_DISABLE          (1U << 28)
+#define MT_TXD3_SEQ_SHIFT           16
+#define MT_TXD3_REM_TX_COUNT_SHIFT  11
+#define MT_TXD3_NO_ACK              (1U << 0)
+
+#define MT_TXD5_TX_STATUS_HOST      (1U << 10)
+#define MT_PACKET_ID_FIRST          3
+#define MT_TXD6_FIXED_BW            (1U << 2)
+#define MT_TXD6_TX_RATE_SHIFT       16
+
+#define MT_TXD8_L_TYPE_SHIFT        4
+#define MT_TXD8_L_SUB_TYPE_SHIFT    0
+
+#define GLOBAL_WCID                 0
+#define TX_RATE_1M_CCK              0
+
+/* Housekeeping commands */
+#define MCU_EXT_CMD_EFUSE_ACCESS    0x01
+#define MCU_EXT_CMD_THERMAL_CTRL    0x2C
+#define THERMAL_SENSOR_TEMP_QUERY   0
+#define MT7921_EEPROM_BLOCK_SIZE    16
+#define MT_EE_MAC_ADDR              0x004
+#define MT_EE_HW_TYPE               0x55B
+
 #endif /* MT7921_REGS_H */
