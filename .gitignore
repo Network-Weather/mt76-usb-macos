@@ -1,5 +1,6 @@
 # MediaTek firmware blobs are licensed and MUST NOT be committed (fetched by setup.sh)
 firmware/
+firmware
 *.bin
 
 # Python
@@ -21,3 +22,8 @@ dist/
 *.pcap
 *.pcapng
 .DS_Store
+
+# C build artifacts
+*.o
+c/mt7921_smoke
+c/test_rxd

@@ -25,3 +25,9 @@ fi
 "$PROJECT_PYTHON" -m pytest -q
 "$PROJECT_PYTHON" -m build --no-isolation
 "$PROJECT_PYTHON" -m pip check
+
+if [ -d c ]; then
+  make -C c clean all
+  make -C c test
+  make -C c clean
+fi
