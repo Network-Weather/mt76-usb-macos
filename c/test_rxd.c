@@ -813,6 +813,7 @@ static void test_pcap_writer_eht_tlvs(void) {
     n = fread(buf, 1, sizeof(buf), in);
     fclose(in);
     unlink(path);
+    assert(n > 24 + 16 + 80);
     rt = buf + 24 + 16;
     assert(read_le32(rt + 36) == (0x4U | 0x400000U));
     assert((read_le32(rt + 44) & 0x1F) == 5);                    /* 996-tone RU = 80 MHz */

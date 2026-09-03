@@ -240,11 +240,12 @@ int mt7921_usb_open(mt7921_usb_t *usb, const char *usb_id) {
     IOObjectRelease(intf_iter);
 
     if (qualifying != 1 || !usb->intf) {
-        set_error(qualifying == 0
-                      ? "no interface with class ff/ff/ff and %d bulk IN + %d bulk OUT endpoints (%s)"
-                      : "ambiguous layout: %d interfaces qualify (%s)",
-                  qualifying == 0 ? MT_N_BULK_IN : qualifying,
-                  qualifying == 0 ? MT_N_BULK_OUT : 0, layout);
+        if (qualifying == 0) {
+            set_error("no interface with class ff/ff/ff and %d bulk IN + %d bulk OUT endpoints (%s)",
+                      MT_N_BULK_IN, MT_N_BULK_OUT, layout);
+        } else {
+            set_error("ambiguous layout: %d interfaces qualify (%s)", qualifying, layout);
+        }
         mt7921_usb_close(usb);
         return -1;
     }

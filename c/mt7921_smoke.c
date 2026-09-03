@@ -660,13 +660,13 @@ int main(int argc, char **argv) {
         bs->channels_attempted++;
         if (mt7921_tune(&dev, spec->band, spec->channel, spec->center ? spec->center : spec->channel,
                         spec->width ? spec->width : 20) != 0) {
+            char err_buf[128];
+            snprintf(err_buf, sizeof(err_buf), "failed to tune to %s channel %u", spec->band, spec->channel);
             mt7921_dev_close(&dev);
-            free(all_chans);
+            free(all_chans); /* spec points into all_chans for --plan all; err_buf is built first */
             free(patch_blob);
             free(ram_blob);
             if (pcap_f) pcap_writer_close(pcap_f);
-            char err_buf[128];
-            snprintf(err_buf, sizeof(err_buf), "failed to tune to %s channel %u", spec->band, spec->channel);
             emit_json("fail", plan_name, dwell, plan_count, req_24, req_5, req_6,
                       &stats_24, &stats_5, &stats_6, patch_sha, ram_sha, true, temp_c,
                       "RuntimeError", err_buf,
