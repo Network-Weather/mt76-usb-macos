@@ -467,8 +467,8 @@ tshark -r out.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 3 && wlan.ta 
   18 total, at 127 to 296 frames per 1 s dwell; median retune 5.7 ms (one MCU command on this
   chip); 0 USB errors.
 
-The MT7921 reference adapter was not attached on 2026-09-03; nothing above reruns its
-evidence, and the MT7921 on-wire framing is held fixed by `tests/golden_mt7921_frames.json`.
+The MT7921 reference adapter was attached later the same day; its rerun on the 0.3.0 code is
+the "MT7921U regression on 0.3.0" section below.
 
 ## Pure C driver on the MT7925U: 2026-09-03
 
@@ -508,8 +508,8 @@ tshark -r out.pcap -Y "_ws.malformed || _ws.expert.severity==error" -T fields -e
   Frames carry no FCS: on 418 beacon and data frames from both pcaps the trailing four bytes
   never equal the CRC-32 of the rest, so the radiotap "FCS at end" flag is correctly absent.
 
-The MT7921 reference adapter was not attached; the C driver's MT7921 path is covered by the
-unchanged offline tests (connac2 decode, TXWI, pcap writer) and by the MT7921 profile tests.
+The C driver's MT7921 path was rerun with the adapter attached later the same day; see the
+"MT7921U regression on 0.3.0" section below.
 
 ## EHT radiotap on the MT7925U: 2026-09-03
 
@@ -536,6 +536,36 @@ tshark -r out.pcap -Y "wlan_radio.phy == 12" -T fields -e wlan_radio.11be.mcs -e
 
 The MT7921 cannot receive EHT PPDUs wider than its configuration and no MT7921 was attached; the
 writers' HT/VHT/HE output is unchanged and covered by the existing offline tests.
+
+## MT7921U regression on 0.3.0 with both adapters attached: 2026-09-03
+
+The ALFA AWUS036AXML (`0e8d:7961`) and the Nighthawk A9000 (`0846:9072`) on the same hub, on
+the 0.3.0 code plus the RCPI fix (`0a54dc1`). Host as in the MT7925U sections above.
+
+```bash
+./.venv/bin/python scripts/usb_descriptors.py --chip-id
+./.venv/bin/python scripts/hardware_smoke.py --plan quick            # no selector: must refuse
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python scripts/hardware_smoke.py --plan all
+MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --plan all --dwell 0.75 --fw firmware --pcap out.pcap
+MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --temp --fw firmware
+MT76_USB_ID=0e8d:7961 ./c/mt7921_smoke --read-efuse 0x000 --fw firmware
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python examples/sniff_to_pcap.py 53 6 out.pcap 6GHz
+```
+
+- **Criterion**: both tools refuse to open without a selector when two supported adapters are
+  attached; with `MT76_USB_ID=0e8d:7961` both 43-channel sweeps pass with no undecoded transfers
+  and no USB errors; the MT7921-only thermal and efuse queries answer; pcaps dissect.
+- **Result**: the descriptor probe lists both adapters (the ALFA's interface 3 carries the eight
+  bulk endpoints plus an interrupt endpoint `0x86`, like the A9000's interface 0; chip ids
+  `0x7961` and `0x7925`). Without a selector: Python `UnsupportedDevice: 2 supported devices
+  attached (0e8d:7961, 0846:9072)`, C `2 supported devices attached ...`, both exit 3.
+  Python sweep on the ALFA: **pass**, 50.1 s, 3189 transfers, 3189 decoded, 0 undecoded, 0 USB
+  errors; 2.4 GHz 3/3 (997), 5 GHz 17/25 (1059), 6 GHz 6/15 (1133). C sweep: **pass**, 51.1 s,
+  3741/3741, 0 undecoded, 0 USB errors; 2.4 GHz 3/3 (1317), 5 GHz 19/25 (1482), 6 GHz 6/15 (942);
+  its pcap dissects with 41 frames flagged, the same populations as on the A9000 (26 VHT NDP
+  Announcements of 34 bytes, 15 beacons from the AP with the zero-length Supported Rates
+  element). Die temperature 32 °C. Efuse block 0x000: `61 79 00 00 xx xx xx xx xx xx 00 ...`,
+  valid 1, MAC masked. Python 6 GHz channel 53 pcap: 3948 frames, 0 malformed.
 
 ## Previously observed, not rerun in the current validation
 
