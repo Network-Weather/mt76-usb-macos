@@ -30,7 +30,7 @@ from pathlib import Path
 import usb.core
 import usb.util
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 # ---------------------------------------------------------------------------
 # Supported USB devices and firmware

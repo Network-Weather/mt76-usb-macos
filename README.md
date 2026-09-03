@@ -4,13 +4,15 @@
 [![License: BSD-3-Clause-Clear](https://img.shields.io/badge/license-BSD--3--Clause--Clear-blue.svg)](LICENSE)
 
 A small, readable Python userspace monitor-mode driver for the MediaTek MT7921AU / MT7921U
-(`MT7961`, USB `0e8d:7961`) on macOS. It talks directly to an external adapter such as the
-ALFA AWUS036AXML through libusb—no kernel extension, DriverKit extension, root, or virtual
-machine—and writes 2.4, 5, and **6 GHz** 802.11 traffic to radiotap pcap for Wireshark.
+(`MT7961`, USB `0e8d:7961`) and MT7925U (Wi-Fi 7, for example the Netgear Nighthawk A9000) on
+macOS. It talks directly to an external adapter such as the ALFA AWUS036AXML or the A9000 through
+libusb—no kernel extension, DriverKit extension, root, or virtual machine—and writes 2.4, 5, and
+**6 GHz** 802.11 traffic, at up to **160 MHz** on the MT7925, to radiotap pcap for Wireshark.
 
-The practical use case is giving a Mac whose built-in radio cannot receive 6 GHz a passive
-Wi-Fi 6E capture instrument. The current reference host is an M1 Max; newer Macs may have
-different built-in capabilities.
+The practical use case is giving a Mac a passive Wi-Fi 6E / Wi-Fi 7 capture instrument that
+is independent of its built-in radio: the built-in radio can stay associated (and, as in the
+160 MHz evidence, act as a known transmitter) while the adapter watches any channel. Reference
+hosts: an M1 Max for the MT7921 evidence and an M4 for the MT7925 evidence.
 
 > **Status: research-grade passive capture, not a network driver.** The receive path is
 > working on the exact hardware below. Injection is experimental and was not part of the
@@ -26,7 +28,7 @@ Support is per chip and evidence-gated:
 | Chip (Linux module) | Adapter tested | Status |
 |---|---|---|
 | MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Working: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz, dated evidence in [docs/TESTING.md](docs/TESTING.md) |
-| MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | Netgear Nighthawk A9000 | In progress: boots, receives on 2.4 / 5 / 6 GHz, decodes to radiotap pcap with 0 malformed in tshark, and accepts 20/80/160 MHz configurations ([docs/TESTING.md](docs/TESTING.md)); a frame decoded at 160 MHz is the remaining stage in [docs/MT7925.md](docs/MT7925.md) |
+| MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`, `0e8d:6639`) | Netgear Nighthawk A9000 (`0846:9072`) | Working: 2.4 / 5 / 6 GHz passive capture at 20, 80, and **160 MHz**, 43-channel smoke pass, dated evidence in [docs/TESTING.md](docs/TESTING.md); the A8500 and MediaTek ids are in the table but untested |
 | MT7663U, MT76x2U, MT76x0U (`mt7663u`, `mt76x2u`, `mt76x0u`) | none | Not attempted: different firmware and MCU models; nothing here has been run on them |
 
 **Lineage:** the driver logic is transcribed from the BSD-3-Clause-Clear
@@ -90,6 +92,7 @@ terms and the one blob you must not fetch.
 ./.venv/bin/python examples/scan.py                              # tri-band BSSID census
 ./.venv/bin/python examples/scan.py 6                            # 6 GHz PSCs only
 ./.venv/bin/python examples/sniff_to_pcap.py 53 8 out.pcap 6GHz # 6 GHz radiotap pcap
+./.venv/bin/python examples/sniff_to_pcap.py 53 8 out.pcap 6GHz --width 160 --center 47  # 160 MHz (MT7925)
 ./.venv/bin/python scripts/usb_descriptors.py --chip-id          # what the driver sees; no firmware needed
 ./.venv/bin/python scripts/firmware_boot.py                      # boot firmware, report chip capabilities (either chip)
 ./.venv/bin/python scripts/hardware_smoke.py --plan all          # redacted passive release check
@@ -184,9 +187,10 @@ interfaces 0 to 2 are Bluetooth) and on the A9000's single interface 0, the resu
 
 ## Capability and evidence matrix
 
-“Current pass” means rerun on the attached `0e8d:7961` device on 2026-08-31. “Previously
-observed” is deliberately weaker: the code has done it on hardware, but it was not proved
-again in the publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTING.md).
+“Current pass” means rerun on the attached `0e8d:7961` device on 2026-08-31, or on the
+attached `0846:9072` device on 2026-09-03 where a row says MT7925. “Previously observed” is
+deliberately weaker: the code has done it on hardware, but it was not proved again in the
+publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTING.md).
 
 | Capability | Evidence |
 |---|---|
@@ -199,8 +203,9 @@ again in the publication run. Exact commands and results are in [docs/TESTING.md
 | Per-frame PHY rate, width, MCS, RSSI, retry bit | Previously observed; offline calculations tested |
 | 802.11k/v/r, PMF, EasyMesh, and 802.11s parsing | Synthetic offline tests; opportunistic live coverage |
 | Frame injection | Experimental, previously observed only at low rate; **not current-pass tested** |
-| 40 / 80 MHz capture | Code paths exist; not covered by the current release validation |
-| 160 / 320 MHz capture | Not supported for this part |
+| 40 / 80 MHz capture | MT7921: code paths exist, not release-validated. MT7925: 80 MHz configuration current pass; frames decoded at 80 and 40 MHz during the 160 MHz run |
+| 160 MHz capture | MT7921: not supported (measured zero transfers). **MT7925: current pass**, 1736 frames decoded at 160 MHz in 10 s, 193 HE data frames from a known transmitter |
+| 320 MHz capture | No supported part; decoded as a width, no rate |
 | Simultaneous multi-channel capture | Not possible with one radio |
 | Hardware CCA busy / noise floor | Not working; reads zero on the reference device |
 
@@ -235,7 +240,8 @@ unless `--acknowledge-experimental-transmit` is explicitly supplied.
   `0e8d:7961` alone so far. Comfast/rebadged IDs, MT7922, PCIe, SDIO, and Bluetooth are not
   supported.
 - One radio means channel hopping has unavoidable blind intervals. It cannot capture more
-  than one channel simultaneously, and the current examples use 20 MHz channels.
+  than one channel simultaneously; the scan and roam tools use 20 MHz channels, and
+  `sniff_to_pcap.py --width` selects wider ones.
 - It does not decrypt protected traffic, reconstruct TCP streams, split A-MSDU inner
   frames, or guarantee complete beamformed downlink capture.
 - It is not a spectrum analyzer. Frame counts, RSSI, and FCS errors cannot identify
@@ -272,7 +278,7 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 142 offline tests for firmware parsing, MCU framing (both chips, with
+The macOS-only CI runs 143 offline tests for firmware parsing, MCU framing (both chips, with
 the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.
@@ -284,12 +290,12 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
 ## Planning
 
 - [ROADMAP.md](ROADMAP.md): stack-ranked work in three tracks (roaming and steering instrument,
-  community capture source, researcher reference). Fresh as of 2026-09-01.
-- [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-01.
+  community capture source, researcher reference). Fresh as of 2026-09-03.
+- [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-03.
 - [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
-  not re-run by accident. Fresh as of 2026-09-02.
-- [docs/MT7925.md](docs/MT7925.md): the MT7925U (Wi-Fi 7, 160 MHz) port, each claim checked
-  against the pinned mt76 source, with the stage tracker. Fresh as of 2026-09-03.
+  not re-run by accident. Fresh as of 2026-09-03.
+- [docs/MT7925.md](docs/MT7925.md): the MT7925U (Wi-Fi 7, 160 MHz) port: what differs from the
+  MT7921 in the mt76 source, what the A9000 is, and the stage tracker. Fresh as of 2026-09-03.
 
 ## License and provenance
 

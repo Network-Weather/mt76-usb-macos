@@ -419,8 +419,56 @@ tshark -r out.pcap -Y "_ws.malformed || _ws.expert.severity==error" | wc -l
   returned zero transfers under the same 160 MHz configuration
   ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)); the MT7925 keeps receiving.
 
-Not yet shown on this device: a frame decoded at 80 or 160 MHz width. That needs a client
-transmitting on the wide channel, which is the next stage.
+### 160 MHz capture with a controlled transmitter, same day
+
+Same host, adapter, and firmware. The host's built-in Wi-Fi (Broadcom `14e4:4388`, 802.11ax)
+was joined to a 6 GHz BSS on channel 53 operating at 160 MHz (its link reported
+`Channel: 53 (6GHz, 160MHz)`, transmit rate 2401 Mb/s, MCS 11) and generated traffic bound to
+that interface (an HTTPS download loop and a 1200-byte ping at 50 per second to the gateway)
+while the A9000 captured the same channel configured for 160 MHz (control 53, center 47). The
+capture host's wired link carried everything else. Counts only; the SSID and addresses stay
+out of this repository.
+
+```bash
+./.venv/bin/python scripts/width_probe.py 6GHz:53:47:160 --seconds 10
+./.venv/bin/python examples/sniff_to_pcap.py 53 10 out.pcap 6GHz --width 160 --center 47
+tshark -r out.pcap -Y "radiotap.he.data_5.data_bw_ru_allocation == 3 && wlan.ta == <mac>" | wc -l
+```
+
+- **Criterion**: frames decoded with a PHY width of 160 MHz > 0; HE data frames at 160 MHz
+  whose transmitter address is the built-in Wi-Fi's MAC > 0; tshark dissects the pcap with
+  zero malformed frames.
+- **Result**: width probe, 10 s: **3337 frames, 1736 decoded at 160 MHz**, 513 at 80, 1066 at
+  20, 22 at 40; kinds BlockAck 894, Action 781, RTS 565, CTS 510, Beacon 196, QoS Data 147,
+  VHT-NDPA 73, ActionNoAck 73, Data 65, ACK 17, Null 15; 0 USB errors. pcap, 10 s: 3764
+  transfers, 3764 frames, **0 malformed**; **193 HE frames at 160 MHz (radiotap HE bandwidth
+  code 3), all 193 transmitted by the built-in Wi-Fi's MAC**, all QoS Data at HE MCS 8 (76)
+  and MCS 9 (117), radiotap data rates 1633 to 1922 Mb/s; 1186 frames in total from that MAC
+  (RTS 458, BlockAck 449, QoS Data 193, others 86). Frames addressed to that MAC were CTS,
+  BlockAck, and control only: the AP's downlink data to it was not decoded, consistent with
+  beamformed downlink being outside what a third radio can receive
+  ([README](../README.md#known-limits-and-non-goals)).
+
+### Full passive sweep and retune drops, same day
+
+```bash
+./.venv/bin/python scripts/hardware_smoke.py --plan all
+./.venv/bin/python scripts/retune_drops.py --retunes 20 --dwell 1
+```
+
+- **Criterion**: `hardware_smoke` exits 0 with decoded frames on every band and no
+  undecoded transfers; `retune_drops` completes 20 retunes with counts only.
+- **Result**: `status=pass`, exit 0, 48.2 s for 43 channels: 991 transfers, 991 decoded
+  frames, 0 undecoded, 0 USB errors, 67 USB timeouts (quiet channels). 2.4 GHz 3/3 channels
+  with frames (233: 129 management, 56 data, 48 control); 5 GHz 16/25 (527: 327 / 22 / 178);
+  6 GHz 4/15 PSCs (231: 227 / 4 / 0). Redacted output in
+  [hardware-smoke-reference-mt7925.json](hardware-smoke-reference-mt7925.json). Retune drops on
+  the two busiest 2.4 GHz channels, 20 retunes: median 1 frame lost per retune, min 0, max 3,
+  18 total, at 127 to 296 frames per 1 s dwell; median retune 5.7 ms (one MCU command on this
+  chip); 0 USB errors.
+
+The MT7921 reference adapter was not attached on 2026-09-03; nothing above reruns its
+evidence, and the MT7921 on-wire framing is held fixed by `tests/golden_mt7921_frames.json`.
 
 ## Previously observed, not rerun in the current validation
 
@@ -438,9 +486,10 @@ as a current release qualification.
 ## Explicitly untested or unsupported
 
 - Intel Macs, non-26.6 macOS hardware runs, and non-Apple operating systems;
-- capture on any USB id other than `0e8d:7961`: the A9000 (`0846:9072`) is identified and its
-  interface resolved from descriptors (above), but nothing has been received on it yet;
-- 160/320 MHz, simultaneous channels, multiple adapters, MT7922, PCIe, and SDIO;
+- capture on USB ids other than `0e8d:7961` and `0846:9072` (the A8500 `0846:9050` and the
+  MediaTek `0e8d:7925` / `0e8d:6639` ids are in the table but no such device has been attached);
+- 320 MHz (no supported part), 160 MHz on the MT7921U, simultaneous channels, multiple
+  adapters in one process, MT7922, PCIe, and SDIO;
 - association, client mode, AP mode, routing, CoreWLAN, and a BSD network interface;
 - Bluetooth firmware or coexistence;
 - decryption and complete capture of beamformed downlink or A-MSDU inner frames;

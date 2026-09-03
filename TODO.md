@@ -10,10 +10,8 @@ least two APs on one SSID.
   radio to one channel and saw none of five roams of an MLO client; the network's own
   management log did. Next: watch the client's current 5 GHz link at 80 MHz with that log as
   the reference, and add Multi-Link element parsing so all of the client's link addresses match.
-- [ ] **A9000 port (R22).** Stages and their status are tracked in
-  [docs/MT7925.md](docs/MT7925.md#stages).
 - [ ] **roam_watch --bw 80.** 80 MHz capture works on 5 GHz (146 decoded 80 MHz frames in 10 s);
-  the watcher and survey commands still configure 20 MHz.
+  the watcher and survey commands still configure 20 MHz (`sniff_to_pcap.py --width` exists).
 
 ## Build
 
@@ -27,6 +25,8 @@ least two APs on one SSID.
 
 ## Landed this sprint
 
+- ~~R22 / R2: MT7925U port. The Nighthawk A9000 boots, receives on 2.4 / 5 / 6 GHz, decodes to
+  radiotap pcap, and captures 160 MHz HE data from a known transmitter; 0.2.0.~~
 - ~~A9000 day one: descriptors recorded with pyusb, chip id `0x7925` read, no Bluetooth
   interface present; R2 descriptor discovery and `scripts/usb_descriptors.py` shipped.~~
 - ~~R5 drop magnitude measured: median 1 frame lost per retune, max 8, over 30 hops at 100 to

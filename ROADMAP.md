@@ -123,7 +123,7 @@ Done when two reference adapters capture concurrently with per-device counters, 
 is observed on both source and target channels in one run, and the single-adapter path is
 unchanged.
 
-### R22. MT7925U port for 160 MHz and Wi-Fi 7
+### ~~R22. MT7925U port for 160 MHz and Wi-Fi 7~~ (landed 2026-09-03)
 
 Every 6 GHz AP in the reference house runs 160 MHz and the MT7921 returns nothing when
 configured for it, so client data on 6 GHz is invisible to this adapter
@@ -136,6 +136,22 @@ header, four commands moving to UNI encoding, and a connac3 RX descriptor decode
 Done when the A9000 boots, tunes, and captures on 20, 80, and 160 MHz through the existing
 redacted smoke schema, with descriptor discovery (R2) rather than a hard-coded interface, a
 connac3 decoder with synthetic fixtures, and a dated evidence section in docs/TESTING.md.
+
+Done: `mt7925u.py`, `rxd_connac3.py`, and the 2026-09-03 evidence in docs/TESTING.md. Two
+follow-ups fall out of it:
+
+### R26. C driver: MT7925 support
+
+`c/` still matches only `0e8d:7961` on interface 3 and decodes connac2. Port the Python port:
+descriptor-driven interface selection, the `mt7925u.py` MCU geometry and UNI commands, and a
+connac3 `mt7921_rxd_decode` sibling, checked against the same synthetic fixtures. Done when
+`c/mt7921_smoke` passes on the A9000 with the evidence format used for the Python driver.
+
+### R27. EHT radiotap
+
+`rxd_connac3` decodes EHT-SU/TRIG/MU frames (mode, MCS up to 13, NSS, width) but the pcap writer
+emits only Flags/Channel/dBm for them, so Wireshark shows no rate. Add the radiotap EHT and
+U-SIG fields. Done when an EHT frame captured on the MT7925 shows its MCS and width in Wireshark.
 
 ### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 
@@ -159,7 +175,7 @@ scripts whatever the outcome.
 
 ## Track B: community capture source
 
-### R2. Descriptor discovery and explicit device support
+### ~~R2. Descriptor discovery and explicit device support~~ (landed 2026-09-03)
 
 Replace the hard-coded interface 3 and endpoint layout with descriptor inspection and an
 explicit supported-device table. This is the first thing that fails for anyone whose adapter is

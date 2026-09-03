@@ -5,6 +5,14 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.2.0] - 2026-09-03
+
+MT7925U (Wi-Fi 7, 160 MHz) support on the Netgear Nighthawk A9000, and descriptor-driven device
+selection for every supported adapter. Hardware claims are evidence-gated in
+[docs/TESTING.md](docs/TESTING.md).
+
 ### Added
 
 - Descriptor-driven device selection (roadmap R2): `SUPPORTED_DEVICES` lists the MT7921U and
@@ -125,5 +133,6 @@ MT7925U port planned. Hardware claims are evidence-gated in [docs/TESTING.md](do
 - Offline tests for the roam watcher's BSSID bookkeeping: channel from the frame, not the sweep
   target; DS Parameter Set over descriptor; strongest RSSI; k/v/r flags.
 
-[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Network-Weather/mt76-usb-macos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Network-Weather/mt76-usb-macos/releases/tag/v0.1.0

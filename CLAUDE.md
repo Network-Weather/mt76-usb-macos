@@ -5,9 +5,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 A userspace, libusb-based monitor-mode driver for the MediaTek MT7921AU (USB `0e8d:7961`,
-e.g. ALFA AWUS036AXML) on macOS. Passive 2.4/5/6 GHz capture to radiotap pcap; not a
-network interface. The code is a transcription of the BSD-3-Clause-Clear
-[openwrt/mt76](https://github.com/openwrt/mt76) MT7921 path at commit `c5a3bd91`.
+e.g. ALFA AWUS036AXML) and MT7925U (e.g. Netgear Nighthawk A9000, `0846:9072`) on macOS.
+Passive 2.4/5/6 GHz capture to radiotap pcap, 160 MHz on the MT7925; not a network
+interface. The code is a transcription of the BSD-3-Clause-Clear
+[openwrt/mt76](https://github.com/openwrt/mt76) MT7921 and MT7925 USB paths at commit
+`c5a3bd91` (a checkout lives at `~/dev/mt76` on the reference host).
 [README.md](README.md) covers requirements, usage, the endpoint map, the capability
 matrix, and the five measured bring-up gotchas; read it before touching the driver.
 
@@ -30,9 +32,12 @@ bash setup.sh                                  # idempotent: .venv + pyusb, fetc
 installed), pytest, `python -m build --no-isolation`, `pip check`. CI runs the same minus shellcheck on
 `macos-14`/`macos-26` with Python 3.10 and 3.14.
 
-Hardware runs (attached adapter required; firmware dir overridable with `MT7921_FW_DIR`):
+Hardware runs (attached adapter required; firmware dir overridable with `MT76_FW_DIR`; with two
+adapters attached, pick one with `MT76_USB_ID=vvvv:pppp`):
 
 ```bash
+./.venv/bin/python scripts/usb_descriptors.py --chip-id    # what the driver sees; no firmware needed
+./.venv/bin/python scripts/firmware_boot.py --rx 5          # boot + receive census, either chip
 ./.venv/bin/python scripts/hardware_smoke.py --plan all   # redacted; exit 0 pass, 1 fail, 2 inconclusive, 3 unsupported
 ./.venv/bin/python examples/scan.py [2.4|5|6|all]
 ./.venv/bin/python examples/sniff_to_pcap.py <chan> <secs> [out.pcap] [2.4GHz|5GHz|6GHz]
@@ -101,8 +106,10 @@ Each is documented in full elsewhere; these are the ones that bite.
 - Do not promote anything from the "previously observed" or "untested" lists in
   [docs/TESTING.md](docs/TESTING.md) to a claim without adding a dated result, test bed,
   command, and acceptance criterion there. A quiet channel is not a driver failure.
-- Only `0e8d:7961` with Wi-Fi on interface 3 is supported; adding a USB ID, band, width,
-  or chip requires dated hardware evidence first ([ROADMAP.md](ROADMAP.md) decision rules).
+- Supported devices are the `SUPPORTED_DEVICES` table (MT7921U `0e8d:7961`, MT7925U
+  `0846:9072` validated; other MT7925 ids listed but untested); the Wi-Fi interface comes from
+  the descriptors. Adding a USB ID, band, width, or chip requires dated hardware evidence first
+  ([ROADMAP.md](ROADMAP.md) decision rules).
 - This repository is the instrument, not a survey product. Generic probes and decoders belong
   here; site-survey orchestration, place or room naming, network-specific verdict rules, and
   anything that identifies a real network (SSIDs, BSSIDs, AP names, controller settings) do

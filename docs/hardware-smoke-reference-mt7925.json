@@ -1,0 +1,92 @@
+{
+  "bands": {
+    "2.4GHz": {
+      "channels_attempted": 3,
+      "channels_with_frames": 3,
+      "channels_with_transfers": 3,
+      "decoded_frames": 233,
+      "frame_types": {
+        "control": 48,
+        "data": 56,
+        "management": 129,
+        "other": 0
+      },
+      "undecoded_transfers": 0,
+      "usb_errors": 0,
+      "usb_timeouts": 0,
+      "usb_transfers": 233
+    },
+    "5GHz": {
+      "channels_attempted": 25,
+      "channels_with_frames": 16,
+      "channels_with_transfers": 16,
+      "decoded_frames": 527,
+      "frame_types": {
+        "control": 178,
+        "data": 22,
+        "management": 327,
+        "other": 0
+      },
+      "undecoded_transfers": 0,
+      "usb_errors": 0,
+      "usb_timeouts": 34,
+      "usb_transfers": 527
+    },
+    "6GHz": {
+      "channels_attempted": 15,
+      "channels_with_frames": 4,
+      "channels_with_transfers": 4,
+      "decoded_frames": 231,
+      "frame_types": {
+        "control": 0,
+        "data": 4,
+        "management": 227,
+        "other": 0
+      },
+      "undecoded_transfers": 0,
+      "usb_errors": 0,
+      "usb_timeouts": 33,
+      "usb_transfers": 231
+    }
+  },
+  "device": {
+    "chip": "mt7925",
+    "usb_id": "0846:9072",
+    "usb_speed_code": 4,
+    "wifi_interface": 0
+  },
+  "duration_seconds": 48.209,
+  "firmware": {
+    "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+    "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+  },
+  "generated_at_utc": "2026-09-03T21:19:43.977279+00:00",
+  "host": {
+    "machine": "arm64",
+    "macos": "26.6.1"
+  },
+  "plan": {
+    "channels": 43,
+    "dwell_seconds": 0.75,
+    "name": "all",
+    "requested_bands": [
+      "2.4GHz",
+      "5GHz",
+      "6GHz"
+    ]
+  },
+  "schema_version": 1,
+  "software": {
+    "mt76_usb_macos": "0.1.0",
+    "python": "3.14.7",
+    "pyusb": "1.3.1"
+  },
+  "status": "pass",
+  "totals": {
+    "decoded_frames": 991,
+    "undecoded_transfers": 0,
+    "usb_errors": 0,
+    "usb_timeouts": 67,
+    "usb_transfers": 991
+  }
+}

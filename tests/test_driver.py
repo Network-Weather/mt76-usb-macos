@@ -11,7 +11,7 @@ import mt7921u as m
 
 
 def test_module_and_distribution_versions_match():
-    assert m.__version__ == version("mt76-usb-macos") == "0.1.0"
+    assert m.__version__ == version("mt76-usb-macos") == "0.2.0"
 
 
 class RecordingMcu(m.Mt7921uMcu):

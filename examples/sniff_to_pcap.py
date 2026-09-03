@@ -186,7 +186,21 @@ def main() -> int:
     parser.add_argument("output", nargs="?", default="capture.pcap")
     parser.add_argument("band", nargs="?", choices=sorted(CHAN_BAND), default="2.4GHz")
     parser.add_argument("--overwrite", action="store_true", help="replace an existing output file")
+    parser.add_argument(
+        "--width",
+        type=int,
+        choices=sorted(m.WIDTH_TO_SNIFFER_BW),
+        default=20,
+        help="sniffer bandwidth in MHz (default 20); wider needs --center",
+    )
+    parser.add_argument(
+        "--center",
+        type=int,
+        help="center channel for --width above 20 (defaults to the control channel)",
+    )
     args = parser.parse_args()
+    if args.width > 20 and args.center is None:
+        parser.error("--center is required when --width is above 20 MHz")
     if not 1 <= args.channel <= 255:
         parser.error("channel must be between 1 and 255")
     if not 0 < args.duration <= 86400:
@@ -204,10 +218,10 @@ def main() -> int:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)
-        dev.tune(band, chan)
+        dev.tune(band, chan, args.center, args.width)
         time.sleep(0.2)
         fh.write(pcap_header())
-        print(f"channel {chan} ({band}), {secs:g}s -> {out}")
+        print(f"channel {chan} ({band}, {args.width} MHz), {secs:g}s -> {out}")
 
         freq = freq_for(band, chan)
         n = written = 0
