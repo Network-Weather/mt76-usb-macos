@@ -324,6 +324,31 @@ tshark -r /tmp/test_c_writer.pcap -O radiotap
         HE Data 6: 1 space-time stream (0x1)
     ```
 
+## MT7925U descriptor discovery and chip identity: 2026-09-03
+
+Day one with a Netgear Nighthawk A9000, before any firmware was loaded. Host: Apple M4
+MacBook Pro, macOS 26.6 (Darwin 25.6.0), Python 3.14.7, PyUSB with Homebrew libusb 1.0.30,
+unprivileged user. The MT7921 reference adapter was not attached.
+
+```bash
+./.venv/bin/python scripts/usb_descriptors.py --chip-id
+```
+
+- **Criterion**: the device enumerates as a supported USB id, `select_wifi_interface` resolves
+  exactly one interface with class `ff/ff/ff` and at least 2 bulk IN plus 6 bulk OUT endpoints,
+  and `MT_HW_CHIPID` reads a chip id the firmware table knows.
+- **Result**: `0846:9072`, USB 3.2 (`bcdUSB 0x0320`), one configuration, **one interface**
+  (number 0, class `ff/ff/ff`, 9 endpoints: bulk `0x84 0x85 0x08 0x04 0x05 0x06 0x07 0x09` in
+  that order, then interrupt `0x86`). Positional assignment gives `EP_IN_PKT_RX=0x84`,
+  `EP_IN_CMD_RESP=0x85`, `EP_OUT_INBAND_CMD=0x08`, `EP_OUT_AC_BE=0x04`, the same roles the
+  MT7921 reference adapter exposes on its interface 3. `chip_id=0x7925`, `MT_HW_REV=0x00008a00`,
+  `MT_CONN_ON_MISC=0` (no firmware running). The device has no Bluetooth interface, and macOS
+  had matched no driver to it (`ioreg`: `!matched`).
+
+Nothing beyond enumeration and register reads was attempted on this device in this run;
+firmware boot, tuning, and capture on the MT7925 are the port's later stages
+([MT7925.md](MT7925.md)).
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
@@ -340,7 +365,8 @@ as a current release qualification.
 ## Explicitly untested or unsupported
 
 - Intel Macs, non-26.6 macOS hardware runs, and non-Apple operating systems;
-- USB IDs other than `0e8d:7961` or layouts whose Wi-Fi function is not interface 3;
+- capture on any USB id other than `0e8d:7961`: the A9000 (`0846:9072`) is identified and its
+  interface resolved from descriptors (above), but nothing has been received on it yet;
 - 160/320 MHz, simultaneous channels, multiple adapters, MT7922, PCIe, and SDIO;
 - association, client mode, AP mode, routing, CoreWLAN, and a BSD network interface;
 - Bluetooth firmware or coexistence;

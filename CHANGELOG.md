@@ -5,7 +5,24 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Descriptor-driven device selection (roadmap R2): `SUPPORTED_DEVICES` lists the MT7921U and
+  MT7925U USB ids, and `open()` picks the Wi-Fi interface by class `ff/ff/ff` and endpoint
+  shape, assigning endpoint roles positionally as `mt76u_set_endpoints` does. Layouts that do
+  not match fail closed with a diagnostic. `MT76_USB_ID` or `usb_id=` selects one adapter when
+  several are attached.
+- `scripts/usb_descriptors.py`: redacted dump of each supported adapter's interfaces and
+  endpoints, the roles the driver resolves, and with `--chip-id` the identity registers.
+- Firmware files and their pinned SHA-256s live in `mt7921u.FIRMWARE_FILES`, loaded through
+  `load_firmware(chip)`; `setup.sh` also fetches the MT7925 blobs. `MT76_FW_DIR` replaces
+  `MT7921_FW_DIR`, which still works.
+- First MT7925 hardware record: the Netgear Nighthawk A9000 enumerates, resolves to interface 0,
+  and reads chip id `0x7925` ([docs/TESTING.md](docs/TESTING.md)).
+
+### Fixed
+
+- `chip_id()` returned the high half of `MT_HW_CHIPID`; the chip number is the low half.
 
 ## [0.1.0] - 2026-09-02
 

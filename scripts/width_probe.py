@@ -12,7 +12,8 @@ own VHT Operation or HE Operation element advertises, so a silent 160 MHz AP is 
 Output is counts and per-BSSID width claims only; no SSIDs, client addresses, or payloads.
 
 Usage: width_probe.py 5GHz:132:138:80 6GHz:53:47:160 [--seconds 6]
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 from __future__ import annotations
@@ -32,7 +33,7 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
 CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
 # Channel-switch and sniffer commands encode width differently (mt7921/mcu.c).
 CMD_CBW = {20: m.CMD_CBW_20MHZ, 40: m.CMD_CBW_40MHZ, 80: m.CMD_CBW_80MHZ, 160: m.CMD_CBW_160MHZ}
@@ -124,10 +125,7 @@ def main() -> int:
     args = parser.parse_args()
     if not 1 <= args.seconds <= 60:
         parser.error("--seconds must be between 1 and 60")
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
+    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
     results = []
     with m.Mt7921uDevice() as dev:
         dev.bringup(patch, ram, log=lambda *a: None)

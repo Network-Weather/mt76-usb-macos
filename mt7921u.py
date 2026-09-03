@@ -17,16 +17,294 @@ high-rate transmit is untested.
 
 from __future__ import annotations
 
+import hashlib
+import os
 import struct
 import time
 from contextlib import suppress
+from dataclasses import dataclass
+from pathlib import Path
 
 import usb.core
 import usb.util
 
 __version__ = "0.1.0"
 
-VID, PID = 0x0E8D, 0x7961
+# ---------------------------------------------------------------------------
+# Supported USB devices and firmware
+#
+# mt7921/usb.c mt7921u_device_table and mt7925/usb.c mt7925u_device_table at c5a3bd91.
+# Each entry matches interface class/subclass/protocol ff/ff/ff, never an interface
+# number; see select_wifi_interface below.
+# ---------------------------------------------------------------------------
+
+CHIP_MT7921 = "mt7921"
+CHIP_MT7925 = "mt7925"
+
+VID, PID = 0x0E8D, 0x7961  # the MT7921 reference adapter (ALFA AWUS036AXML)
+
+SUPPORTED_DEVICES: dict[tuple[int, int], str] = {
+    (0x0E8D, 0x7961): CHIP_MT7921,
+    (0x0E8D, 0x7925): CHIP_MT7925,
+    (0x0E8D, 0x6639): CHIP_MT7925,  # MT7927 USB id; mt7925/usb.c:219 forces chip 0x7927
+    (0x0846, 0x9050): CHIP_MT7925,  # Netgear Nighthawk A8500
+    (0x0846, 0x9072): CHIP_MT7925,  # Netgear Nighthawk A9000
+}
+
+# Firmware blobs per chip, relative to the firmware directory, with the SHA-256 of the
+# copy at the linux-firmware commit pinned in setup.sh. mt792x.h MT7921_FIRMWARE_WM,
+# MT7921_ROM_PATCH, MT7925_FIRMWARE_WM, MT7925_ROM_PATCH at c5a3bd91.
+LINUX_FIRMWARE_COMMIT = "e981caea6ed33c48d25b7dbf473327dbd01df163"
+FIRMWARE_FILES: dict[str, tuple[tuple[str, str], tuple[str, str]]] = {
+    # chip: ((patch relative path, sha256), (ram relative path, sha256))
+    CHIP_MT7921: (
+        (
+            "WIFI_MT7961_patch_mcu_1_2_hdr.bin",
+            "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        ),
+        (
+            "WIFI_RAM_CODE_MT7961_1.bin",
+            "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+        ),
+    ),
+    CHIP_MT7925: (
+        (
+            "mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin",
+            "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        ),
+        (
+            "mt7925/WIFI_RAM_CODE_MT7925_1_1.bin",
+            "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+        ),
+    ),
+}
+
+REPO_ROOT = Path(__file__).resolve().parent
+
+
+def firmware_dir(fw_dir: str | os.PathLike | None = None) -> Path:
+    """Where setup.sh put the blobs: an explicit argument, $MT76_FW_DIR, the older
+    $MT7921_FW_DIR, then <repo>/firmware."""
+    if fw_dir is not None:
+        return Path(fw_dir)
+    for var in ("MT76_FW_DIR", "MT7921_FW_DIR"):
+        value = os.environ.get(var)
+        if value:
+            return Path(value)
+    return REPO_ROOT / "firmware"
+
+
+def firmware_paths(chip: str, fw_dir: str | os.PathLike | None = None) -> tuple[Path, Path]:
+    """(patch path, RAM path) for one chip."""
+    (patch, _), (ram, _) = FIRMWARE_FILES[chip]
+    base = firmware_dir(fw_dir)
+    return base / patch, base / ram
+
+
+def load_firmware(
+    chip: str, fw_dir: str | os.PathLike | None = None, verify: bool = True
+) -> tuple[bytes, bytes]:
+    """Read the patch and RAM blobs for one chip, checking the pinned SHA-256s.
+
+    verify=False skips the hash check for deliberately different firmware; the
+    examples and scripts keep it on.
+    """
+    patch_path, ram_path = firmware_paths(chip, fw_dir)
+    for path in (patch_path, ram_path):
+        if not path.is_file():
+            raise FileNotFoundError(f"firmware missing: {path}; run bash setup.sh")
+    blobs = []
+    for path, (_, expected) in zip((patch_path, ram_path), FIRMWARE_FILES[chip], strict=True):
+        data = path.read_bytes()
+        if verify:
+            actual = hashlib.sha256(data).hexdigest()
+            if actual != expected:
+                raise RuntimeError(
+                    f"firmware checksum mismatch for {path.name}: {actual}; run bash setup.sh"
+                )
+        blobs.append(data)
+    return blobs[0], blobs[1]
+
+
+# ---------------------------------------------------------------------------
+# Descriptor discovery (usb.c mt76u_set_endpoints at c5a3bd91)
+#
+# mt76 binds by interface class ff/ff/ff and assigns endpoints positionally: the
+# first two bulk IN endpoints in descriptor order are PKT_RX and CMD_RESP; the first
+# six bulk OUT endpoints are INBAND_CMD, AC_BE, AC_BK, AC_VI, AC_VO, HCCA. Other
+# endpoint types are skipped; usb.c:326 fails unless exactly 2 IN and 6 OUT were found.
+# ---------------------------------------------------------------------------
+
+N_BULK_IN = 2  # __MT_EP_IN_MAX
+N_BULK_OUT = 6  # __MT_EP_OUT_MAX
+USB_ENDPOINT_XFER_BULK = 2  # bmAttributes & 0x3
+USB_ENDPOINT_DIR_IN = 0x80
+WIFI_INTERFACE_CLASS = (0xFF, 0xFF, 0xFF)
+
+
+@dataclass(frozen=True)
+class EndpointDesc:
+    address: int  # bEndpointAddress, direction bit included
+    attributes: int  # bmAttributes
+
+    @property
+    def is_bulk(self) -> bool:
+        return (self.attributes & 0x3) == USB_ENDPOINT_XFER_BULK
+
+    @property
+    def is_in(self) -> bool:
+        return bool(self.address & USB_ENDPOINT_DIR_IN)
+
+
+@dataclass(frozen=True)
+class InterfaceDesc:
+    number: int
+    interface_class: int
+    subclass: int
+    protocol: int
+    endpoints: tuple[EndpointDesc, ...]
+
+    @property
+    def class_triple(self) -> tuple[int, int, int]:
+        return (self.interface_class, self.subclass, self.protocol)
+
+
+@dataclass(frozen=True)
+class UsbLayout:
+    """What open() resolved from the descriptors: which interface holds the Wi-Fi
+    function and which endpoint addresses play which mt76 role."""
+
+    vid: int
+    pid: int
+    chip: str
+    interface: int
+    in_eps: tuple[int, ...]  # N_BULK_IN addresses, direction bit included
+    out_eps: tuple[int, ...]  # N_BULK_OUT addresses
+
+    @property
+    def usb_id(self) -> str:
+        return f"{self.vid:04x}:{self.pid:04x}"
+
+    @property
+    def ep_in_pkt_rx(self) -> int:
+        return self.in_eps[0]
+
+    @property
+    def ep_in_cmd_resp(self) -> int:
+        return self.in_eps[1]
+
+    @property
+    def ep_out_inband_cmd(self) -> int:
+        return self.out_eps[0]
+
+    @property
+    def ep_out_ac_be(self) -> int:
+        return self.out_eps[1]
+
+
+class UnsupportedDevice(RuntimeError):
+    """No usable device, or the descriptors do not match what mt76 requires."""
+
+
+def _describe_interfaces(interfaces: list[InterfaceDesc]) -> str:
+    parts = []
+    for intf in interfaces:
+        bulk_in = sum(1 for ep in intf.endpoints if ep.is_bulk and ep.is_in)
+        bulk_out = sum(1 for ep in intf.endpoints if ep.is_bulk and not ep.is_in)
+        cls = "/".join(f"{v:02x}" for v in intf.class_triple)
+        parts.append(f"intf {intf.number} class {cls} bulk in/out {bulk_in}/{bulk_out}")
+    return "; ".join(parts) or "no interfaces"
+
+
+def select_wifi_interface(interfaces: list[InterfaceDesc]) -> tuple[int, tuple, tuple]:
+    """Pick the interface mt76 would bind and assign its endpoints positionally.
+
+    Returns (interface number, in endpoint addresses, out endpoint addresses).
+    Raises UnsupportedDevice when no interface qualifies or more than one does, so a
+    layout this code has never seen fails closed with the descriptors it saw.
+    """
+    candidates = []
+    for intf in interfaces:
+        if intf.class_triple != WIFI_INTERFACE_CLASS:
+            continue
+        in_eps: list[int] = []
+        out_eps: list[int] = []
+        for ep in intf.endpoints:
+            if not ep.is_bulk:
+                continue
+            if ep.is_in and len(in_eps) < N_BULK_IN:
+                in_eps.append(ep.address)
+            elif not ep.is_in and len(out_eps) < N_BULK_OUT:
+                out_eps.append(ep.address)
+        if len(in_eps) == N_BULK_IN and len(out_eps) == N_BULK_OUT:
+            candidates.append((intf.number, tuple(in_eps), tuple(out_eps)))
+    if not candidates:
+        raise UnsupportedDevice(
+            "no interface with class ff/ff/ff and at least "
+            f"{N_BULK_IN} bulk IN + {N_BULK_OUT} bulk OUT endpoints "
+            f"({_describe_interfaces(interfaces)})"
+        )
+    if len(candidates) > 1:
+        numbers = ", ".join(str(c[0]) for c in candidates)
+        raise UnsupportedDevice(
+            f"ambiguous layout: interfaces {numbers} all qualify "
+            f"({_describe_interfaces(interfaces)})"
+        )
+    return candidates[0]
+
+
+def interfaces_from_pyusb(dev) -> list[InterfaceDesc]:
+    """Flatten the active configuration's interfaces (alternate setting 0 only)."""
+    cfg = dev.get_active_configuration()
+    out = []
+    for intf in cfg:
+        if intf.bAlternateSetting != 0:
+            continue
+        eps = tuple(EndpointDesc(ep.bEndpointAddress, ep.bmAttributes) for ep in intf)
+        out.append(
+            InterfaceDesc(
+                intf.bInterfaceNumber,
+                intf.bInterfaceClass,
+                intf.bInterfaceSubClass,
+                intf.bInterfaceProtocol,
+                eps,
+            )
+        )
+    return out
+
+
+def layout_from_pyusb(dev) -> UsbLayout:
+    key = (dev.idVendor, dev.idProduct)
+    chip = SUPPORTED_DEVICES.get(key)
+    if chip is None:
+        raise UnsupportedDevice(f"device {key[0]:04x}:{key[1]:04x} is not in SUPPORTED_DEVICES")
+    number, in_eps, out_eps = select_wifi_interface(interfaces_from_pyusb(dev))
+    return UsbLayout(key[0], key[1], chip, number, in_eps, out_eps)
+
+
+def parse_usb_id(text: str) -> tuple[int, int]:
+    """'0846:9072' -> (0x0846, 0x9072)."""
+    try:
+        vid, pid = text.lower().split(":")
+        return int(vid, 16), int(pid, 16)
+    except ValueError as exc:
+        raise ValueError(f"usb id must look like 0e8d:7961, got {text!r}") from exc
+
+
+def find_supported_devices(usb_id: str | None = None) -> list:
+    """Attached pyusb devices whose VID:PID is supported, optionally one exact ID.
+
+    usb_id defaults to $MT76_USB_ID so a host with two adapters can pick one without
+    changing code. Returns pyusb device objects; nothing is opened or claimed.
+    """
+    wanted = usb_id or os.environ.get("MT76_USB_ID") or None
+    keys = {parse_usb_id(wanted)} if wanted else set(SUPPORTED_DEVICES)
+    found = []
+    for dev in usb.core.find(find_all=True):
+        if (dev.idVendor, dev.idProduct) in keys:
+            found.append(dev)
+    return found
+
 
 # usb.h: USB_TYPE_VENDOR = 0x40, USB_DIR_IN = 0x80
 USB_TYPE_VENDOR = 0x40
@@ -47,14 +325,16 @@ MT_VEND_READ_EXT = 0x63
 MT_VEND_WRITE_EXT = 0x66
 MT_VEND_FEATURE_SET = 0x91
 
-# mt76.h, endpoint enums. Values are the endpoint *numbers*; direction is
-# added by the caller. Resolved against this device's interface 3 descriptor.
+# mt76.h endpoint roles, as resolved on the MT7921 reference adapter (interface 3;
+# interfaces 0-2 are its Bluetooth function). These are the defaults an unopened device
+# object carries; open() replaces them with what the attached device's descriptors say
+# (see select_wifi_interface). The A9000 exposes the same addresses on interface 0.
 EP_OUT_INBAND_CMD = 0x08
 EP_OUT_AC_BE = 0x04
 EP_IN_PKT_RX = 0x84
 EP_IN_CMD_RESP = 0x85
 
-WIFI_INTERFACE = 3  # class 0xff; interfaces 0-2 are the Bluetooth function
+WIFI_INTERFACE = 3  # MT7921 reference adapter; informational, open() does not use it
 
 # mt792x_regs.h
 MT_HW_CHIPID = 0x70010200
@@ -104,12 +384,30 @@ VEND_RETRIES = 10
 
 
 class Mt7921u:
-    """Register-level access to an MT7921AU. Context manager."""
+    """Register-level access to an mt792x USB chip. Context manager.
 
-    def __init__(self, verbose: bool = False):
+    CHIP names which SUPPORTED_DEVICES entries this class drives; open() refuses a
+    device whose descriptors resolve to another chip so an MT7925 is never driven
+    with MT7921 command encodings by accident.
+    """
+
+    CHIP = CHIP_MT7921
+    # mt76_chip(): rr(MT_HW_CHIPID) is the chip number itself (mt7925/usb.c:215-217,
+    # mt7921/usb.c:206-208 at c5a3bd91). Values this class accepts from chip_id().
+    CHIP_IDS: tuple[int, ...] = (0x7961,)
+
+    def __init__(self, verbose: bool = False, usb_id: str | None = None):
         self.dev = None
         self.verbose = verbose
+        self.usb_id = usb_id  # "vvvv:pppp" to pick one adapter; None = any supported
         self._claimed = []
+        self.layout: UsbLayout | None = None
+        # Endpoint roles. Defaults are the reference adapter's so an object built
+        # without USB (tests) still frames commands; open() sets the real ones.
+        self.ep_in_pkt_rx = EP_IN_PKT_RX
+        self.ep_in_cmd_resp = EP_IN_CMD_RESP
+        self.ep_out_inband_cmd = EP_OUT_INBAND_CMD
+        self.ep_out_ac_be = EP_OUT_AC_BE
 
     def __enter__(self) -> Mt7921u:
         self.open()
@@ -119,14 +417,41 @@ class Mt7921u:
         self.close()
 
     def open(self) -> None:
-        self.dev = usb.core.find(idVendor=VID, idProduct=PID)
-        if self.dev is None:
-            raise RuntimeError(f"device {VID:04x}:{PID:04x} not found")
+        """Find one supported device, resolve its layout, claim the Wi-Fi interface."""
+        candidates = find_supported_devices(self.usb_id)
+        if not candidates:
+            wanted = self.usb_id or os.environ.get("MT76_USB_ID") or "any supported"
+            raise UnsupportedDevice(f"device not found (looked for {wanted})")
+        if len(candidates) > 1:
+            ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
+            raise UnsupportedDevice(
+                f"{len(candidates)} supported devices attached ({ids}); "
+                "pass usb_id or set MT76_USB_ID to pick one"
+            )
+        dev = candidates[0]
+        layout = layout_from_pyusb(dev)
+        if layout.chip != self.CHIP:
+            raise UnsupportedDevice(
+                f"device {layout.usb_id} is an {layout.chip}; {type(self).__name__} "
+                f"drives {self.CHIP} (use open_device() to pick the class by USB id)"
+            )
         try:
-            usb.util.claim_interface(self.dev, WIFI_INTERFACE)
-            self._claimed.append(WIFI_INTERFACE)
+            usb.util.claim_interface(dev, layout.interface)
         except usb.core.USBError as exc:
-            raise RuntimeError(f"cannot claim interface {WIFI_INTERFACE}: {exc}") from exc
+            raise RuntimeError(f"cannot claim interface {layout.interface}: {exc}") from exc
+        self.dev = dev
+        self._claimed.append(layout.interface)
+        self.layout = layout
+        self.ep_in_pkt_rx = layout.ep_in_pkt_rx
+        self.ep_in_cmd_resp = layout.ep_in_cmd_resp
+        self.ep_out_inband_cmd = layout.ep_out_inband_cmd
+        self.ep_out_ac_be = layout.ep_out_ac_be
+        if self.verbose:
+            print(
+                f"  opened {layout.usb_id} ({layout.chip}) interface {layout.interface} "
+                f"in={[f'{e:#04x}' for e in layout.in_eps]} "
+                f"out={[f'{e:#04x}' for e in layout.out_eps]}"
+            )
 
     def close(self) -> None:
         if self.dev is None:
@@ -260,7 +585,12 @@ class Mt7921u:
     # ---- identity ------------------------------------------------------
 
     def chip_id(self) -> int:
-        return (self.rr(MT_HW_CHIPID) >> 16) & 0xFFFF
+        """mt76_chip(): the low half of MT_HW_CHIPID (0x7961, 0x7925, 0x6639, ...).
+
+        mt7925/usb.c:215-217 at c5a3bd91 builds rev = (rr(CHIPID) << 16) | (rr(REV) & 0xff)
+        and mt76_chip() returns rev >> 16.
+        """
+        return self.rr(MT_HW_CHIPID) & 0xFFFF
 
     def hw_rev(self) -> int:
         return self.rr(MT_HW_REV)
@@ -400,11 +730,11 @@ class Mt7921uMcu(Mt7921u):
 
         if cid == MCU_CMD_FW_SCATTER:
             body = payload  # no mcu_txd for scatter
-            ep = EP_OUT_AC_BE
+            ep = self.ep_out_ac_be
         else:
             total = MCU_TXD_LEN + len(payload)
             body = self._build_mcu_txd(total, cid, seq) + payload
-            ep = EP_OUT_INBAND_CMD
+            ep = self.ep_out_inband_cmd
 
         # mt792x_skb_add_usb_sdio_hdr: len in [15:0], pkt type in [17:16]
         hdr = struct.pack("<I", len(body) & 0xFFFF)
@@ -432,7 +762,7 @@ class Mt7921uMcu(Mt7921u):
         with it set (what mt792xu_dma_init does) responses arrive on
         MT_EP_IN_PKT_RX, otherwise on MT_EP_IN_CMD_RESP. Measured both ways.
         """
-        ep = EP_IN_PKT_RX if self.evt_ep4 else EP_IN_CMD_RESP
+        ep = self.ep_in_pkt_rx if self.evt_ep4 else self.ep_in_cmd_resp
         # Once RX events are routed to EP4, MCU responses and 802.11 frames
         # share one endpoint. Under load the response is buried in the frame
         # stream, so demultiplex on the descriptor's packet type rather than
@@ -1060,7 +1390,7 @@ def _mcu_cmd_word(self, cmd: int, payload: bytes = b"", wait: bool = True, timeo
             f"    mcu -> cmd=0x{cmd:06x} cid=0x{cid:02x} ext=0x{ext_cid:02x} "
             f"sq={set_query} seq={seq} {len(frame)}B"
         )
-    self.bulk_out(EP_OUT_INBAND_CMD, frame, timeout)
+    self.bulk_out(self.ep_out_inband_cmd, frame, timeout)
     if not wait:
         return None
     return self.mcu_wait(seq, cid, timeout)
@@ -1162,7 +1492,7 @@ def _set_rxfilter(self, fif: int, bit_op: int = 0, bit_map: int = 0) -> None:
 
 def _rx_read(self, timeout: int = 1000, size: int = 8192) -> bytes:
     """One bulk read off the 802.11 receive endpoint."""
-    return self.bulk_in(EP_IN_PKT_RX, size, timeout)
+    return self.bulk_in(self.ep_in_pkt_rx, size, timeout)
 
 
 Mt7921uDevice.set_rxfilter = _set_rxfilter
@@ -1286,7 +1616,7 @@ def _mcu_uni(self, cid: int, payload: bytes, wait: bool = True, timeout: int = 3
     frame += b"\x00" * (((len(frame) + 3) & ~3) + 4 - len(frame))
     if self.verbose:
         print(f"    uni -> cid=0x{cid:02x} seq={seq} {len(frame)}B")
-    self.bulk_out(EP_OUT_INBAND_CMD, frame, timeout)
+    self.bulk_out(self.ep_out_inband_cmd, frame, timeout)
     if not wait:
         return None
     return self.mcu_wait(seq, cid, timeout)
@@ -1507,7 +1837,7 @@ def _inject(self, frame: bytes, ep: int, seq: int = 0, pid: int = 0) -> None:
 def _alive(self) -> bool:
     """Is the chip still answering after a transmit attempt?"""
     try:
-        return (self.rr(MT_HW_CHIPID) & 0xFFFF) == 0x7961
+        return self.chip_id() in self.CHIP_IDS
     except Exception:
         return False
 

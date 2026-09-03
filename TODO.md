@@ -10,9 +10,8 @@ least two APs on one SSID.
   radio to one channel and saw none of five roams of an MLO client; the network's own
   management log did. Next: watch the client's current 5 GHz link at 80 MHz with that log as
   the reference, and add Multi-Link element parsing so all of the client's link addresses match.
-- [ ] **A9000 day one (R22).** Record the full USB descriptor set with pyusb before claiming
-  anything; read `MT_HW_CHIPID`; check what owns the Bluetooth interface in `ioreg`; then follow
-  [docs/MT7925.md](docs/MT7925.md).
+- [ ] **A9000 port (R22).** Stages and their status are tracked in
+  [docs/MT7925.md](docs/MT7925.md#stages).
 - [ ] **roam_watch --bw 80.** 80 MHz capture works on 5 GHz (146 decoded 80 MHz frames in 10 s);
   the watcher and survey commands still configure 20 MHz.
 
@@ -28,6 +27,8 @@ least two APs on one SSID.
 
 ## Landed this sprint
 
+- ~~A9000 day one: descriptors recorded with pyusb, chip id `0x7925` read, no Bluetooth
+  interface present; R2 descriptor discovery and `scripts/usb_descriptors.py` shipped.~~
 - ~~R5 drop magnitude measured: median 1 frame lost per retune, max 8, over 30 hops at 100 to
   250 frames per second; `scripts/retune_drops.py` and the `mcu_wait` counters shipped.~~
 - ~~R18 decision: 0.1.0 is not released. CHANGELOG entry moved back under Unreleased; tagging

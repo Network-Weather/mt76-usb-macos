@@ -56,9 +56,14 @@ capture, libusb access to the otherwise-unclaimed device is enough.
 
 ## Requirements
 
-- An MT7921AU **USB device with the exact ID and composite layout** `0e8d:7961`, for
-  example the tested ALFA AWUS036AXML. The code currently hard-codes Wi-Fi interface 3;
-  rebadged IDs and single-interface MT7921AU devices are not supported yet.
+- A USB device whose ID is in `mt7921u.SUPPORTED_DEVICES`: `0e8d:7961` (MT7921AU, for
+  example the tested ALFA AWUS036AXML) or the MT7925U ids `0846:9072`, `0846:9050`,
+  `0e8d:7925`, `0e8d:6639`. The Wi-Fi interface and its endpoints are resolved from the USB
+  descriptors the way `mt76u_set_endpoints` does (class `ff/ff/ff`, first 2 bulk IN and 6
+  bulk OUT), so interface 3 on the ALFA and interface 0 on the Nighthawk A9000 both work;
+  a layout that does not match fails closed with the descriptors it saw.
+  `scripts/usb_descriptors.py` shows what the driver would pick. Rebadged IDs not in the table
+  are not matched.
 - macOS on Apple Silicon. Hardware-validated on an M1 Max running macOS 26.6. Intel macOS
   and other macOS releases are plausible but **not hardware-tested by this project**.
 - For the Python driver: Homebrew `libusb` (`brew install libusb`) and Python 3.10+.
@@ -85,6 +90,7 @@ terms and the one blob you must not fetch.
 ./.venv/bin/python examples/scan.py                              # tri-band BSSID census
 ./.venv/bin/python examples/scan.py 6                            # 6 GHz PSCs only
 ./.venv/bin/python examples/sniff_to_pcap.py 53 8 out.pcap 6GHz # 6 GHz radiotap pcap
+./.venv/bin/python scripts/usb_descriptors.py --chip-id          # what the driver sees; no firmware needed
 ./.venv/bin/python scripts/hardware_smoke.py --plan all          # redacted passive release check
 ./.venv/bin/python scripts/retune_drops.py                    # frames lost per channel hop, counts only
 ./.venv/bin/python scripts/width_probe.py 5GHz:132:138:80 6GHz:53:47:160   # which widths decode; counts only
@@ -162,8 +168,9 @@ will hit:
 
 ## Endpoint map
 
-`mt76u_set_endpoints` assigns endpoints positionally over the interface descriptor. On
-interface 3 (the Wi-Fi function; interfaces 0 to 2 are Bluetooth):
+`mt76u_set_endpoints` assigns endpoints positionally over the interface descriptor, and so
+does `mt7921u.select_wifi_interface`. On the ALFA's interface 3 (the Wi-Fi function;
+interfaces 0 to 2 are Bluetooth) and on the A9000's single interface 0, the result is:
 
 | Driver constant | Endpoint | Use |
 |---|---|---|
@@ -221,8 +228,9 @@ unless `--acknowledge-experimental-transmit` is explicitly supplied.
   or Wireshark's interface list.
 - This is not a complete Wireshark extcap integration. Today an example writes pcap to a
   file; open that file in Wireshark after or during capture.
-- Only USB `0e8d:7961` with Wi-Fi on interface 3 is matched. Netgear/Comfast/rebadged IDs,
-  the Panda single-interface layout, MT7922, PCIe, SDIO, and Bluetooth are not supported.
+- Only the USB ids in `SUPPORTED_DEVICES` are matched, and capture is validated on
+  `0e8d:7961` alone so far. Comfast/rebadged IDs, MT7922, PCIe, SDIO, and Bluetooth are not
+  supported.
 - One radio means channel hopping has unavoidable blind intervals. It cannot capture more
   than one channel simultaneously, and the current examples use 20 MHz channels.
 - It does not decrypt protected traffic, reconstruct TCP streams, split A-MSDU inner
@@ -261,7 +269,8 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 54 offline tests for firmware parsing, MCU framing, RX descriptors,
+The macOS-only CI runs 70 offline tests for firmware parsing, MCU framing, RX descriptors,
+USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.
 It also enforces Ruff formatting/linting, shell syntax, and distribution builds. Hardware tests
 are intentionally separate because GitHub runners have no radio. See
@@ -275,8 +284,8 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
 - [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-01.
 - [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
   not re-run by accident. Fresh as of 2026-09-02.
-- [docs/MT7925.md](docs/MT7925.md): the MT7925U (Wi-Fi 7, 160 MHz) port plan, each claim checked
-  against the pinned mt76 source. Fresh as of 2026-09-02.
+- [docs/MT7925.md](docs/MT7925.md): the MT7925U (Wi-Fi 7, 160 MHz) port, each claim checked
+  against the pinned mt76 source, with the stage tracker. Fresh as of 2026-09-03.
 
 ## License and provenance
 

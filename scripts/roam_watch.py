@@ -19,7 +19,8 @@ Two modes:
 
 This is a diagnostic for the operator's own network. Output includes MAC addresses and
 SSIDs; treat the terminal output as sensitive and do not commit it.
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 from __future__ import annotations
@@ -39,7 +40,7 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
 CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}
 # Sweep set for --find: the 2.4 GHz non-overlapping channels, every 5 GHz 20 MHz channel
 # an AP in the US can sit on, and the 6 GHz preferred scanning channels.
@@ -56,10 +57,7 @@ FTYPE_DATA = 2
 
 
 def load_firmware() -> tuple[bytes, bytes]:
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
+    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
     return patch, ram
 
 

@@ -9,7 +9,8 @@ count (from the BSS Load IE). Nothing here transmits.
 
 Usage: scan.py [2.4|5|6|all]
 
-Firmware is loaded from $MT7921_FW_DIR, defaulting to <repo>/firmware.
+Firmware is loaded from $MT76_FW_DIR (or the older $MT7921_FW_DIR), defaulting to
+<repo>/firmware; the pinned SHA-256s are checked.
 """
 
 import argparse
@@ -26,7 +27,7 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-FW_DIR = os.environ.get("MT7921_FW_DIR", os.path.join(REPO_ROOT, "firmware"))
+FW_DIR = m.firmware_dir()  # $MT76_FW_DIR, then $MT7921_FW_DIR, then <repo>/firmware
 DWELL = float(os.environ.get("DWELL_SECONDS", "1.5"))
 
 CH_24 = [1, 6, 11]
@@ -78,10 +79,7 @@ def main() -> int:
         parser.error("--dwell must be between 0.05 and 10 seconds")
     plan = PLANS[args.plan]
 
-    with open(os.path.join(FW_DIR, "WIFI_MT7961_patch_mcu_1_2_hdr.bin"), "rb") as fh:
-        patch = fh.read()
-    with open(os.path.join(FW_DIR, "WIFI_RAM_CODE_MT7961_1.bin"), "rb") as fh:
-        ram = fh.read()
+    patch, ram = m.load_firmware(m.CHIP_MT7921, FW_DIR)
 
     bss = OrderedDict()
     with m.Mt7921uDevice() as dev:
