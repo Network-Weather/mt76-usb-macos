@@ -18,7 +18,9 @@ ROOT = Path(__file__).resolve().parent.parent
 def test_changelog_has_a_dated_section_for_the_declared_version():
     changelog = (ROOT / "CHANGELOG.md").read_text()
     pattern = rf"^## \[{re.escape(m.__version__)}\] - \d{{4}}-\d{{2}}-\d{{2}}$"
-    assert re.search(pattern, changelog, re.M), f"CHANGELOG.md lacks a dated section for {m.__version__}"
+    assert re.search(pattern, changelog, re.MULTILINE), (
+        f"CHANGELOG.md lacks a dated section for {m.__version__}"
+    )
     assert f"[{m.__version__}]: https://" in changelog, "CHANGELOG.md lacks the compare link"
 
 
