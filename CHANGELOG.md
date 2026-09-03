@@ -19,6 +19,16 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
   `MT7921_FW_DIR`, which still works.
 - First MT7925 hardware record: the Netgear Nighthawk A9000 enumerates, resolves to interface 0,
   and reads chip id `0x7925` ([docs/TESTING.md](docs/TESTING.md)).
+- `mt7925u.py`: `Mt7925uDevice`, a subclass of the MT7921 device with the connac3 WFSYS reset
+  descriptor, the 44-byte MCU reply header, MCU TXD without `LONG_FORMAT`, the per-command UNI
+  ack option, and UNI `CHIP_CONFIG` capability and `EFUSE_CTRL` buffer-mode commands. Boots
+  the MT7925 firmware on the A9000 to `N9_RDY` and parses its capability element list
+  ([docs/TESTING.md](docs/TESTING.md)). `open_device()` picks the class from the USB id.
+- `scripts/firmware_boot.py`: boot firmware on whichever supported adapter is attached and
+  report chip id, firmware hashes, and capabilities as redacted JSON.
+- The MCU reply-header geometry, TXD word 1, UNI option, and WFSYS reset registers are class
+  attributes with the MT7921 values as defaults; `tests/golden_mt7921_frames.json` freezes every
+  MT7921 command's on-wire bytes so those seams cannot move them.
 
 ### Fixed
 

@@ -40,7 +40,7 @@ Hardware runs (attached adapter required; firmware dir overridable with `MT7921_
 
 ## Architecture
 
-Two flat modules, no package:
+Three flat modules, no package:
 
 - `mt7921u.py` is three stacked classes. `Mt7921u` owns libusb: vendor control transfers,
   register `rr`/`wr`/`rmw`, bulk I/O. `Mt7921uMcu` adds MCU TXD framing, sequence numbers,
@@ -51,6 +51,13 @@ Two flat modules, no package:
   efuse, TX, telemetry). `grep 'def set_sniffer'` finds nothing; grep `_set_sniffer` or
   the binding line. This runtime attachment is why mypy is not gated yet
   ([docs/QUALITY.md](docs/QUALITY.md)); ROADMAP R4 is the planned fix.
+- Chip-specific MCU geometry lives in class attributes on `Mt7921uMcu`/`Mt7921uDevice`
+  (`TXD1`, `MCU_RXD_LEN`, `RXD_SEQ_OFFSET`, `RXD_STATUS_OFFSET`, `WFSYS_*`, `uni_option()`,
+  `post_firmware_init()`), with MT7921 values as defaults. `mt7925u.py` is `Mt7925uDevice`,
+  a subclass overriding those for connac3 plus UNI-encoded capability/efuse commands; it is
+  declared after the bindings, so it inherits every bound method. `open_device()` in
+  `mt7921u.py` returns the right class for the attached USB id. `tests/golden_mt7921_frames.json`
+  freezes the MT7921 on-wire frames; regenerate it only for a deliberate wire change.
 - `rxd.py` is pure Python with no USB dependency: RX descriptor `decode()`, `parse_80211()`
   and IE parsers (RSN, 802.11k/v/r, Multi-AP, mesh), PHY rate/airtime, A-MPDU aggregation
   tracking. Its tests need no fakes at all.

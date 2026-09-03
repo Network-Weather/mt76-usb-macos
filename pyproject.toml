@@ -59,7 +59,7 @@ dev = [
 ]
 
 [tool.setuptools]
-py-modules = ["mt7921u", "rxd"]
+py-modules = ["mt7921u", "mt7925u", "rxd"]
 
 [tool.ruff]
 line-length = 100

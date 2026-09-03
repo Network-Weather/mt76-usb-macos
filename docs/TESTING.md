@@ -345,9 +345,32 @@ unprivileged user. The MT7921 reference adapter was not attached.
   `MT_CONN_ON_MISC=0` (no firmware running). The device has no Bluetooth interface, and macOS
   had matched no driver to it (`ioreg`: `!matched`).
 
-Nothing beyond enumeration and register reads was attempted on this device in this run;
-firmware boot, tuning, and capture on the MT7925 are the port's later stages
-([MT7925.md](MT7925.md)).
+### Firmware boot, same day
+
+Same host and adapter. Firmware: `mt7925/WIFI_MT7925_PATCH_MCU_1_1_hdr.bin`
+`8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1`,
+`mt7925/WIFI_RAM_CODE_MT7925_1_1.bin`
+`23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120`, linux-firmware
+`e981caea6ed33c48d25b7dbf473327dbd01df163`.
+
+```bash
+./.venv/bin/python scripts/firmware_boot.py
+```
+
+- **Criterion**: `bringup()` through `Mt7925uDevice` (connac3 WFSYS descriptor, 44-byte MCU
+  reply header, TXD without LONG_FORMAT, UNI CHIP_CONFIG capability query, UNI EFUSE_CTRL
+  buffer mode) ends with `MT_CONN_ON_MISC` reporting `FW_N9_RDY`, the capability query
+  answered with a parseable element list, and the efuse push acknowledged; exit 0.
+- **Result**: `status=pass`, exit 0, in 1.5 s. Patch `20260813113015a` (2 sections), RAM
+  `20260813113118` (5 regions, one `NON_DL`), `MT_CONN_ON_MISC=0x00000003`. Capability
+  elements reported: TX_RESOURCE, SINGLE_SKU, CSUM_OFFLOAD, HW_VER, SW_VER, MAC_ADDR, PHY, MAC,
+  FRAME_BUF, BEAM_FORM, LOCATION, MUMIMO, BUFFER_MODE_INFO, HW_ADIE_VERSION, 6G, CHIP_CAP,
+  EML_CAP, and unnamed tags `0x15 0x1b 0x1d 0x28 0x38 0x39 0x48`. PHY capability: `nss=2`
+  (antenna mask `0x3`), `max_bw=4`, HT/VHT/HE/EHT all 1, `hw_path=0x0f`, DBDC 1. Repeated
+  twice with the same result; the second run started from a chip already reporting
+  `FW_N9_RDY` and took the WFSYS reset path.
+
+Not yet attempted on this device: RX filter, sniffer mode, tuning, and receive.
 
 ## Previously observed, not rerun in the current validation
 

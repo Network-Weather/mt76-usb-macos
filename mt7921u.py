@@ -446,6 +446,16 @@ class Mt7921u:
         self.ep_in_cmd_resp = layout.ep_in_cmd_resp
         self.ep_out_inband_cmd = layout.ep_out_inband_cmd
         self.ep_out_ac_be = layout.ep_out_ac_be
+        # The USB id says which family; the silicon says which blobs. Refuse before any
+        # firmware is offered to a chip this class does not know (0x6639 is the MT7927,
+        # which mt7925/usb.c:219 forces to 0x7927 and feeds different files).
+        chip_id = self.chip_id()
+        if chip_id not in self.CHIP_IDS:
+            self.close()
+            raise UnsupportedDevice(
+                f"device {layout.usb_id} reports chip id {chip_id:#06x}; "
+                f"{type(self).__name__} knows {[f'{c:#06x}' for c in self.CHIP_IDS]}"
+            )
         if self.verbose:
             print(
                 f"  opened {layout.usb_id} ({layout.chip}) interface {layout.interface} "
@@ -608,6 +618,10 @@ MT_HDR_FORMAT_CMD = 1
 MT_TX_TYPE_CMD = 2
 MT_TX_MCU_PORT_RX_Q0 = 0x20
 MT_TX_PORT_IDX_MCU = 1
+MT_TXD1_LONG_FORMAT = 1 << 31  # connac2 only; mt76_connac3_mac.h has no such bit
+MT_TXD1_HDR_FORMAT_SHIFT = 16  # MT_TXD1_HDR_FORMAT GENMASK(17, 16) on connac2
+# MCU TXD word 1 as mt76_connac2_mcu_fill_message writes it (mt7921).
+MCU_TXD1_CONNAC2 = MT_TXD1_LONG_FORMAT | (MT_HDR_FORMAT_CMD << MT_TXD1_HDR_FORMAT_SHIFT)
 
 # mt76_connac_mcu.h
 MCU_PKT_ID = 0xA0
@@ -674,10 +688,22 @@ class McuError(RuntimeError):
 
 
 class Mt7921uMcu(Mt7921u):
-    """Adds the MCU command/response layer on top of register access."""
+    """Adds the MCU command/response layer on top of register access.
 
-    def __init__(self, verbose: bool = False):
-        super().__init__(verbose=verbose)
+    The class attributes are the chip's MCU framing geometry. The defaults are the
+    connac2 (MT7921) values; mt7925u overrides them for connac3.
+    """
+
+    # struct mt76_connac2_mcu_txd word 1, written by mt76_connac2_mcu_fill_message.
+    TXD1 = MCU_TXD1_CONNAC2
+    # Reply header: sizeof(struct mt76_connac2_mcu_rxd), and where seq and the
+    # patch-semaphore status byte sit in the raw transfer (mt7921_mcu_parse_response).
+    MCU_RXD_LEN = MCU_RXD_LEN
+    RXD_SEQ_OFFSET = RXD_SEQ_OFFSET
+    RXD_STATUS_OFFSET = RXD_STATUS_OFFSET
+
+    def __init__(self, verbose: bool = False, usb_id: str | None = None):
+        super().__init__(verbose=verbose, usb_id=usb_id)
         self.msg_seq = 0
         self.evt_ep4 = False  # set once dma_rx_evt_ep4 has run
         # Counters for what mcu_wait throws away while hunting for a reply on the
@@ -710,8 +736,7 @@ class Mt7921uMcu(Mt7921u):
             | ((MT_TX_TYPE_CMD & 0x3) << 23)
             | ((MT_TX_MCU_PORT_RX_Q0 & 0x7F) << 25)
         )
-        # MT_TXD1: LONG_FORMAT BIT(31), HDR_FORMAT GENMASK(17,16)
-        txd[1] = (1 << 31) | ((MT_HDR_FORMAT_CMD & 0x3) << 16)
+        txd[1] = self.TXD1
 
         out = b"".join(struct.pack("<I", v & 0xFFFFFFFF) for v in txd)
         # len is total minus the 32-byte txd[8] array
@@ -778,7 +803,7 @@ class Mt7921uMcu(Mt7921u):
                     f"cid 0x{cid:02x} seq {seq}: no response on ep "
                     f"0x{ep:02x} after {discarded} frames ({exc})"
                 ) from exc
-            if len(raw) < MCU_RXD_LEN:
+            if len(raw) < self.MCU_RXD_LEN:
                 continue
             rxd0 = struct.unpack_from("<I", raw, 0)[0]
             pkt_type = (rxd0 >> 27) & 0x1F
@@ -793,7 +818,7 @@ class Mt7921uMcu(Mt7921u):
                 else:
                     self.mcu_wait_other_packets += 1
                 continue
-            rseq = raw[RXD_SEQ_OFFSET]
+            rseq = raw[self.RXD_SEQ_OFFSET]
             if self.verbose:
                 print(f"    mcu <- {len(raw)}B seq={rseq} (want {seq}, {discarded} frames skipped)")
             if rseq == seq:
@@ -804,10 +829,13 @@ class Mt7921uMcu(Mt7921u):
             f"cid 0x{cid:02x}: no response matching seq {seq} ({discarded} frames skipped)"
         )
 
-    @staticmethod
-    def _status_byte(rxd: bytes) -> int:
+    def _status_byte(self, rxd: bytes) -> int:
         """PATCH_SEM_CONTROL / PATCH_FINISH_REQ return a status byte."""
-        return rxd[RXD_STATUS_OFFSET]
+        return rxd[self.RXD_STATUS_OFFSET]
+
+    def reply_body(self, rxd: bytes) -> bytes:
+        """The payload after the chip's MCU reply header (skb_pull(sizeof(*rxd)))."""
+        return rxd[self.MCU_RXD_LEN :]
 
     # ---- firmware download commands ------------------------------------
 
@@ -1243,10 +1271,15 @@ class Mt7921uDevice(Mt7921uMcu):
 
         self.clear_bits(MT_UDMA_TX_QSEL, MT_FW_DL_EN)
         log("firmware is running")
+        self.post_firmware_init(log)
 
-        # Bands other than 2.4 GHz stay silent until the firmware has the
-        # calibration data. Measured: without this, channel 153 yields zero
-        # transfers while channel 6 yields thousands.
+    def post_firmware_init(self, log=print) -> None:
+        """What __mt7921_init_hardware does once the firmware answers.
+
+        Bands other than 2.4 GHz stay silent until the firmware has the calibration
+        data. Measured: without this, channel 153 yields zero transfers while channel 6
+        yields thousands.
+        """
         self.get_nic_capability()
         self.set_eeprom()
         log("efuse pushed")
@@ -1278,7 +1311,8 @@ def _wait_udma_idle(self) -> None:
 
 
 def _wfsys_reset(self) -> None:
-    """mt792xu_wfsys_reset, mt7921 descriptor.
+    """mt792xu_wfsys_reset, driven by the class's WFSYS_* descriptor
+    (struct mt792xu_wfsys_desc; mt7921_wfsys_desc is the default below).
 
     Note the reset register is reached through the UHW (USB host wrapper)
     vendor request pair, not the normal one.
@@ -1286,22 +1320,32 @@ def _wfsys_reset(self) -> None:
     self.wait_udma_idle()
     self.epctl_rst_opt(False)
 
-    val = self.uhw_rr(MT_CBTOP_RGU_WF_SUBSYS_RST)
-    self.uhw_wr(MT_CBTOP_RGU_WF_SUBSYS_RST, val | MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH)
-    time.sleep(0.001)
-    val = self.uhw_rr(MT_CBTOP_RGU_WF_SUBSYS_RST)
-    self.uhw_wr(
-        MT_CBTOP_RGU_WF_SUBSYS_RST, val & ~MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH & 0xFFFFFFFF
-    )
+    val = self.uhw_rr(self.WFSYS_RST_REG)
+    self.uhw_wr(self.WFSYS_RST_REG, val | MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH)
+    time.sleep(self.WFSYS_RST_DELAY_S)
+    val = self.uhw_rr(self.WFSYS_RST_REG)
+    self.uhw_wr(self.WFSYS_RST_REG, val & ~MT_CBTOP_RGU_WF_SUBSYS_RST_WF_WHOLE_PATH & 0xFFFFFFFF)
 
-    self.uhw_wr(MT_UDMA_CONN_INFRA_STATUS_SEL, 0)
+    if self.WFSYS_NEED_STATUS_SEL:
+        self.uhw_wr(MT_UDMA_CONN_INFRA_STATUS_SEL, 0)
 
     for _ in range(MT792x_WFSYS_INIT_RETRY_COUNT):
-        val = self.uhw_rr(MT_UDMA_CONN_INFRA_STATUS)
-        if val & MT_UDMA_CONN_WFSYS_INIT_DONE:
+        val = self.uhw_rr(self.WFSYS_DONE_REG)
+        if (val & self.WFSYS_DONE_MASK) == self.WFSYS_DONE_VAL:
             return
         time.sleep(0.1)
     raise RuntimeError("timeout waiting for WFSYS init done")
+
+
+# mt7921_wfsys_desc (mt792x_usb.c:375-382 at c5a3bd91): done when BIT(22) of the
+# UDMA status register is set, after selecting status page 0; usleep_range(10, 20)
+# between asserting and releasing the reset.
+Mt7921uDevice.WFSYS_RST_REG = MT_CBTOP_RGU_WF_SUBSYS_RST
+Mt7921uDevice.WFSYS_DONE_REG = MT_UDMA_CONN_INFRA_STATUS
+Mt7921uDevice.WFSYS_DONE_MASK = MT_UDMA_CONN_WFSYS_INIT_DONE
+Mt7921uDevice.WFSYS_DONE_VAL = MT_UDMA_CONN_WFSYS_INIT_DONE
+Mt7921uDevice.WFSYS_RST_DELAY_S = 0.001
+Mt7921uDevice.WFSYS_NEED_STATUS_SEL = True
 
 
 Mt7921uDevice.wait_udma_idle = _wait_udma_idle
@@ -1399,7 +1443,7 @@ def _mcu_cmd_word(self, cmd: int, payload: bytes = b"", wait: bool = True, timeo
 def _get_nic_capability(self) -> dict:
     """mt7921_mcu_get_nic_capability. Returns the decoded TLVs."""
     rxd = self.mcu_cmd_word(MCU_CE_CMD(MCU_CE_CMD_GET_NIC_CAPAB))
-    body = rxd[MCU_RXD_LEN:]
+    body = self.reply_body(rxd)
     if len(body) < 4:
         raise McuError(f"capability response too short ({len(body)} bytes)")
     (n_element,) = struct.unpack_from("<H", body, 0)
@@ -1589,29 +1633,37 @@ SNIFFER_BW_80 = 1
 SNIFFER_BW_160 = 2
 
 
-def _build_uni_txd(self, total_len: int, cid: int, seq: int) -> bytes:
-    """mt76_connac2_mcu_fill_message, UNI path."""
+def _uni_option(self, cid: int, query: bool = False) -> int:
+    """The uni_txd option byte. mt7921 always asks for an extended ack."""
+    return MCU_CMD_UNI_EXT_ACK
+
+
+def _build_uni_txd(self, total_len: int, cid: int, seq: int, query: bool = False) -> bytes:
+    """mt76_connac2_mcu_fill_message, UNI path (struct mt76_connac2_mcu_uni_txd)."""
     txd = [0] * 8
     txd[0] = (
         (total_len & 0xFFFF)
         | ((MT_TX_TYPE_CMD & 0x3) << 23)
         | ((MT_TX_MCU_PORT_RX_Q0 & 0x7F) << 25)
     )
-    txd[1] = (1 << 31) | ((MT_HDR_FORMAT_CMD & 0x3) << 16)
+    txd[1] = self.TXD1
     out = b"".join(struct.pack("<I", v & 0xFFFFFFFF) for v in txd)
     out += struct.pack("<HH", (total_len - 32) & 0xFFFF, cid & 0xFFFF)
     out += struct.pack("<BBBB", 0, MCU_PKT_ID, 0, seq & 0xFF)
-    out += struct.pack("<HBB", 0, MCU_S2D_H2N, MCU_CMD_UNI_EXT_ACK)
+    out += struct.pack("<HBB", 0, MCU_S2D_H2N, self.uni_option(cid, query))
     out += b"\x00" * 4
     if len(out) != MCU_UNI_TXD_LEN:
         raise RuntimeError(f"internal UNI TXD length {len(out)}, expected {MCU_UNI_TXD_LEN}")
     return out
 
 
-def _mcu_uni(self, cid: int, payload: bytes, wait: bool = True, timeout: int = 3000):
+def _mcu_uni(
+    self, cid: int, payload: bytes, wait: bool = True, timeout: int = 3000, query: bool = False
+):
+    """One UNI command. query=True marks a __MCU_CMD_FIELD_QUERY command word."""
     seq = self._next_seq()
     total = MCU_UNI_TXD_LEN + len(payload)
-    body = self._build_uni_txd(total, cid, seq) + payload
+    body = self._build_uni_txd(total, cid, seq, query=query) + payload
     frame = struct.pack("<I", len(body) & 0xFFFF) + body
     frame += b"\x00" * (((len(frame) + 3) & ~3) + 4 - len(frame))
     if self.verbose:
@@ -1664,6 +1716,7 @@ def _config_sniffer(
     self.mcu_uni(MCU_UNI_CMD_SNIFFER, hdr + tlv)
 
 
+Mt7921uDevice.uni_option = _uni_option
 Mt7921uDevice._build_uni_txd = _build_uni_txd
 Mt7921uDevice.mcu_uni = _mcu_uni
 Mt7921uDevice.set_sniffer = _set_sniffer
@@ -1723,10 +1776,8 @@ MT_TXD0_TX_BYTES_M = 0xFFFF
 MT_TX_TYPE_SF = 1
 MT_LMAC_ALTX0 = 0x10
 
-MT_TXD1_LONG_FORMAT = 1 << 31
 MT_TXD1_OWN_MAC_SHIFT = 24
 MT_TXD1_TID_SHIFT = 20
-MT_TXD1_HDR_FORMAT_SHIFT = 16
 MT_TXD1_HDR_INFO_SHIFT = 11
 MT_HDR_FORMAT_802_11 = 2
 
@@ -1863,7 +1914,7 @@ def _get_temperature(self):
     """mt7921_mcu_get_temperature. Degrees C, from the on-die sensor."""
     req = struct.pack("<BBB5x", THERMAL_SENSOR_TEMP_QUERY, 0, 0)
     rxd = self.mcu_cmd_word(MCU_EXT_CMD(MCU_EXT_CMD_THERMAL_CTRL), req)
-    body = rxd[MCU_RXD_LEN:]
+    body = self.reply_body(rxd)
     # mt7921_mcu_parse_response pulls sizeof(rxd)+4 for THERMAL_CTRL
     if len(body) < 8:
         return None
@@ -1875,7 +1926,7 @@ def _read_efuse(self, offset: int):
     base = offset & ~(MT7921_EEPROM_BLOCK_SIZE - 1)
     req = struct.pack("<II", base, 0) + b"\x00" * MT7921_EEPROM_BLOCK_SIZE
     rxd = self.mcu_cmd_word(MCU_EXT_CMD(MCU_EXT_CMD_EFUSE_ACCESS) | MCU_CMD_FIELD_QUERY, req)
-    body = rxd[MCU_RXD_LEN:]
+    body = self.reply_body(rxd)
     if len(body) < 8 + MT7921_EEPROM_BLOCK_SIZE:
         return None, None
     _addr, valid = struct.unpack_from("<II", body, 0)
@@ -1885,3 +1936,41 @@ def _read_efuse(self, offset: int):
 
 Mt7921uDevice.get_temperature = _get_temperature
 Mt7921uDevice.read_efuse = _read_efuse
+
+
+# ---------------------------------------------------------------------------
+# Device factory: pick the driver class from the attached device's USB id
+# ---------------------------------------------------------------------------
+
+
+def device_class_for(chip: str):
+    """The device class that drives one SUPPORTED_DEVICES chip name."""
+    if chip == CHIP_MT7921:
+        return Mt7921uDevice
+    if chip == CHIP_MT7925:
+        import mt7925u
+
+        return mt7925u.Mt7925uDevice
+    raise UnsupportedDevice(f"no driver class for chip {chip!r}")
+
+
+def open_device(usb_id: str | None = None, verbose: bool = False):
+    """Return an unopened device object of the right class for the attached adapter.
+
+    Use it as a context manager exactly like Mt7921uDevice(). With several supported
+    adapters attached, usb_id (or $MT76_USB_ID) picks one.
+    """
+    candidates = find_supported_devices(usb_id)
+    if not candidates:
+        wanted = usb_id or os.environ.get("MT76_USB_ID") or "any supported"
+        raise UnsupportedDevice(f"device not found (looked for {wanted})")
+    if len(candidates) > 1:
+        ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
+        raise UnsupportedDevice(
+            f"{len(candidates)} supported devices attached ({ids}); "
+            "pass usb_id or set MT76_USB_ID to pick one"
+        )
+    dev = candidates[0]
+    chip = SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)]
+    cls = device_class_for(chip)
+    return cls(verbose=verbose, usb_id=f"{dev.idVendor:04x}:{dev.idProduct:04x}")

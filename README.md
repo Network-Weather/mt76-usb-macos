@@ -91,6 +91,7 @@ terms and the one blob you must not fetch.
 ./.venv/bin/python examples/scan.py 6                            # 6 GHz PSCs only
 ./.venv/bin/python examples/sniff_to_pcap.py 53 8 out.pcap 6GHz # 6 GHz radiotap pcap
 ./.venv/bin/python scripts/usb_descriptors.py --chip-id          # what the driver sees; no firmware needed
+./.venv/bin/python scripts/firmware_boot.py                      # boot firmware, report chip capabilities (either chip)
 ./.venv/bin/python scripts/hardware_smoke.py --plan all          # redacted passive release check
 ./.venv/bin/python scripts/retune_drops.py                    # frames lost per channel hop, counts only
 ./.venv/bin/python scripts/width_probe.py 5GHz:132:138:80 6GHz:53:47:160   # which widths decode; counts only
@@ -106,7 +107,8 @@ The codebase includes both a high-level Python library and a zero-dependency C d
 
 | Component | What it does |
 |---|---|
-| `mt7921u.py` | Python driver: USB vendor transfers, register I/O, MCU command framing, firmware download, channel and sniffer setup, receive, and injection |
+| `mt7921u.py` | Python driver: USB vendor transfers, register I/O, MCU command framing, firmware download, channel and sniffer setup, receive, and injection; device table, descriptor discovery, and the `open_device()` factory |
+| `mt7925u.py` | MT7925U (connac3) subclass: its WFSYS reset, MCU framing geometry, and UNI capability/efuse commands. Boots firmware on the Nighthawk A9000; receive is the next stage |
 | `rxd.py` | Python RX descriptor decode and 802.11 frame parsing (IE analysis, AKM suites, airtime accounting) |
 | [`c/`](c/README.md) | Pure C driver: native macOS IOKit USB transport (zero external dependencies), MCU framing, TXWI injection, PCAP writer, and `mt7921_smoke` CLI |
 
@@ -269,7 +271,8 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 70 offline tests for firmware parsing, MCU framing, RX descriptors,
+The macOS-only CI runs 113 offline tests for firmware parsing, MCU framing (both chips, with
+the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.
 It also enforces Ruff formatting/linting, shell syntax, and distribution builds. Hardware tests
