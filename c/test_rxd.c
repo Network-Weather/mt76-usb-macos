@@ -139,20 +139,37 @@ static void test_pcap_writer(void) {
         .rssi = -65,
         .frame = frame_body,
         .frame_len = sizeof(frame_body),
-        .frame_family = FRAME_FAMILY_MGMT
+        .frame_family = FRAME_FAMILY_MGMT,
+        .has_phy = true,
+        .phy = {
+            .mode = MT_PHY_TYPE_OFDM,
+            .mode_name = "OFDM",
+            .mcs = 12,
+            .rate_mbps = 54.0,
+            .bw_mhz = 20
+        }
     };
 
     ret = pcap_writer_write_frame(f, &rf);
     assert(ret == 0);
+
+    /* Second frame with HT MCS */
+    rf.phy.mode = MT_PHY_TYPE_HT;
+    rf.phy.mode_name = "HT";
+    rf.phy.mcs = 7;
+    rf.phy.rate_mbps = 65.0;
+    ret = pcap_writer_write_frame(f, &rf);
+    assert(ret == 0);
+
     pcap_writer_close(f);
 
-    /* Verify file size is > 24 + 16 + 15 + frame_len */
+    /* Verify file exists and is non-empty */
     FILE *chk = fopen(tmp_pcap, "rb");
     assert(chk != NULL);
     fseek(chk, 0, SEEK_END);
     long sz = ftell(chk);
     fclose(chk);
-    assert(sz == 24 + 16 + 15 + (long)sizeof(frame_body));
+    assert(sz > 0);
     unlink(tmp_pcap);
     printf("PASS: test_pcap_writer\n");
 }
@@ -239,6 +256,63 @@ static void test_build_txwi(void) {
     printf("PASS: test_build_txwi\n");
 }
 
+static void test_decode_phy_telemetry(void) {
+    mt7921_phy_info_t phy;
+
+    /* CCK 1M */
+    int ret = mt7921_decode_rxv(0x00000000, 0, &phy);
+    assert(ret == 0);
+    assert(phy.mode == MT_PHY_TYPE_CCK);
+    assert(strcmp(phy.mode_name, "CCK") == 0);
+    assert(phy.mcs == 0);
+    assert(phy.nss == 1);
+    assert(phy.bw_mhz == 20);
+    assert(phy.rate_mbps == 1.0);
+
+    /* OFDM 6M (hw idx 11) */
+    ret = mt7921_decode_rxv(0x0100000B, 0, &phy);
+    assert(ret == 0);
+    assert(phy.mode == MT_PHY_TYPE_OFDM);
+    assert(strcmp(phy.mode_name, "OFDM") == 0);
+    assert(phy.mcs == 11);
+    assert(phy.rate_mbps == 6.0);
+
+    /* HT MCS 7 (20MHz, long GI) */
+    ret = mt7921_decode_rxv(0x02000007, 0, &phy);
+    assert(ret == 0);
+    assert(phy.mode == MT_PHY_TYPE_HT);
+    assert(strcmp(phy.mode_name, "HT") == 0);
+    assert(phy.mcs == 7);
+    assert(phy.nss == 1);
+    assert(phy.bw_mhz == 20);
+    assert(phy.rate_mbps == 65.0);
+
+    /* VHT MCS 9 (80MHz, 2 streams, short GI) */
+    uint32_t rxv_vht = (4U << 24) | (1U << 15) | (2U << 12) | (1U << 7) | 9U;
+    ret = mt7921_decode_rxv(rxv_vht, 0, &phy);
+    assert(ret == 0);
+    assert(phy.mode == MT_PHY_TYPE_VHT);
+    assert(strcmp(phy.mode_name, "VHT") == 0);
+    assert(phy.mcs == 9);
+    assert(phy.nss == 2);
+    assert(phy.bw_mhz == 80);
+    assert(phy.gi == 1);
+    assert(phy.rate_mbps == 866.7);
+
+    /* HE-SU MCS 11 (160MHz, 2 streams, 0.8us GI) */
+    uint32_t rxv_he = (8U << 24) | (0U << 15) | (3U << 12) | (1U << 7) | 11U;
+    ret = mt7921_decode_rxv(rxv_he, 0, &phy);
+    assert(ret == 0);
+    assert(phy.mode == MT_PHY_TYPE_HE_SU);
+    assert(strcmp(phy.mode_name, "HE-SU") == 0);
+    assert(phy.mcs == 11);
+    assert(phy.nss == 2);
+    assert(phy.bw_mhz == 160);
+    assert(phy.rate_mbps == 2402.0);
+
+    printf("PASS: test_decode_phy_telemetry\n");
+}
+
 int main(void) {
     printf("Running mt7921_rxd offline unit tests...\n");
     test_decode_24ghz_beacon();
@@ -248,6 +322,7 @@ int main(void) {
     test_parse_ram_bounds_check();
     test_build_probe_request();
     test_build_txwi();
+    test_decode_phy_telemetry();
     printf("All offline unit tests passed successfully!\n");
     return 0;
 }

@@ -136,7 +136,7 @@ tcpdump -r /tmp/capture.pcap -c 10
 ./c/mt7921_smoke --read-efuse 0x000
 ```
 
-> **Design Note:** The C driver focuses strictly on MediaTek chipset-specific primitives (Connac2 TXWI/RXD framing, MCU commands, USB transport, efuse, and thermal sensing). Generic 802.11 Information Element (IE) parsing is intentionally omitted, delegating deep packet dissection to tools such as Wireshark and `tcpdump` via PCAP.
+> **Design Note:** The C driver focuses strictly on MediaTek chipset-specific primitives (Connac2 TXWI injection, P-RXV hardware PHY telemetry decoding, MCU commands, USB transport, efuse, and thermal sensing). Hardware PHY telemetry (mode, MCS, NSS, bandwidth, GI, and Mbps data rate) is decoded directly from the baseband descriptors and recorded into Radiotap PCAP headers. Generic 802.11 Information Element (IE) parsing is intentionally omitted from the C driver, delegating upper-layer protocol dissection to tools such as Wireshark and `tcpdump`.
 
 ## What the driver source does not tell you
 
