@@ -126,13 +126,13 @@ Capabilities and CLI options:
 ./c/mt7921_smoke --plan quick --dwell 1.0 --pcap /tmp/capture.pcap
 tcpdump -r /tmp/capture.pcap -c 10
 
-# Test packet injection across channels (sends 5 probe requests per channel)
-./c/mt7921_smoke --plan quick --dwell 0.5 --inject 5
+# Test experimental packet injection (rate-limited, requires explicit acknowledgement)
+./c/mt7921_smoke --plan quick --dwell 0.5 --inject 3 --acknowledge-experimental-transmit
 
 # Query on-die temperature sensor
 ./c/mt7921_smoke --temp
 
-# Read a raw 16-byte efuse block
+# Read a raw 16-byte efuse block (MAC address masked by default)
 ./c/mt7921_smoke --read-efuse 0x000
 ```
 

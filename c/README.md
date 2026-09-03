@@ -63,13 +63,13 @@ Requires the MT7921AU USB adapter and firmware blobs in `./firmware` (or specifi
 ./mt7921_smoke --plan quick --dwell 1.0 --pcap capture.pcap
 tcpdump -r capture.pcap -c 10
 
-# Test packet injection across channels (5 probe requests per channel)
-./mt7921_smoke --plan quick --dwell 0.5 --inject 5
+# Test experimental packet injection (rate-limited, requires explicit acknowledgement)
+./mt7921_smoke --plan quick --dwell 0.5 --inject 3 --acknowledge-experimental-transmit
 
 # Query on-die temperature sensor
 ./mt7921_smoke --temp
 
-# Read a raw 16-byte efuse block
+# Read a raw 16-byte efuse block (MAC address masked by default)
 ./mt7921_smoke --read-efuse 0x000
 ```
 
@@ -78,7 +78,7 @@ tcpdump -r capture.pcap -c 10
 Validated live on macOS against ALFA AWUS036AXML (`0e8d:7961`):
 - Cold & warm bringup: Verified (including retained `FW_STATE` WFSYS reset recovery)
 - 2.4 GHz, 5 GHz, and 6 GHz PSC capture: Verified (1,333 frames decoded across all 43 channels on `--plan all`)
-- Packet injection: Verified (5 probe requests sent per channel with chip alive)
+- Packet injection: Research-grade and rate-limited. Low-rate probe request constructor and paced transmit helper implemented; sustained injection across bands remains explicitly untested per `docs/TESTING.md`.
 - Die temperature: Verified (returns active sensor reading, e.g. 32°C)
-- Raw EFUSE read: Verified (block 0x000 returns MT7961 chip ID `61 79` with valid flag)
-- Radiotap pcap export: Verified readable by `tcpdump` and Wireshark
+- Raw EFUSE read: Verified (block 0x000 returns MT7961 chip ID `61 79` with valid flag; MAC bytes masked by default)
+- Radiotap pcap export: Verified readable by `tcpdump` and Wireshark with RATE, MCS, VHT, and HE fields

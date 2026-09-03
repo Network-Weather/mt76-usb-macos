@@ -161,6 +161,28 @@ static void test_pcap_writer(void) {
     ret = pcap_writer_write_frame(f, &rf);
     assert(ret == 0);
 
+    /* Third frame with VHT */
+    rf.phy.mode = MT_PHY_TYPE_VHT;
+    rf.phy.mode_name = "VHT";
+    rf.phy.mcs = 9;
+    rf.phy.nss = 2;
+    rf.phy.bw_mhz = 80;
+    rf.phy.gi = 1;
+    rf.phy.rate_mbps = 866.7;
+    ret = pcap_writer_write_frame(f, &rf);
+    assert(ret == 0);
+
+    /* Fourth frame with HE */
+    rf.phy.mode = MT_PHY_TYPE_HE_SU;
+    rf.phy.mode_name = "HE-SU";
+    rf.phy.mcs = 11;
+    rf.phy.nss = 2;
+    rf.phy.bw_mhz = 160;
+    rf.phy.gi = 0;
+    rf.phy.rate_mbps = 2402.0;
+    ret = pcap_writer_write_frame(f, &rf);
+    assert(ret == 0);
+
     pcap_writer_close(f);
 
     /* Verify file exists and is non-empty */
