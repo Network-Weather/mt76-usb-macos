@@ -370,6 +370,59 @@ roughly twice as many preambles as it delivers frames.
 This satisfies acceptance criteria 4 and 5 for Spike A's measurement, by a different route
 than Spike A proposed. The MIB *registers* remain dead; the MCU path reaches live counters.
 
+## Capability map
+
+MediaTek's `mt_wifi` headers list 127 `EXT_CMD_ID` values against mt76's 52
+([RELATED_WORK.md](../RELATED_WORK.md#mediatek-mt_wifi-driver-headers)). Cross-referencing
+that list against the dispatch tables in the MT7921 image: **57 of the 127 have a slot**. The
+measurement-relevant ones, with what hardware said where it was asked:
+
+| id | command | slot | hardware |
+|---|---|---|---|
+| `0xa3` | `RDD_IPI_HIST_CTRL` | `0x00961422` | **accepted** — status 0, but emits no event yet |
+| `0x5a` | `GET_MIB_INFO` | `0xe02767c0` | **working** — live counters, see above |
+| `0x56` | `WIFI_SPECTRUM` | `0x009214c8` | not tried |
+| `0x70` | `EDCCA_CTRL` | `0x00955968` | not tried |
+| `0x3a` | `RDD_ON_OFF_CTRL` | `0x0095c90e` | not tried |
+| `0x9d` | `SET_RDM_RADAR_THRES` | `0x009616d0` | not tried |
+| `0xb2` | `SET_RDM_TEST_PATTERN` | `0xe027674c` | not tried |
+| `0x30` | `GET_TX_STATISTICS` | `0x009175b4` | not tried |
+| `0xb0` | `GET_STA_TX_STAT` | `0x00951f00` | not tried |
+| `0x1c` | `GET_TX_POWER` | `0x00967a0c` | not tried |
+| `0x4a` | `RX_AIRTIME_CTRL` | `0x009241a2` | **refused** — a slot is not implementation |
+
+Command names beyond those measured are not transcribed into this repository; the header they
+come from is proprietary. They are recorded here as observations about what the interface
+contains, with the citation, so the next session knows where to look.
+
+### The IPI histogram is reachable, and specified
+
+This is where the investigation started — `rdmGetIpiHist` in the firmware strings, and
+`mt792x_phy_get_nf()` returning a hardcoded 0 — and the interface turns out to be fully
+specified in the vendor header, as `EXT_CMD_ID_RDD_IPI_HIST_CTRL` (0xa3), which mt76 does not
+mention at all.
+
+The command takes an index, a band, a set flag and four idle-power parameters. The reply event
+carries **12 counters plus a TX-assert time in microseconds**, and the header documents each
+bin as a power range: `<= -92 dBm`, then `-92..-89`, `-89..-86`, `-86..-83`, `-83..-80`,
+`-80..-75`, `-75..-70`, `-70..-65`, `-65..-60`, `-60..-55`, `> -55`, and an eleventh entry
+that is a free-running counter incrementing once per 8 µs — the denominator that turns bin
+counts into dwell fractions. Those boundaries are exactly mt7915's `nf_power[]` table, which
+is what confirms the two are the same instrument reached by different routes.
+
+**Measured 2026-09-03:** the MT7921U accepts the command. Every get type — all-counts,
+bins 0-10, bins 2-10, free-run — returns `a3000000 00000000`, status **zero**, which is
+categorically different from the `0xfe` refusal that `RX_AIRTIME_CTRL` and `PHY_STAT_INFO`
+return. It is accepted and acknowledged.
+
+What it does *not* do yet is produce the histogram. `EXT_EVENT_ID_RDD_IPI_HIST_CTRL` is a
+separate asynchronous event, and none arrived on the RX endpoint in 5 s of watching after a
+`CR_INIT` and `HIST_RESET`. The untested next step is that IPI lives under the RDD module, so
+it plausibly needs RDD started via `RDD_ON_OFF_CTRL` (0x3a) first, and/or the `RDD_SET_IDLE_PWR`
+parameters — threshold, max count, duration — set before it will sample anything.
+
+If that works it is a real noise floor on a part whose driver reports none.
+
 ## How to hunt a command
 
 The four instruments built here compose into a loop that takes an hour and needs no
@@ -397,21 +450,24 @@ prediction that survived a 20 vs 80 MHz test before it was a name.
 Ranked. Each has a dispatch slot in the MT7921 image *and* a matching firmware string, which
 is the cheapest evidence that something is there; none has been sent to hardware.
 
-1. **`EXT_CMD_ID_WIFI_SPECTRUM` (0x56)** — handler `0x009214c8`, and the image carries
+1. **Finish `RDD_IPI_HIST_CTRL` (0xa3).** It is accepted, specified, and one step from a
+   noise floor: start RDD with `RDD_ON_OFF_CTRL` (0x3a), or set the idle-power parameters,
+   then watch for the event. This is the highest-value lead on the list by some distance.
+2. **`EXT_CMD_ID_WIFI_SPECTRUM` (0x56)** — handler `0x009214c8`, and the image carries
    `%s : Wifi-spectrum is enable !!`. Nothing in mt76 drives it. If it does what its name
    says, it is a spectrum view rather than a single occupancy scalar, which is a different
    class of instrument from anything here.
-2. **`EXT_CMD_ID_EDCCA_CTRL` (0x70)** — 24 EDCCA strings in the image, including per-band
+3. **`EXT_CMD_ID_EDCCA_CTRL` (0x70)** — 24 EDCCA strings in the image, including per-band
    per-bandwidth thresholds (`B%d_EdccaTh:BW20=...`). Reading the threshold tells us what
    "busy" *means* for `P_CCA_TIME`, which currently has no calibration at all. Note its
    dispatch slot handler reads `0x00000000`, so expect a refusal.
-3. **The accepted MIB offsets that stayed at zero** — 1, 4, 5, 6, 8, 9, 10, 17, 20-23. They
+4. **The accepted MIB offsets that stayed at zero** — 1, 4, 5, 6, 8, 9, 10, 17, 20-23. They
    reply, so they exist; they were simply quiet in monitor mode on the channels tried. Free
    to check, since the sweep already runs.
-4. **RDD, `SET_RDD_CTRL` (0x3a) with `SET_RDD_TH` (0x9d)** — radar pulse detection is
+5. **RDD pulse reporting, `RDD_ON_OFF_CTRL` (0x3a) with `SET_RDM_RADAR_THRES` (0x9d)** — radar pulse detection is
    implemented and undriven. Raw pulse reports are a non-Wi-Fi energy source, useful well
    beyond DFS.
-5. **`MIB_CNT_P_ED_TIME`** — primary-channel energy-detect time, the direct non-Wi-Fi
+6. **`MIB_CNT_P_ED_TIME`** — primary-channel energy-detect time, the direct non-Wi-Fi
    interference figure. This firmware refuses its offset; worth re-checking on the MT7925 or
    a newer MT7921 build, though the MT7925's encrypted image means the offline half of the
    loop does not run there.
