@@ -923,6 +923,16 @@ beacon does not include them, and no client association was observed during thes
 decoder's handling of per-STA profiles and of element and subelement fragmentation is covered by
 synthetic fixtures cross-checked against tshark in `tests/test_multi_link.py`, not by air.
 
+## Receiver evidence and per-packet power (2026-09-04)
+
+The dated [receiver-evidence report](RECEIVER_EVIDENCE.md) records the test bed,
+commands, acceptance criteria, aggregate evidence, and limitations. At 5 GHz
+channel 36 / 20 MHz, 100/100 controlled OFDM probes were independently decoded;
+TXWI offset codes -8 and -16 reduced received signal and TX status power relative
+to interleaved zero-code controls. Absolute transmit power remains uncalibrated.
+The passive BlockAck comparison has not yet met its recent-data visibility
+criterion and must not be presented as a packet-loss estimator.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
@@ -949,8 +959,9 @@ as a current release qualification.
 - working noise-floor measurements; CCA-busy is now available through the MCU paths documented
   above;
 - suspend/resume, sleep/wake, hot-unplug recovery, and long-duration soak behavior;
-- sustained or high-rate injection, working injection above 2.4 GHz, TX power, TX feedback, and
-  regulatory-domain enforcement; and
+- sustained or high-rate injection, absolute TX-power calibration, and regulatory-domain
+  enforcement (bounded 5 GHz OFDM injection, TX feedback, and relative attenuation have
+  separate research evidence above); and
 - automatic recovery from a device that stops responding.
 
 Do not turn an item in this section into a positive claim until a dated result, exact test
