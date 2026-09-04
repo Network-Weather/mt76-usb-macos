@@ -47,6 +47,46 @@ group-mask and frame-count results are unaffected.
 
 ## Source evidence and limitations
 
+## Reproducible receive-vector results
+
+Tool: [`rx_vector_probe.py`](../research/rx_vector_probe.py). Output contains word
+variability by PHY mode and exploratory byte/RSSI correlations, never raw frames or
+network identifiers. Synthetic tests check group offsets, descriptor-length bounds,
+and the Group-3 origin of connac3 HE indexes.
+
+```bash
+MT76_FW_DIR=/path/to/firmware /path/to/venv/bin/python research/rx_vector_probe.py \
+  --usb-id 0846:9072 2.4GHz:6 5GHz:36:42:80 5GHz:149:155:80 6GHz:37:47:160 \
+  --seconds 8 --output /tmp/mt7925-rx-vectors.json
+MT76_FW_DIR=/path/to/firmware /path/to/venv/bin/python research/rx_vector_probe.py \
+  --usb-id 0e8d:7961 2.4GHz:6 5GHz:36:42:80 --seconds 5 --g5-cycle \
+  --output /tmp/mt7921-rx-vectors.json
+```
+
+MT7925: 416, 484, 629, and 37 normal frames respectively, all carrying Group 5.
+No USB errors or FCS errors; this is a short sample, not a reliability qualification.
+The third target delivered 78 HT and 3 VHT frames; the rest were legacy CCK/OFDM.
+**No HE frames were present**, so the HE-field/beacon-color check was not exercised.
+Group-5 word 6 bytes 0/1 repeatedly correlate with decoded RSSI (up to r=0.9983).
+This is a strong lead for duplicate RCPI, not a new independent signal measurement.
+Other correlations are exploratory and confounded by transmitter and frame type.
+
+MT7961: the documented Group-5 bit **works over USB**, without RF-test mode.
+
+| Target | Baseline | Enabled | Restored |
+| --- | --- | --- | --- |
+| 2.4 GHz ch 6 / 20 MHz | 295 frames, no G5 | 289 frames, all G5 | 267 without G5, 1 with G5 |
+| 5 GHz ch 36 / 80 MHz | 326 frames, no G5 | 331 frames, all G5 | 332 frames, no G5 |
+
+`MT_DMA_DCR0(0)` changed from `0x02773400` to `0x02f73400`, then back to
+`0x02773400`; final readback confirmed restoration. The single G5 record after
+restoration is compatible with an in-flight/buffered descriptor; transitions are not
+atomic at the host. There were no USB errors or descriptor-length failures.
+The short runs do not resolve the upstream warning about hardware issues. Default
+driver behavior is unchanged; enabling is confined to the explicit research option.
+
+## Source evidence and limitations
+
 All mt76 references in this section are at `c5a3bd91aa735b669618610d5f0ebfa5786845a6`.
 
 - `mt7925/mac.c:mt7925_mac_fill_rx` describes Group 3 as four words and Group 5 as
