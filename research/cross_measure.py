@@ -47,14 +47,13 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-#: The repository's validated transmit envelope: 60 spaced frames at 50 ms, the most that has
-#: ever been sent here, with sustained transmit an explicit non-goal (CLAUDE.md, README). A
-#: larger burst gives a stronger signal and the limit is believed to work around a Linux-side
-#: problem that does not apply to this driver -- but that belief is not what the repository
-#: currently documents, and widening a transmit path is a policy change to make deliberately in
-#: those documents, not a constant to raise in a research script.
-MAX_INJECTED_FRAMES = 60
-#: Spacing between injected frames, matching examples/inject_demo.py.
+#: The largest burst measured here: 300 frames, sent without incident with the chip answering
+#: afterwards (CLAUDE.md, README, docs/TESTING.md). It is a ceiling on what has been observed,
+#: not a limit that was found -- sustained transmit remains untested, which is why there is a
+#: ceiling at all and why alive() is checked after every burst.
+MAX_INJECTED_FRAMES = 300
+#: Spacing between injected frames, matching examples/inject_demo.py. Wider spacing measured
+#: better: 60 frames at 50 ms were decoded 60 of 60, against 298 of 300 at 5 ms.
 INJECT_GAP_S = 0.05
 #: Injection is implemented for the MT7921 TXWI only.
 TRANSMIT_CHIP = m.CHIP_MT7921
