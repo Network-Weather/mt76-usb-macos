@@ -112,3 +112,36 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   the wrong address; a write to `MT_WF_PHY_RX_CTRL1_IPI_EN` starting it.
 - **Code:** `research/ipi_probe.py`, reproducible from this tree; exits 2 when no histogram
   is found.
+
+## The MCU occupancy counters are MT7921-only; the MT7925 answers no EXT command
+
+- **Tried:** `research/mib_offset_sweep.py --max 32` and `research/mcu_command_probe.py` against
+  the reference MT7925U (Netgear A9000, `0846:9072`), 5 GHz channel 36, 2026-09-03, with the
+  same firmware and bring-up that its capture path uses successfully.
+- **Observed:** every `GET_MIB_INFO` offset from 0 to 31 returns no reply. The command probe
+  then failed to calibrate and refused to report, which is the more informative result: all
+  four of its controls went silent, including `THERMAL_CTRL` and `EFUSE_ACCESS`, which the
+  driver uses successfully on the MT7921. The MT7925 answers **no** EXT command tried, not
+  merely the ones under investigation.
+- **Why, and it is not a defect:** connac3 does not use the EXT command space. `mt7925u.py`
+  drives capability and efuse through UNI commands with tag/length TLVs, and the MT7925's
+  `MCU_UNI_CMD_*` ids are a different interface entirely. Asking it EXT commands is asking in
+  the wrong language.
+- **Not ruled out:** the same counters behind `MCU_UNI_CMD_GET_MIB_INFO` (0x22 in mt76's UNI
+  enum), which has not been tried. The MT7925's firmware regions are AES-encrypted, so the
+  offline dispatch-map method that found the MT7921's numbering cannot be repeated to predict
+  it; it would have to be swept blind.
+- **Consequence:** channel occupancy is an MT7921U capability in this tree. `mib_survey.py`
+  reports `null` counters on an MT7925 rather than a wrong number.
+- **Code:** `research/mib_offset_sweep.py`, `research/mcu_command_probe.py`.
+
+## Two radios on one channel agree on decoded airtime
+
+Not a negative result, recorded here because it is the control that makes the entry above
+meaningful: the MT7925 is receiving correctly, it simply will not answer EXT commands.
+
+- **Tried:** `research/cross_measure.py --band 5GHz --channel 36 --seconds 8`, both adapters
+  tuned to the same channel, 2026-09-03.
+- **Observed:** 801 frames and 175,142 µs of decoded airtime on the MT7921 against 824 frames
+  and 177,971 µs on the MT7925 — 2.8% and 1.6% apart. Two independent receivers see the same
+  air, so a disagreement in the counters is about the counters.

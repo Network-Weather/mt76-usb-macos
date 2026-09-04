@@ -10,7 +10,10 @@ measurement. See docs/FIRMWARE_RECON.md.
 
 import argparse
 import math
+import os
 import struct
+import sys
+import time
 
 import pytest
 import usb.core
@@ -769,3 +772,49 @@ def test_the_cca_delta_is_taken_across_the_dwell_and_nothing_else(monkeypatch):
     # put occupancy in the numerator that the denominator does not cover.
     out = _run_dwell(monkeypatch, [], cca_step=1000, secs=0.05)
     assert out["mcu_counters"]["p_cca_time_us"] == 1000
+
+
+def test_the_dwell_is_measured_across_the_counter_reads_not_the_frame_loop(monkeypatch):
+    # read_cca is a synchronous MCU round trip. If the denominator covers only the frame
+    # loop, the latency of the closing read lands in the numerator alone, and a saturated
+    # channel can report a busy fraction above 1 purely from MCU latency.
+    class SlowMcu(_FakeRadio):
+        def mcu_cmd_word(self, cmd, payload, timeout=0):
+            time.sleep(0.02)  # a round trip that is not free
+            return super().mcu_cmd_word(cmd, payload, timeout)
+
+    radio = SlowMcu([], cca_step=0)
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(radio, "5GHz", 36, 36, 20, 0.05)
+    # The counter's interval must enclose the window frames were collected in.
+    assert out["dwell_us"] > out["frame_window_us"]
+
+
+def test_a_wrapped_counter_reads_as_elapsed_time_not_as_negative_occupancy():
+    # 32-bit free-running counter; a dwell straddling the wrap would otherwise subtract to a
+    # large negative that no guard catches, being neither zero nor above elapsed time.
+    assert ms.COUNTER32_MODULUS == 1 << 32
+    before = ms.COUNTER32_MODULUS - 1000
+    after = 500  # wrapped
+    assert (after - before) % ms.COUNTER32_MODULUS == 1500
+
+
+def test_region_selection_on_a_patch_image_is_refused_rather_than_crashing(capsys):
+    # parse_ram on a patch image raises; the CLI should say what is wrong instead.
+    import subprocess
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "scripts/fw_triage.py",
+            "--strings-for",
+            "WIFI_MT7961_patch",
+            "--region",
+            "0",
+        ],
+        cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 2
+    assert "patch image has sections" in proc.stderr

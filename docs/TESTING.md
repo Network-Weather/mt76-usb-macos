@@ -370,6 +370,12 @@ Independent corroboration in the same runs, not designed for: `MIB_CNT_BCN_TX` a
 `MIB_CNT_TX_BW_*` counters read exactly zero on both bands, as they must in a driver that never
 transmits.
 
+**MT7921U only.** The MT7925U answers no EXT command at all -- connac3 uses the UNI command
+space -- so every offset returns nothing and `mib_survey.py` reports `null` rather than a wrong
+number there ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)). As a control, both adapters on one
+channel decoded 801 and 824 frames for 175,142 and 177,971 µs of airtime, so the MT7925 is
+receiving correctly; it simply cannot be asked.
+
 **Not established.** What distinguishes offset 11 from offset 14 (`CCA_NAV_TX_TIME`); they agreed
 exactly on one channel of four and diverged by 9% on another. Offset 0 does not behave like its
 vendor name and is unused. `band_idx = 1` is accepted but the USB parts are single-band, so what

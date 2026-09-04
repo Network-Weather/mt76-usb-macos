@@ -70,6 +70,8 @@ COUNTER_WRAP_US = 1 << 24  # 16.78 s at 1 us/tick; dwells are bounded well below
 REGISTER_DWELL_MAX_S = 10.0
 #: The MCU counter is 32-bit, so the ceiling here is patience, not arithmetic.
 MCU_DWELL_MAX_S = 120.0
+#: The MCU counters free-run in a 32-bit field, wrapping after about 4,295 s at 1 us/tick.
+COUNTER32_MODULUS = 1 << 32
 
 # mt76 adds these fields straight into mt76_channel_state's cc_busy/cc_tx/cc_rx, which
 # cfg80211 reports as milliseconds after dividing by 1000 (mt76/mac80211.c), so upstream
@@ -164,7 +166,13 @@ def dwell(
     # The CCA counter is read last before the dwell and first after it, so the interval it
     # measures is the interval `elapsed_us` describes. Reading it further out puts occupancy
     # from the intervening MCU round trips into the numerator but not the denominator.
+    # read_cca is a synchronous MCU round trip, so the counter is sampled at some instant
+    # inside the call. Bracketing each read and taking the midpoint puts the denominator on
+    # the same interval as the numerator to within half a round trip, instead of excluding
+    # the response latency from one end and the request latency from the other.
+    cca_open = time.monotonic()
     cca_before = read_cca(dev)
+    cca_open_end = time.monotonic()
     started = time.monotonic()
     frames = 0
     usb_errors = 0
@@ -205,15 +213,25 @@ def dwell(
         parsed = rxd.parse_80211(d["frame"])
         decoded_airtime_us += bill(aggregates.feed(d, len(d["frame"]), parsed.get("addr2")))
     decoded_airtime_us += bill(aggregates.flush())
-    elapsed_us = (time.monotonic() - started) * 1e6
+    loop_ended = time.monotonic()
+    cca_close = time.monotonic()
     cca_after = read_cca(dev)
+    cca_close_end = time.monotonic()
+    # The interval the counter actually measured, midpoint to midpoint.
+    elapsed_us = ((cca_close + cca_close_end) / 2 - (cca_open + cca_open_end) / 2) * 1e6
+    frame_window_us = (loop_ended - started) * 1e6
     after = mcu_counters(dev)
     mcu = {
         k: (after[k] - before[k]) if (after[k] is not None and before[k] is not None) else None
         for k in after
     }
+    # The counter is 32 bits and free-running, so a long enough run wraps. Masking makes a
+    # dwell that straddles the wrap read correctly instead of reporting negative occupancy,
+    # which no guard here would catch because it is neither zero nor above elapsed time.
     mcu["p_cca_time_us"] = (
-        None if (cca_before is None or cca_after is None) else cca_after - cca_before
+        None
+        if (cca_before is None or cca_after is None)
+        else (cca_after - cca_before) % COUNTER32_MODULUS
     )
     busy_us = mcu.get("p_cca_time_us")
     counters = read_counters(dev) if use_registers else dict.fromkeys(COUNTERS, 0)
@@ -222,6 +240,9 @@ def dwell(
         "center": center,
         "width_mhz": width,
         "dwell_us": round(elapsed_us),
+        # How long frames were actually collected. Slightly shorter than the counter's own
+        # interval, by the MCU round trips that bracket it.
+        "frame_window_us": round(frame_window_us),
         "mcu_counters": mcu,
         # `busy_us or 0` would discard a genuine zero, which is exactly what a silent
         # channel reports and is a result worth keeping.

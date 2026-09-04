@@ -515,6 +515,11 @@ def main() -> int:
             blob = fh.read()
         data = blob
         if args.region is not None:
+            if "patch" in os.path.basename(matches[0]).lower():
+                # A patch image declares sections, not regions, and parse_ram would raise on
+                # it. Say so rather than crashing with a struct error.
+                print("--region applies to RAM images; a patch image has sections", file=sys.stderr)
+                return 2
             regions = split_regions(blob, m.parse_ram(blob))
             if not 0 <= args.region < len(regions):
                 print(f"image has {len(regions)} regions", file=sys.stderr)
