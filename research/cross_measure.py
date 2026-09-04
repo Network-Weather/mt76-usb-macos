@@ -47,16 +47,15 @@ import usb.core  # noqa: E402
 import mt7921u as m  # noqa: E402
 import rxd  # noqa: E402
 
-#: Frames per burst. examples/inject_demo.py caps at 3 and the repository describes injection
-#: as rate limited, but that limit works around a Linux-side problem that does not apply to
-#: this userspace driver on macOS (David, 2026-09-03). The cap here is instead set by what the
-#: experiment needs: enough airtime to rise clearly above a quiet channel's floor, and few
-#: enough that a burst fits inside one dwell. It is still a cap, because sustained transmit
-#: remains untested and `alive()` is checked after every burst.
-MAX_INJECTED_FRAMES = 1000
-#: Spacing between injected frames. Wide enough that consecutive frames cannot be mistaken for
-#: one PPDU by the measuring radio, tight enough that a full burst fits in a few seconds.
-INJECT_GAP_S = 0.005
+#: The repository's validated transmit envelope: 60 spaced frames at 50 ms, the most that has
+#: ever been sent here, with sustained transmit an explicit non-goal (CLAUDE.md, README). A
+#: larger burst gives a stronger signal and the limit is believed to work around a Linux-side
+#: problem that does not apply to this driver -- but that belief is not what the repository
+#: currently documents, and widening a transmit path is a policy change to make deliberately in
+#: those documents, not a constant to raise in a research script.
+MAX_INJECTED_FRAMES = 60
+#: Spacing between injected frames, matching examples/inject_demo.py.
+INJECT_GAP_S = 0.05
 #: Injection is implemented for the MT7921 TXWI only.
 TRANSMIT_CHIP = m.CHIP_MT7921
 #: _build_txwi programs MT_TXD6_FIXED_BW with TX_RATE_1M_CCK unconditionally (mt7921u.py),
@@ -90,10 +89,14 @@ def measure(
     #: seeing these is independent proof the burst reached the air, which no counter on the
     #: transmitting radio can provide.
     ours = 0
+    usb_errors = 0
+    timeouts = 0
     # Read the counter first, then rendezvous. Waiting before this read means the sender is
     # released while every receiver still owes an MCU round trip, and a short burst can be
     # over before anyone is in their read loop -- measured: 300 frames, zero received.
+    cca_open = time.monotonic()
     cca_before = survey.read_cca(dev)
+    cca_open_end = time.monotonic()
     if ready is not None:
         # Every radio waits here until all of them are tuned, counters sampled, and about to
         # listen, so the burst lands inside the window meant to contain it. A fixed sleep
@@ -104,8 +107,13 @@ def measure(
         try:
             raw = bytes(dev.rx_read(timeout=READ_TIMEOUT_MS))
         except usb.core.USBTimeoutError:
+            # Routine on a quiet channel: one per READ_TIMEOUT_MS with nothing to hand over.
+            timeouts += 1
             continue
         except usb.core.USBError:
+            # Not routine. A stalled endpoint yields zero frames, which would otherwise look
+            # exactly like "the injected frames did not radiate".
+            usb_errors += 1
             continue
         if not raw:
             continue
@@ -118,10 +126,14 @@ def measure(
             ours += 1
         for aggregate in aggregates.feed(d, len(d["frame"]), parsed.get("addr2")):
             decoded_us += aggregate.airtime_us() or 0.0
-    elapsed_us = (time.monotonic() - started) * 1e6
     for aggregate in aggregates.flush():
         decoded_us += aggregate.airtime_us() or 0.0
+    cca_close = time.monotonic()
     cca_after = survey.read_cca(dev)
+    cca_close_end = time.monotonic()
+    # The counter's own interval, midpoint to midpoint, so the denominator covers the same
+    # span as the numerator rather than only the frame loop between the two round trips.
+    elapsed_us = ((cca_close + cca_close_end) / 2 - (cca_open + cca_open_end) / 2) * 1e6
 
     busy = None if (cca_before is None or cca_after is None) else cca_after - cca_before
     out.update(
@@ -133,8 +145,13 @@ def measure(
             "frames_decoded": frames,
             "injected_frames_seen": ours,
             "decoded_airtime_us": round(decoded_us),
+            "usb_errors": usb_errors,
+            "read_timeouts": timeouts,
         }
     )
+    if usb_errors:
+        # A dwell that spent itself on transport errors is not evidence about the air.
+        raise RuntimeError(f"{usb_errors} USB errors during the dwell; this dwell measured nothing")
 
 
 def transmit(dev, count: int, out: dict) -> None:
@@ -153,6 +170,8 @@ def transmit(dev, count: int, out: dict) -> None:
             out.setdefault("errors", []).append(str(exc)[:60])
             break
         time.sleep(INJECT_GAP_S)
+    if sent != count:
+        out["incomplete"] = True
     out.update(
         {
             "requested": count,
@@ -263,6 +282,13 @@ def main() -> int:
             }
             started = time.monotonic()
             transmit(dev, args.transmit, tx_result)
+            if tx_result.get("sent") != args.transmit:
+                raise RuntimeError(
+                    f"sent {tx_result.get('sent')} of {args.transmit} frames; the burst the "
+                    f"receivers were measuring is not the burst that was asked for"
+                )
+            if not tx_result.get("alive_after"):
+                raise RuntimeError("the chip stopped answering after the burst")
             after_counters = {
                 name: survey.read_mcu_offset(dev, offs)
                 for offs, name in mcs.MIB_OFFSETS_MT7921.items()

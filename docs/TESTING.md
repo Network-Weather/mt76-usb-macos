@@ -247,7 +247,7 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 - **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
 *(This entry establishes host-to-device USB delivery only. Over-the-air radiation is measured
 separately with an independent receiver: see "Injected frames reach the air" above, which
-records 298 of 300 frames decoded by a second adapter on 2.4 GHz and none on 5 GHz.)*
+records 60 of 60 frames decoded by a second adapter on 2.4 GHz and none on 5 GHz.)*
 
 ### Radiotap PCAP export (Live Hardware Legacy/HT and Synthetic VHT/HE Writer)
 
@@ -332,8 +332,8 @@ Both reference adapters attached: MT7921U (ALFA, `0e8d:7961`) transmitting and m
 (Netgear A9000, `0846:9072`) receiving independently on the same channel. Pinned firmware.
 
 ```bash
-./.venv/bin/python research/cross_measure.py --band 2.4GHz --channel 1 --seconds 8 \
-    --transmit 300 --acknowledge-experimental-transmit
+./.venv/bin/python research/cross_measure.py --band 2.4GHz --channel 1 --seconds 10 \
+    --transmit 60 --acknowledge-experimental-transmit
 ```
 
 The transmitting radio sends spaced wildcard Probe Requests from a locally administered address
@@ -347,7 +347,8 @@ radiation" for want of an independent receiver. There is one now.
 
 | Band, channel | Frames sent | Decoded by the second radio |
 |---|---|---|
-| 2.4 GHz ch 1 | 300 | **298** |
+| 2.4 GHz ch 1 | 60 | **60** |
+| 2.4 GHz ch 1 | 300 | 298 |
 | 2.4 GHz ch 1 | 3 | 0 |
 | 5 GHz ch 149 | 300 | **0** (two runs) |
 
@@ -360,37 +361,45 @@ number.
 
 - **Criterion**: a second radio tuned to the same channel decodes frames whose transmitter is
   the synthetic source address, which nothing else on air uses.
-- **Result**: injection radiates on 2.4 GHz. 298 of 300 frames are decoded by the observing
-  radio, which was also handling ambient traffic throughout. Three frames were not enough to be
-  caught.
+- **Result**: injection radiates on 2.4 GHz. Within the repository's documented 60-frame
+  envelope, all 60 are decoded by the observing radio while it also handles ambient traffic.
+  Three frames were not enough to be caught. The 300-frame row predates the restoration of that
+  limit and is kept because it is the same result at a larger count.
 - **Injection does not radiate on 5 GHz**, consistent with the C driver refusing to submit above
   2.4 GHz. Recorded in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
 
-### Offset 14 counts transmit time; offset 11 does not
+### What separates offset 11 from offset 14 is not transmit, and is not established
 
-A controlled burst separates them, with both counters read around the same window on the
-transmitting radio:
+A controlled burst was expected to settle this and did not. Both counters were read around the
+same window on the transmitting radio:
 
-| Frames sent | `p_cca_time` | `cca_nav_tx_time` | difference | difference per frame |
-|---|---|---|---|---|
-| 3 | 13,095 µs | 16,336 µs | 3,241 µs | 1,080 µs |
-| 300 | 1,359,445 µs | 1,677,954 µs | 318,509 µs | 1,062 µs |
-| 300 | 1,296,697 µs | 1,604,902 µs | 308,205 µs | 1,027 µs |
+| Frames sent | Burst window | `p_cca_time` | `cca_nav_tx_time` | difference | difference per second of window |
+|---|---|---|---|---|---|
+| 3 | 34,698 µs | 13,095 µs | 16,336 µs | 3,241 µs | 93,000 µs/s |
+| 300 | 2,174,152 µs | 1,359,445 µs | 1,677,954 µs | 318,509 µs | 146,000 µs/s |
+| 60 | ~3,000,000 µs | — | — | 267,606 µs | 89,000 µs/s |
+| **0 (control)** | 10,006,148 µs | 2,183,232 µs | 3,153,598 µs | **970,366 µs** | **97,000 µs/s** |
 
-- **Criterion**: if `CCA_NAV_TX_TIME` includes transmit and `P_CCA_TIME` does not, their
-  difference must scale with the number of frames transmitted, and the per-frame figure must
-  hold across a large change in count.
-- **Result**: the difference grows 98× for 100× the frames, and the per-frame cost holds at
-  1,080, 1,062 and 1,027 µs across three runs and a hundredfold change in count — a 5% spread.
-  The names are confirmed by behaviour.
-- **Scale check**: about 1,050 µs per frame against 448 µs of pure frame airtime. The rate is
-  1 Mbps CCK with a 192 µs preamble because `_build_txwi` programs `TX_RATE_1M_CCK`
-  unconditionally, whatever band the radio is tuned to; taking the rate from the band instead
-  would have described a 5 GHz burst as seven times faster than what actually goes out. The ratio of 2.4 is what DIFS, backoff and NAV add to each
-  transmission, so the counter is reporting real microseconds rather than an arbitrary tick.
+**The control is the point.** With nothing transmitted at all, the difference is 9.7% of the
+dwell — a higher rate than during the 60-frame burst. The difference tracks elapsed time, not
+frames transmitted, and transmitting 60 frames does not raise it above the ambient rate.
 
-This is the first measurement here with a known ground truth rather than ambient traffic: the
-number of frames is chosen, not observed.
+An earlier reading of the first two rows claimed the difference grows 98× for 100× the frames.
+That comparison changed the frame count and the burst duration together — the window grew 63×
+between them — so it measured duration and attributed it to frames. Per frame it gives 1,080 and
+1,062 µs, which looked like agreement to 1.7%; the 60-frame run gives 4,460 µs for the same
+quantity, and the zero-frame control gives a larger difference than any of them.
+
+What survives: `cca_nav_tx_time` is consistently the larger of the two, by 9-15% of the dwell on
+a busy channel. That is consistent with its name — CCA plus NAV plus TX against primary CCA
+alone — with the NAV component, set by *other* stations' duration fields, dominating whatever
+the local radio transmits. **Nothing here isolates the TX term**, and the transmit contribution
+of 60 frames is below the ambient variation. Distinguishing them needs an experiment on a quiet
+channel where NAV is near zero, which channel 1 is not.
+
+The radiation result above *is* a known ground truth — the number of frames is chosen, not
+observed — and it holds. The counter comparison is not: it was run against ambient traffic that
+turned out to dominate the effect being looked for.
 
 ## Channel occupancy over the MCU: 2026-09-03
 

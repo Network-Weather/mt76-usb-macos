@@ -191,3 +191,20 @@ meaningful: the MT7925 is receiving correctly, it simply will not answer EXT com
 - **Not ruled out:** an mt7921-specific PHY offset for the enable; the sampler requiring RF-test
   mode, which `WIFI_SPECTRUM` also appears to need; a firmware build without it.
 - **Code:** `research/ipi_hist_cmd.py`, `research/ipi_probe.py`.
+
+## A transmit burst does not separate offset 14 from offset 11
+
+- **Tried:** `research/cross_measure.py --transmit` on 2.4 GHz channel 1 with 3, 60 and 300
+  frames, reading `P_CCA_TIME` and `CCA_NAV_TX_TIME` around each burst, 2026-09-03 and 09-04.
+- **Observed:** the difference between the two counters grows with the burst *window*, not with
+  the number of frames. A zero-transmit control over a 10 s dwell on the same channel gives
+  970,366 µs of difference, 9.7% of the dwell — a higher rate than the 60-frame burst's 8.9%.
+- **What went wrong the first time:** comparing 3 frames against 300 changed the frame count and
+  the burst duration together, the window growing 63× between them. The resulting "98× for 100×
+  the frames" measured duration and attributed it to frames, and a per-frame figure that agreed
+  to 1.7% across those two points disagrees by 4× once a third spacing is tried.
+- **Not ruled out:** that `CCA_NAV_TX_TIME` does include a TX term, which its name says. The
+  experiment cannot see it because the NAV component — other stations' duration fields — is far
+  larger on a busy channel. A quiet channel where NAV is near zero would isolate it; channel 1
+  is not that channel.
+- **Code:** `research/cross_measure.py`, `scripts/mib_survey.py` for the control.

@@ -419,10 +419,10 @@ at 13, 15 and 16**, and those are exactly the offsets below 17 that returned no 
 | 12 | `MIB_CNT_S_CCA_TIME` | 512 µs at 20 MHz against 3224 and 3772 at 80 MHz |
 | 14 | `MIB_CNT_CCA_NAV_TX_TIME` | µs, tracks 11 and exceeds it |
 
-`offs 14` was settled the same way, by a controlled transmit rather than by ambient traffic:
-sending 3 and then 300 frames grew the difference between it and `offs 11` by 98×, at 1,080 and
-1,062 µs per frame — agreement to 1.7% across a hundredfold change in count. So `offs 14`
-includes transmit time and `offs 11` does not, and the counter reports real microseconds
+`offs 14` is **not** settled. A transmit experiment appeared to settle it and did not survive
+its own control: with nothing transmitted, the difference between `offs 14` and `offs 11` is
+larger than during a 60-frame burst. It tracks elapsed time, not frames, and the NAV component
+of `CCA_NAV_TX_TIME` — set by other stations — dominates anything the local radio sends
 ([docs/TESTING.md](TESTING.md)).
 
 `offs 12` was a falsifiable prediction and it held: a *secondary*-channel counter must stay
