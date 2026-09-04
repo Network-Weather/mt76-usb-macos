@@ -324,6 +324,48 @@ tshark -r /tmp/test_c_writer.pcap -O radiotap
         HE Data 6: 1 space-time stream (0x1)
     ```
 
+## Channel occupancy over the MCU: 2026-09-03
+
+Same host and reference MT7921U adapter (`0e8d:7961`) as the 2026-08-31 test bed; macOS 26.6,
+pinned firmware, passive receive only. The second adapter was attached, so the id is pinned.
+
+```bash
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python scripts/mib_survey.py 2.4GHz:6 5GHz:36 --seconds 8
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python scripts/mcu_stats.py --band 5GHz --channel 36
+```
+
+Occupancy comes from `MCU_EXT_CMD_GET_MIB_INFO` offset 11 (`MIB_CNT_P_CCA_TIME`), primary-channel
+CCA busy time in microseconds. The offsets are this chip's own numbering, established by sweeping
+0-127 and corroborated against MediaTek's `ENUM_MIB_COUNTER_T`; the derivation, the full accepted
+set and the counters that were rejected are in [FIRMWARE_RECON.md](FIRMWARE_RECON.md).
+
+| Channel | Dwell | Busy | Frames decoded | Decoded airtime | Busy minus decoded |
+|---|---|---|---|---|---|
+| 2.4 GHz ch 6 | 8 s | 9.48% | 258 | 615,408 µs | **+149,217 µs** |
+| 5 GHz ch 36 | 8 s | 2.23% | 816 | 187,491 µs | −8,836 µs |
+| 2.4 GHz ch 6 | 12 s | 9.79% | 413 | 972,163 µs | **+211,856 µs** |
+| 5 GHz ch 36 | 12 s | 2.30% | 1,181 | 274,626 µs | +2,004 µs |
+
+**Acceptance criteria and how they were met.** The counter must advance (it does, on every run);
+busy time must not exceed wall clock (9.79% peak); it must order channels consistently (2.4 GHz
+channel 6 above 5 GHz channel 36 in both runs, and 5 GHz channel 149 at 0.17% in a separate
+sweep); and it must exceed the airtime of frames the driver decoded, which is the claim that
+makes it worth having. On 2.4 GHz it does so by roughly a quarter of the total.
+
+The negative 5 GHz figure is expected rather than a fault: `rxd.airtime_us` estimates preamble
+plus payload at the decoded rate, so a few microseconds of per-frame overestimate accumulates
+over 816 frames. It reads as "the decoder saw essentially all of it".
+
+Independent corroboration in the same runs, not designed for: `MIB_CNT_BCN_TX` and all four
+`MIB_CNT_TX_BW_*` counters read exactly zero on both bands, as they must in a driver that never
+transmits.
+
+**Not established.** What distinguishes offset 11 from offset 14 (`CCA_NAV_TX_TIME`); they agreed
+exactly on one channel of four and diverged by 9% on another. Offset 0 does not behave like its
+vendor name and is unused. `band_idx = 1` is accepted but the USB parts are single-band, so what
+it reports was not investigated. The MIB *registers* remain dead on this part
+([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)); this measurement does not come from them.
+
 ## MT7925U descriptor discovery and chip identity: 2026-09-03
 
 Day one with a Netgear Nighthawk A9000, before any firmware was loaded. Host: Apple M4

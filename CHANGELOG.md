@@ -5,6 +5,27 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+### Added
+
+- Channel occupancy measurement. `scripts/mib_survey.py` reports primary-channel CCA busy time
+  beside the airtime of the frames actually decoded, so the gap between them -- occupancy that
+  never becomes a decodable frame -- is visible. Measured 9.48% busy with 149 ms per 8 s window
+  unaccounted for by frames on 2.4 GHz channel 6 ([docs/TESTING.md](docs/TESTING.md)).
+- `scripts/mcu_stats.py`, which reads the chip's MIB counters over `MCU_EXT_CMD_GET_MIB_INFO` and
+  recognises the firmware's unsupported-command reply, so what a firmware implements is asked
+  rather than assumed.
+- `scripts/fw_triage.py`, offline firmware image triage: per-region classification from the
+  declared header flags, RF symbol inventory, the firmware's own source-path map, an EXT command
+  dispatch map, and `--extract-regions` for disassembly work.
+- [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md): what the firmware images contain, the
+  capability map, and the method for establishing whether a given MCU command is implemented.
+
+### Changed
+
+- `scripts/mib_survey.py` takes its counters from the MCU. The MIB registers read zero on this
+  part however they are armed; `--registers` still reads them so that result stays reproducible
+  ([NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md)).
+
 ### Documentation
 
 - MT7921U regression on the 0.3.0 code with both adapters attached: both tools refuse an ambiguous
