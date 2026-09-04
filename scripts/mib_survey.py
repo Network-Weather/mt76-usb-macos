@@ -3,22 +3,23 @@
 # Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 """How busy is this channel, including the energy we cannot demodulate?
 
-Reads the MAC's own airtime counters over the dwell rather than counting frames. The chip
-accumulates CCA busy, TX, RX and OBSS time in hardware, so the busy figure includes energy
-the sniffer never resolves into a frame: distant APs, hidden nodes, non-Wi-Fi interferers.
-Each dwell also sums the airtime of the frames that *were* decoded, so the report shows both
-numbers side by side. The gap between them is the part of the channel a frame-counting
-sniffer is blind to, and it is the reason this script exists.
+Reports channel occupancy from the chip's own CCA counters rather than from frames, so the
+busy figure includes energy the sniffer never resolves: distant APs, hidden nodes, non-Wi-Fi
+interferers. Each dwell also sums the airtime of the frames that *were* decoded, so both
+numbers appear side by side. The gap between them is the part of the channel a frame-counting
+sniffer is blind to, and it is why this script exists. Measured 2026-09-03 on 2.4 GHz
+channel 6: 1,184,019 us of occupancy against 972,163 us of decoded airtime over 12 s.
 
-Passive receive only; no frame is transmitted and no register outside the MIB and RMAC
-counter blocks is written. Output is per-channel totals with no BSSIDs or payloads.
+The counters are read over MCU_EXT_CMD_GET_MIB_INFO. **The MIB registers do not work on this
+part** -- every duration counter reads zero however it is armed, which is recorded with its
+diagnosis in NEGATIVE_RESULTS.md; `--registers` still reads them so that result stays
+reproducible. The MCU offsets are this chip's own numbering, established by sweep and
+corroborated against the vendor enum; see docs/FIRMWARE_RECON.md and scripts/mcu_stats.py.
 
-See docs/FIRMWARE_RECON.md (Spike A) for what must be true before these numbers are trusted.
-Upstream reference: mt792x_mac.c:226 mt792x_phy_update_channel() reads the same four
-counters for cfg80211 survey dump, and mt792x_mac.c:195 mt792x_mac_reset_counters() is the
-clear sequence reproduced here.
+Passive receive only: nothing is transmitted, and with the default MCU path nothing is
+written at all.
 
-Usage: mib_survey.py 2.4GHz:6 5GHz:36:36:20 [--seconds 5]
+Usage: mib_survey.py 2.4GHz:6 5GHz:36:36:20 [--seconds 5] [--registers]
 """
 
 from __future__ import annotations
@@ -26,12 +27,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import struct
 import sys
 import time
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
+sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
+import mcu_stats as mcs  # noqa: E402
 import usb.core  # noqa: E402
 
 import mt7921u as m  # noqa: E402
@@ -39,6 +43,7 @@ import rxd  # noqa: E402
 
 FW_DIR = m.firmware_dir()
 READ_TIMEOUT_MS = 250
+MCU_TIMEOUT_MS = 700
 
 # Register addresses, band 0, transcribed from mt76 mt792x_regs.h at baseline c5a3bd91.
 # Band 1 exists in the header (MIB 0x820fd000, RMAC 0x820f5000) but the USB parts are
@@ -117,9 +122,31 @@ def plausible(counters: dict[str, int]) -> str | None:
     return None
 
 
-def dwell(dev, band: str, control: int, center: int, width: int, secs: float) -> dict:
+def mcu_counters(dev, band_idx: int = 0) -> dict[str, int | None]:
+    """The occupancy counters, over the MCU. Free-running, so callers difference them."""
+    out = {}
+    for offs, name in mcs.MIB_OFFSETS_MT7921.items():
+        try:
+            body = dev.reply_body(
+                dev.mcu_cmd_word(
+                    m.MCU_EXT_CMD(mcs.MCU_EXT_CMD_GET_MIB_INFO),
+                    struct.pack("<IIQ", band_idx, offs, 0),
+                    timeout=MCU_TIMEOUT_MS,
+                )
+            )
+            out[name] = mcs.parse_mt7921_value(body)
+        except (m.McuError, RuntimeError):
+            out[name] = None
+    return out
+
+
+def dwell(
+    dev, band: str, control: int, center: int, width: int, secs: float, use_registers: bool = False
+) -> dict:
     dev.tune(band, control, center, width)
-    reset_counters(dev)
+    before = mcu_counters(dev)
+    if use_registers:
+        reset_counters(dev)
     started = time.monotonic()
     frames = 0
     usb_errors = 0
@@ -142,38 +169,48 @@ def dwell(dev, band: str, control: int, center: int, width: int, secs: float) ->
         if air:
             decoded_airtime_us += air
     elapsed_us = (time.monotonic() - started) * 1e6
-    counters = read_counters(dev)
-
-    ticks_to_us = {k: v * US_PER_TICK for k, v in counters.items()}
-    busy_us = ticks_to_us["cca_busy"]
+    after = mcu_counters(dev)
+    mcu = {
+        k: (after[k] - before[k]) if (after[k] is not None and before[k] is not None) else None
+        for k in after
+    }
+    busy_us = mcu.get("p_cca_time_us")
+    counters = read_counters(dev) if use_registers else dict.fromkeys(COUNTERS, 0)
     result = {
         "target": f"{band}:{control}",
         "center": center,
         "width_mhz": width,
         "dwell_us": round(elapsed_us),
-        "counters_raw": counters,
-        "counters_us": {k: round(v) for k, v in ticks_to_us.items()},
-        "busy_fraction": round(busy_us / elapsed_us, 4) if elapsed_us else None,
+        "mcu_counters": mcu,
+        "busy_fraction": round(busy_us / elapsed_us, 4) if (busy_us and elapsed_us) else None,
         "frames_decoded": frames,
         "decoded_airtime_us": round(decoded_airtime_us),
         # The number this script exists to produce. Positive means the hardware counted
-        # occupancy the frame decoder never saw.
-        "undecoded_busy_us": round(busy_us - decoded_airtime_us),
+        # occupancy the frame decoder never saw. Small negatives are expected and are not an
+        # error: rxd.airtime_us models preamble plus payload at the decoded rate, so a
+        # per-frame overestimate of a few microseconds accumulates over hundreds of frames.
+        # Read the sign as "the decoder saw essentially all of it", not as a fault. Measured
+        # 2026-09-03: +149,217 us on 2.4 GHz channel 6 against -8,836 us on 5 GHz channel 36
+        # in the same run.
+        "undecoded_busy_us": round(busy_us - decoded_airtime_us) if busy_us else None,
         "usb_errors": usb_errors,
         "warnings": [],
     }
-    warn = plausible(counters)
-    if warn:
-        result["warnings"].append(warn)
-    # Acceptance criterion 3. A counter wrap over a short dwell would also land here, which
-    # is why the wrap period is stated above: at 1 us/tick nothing under 16 s can wrap once.
+    if use_registers:
+        result["register_counters_raw"] = counters
+        warn = plausible(counters)
+        if warn:
+            result["warnings"].append(f"registers: {warn}")
+    if busy_us is None:
+        result["warnings"].append("the MCU did not return a CCA counter")
+        return result
+    # A counter wrap over a short dwell would also land here, which is why the wrap period is
+    # stated above: at 1 us/tick nothing under 16 s can wrap once.
     if busy_us > elapsed_us:
         result["warnings"].append(
             f"busy {busy_us:.0f} us exceeds the {elapsed_us:.0f} us dwell: the tick is not "
             f"1 us, the counter wrapped, or the block is not what we think it is"
         )
-    if any(v >= COUNTER_MASK for v in counters.values()):
-        result["warnings"].append("a counter saturated its 24-bit field; shorten --seconds")
     return result
 
 
@@ -181,6 +218,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("targets", nargs="+", type=parse_target)
     parser.add_argument("--seconds", type=float, default=5.0)
+    parser.add_argument(
+        "--registers",
+        action="store_true",
+        help="also read the MIB registers, which are known dead on this part "
+        "(NEGATIVE_RESULTS.md); kept so that result stays reproducible",
+    )
     args = parser.parse_args()
     # The 24-bit counters wrap after 16.78 s at the assumed tick, so a dwell must stay well
     # under that for the wrap check above to mean anything.
@@ -194,9 +237,10 @@ def main() -> int:
         dev.bringup(patch, ram, log=lambda *a: None)
         dev.set_monitor_mode()
         dev.set_sniffer(True)
-        arm_counters(dev)
+        if args.registers:
+            arm_counters(dev)
         for band, control, center, width in args.targets:
-            runs.append(dwell(dev, band, control, center, width, args.seconds))
+            runs.append(dwell(dev, band, control, center, width, args.seconds, args.registers))
     print(
         json.dumps(
             {

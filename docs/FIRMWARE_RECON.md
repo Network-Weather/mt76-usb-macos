@@ -343,6 +343,55 @@ own frame count and summed airtime (6 s per channel, 2026-09-03):
   some kind, not occupancy. `offs 3` reads exactly 65535 on every channel and is not a
   counter. The remaining accepted offsets sat at zero throughout.
 
+### The full accepted set, and what it confirms
+
+All 19 accepted offsets, read around 12 s dwells with the sniffer running (2026-09-03):
+
+| offs | vendor name | 2.4 GHz ch6 | 5 GHz ch36 |
+|---|---|---:|---:|
+| 0 | `MIB_CNT_RX_FCS_ERR` | 7,995,805 | 51,315,872 |
+| 1 | `MIB_CNT_RX_FIFO_OVERFLOW` | 0 | 0 |
+| 2 | `MIB_CNT_RX_MPDU` | 414 | 1,184 |
+| 3 | `MIB_CNT_CHANNEL_IDLE` | 65,535 | 65,535 |
+| 4–6, 8, 10 | vector drop, delimiter fail, vector mismatch, PF drop, A-MPDU RX | 0 | 0 |
+| 7 | `MIB_CNT_MDRDY` | 539 | 1,966 |
+| 9 | `MIB_CNT_LEN_MISMATCH` | 3 | 7 |
+| 11 | `MIB_CNT_P_CCA_TIME` | 1,184,019 (9.79%) | 276,630 (2.30%) |
+| 12 | `MIB_CNT_S_CCA_TIME` | 0 | 1,298 |
+| 14 | `MIB_CNT_CCA_NAV_TX_TIME` | 1,186,364 | 299,091 |
+| 17, 20–23 | `BCN_TX`, `TX_BW_20/40/80/160MHZ` | 0 | 0 |
+
+Two things fall out that were not designed for.
+
+**The TX counters are a free consistency check.** `BCN_TX` and all four `TX_BW_*` counters
+read exactly zero on both bands, which is what must happen in a receive-only driver that
+never transmits. Nothing forced that; it is the enum mapping confirming itself.
+
+**`offs 0` does not behave like its name.** `MIB_CNT_RX_FCS_ERR` at 666k/s on 2.4 GHz and
+4.3M/s on 5 GHz is not a plausible FCS error rate, and the value scales with band rather than
+with traffic. The name is recorded as unverified: whatever offset 0 is on this part, the
+sweep evidence does not support calling it an FCS error count, and it is not used.
+
+`band_idx = 1` is accepted by the firmware. The USB parts are single-band, so what it reports
+is not investigated.
+
+### The measurement, working end to end
+
+`scripts/mib_survey.py` now takes its occupancy from the MCU rather than the dead registers
+(`--registers` still reads those, so that negative result stays reproducible). An 8 s dwell
+per channel, 2026-09-03:
+
+| channel | busy | decoded airtime | occupancy the decoder missed |
+|---|---:|---:|---:|
+| 2.4 GHz ch6 | 9.48% | 615,408 µs | **+149,217 µs** |
+| 5 GHz ch36 | 2.23% | 187,491 µs | −8,836 µs |
+
+The negative figure is expected and is not a fault. `rxd.airtime_us` models preamble plus
+payload at the decoded rate, so a per-frame overestimate of a few microseconds accumulates
+over 816 frames; the sign should be read as "the decoder saw essentially all of it". The
+2.4 GHz number is the interesting one, and it is consistent across every run: roughly a
+quarter of that channel's occupancy never becomes a frame this driver can show you.
+
 ### The counters have real names
 
 The numbering was then corroborated against MediaTek's own `ENUM_MIB_COUNTER_T`

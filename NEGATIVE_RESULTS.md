@@ -31,10 +31,13 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Not ruled out:** a per-BSS or per-STA context that monitor mode never creates, which the
   duration counters may be scoped to; a different register select; the counters not being
   wired on this part at all.
-- **Code:** `scripts/mib_survey.py`, reproducible from this tree. This supersedes the earlier
-  entry, which recorded the same zero readings from an unshipped probe.
-- **Consequence:** frame counts and BSS Load from beacons remain the only utilization signals
-  available. They must not be presented as channel busy time.
+- **Code:** `scripts/mib_survey.py --registers`, reproducible from this tree. This supersedes
+  the earlier entry, which recorded the same zero readings from an unshipped probe.
+- **Consequence, and it has changed:** the registers stay dead, but the same measurement is
+  available over the MCU. `MCU_EXT_CMD_GET_MIB_INFO` offset 11 (`MIB_CNT_P_CCA_TIME`) returns
+  live primary-channel CCA busy time in microseconds, and `scripts/mib_survey.py` now uses it
+  by default. So channel busy time *is* available on this part -- just not through the
+  register path this entry is about. See docs/FIRMWARE_RECON.md.
 
 ## MCU GET_MIB_INFO returns a zeroed echo, and PHY_STAT_INFO is a stub
 
