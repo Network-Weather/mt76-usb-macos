@@ -96,6 +96,9 @@ def main() -> int:
         frames = 0
         airtime = 0.0
         decode = m.decoder_for(dev)
+        # One preamble per aggregate, not per subframe; the identification compares decoded
+        # airtime against the counters, and the naive sum inflates it severalfold.
+        aggregates = rxd.AggregationTracker()
         while time.monotonic() - started < args.seconds:
             try:
                 raw = bytes(dev.rx_read(timeout=READ_TIMEOUT_MS))
@@ -107,10 +110,11 @@ def main() -> int:
             if not d or not d.get("frame"):
                 continue
             frames += 1
-            phy = d.get("phy") or {}
-            us = rxd.airtime_us(len(d["frame"]), phy.get("mode"), phy.get("rate_mbps"))
-            if us:
-                airtime += us
+            parsed = rxd.parse_80211(d["frame"])
+            for aggregate in aggregates.feed(d, len(d["frame"]), parsed.get("addr2")):
+                airtime += aggregate.airtime_us() or 0.0
+        for aggregate in aggregates.flush():
+            airtime += aggregate.airtime_us() or 0.0
         elapsed_us = (time.monotonic() - started) * 1e6
         after = {o: read_offset(dev, o) for o in accepted}
 

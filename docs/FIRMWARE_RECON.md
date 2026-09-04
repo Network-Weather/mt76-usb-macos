@@ -419,11 +419,10 @@ at 13, 15 and 16**, and those are exactly the offsets below 17 that returned no 
 | 12 | `MIB_CNT_S_CCA_TIME` | 512 µs at 20 MHz against 3224 and 3772 at 80 MHz |
 | 14 | `MIB_CNT_CCA_NAV_TX_TIME` | µs, tracks 11 and exceeds it |
 
-`offs 14` is **not** settled. A transmit experiment appeared to settle it and did not survive
-its own control: with nothing transmitted, the difference between `offs 14` and `offs 11` is
-larger than during a 60-frame burst. It tracks elapsed time, not frames, and the NAV component
-of `CCA_NAV_TX_TIME` — set by other stations — dominates anything the local radio sends
-([docs/TESTING.md](TESTING.md)).
+`offs 14` is **not** settled. It runs consistently above `offs 11` by 9-15% of the dwell on a
+busy channel, which fits its name — CCA plus NAV plus TX against primary CCA alone — but nothing
+here isolates which term accounts for the difference. A transmit experiment on `spike/cross-measure`
+did not separate them: the NAV component, set by other stations, dominates.
 
 `offs 12` was a falsifiable prediction and it held: a *secondary*-channel counter must stay
 near zero without a secondary channel, and it rose six- to sevenfold when the sniffer moved

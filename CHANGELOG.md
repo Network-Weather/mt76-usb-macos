@@ -37,7 +37,7 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 - `research/cross_measure.py` runs both adapters at once: two receivers on one channel to check
   they agree, and a bounded transmit burst measured against known airtime. It established that
-  injection radiates on 2.4 GHz (151 of 300 frames decoded by an independent adapter) and not on
+  injection radiates on 2.4 GHz — 60 of 60 frames decoded by an independent adapter — and not on
   5 GHz, which the repository previously could not prove either way
   ([docs/TESTING.md](docs/TESTING.md)).
 

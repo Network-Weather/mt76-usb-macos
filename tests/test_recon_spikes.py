@@ -584,7 +584,8 @@ def test_sweep_mib_finds_a_counter_that_moved():
     out = mcs.sweep_mib(Advancing({11: 1000}), 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
     entry = out["counters"]["11"]
     assert out["echoed"] == 1
-    assert entry["before"] == 1000
+    # The baseline is the second read: the first discovers that the offset answers at all.
+    assert entry["before"] == 1500
     assert entry["delta"] == 500
     assert entry["moved"] is True
     assert out["moved"] == 1
@@ -593,19 +594,47 @@ def test_sweep_mib_finds_a_counter_that_moved():
 def test_sweep_mib_sends_one_offset_per_request():
     dev = _FakeMcuDev(dict.fromkeys((2, 11, 14), 1))
     mcs.sweep_mib(dev, 0, [2, 11, 14], 0.0, mcs.MIB_OFFSETS_MT7921)
-    # Two passes over three offsets, one offset per request.
-    assert dev.seen == [2, 11, 14, 2, 11, 14]
+    # Three passes, one offset per request: discovery, then a baseline over the offsets that
+    # answered, then the second read. Discovery is separate so that offsets which never reply
+    # spend their timeouts before the measured window opens rather than inside it.
+    assert dev.seen == [2, 11, 14] * 3
+
+
+def test_an_offset_that_never_answers_is_left_out_of_the_measured_set():
+    # Discovery is what keeps a dead offset's timeouts outside the measured window; an offset
+    # that does not answer there is not carried into the baseline at all.
+    dev = _FakeMcuDev({11: 5_000_000}, fail_first=[11])
+    out = mcs.sweep_mib(dev, 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
+    assert out["responsive"] == 0
+    assert out["counters"] == {}
+    assert out["moved"] == 0
+    assert out["errors"]
 
 
 def test_a_failed_baseline_read_does_not_become_a_zero_baseline():
-    # The whole free-running counter would otherwise be reported as one dwell's traffic.
-    dev = _FakeMcuDev({11: 5_000_000}, fail_first=[11])
-    out = mcs.sweep_mib(dev, 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
+    # A counter that answers discovery and then fails its baseline must not report the whole
+    # free-running value as one dwell's traffic.
+    class FailsBaseline(_FakeMcuDev):
+        def mcu_cmd_word(self, cmd, payload, timeout=0):
+            body = super().mcu_cmd_word(cmd, payload, timeout)
+            if self.seen.count(11) == 2:  # discovery passed, baseline fails
+                raise RuntimeError("timed out")
+            return body
+
+    out = mcs.sweep_mib(FailsBaseline({11: 5_000_000}), 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
     entry = out["counters"]["11"]
     assert entry["before"] is None
     assert entry["delta"] is None
     assert entry["moved"] is False
     assert out["moved"] == 0
+
+
+def test_the_measured_interval_is_reported_and_is_not_the_requested_dwell():
+    # Percentages must divide by the span the deltas cover, which also includes the second
+    # read pass; using --seconds instead is how a 330 s delta got called a 4 s dwell.
+    out = mcs.sweep_mib(_FakeMcuDev({11: 1}), 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
+    assert out["measured_us"] >= 0
+    assert "measured_us" in out
 
 
 def test_the_default_sweep_names_counters_with_this_chips_map():
@@ -799,22 +828,76 @@ def test_a_wrapped_counter_reads_as_elapsed_time_not_as_negative_occupancy():
     assert (after - before) % ms.COUNTER32_MODULUS == 1500
 
 
-def test_region_selection_on_a_patch_image_is_refused_rather_than_crashing(capsys):
-    # parse_ram on a patch image raises; the CLI should say what is wrong instead.
+def test_region_selection_on_a_patch_image_is_refused_rather_than_crashing(tmp_path):
+    """--region asks for a RAM image's regions; a patch image has sections and parse_ram raises.
+
+    Built against a synthetic patch header rather than the pinned blobs: nothing under tests/
+    may require firmware, and the real images are gitignored, so a CI checkout has none.
+    """
     import subprocess
 
+    # struct mt76_connac2_patch_hdr: build_date[16], platform[4], be32 hw_sw_ver, be32
+    # patch_ver, be16 checksum, u16 rsv, then desc {be32 patch_ver, subsys, feature,
+    # n_region, crc, u32 rsv[11]} = 96 bytes, then one 64-byte section.
+    header = b"20260904000000a\n" + b"ALPS" + struct.pack(">IIHH", 0, 0, 0, 0)
+    header += struct.pack(">IIIII", 0, 4, 0, 1, 0) + bytes(44)
+    section = struct.pack(">III", 0x40002, 96 + 64, 16) + struct.pack(">IIII", 0x900000, 16, 0, 0)
+    section += bytes(64 - len(section))
+    fw_dir = tmp_path / "firmware"
+    fw_dir.mkdir()
+    (fw_dir / "WIFI_MT7961_patch_mcu_synthetic_hdr.bin").write_bytes(header + section + bytes(16))
+
+    repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     proc = subprocess.run(
-        [
-            sys.executable,
-            "scripts/fw_triage.py",
-            "--strings-for",
-            "WIFI_MT7961_patch",
-            "--region",
-            "0",
-        ],
-        cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        [sys.executable, "scripts/fw_triage.py", "--strings-for", "patch", "--region", "0"],
+        cwd=repo,
+        env={**os.environ, "MT76_FW_DIR": str(fw_dir)},
         capture_output=True,
         text=True,
     )
     assert proc.returncode == 2
     assert "patch image has sections" in proc.stderr
+
+
+def test_no_residual_is_reported_when_the_scopes_do_not_match(monkeypatch):
+    # p_cca_time covers the primary 20 MHz whatever the capture width, so at 80 MHz the
+    # decoded total covers more spectrum than the counter and their difference is not a
+    # residual. Withheld rather than reported small.
+    radio = _FakeRadio([], cca_step=1000)
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(radio, "5GHz", 36, 42, 80, 0.05)
+    assert out["undecoded_busy_us"] is None
+    assert any("primary" in w for w in out["warnings"])
+    # The occupancy figure itself is still valid at any width.
+    assert out["busy_fraction"] is not None
+
+
+def test_a_residual_is_reported_at_the_primary_width(monkeypatch):
+    radio = _FakeRadio([], cca_step=1000)
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(radio, "5GHz", 36, 36, 20, 0.05)
+    assert out["undecoded_busy_us"] is not None
+    assert not any("primary" in w for w in out["warnings"])
+
+
+def test_frames_eaten_by_the_mcu_reads_are_counted_and_flagged(monkeypatch):
+    # Those frames sit inside the counter's window but never reach the aggregator, so their
+    # airtime would be billed as occupancy the decoder could not see.
+    class EatsFrames(_FakeRadio):
+        mcu_wait_dropped_frames = 0
+
+        def mcu_cmd_word(self, cmd, payload, timeout=0):
+            type(self).mcu_wait_dropped_frames += 7
+            return super().mcu_cmd_word(cmd, payload, timeout)
+
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(EatsFrames([], cca_step=1000), "5GHz", 36, 36, 20, 0.05)
+    assert out["frames_dropped_by_mcu_reads"] > 0
+    assert any("upper bound" in w for w in out["warnings"])
+
+
+def test_a_clean_dwell_reports_no_dropped_frames(monkeypatch):
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(_FakeRadio([], cca_step=1000), "5GHz", 36, 36, 20, 0.05)
+    assert out["frames_dropped_by_mcu_reads"] == 0
+    assert not any("upper bound" in w for w in out["warnings"])

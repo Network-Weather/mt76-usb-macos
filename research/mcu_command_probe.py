@@ -40,8 +40,12 @@ import mt7921u as m  # noqa: E402
 #: Commands known to work on this part, via the driver's own code paths. Neither may produce
 #: the refusal signature; if one does, the oracle is wrong and every other result is void.
 POSITIVE_CONTROLS = (
-    (0x2C, "THERMAL_CTRL", struct.pack("<BBB5x", 2, 0, 0), False),
-    (0x01, "EFUSE_ACCESS", struct.pack("<II", 4, 0) + bytes(16), True),
+    (0x2C, "THERMAL_CTRL", struct.pack("<BBB5x", 2, 0, 0), False, False),
+    # The efuse block at offset 4 holds the adapter's permanent MAC. It is a good control
+    # because the driver uses it and it plainly works, but its reply must never be
+    # serialized: the repository forbids MACs and USB serials anywhere in it, and a --json
+    # run would otherwise write the identifier that read_efuse deliberately masks.
+    (0x01, "EFUSE_ACCESS", struct.pack("<II", 4, 0) + bytes(16), True, True),
 )
 #: Ids with no dispatch slot anywhere in the firmware image (fw_triage.py --command-map).
 #: Both must produce the refusal, or the oracle is not detecting what it claims to.
@@ -70,7 +74,7 @@ PROBES = (
 TIMEOUT_MS = 2500
 
 
-def send(dev, cid: int, payload: bytes, query: bool = False) -> dict:
+def send(dev, cid: int, payload: bytes, query: bool = False, sensitive: bool = False) -> dict:
     cmd = m.MCU_EXT_CMD(cid) | (m.MCU_CMD_FIELD_QUERY if query else 0)
     try:
         body = dev.reply_body(dev.mcu_cmd_word(cmd, payload, timeout=TIMEOUT_MS))
@@ -80,12 +84,13 @@ def send(dev, cid: int, payload: bytes, query: bool = False) -> dict:
         return {"cid": cid, "state": "silent", "detail": str(exc)[:80]}
     if mcs.is_refusal(body, cid):
         return {"cid": cid, "state": "refused", "reply_bytes": len(body)}
-    return {
-        "cid": cid,
-        "state": "answered",
-        "reply_bytes": len(body),
-        "reply_head": body[:24].hex(),
-    }
+    answered = {"cid": cid, "state": "answered", "reply_bytes": len(body)}
+    if sensitive:
+        # Length and state are all a capability probe needs from this one.
+        answered["reply_head"] = "<redacted: reply carries efuse content>"
+    else:
+        answered["reply_head"] = body[:24].hex()
+    return answered
 
 
 def main() -> int:
@@ -110,8 +115,11 @@ def main() -> int:
         dev.tune(args.band, args.channel, args.channel, 20)
 
         oracle_ok = True
-        for cid, name, payload, query in POSITIVE_CONTROLS:
-            r = send(dev, cid, payload, query) | {"name": name, "expect": "answered"}
+        for cid, name, payload, query, sensitive in POSITIVE_CONTROLS:
+            r = send(dev, cid, payload, query, sensitive) | {
+                "name": name,
+                "expect": "answered",
+            }
             r["control_held"] = r["state"] == "answered"
             oracle_ok &= r["control_held"]
             out["controls"].append(r)

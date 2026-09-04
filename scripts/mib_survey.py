@@ -72,6 +72,9 @@ REGISTER_DWELL_MAX_S = 10.0
 MCU_DWELL_MAX_S = 120.0
 #: The MCU counters free-run in a 32-bit field, wrapping after about 4,295 s at 1 us/tick.
 COUNTER32_MODULUS = 1 << 32
+#: MIB_CNT_P_CCA_TIME is primary-channel CCA, which is the primary 20 MHz whatever the capture
+#: width. Comparing it against airtime decoded across a wider channel compares two scopes.
+PRIMARY_CCA_WIDTH_MHZ = 20
 
 # mt76 adds these fields straight into mt76_channel_state's cc_busy/cc_tx/cc_rx, which
 # cfg80211 reports as milliseconds after dividing by 1000 (mt76/mac80211.c), so upstream
@@ -170,6 +173,13 @@ def dwell(
     # inside the call. Bracketing each read and taking the midpoint puts the denominator on
     # the same interval as the numerator to within half a round trip, instead of excluding
     # the response latency from one end and the request latency from the other.
+    # mcu_wait consumes 802.11 frames while it waits for an MCU reply and counts them in
+    # mcu_wait_dropped_frames. Anything it drops between the two CCA samples sits inside the
+    # counter's window but never reaches the aggregator, so its airtime would be billed as
+    # occupancy the decoder could not see. Measured on three channels this is 0, because the
+    # dwell loop leaves the queue empty and the read costs about 1 ms -- but 0 by observation
+    # is not 0 by construction, so it is measured every run rather than assumed.
+    dropped_before = getattr(dev, "mcu_wait_dropped_frames", 0)
     cca_open = time.monotonic()
     cca_before = read_cca(dev)
     cca_open_end = time.monotonic()
@@ -217,6 +227,7 @@ def dwell(
     cca_close = time.monotonic()
     cca_after = read_cca(dev)
     cca_close_end = time.monotonic()
+    dropped = getattr(dev, "mcu_wait_dropped_frames", 0) - dropped_before
     # The interval the counter actually measured, midpoint to midpoint.
     elapsed_us = ((cca_close + cca_close_end) / 2 - (cca_open + cca_open_end) / 2) * 1e6
     frame_window_us = (loop_ended - started) * 1e6
@@ -258,6 +269,7 @@ def dwell(
         "undecoded_busy_us": (round(busy_us - decoded_airtime_us) if busy_us is not None else None),
         "usb_errors": usb_errors,
         "read_timeouts": timeouts,
+        "frames_dropped_by_mcu_reads": dropped,
         "warnings": [],
     }
     if use_registers:
@@ -268,6 +280,21 @@ def dwell(
     if busy_us is None:
         result["warnings"].append("the MCU did not return a CCA counter")
         return result
+    if width > PRIMARY_CCA_WIDTH_MHZ:
+        # p_cca_time measures the primary 20 MHz; the decoder delivers frames from the whole
+        # width, including the secondary segments. Subtracting the wider quantity from the
+        # narrower one is not a residual, so it is withheld rather than reported small.
+        result["undecoded_busy_us"] = None
+        result["warnings"].append(
+            f"no residual at {width} MHz: the CCA counter covers the primary "
+            f"{PRIMARY_CCA_WIDTH_MHZ} MHz while decoded airtime covers all of it"
+        )
+    if dropped:
+        result["warnings"].append(
+            f"{dropped} frames were consumed by the MCU reads bracketing this dwell; their "
+            f"airtime is inside the counter but not the decoded total, so any residual is an "
+            f"upper bound"
+        )
     if busy_us == 0:
         result["warnings"].append(
             "zero occupancy: a real reading on a silent channel, but "
