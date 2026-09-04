@@ -245,7 +245,9 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 
 - **Criterion**: Submit exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and submit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted by USB endpoint without timeout or I/O errors, chip alive after submission, exit 0 (`status: pass`).
 - **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
-*(Note: Without firmware TX status reporting enabled or an independent RF receiver recording over-the-air packets, bulk-write acceptance establishes successful host-to-device USB delivery and USB transfer completion, but does not prove over-the-air RF radiation.)*
+*(This entry establishes host-to-device USB delivery only. Over-the-air radiation is measured
+separately with an independent receiver: see "Injected frames reach the air" above, which
+records 151 of 300 frames decoded by a second adapter on 2.4 GHz and none on 5 GHz.)*
 
 ### Radiotap PCAP export (Live Hardware Legacy/HT and Synthetic VHT/HE Writer)
 
@@ -323,6 +325,61 @@ tshark -r /tmp/test_c_writer.pcap -O radiotap
         HE Data 5: data Bandwidth/RU allocation: 40 (0x1)
         HE Data 6: 1 space-time stream (0x1)
     ```
+
+## Injected frames reach the air, and what the CCA counters do while transmitting: 2026-09-03
+
+Both reference adapters attached: MT7921U (ALFA, `0e8d:7961`) transmitting and measuring, MT7925U
+(Netgear A9000, `0846:9072`) receiving independently on the same channel. Pinned firmware.
+
+```bash
+./.venv/bin/python research/cross_measure.py --band 2.4GHz --channel 1 --seconds 8 \
+    --transmit 300 --acknowledge-experimental-transmit
+```
+
+The transmitting radio sends spaced wildcard Probe Requests from a locally administered address
+and brackets the burst with its own MIB counters; the second radio counts how many of those
+frames it actually decodes off the air.
+
+### Over-the-air radiation, previously unproven
+
+The earlier injection entry recorded that bulk-write acceptance "does not prove over-the-air RF
+radiation" for want of an independent receiver. There is one now.
+
+| Band, channel | Frames sent | Decoded by the second radio |
+|---|---|---|
+| 2.4 GHz ch 1 | 300 | **151, 152** (two runs) |
+| 2.4 GHz ch 1 | 3 | 0 |
+| 5 GHz ch 149 | 300 | **0** (two runs) |
+
+- **Criterion**: a second radio tuned to the same channel decodes frames whose transmitter is
+  the synthetic source address, which nothing else on air uses.
+- **Result**: injection radiates on 2.4 GHz. About half the burst is decoded by the observing
+  radio, which was also handling 2,170 ambient frames in the same window. Three frames were not
+  enough to be caught at that rate.
+- **Injection does not radiate on 5 GHz**, consistent with the C driver refusing to submit above
+  2.4 GHz. Recorded in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
+
+### Offset 14 counts transmit time; offset 11 does not
+
+Previously listed as not established. A controlled burst settles it, and the two counters were
+read around the same window on the transmitting radio:
+
+| Frames sent | `p_cca_time` | `cca_nav_tx_time` | difference | difference per frame |
+|---|---|---|---|---|
+| 3 | 13,095 µs | 16,336 µs | 3,241 µs | 1,080 µs |
+| 300 | 1,359,445 µs | 1,677,954 µs | 318,509 µs | 1,062 µs |
+
+- **Criterion**: if `CCA_NAV_TX_TIME` includes transmit and `P_CCA_TIME` does not, their
+  difference must scale with the number of frames transmitted, and the per-frame figure must
+  hold across a large change in count.
+- **Result**: the difference grows 98× for 100× the frames, and the per-frame cost agrees to
+  1.7% across that range. The names are confirmed by behaviour.
+- **Scale check**: 1,062 µs per frame against 448 µs of pure frame airtime (32 bytes at 1 Mbps
+  CCK, 192 µs preamble). The ratio of 2.4 is what DIFS, backoff and NAV add to each
+  transmission, so the counter is reporting real microseconds rather than an arbitrary tick.
+
+This is the first measurement here with a known ground truth rather than ambient traffic: the
+number of frames is chosen, not observed.
 
 ## Channel occupancy over the MCU: 2026-09-03
 

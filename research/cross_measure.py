@@ -40,6 +40,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
 sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
+import mcu_stats as mcs  # noqa: E402
 import mib_survey as survey  # noqa: E402
 import usb.core  # noqa: E402
 
@@ -61,6 +62,8 @@ TRANSMIT_CHIP = m.CHIP_MT7921
 #: Locally administered source address, so an injected frame cannot be mistaken for a real
 #: device's traffic by anything watching.
 SYNTHETIC_SRC = bytes.fromhex("02005e105ada")
+#: The same address as the decoders render it, for matching a received frame's transmitter.
+SYNTHETIC_SRC_STR = ":".join(f"{b:02x}" for b in SYNTHETIC_SRC)
 #: Two receivers on one channel will not agree exactly. Beyond this they are not measuring the
 #: same thing, and the run says so rather than averaging the disagreement away.
 AGREEMENT_TOLERANCE = 0.35
@@ -73,6 +76,10 @@ def measure(dev, band: str, channel: int, seconds: float, out: dict) -> None:
     aggregates = rxd.AggregationTracker()
     decoded_us = 0.0
     frames = 0
+    #: Frames whose transmitter is the synthetic source this tool injects from. A receiver
+    #: seeing these is independent proof the burst reached the air, which no counter on the
+    #: transmitting radio can provide.
+    ours = 0
     cca_before = survey.read_cca(dev)
     started = time.monotonic()
     while time.monotonic() - started < seconds:
@@ -89,6 +96,8 @@ def measure(dev, band: str, channel: int, seconds: float, out: dict) -> None:
             continue
         frames += 1
         parsed = rxd.parse_80211(d["frame"])
+        if parsed.get("addr2") == SYNTHETIC_SRC_STR:
+            ours += 1
         for aggregate in aggregates.feed(d, len(d["frame"]), parsed.get("addr2")):
             decoded_us += aggregate.airtime_us() or 0.0
     elapsed_us = (time.monotonic() - started) * 1e6
@@ -104,6 +113,7 @@ def measure(dev, band: str, channel: int, seconds: float, out: dict) -> None:
             "busy_us": busy,
             "busy_fraction": None if busy is None else round(busy / elapsed_us, 5),
             "frames_decoded": frames,
+            "injected_frames_seen": ours,
             "decoded_airtime_us": round(decoded_us),
         }
     )
@@ -215,7 +225,28 @@ def main() -> int:
             # transmitted airtime lands inside the window being measured rather than at
             # its edge.
             time.sleep(1.0)
+            # The transmitting radio is the only one here that can read the counters, so it
+            # brackets its own burst. `cca_nav_tx` includes transmit time and `p_cca` does
+            # not, so the pair separates "the medium was busy" from "we made it busy".
+            before_counters = {
+                name: survey.read_mcu_offset(dev, offs)
+                for offs, name in mcs.MIB_OFFSETS_MT7921.items()
+            }
+            started = time.monotonic()
             transmit(dev, args.transmit, tx_result)
+            after_counters = {
+                name: survey.read_mcu_offset(dev, offs)
+                for offs, name in mcs.MIB_OFFSETS_MT7921.items()
+            }
+            tx_result["self_measured"] = {
+                name: (
+                    None
+                    if (before_counters[name] is None or after_counters[name] is None)
+                    else (after_counters[name] - before_counters[name]) % (1 << 32)
+                )
+                for name in after_counters
+            }
+            tx_result["burst_window_us"] = round((time.monotonic() - started) * 1e6)
 
     threads = [threading.Thread(target=run_receiver, args=(a,)) for a in receivers]
     if sender:

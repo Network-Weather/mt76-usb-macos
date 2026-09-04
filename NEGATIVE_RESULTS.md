@@ -145,3 +145,18 @@ meaningful: the MT7925 is receiving correctly, it simply will not answer EXT com
 - **Observed:** 801 frames and 175,142 µs of decoded airtime on the MT7921 against 824 frames
   and 177,971 µs on the MT7925 — 2.8% and 1.6% apart. Two independent receivers see the same
   air, so a disagreement in the counters is about the counters.
+
+## Injection does not radiate on 5 GHz
+
+- **Tried:** `research/cross_measure.py --band 5GHz --channel 149 --transmit 300
+  --acknowledge-experimental-transmit`, twice, 2026-09-03. The MT7921U injected 300 spaced Probe
+  Requests from a synthetic source address while the MT7925U decoded on the same channel.
+- **Observed:** 300 frames accepted by the USB endpoint, the chip alive afterwards, and **zero**
+  decoded by the observing radio. The same procedure on 2.4 GHz channel 1 yields 151 and 152 of
+  300, so the receiver and the matching both work.
+- **Consistent with the C driver**, which fails closed and submits zero frames above 2.4 GHz
+  (docs/TESTING.md, rate-limited probe request submission). This is that restriction observed
+  from the air rather than from the code.
+- **Not ruled out:** a 5 GHz TX path that needs rate or power configuration the injector does not
+  set; regulatory gating in firmware. Nothing here distinguishes those.
+- **Code:** `research/cross_measure.py`.
