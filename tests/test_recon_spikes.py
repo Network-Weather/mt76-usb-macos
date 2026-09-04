@@ -818,3 +818,47 @@ def test_region_selection_on_a_patch_image_is_refused_rather_than_crashing(capsy
     )
     assert proc.returncode == 2
     assert "patch image has sections" in proc.stderr
+
+
+def test_no_residual_is_reported_when_the_scopes_do_not_match(monkeypatch):
+    # p_cca_time covers the primary 20 MHz whatever the capture width, so at 80 MHz the
+    # decoded total covers more spectrum than the counter and their difference is not a
+    # residual. Withheld rather than reported small.
+    radio = _FakeRadio([], cca_step=1000)
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(radio, "5GHz", 36, 42, 80, 0.05)
+    assert out["undecoded_busy_us"] is None
+    assert any("primary" in w for w in out["warnings"])
+    # The occupancy figure itself is still valid at any width.
+    assert out["busy_fraction"] is not None
+
+
+def test_a_residual_is_reported_at_the_primary_width(monkeypatch):
+    radio = _FakeRadio([], cca_step=1000)
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(radio, "5GHz", 36, 36, 20, 0.05)
+    assert out["undecoded_busy_us"] is not None
+    assert not any("primary" in w for w in out["warnings"])
+
+
+def test_frames_eaten_by_the_mcu_reads_are_counted_and_flagged(monkeypatch):
+    # Those frames sit inside the counter's window but never reach the aggregator, so their
+    # airtime would be billed as occupancy the decoder could not see.
+    class EatsFrames(_FakeRadio):
+        mcu_wait_dropped_frames = 0
+
+        def mcu_cmd_word(self, cmd, payload, timeout=0):
+            type(self).mcu_wait_dropped_frames += 7
+            return super().mcu_cmd_word(cmd, payload, timeout)
+
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(EatsFrames([], cca_step=1000), "5GHz", 36, 36, 20, 0.05)
+    assert out["frames_dropped_by_mcu_reads"] > 0
+    assert any("upper bound" in w for w in out["warnings"])
+
+
+def test_a_clean_dwell_reports_no_dropped_frames(monkeypatch):
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(_FakeRadio([], cca_step=1000), "5GHz", 36, 36, 20, 0.05)
+    assert out["frames_dropped_by_mcu_reads"] == 0
+    assert not any("upper bound" in w for w in out["warnings"])
