@@ -76,15 +76,15 @@ def vectors(raw: bytes, chip: str) -> dict:
 
 
 def he_fields(v: dict, mode: int) -> dict | None:
-    """Connac3 hypotheses from mt76_connac3_mac.c at c5a3bd91, HE modes only."""
-    if mode not in (8, 9, 10, 11) or len(v.get("g3", ())) != 4 or "g5" not in v:
+    """HE/EHT hypotheses from mt76_connac3_mac.c at c5a3bd91; legacy excluded."""
+    if mode not in (8, 9, 10, 11, 13, 14, 15) or len(v.get("g3", ())) != 4 or "g5" not in v:
         return None
     rxv = v["g3"] + v["g5"]
     return {
         "bss_color": (rxv[9] >> 10) & 63,
         "uplink": (rxv[5] >> 2) & 1,
         "spatial_reuse": (rxv[13] >> 8) & 15,
-        "txop": (rxv[9] >> 17) & 7,
+        "txop": (rxv[9] >> 17) & (127 if mode in (13, 14, 15) else 7),
     }
 
 
@@ -122,6 +122,16 @@ def summarize(rows):
             "words": word_stats,
             "rssi_byte_correlations_exploratory": candidates,
         }
+        if len(samples[0][1]) == 24:
+            # Hypothesis only: mt7915's *standalone* vector indexes, tried against
+            # connac3 Group 5. The record type/chip differ; do not export as SNR.
+            snr = [((g[20] >> 13) & 63) - 16 for _, g in samples]
+            result[mode]["g5_word20_snr_hypothesis"] = {
+                "min": min(snr),
+                "median": statistics.median(snr),
+                "max": max(snr),
+                "distinct": len(set(snr)),
+            }
     return result
 
 
@@ -157,6 +167,9 @@ def dwell(dev, target, seconds):
         phy = decoded.get("phy", {})
         if "g5" in v:
             rows.append((phy.get("mode_name", "unknown"), decoded.get("rssi"), v["g5"]))
+            if dev.CHIP == m.CHIP_MT7925:
+                equal = (v["g5"][6] & 65535) == (v["g3"][3] & 65535)
+                counts["g5_rcpi01_equal_prxv" if equal else "g5_rcpi01_different_prxv"] += 1
         frame = rxd.parse_80211(decoded.get("frame", b""))
         if frame.get("ftype") == 1:
             controls[frame["kind"]] += 1
@@ -168,16 +181,23 @@ def dwell(dev, target, seconds):
                 advertised[frame.get("addr2")] = body[4] & 63
         fields = he_fields(v, phy.get("mode"))
         if fields:
-            he.append((frame.get("addr2"), fields))
+            bssid, direction = frame.get("addr2"), None
+            if frame.get("ftype") == 2 and frame["to_ds"] != frame["from_ds"]:
+                direction = int(frame["to_ds"])
+                bssid = frame.get("addr1" if frame["to_ds"] else "addr2")
+            he.append((bssid, fields, direction))
     color_checks = collections.Counter()
+    direction_checks = collections.Counter()
     fields_summary = {
         key: collections.Counter() for key in ("bss_color", "uplink", "spatial_reuse", "txop")
     }
-    for address, fields in he:
+    for address, fields, direction in he:
         for key, value in fields.items():
             fields_summary[key][value] += 1
         if address in advertised:
             color_checks["match" if fields["bss_color"] == advertised[address] else "mismatch"] += 1
+        if direction is not None:
+            direction_checks["match" if fields["uplink"] == direction else "mismatch"] += 1
     return {
         "target": target,
         "elapsed_s": round(time.monotonic() - started, 3),
@@ -185,8 +205,9 @@ def dwell(dev, target, seconds):
         "group_masks": dict(masks),
         "control_subtypes": dict(controls),
         "group5_by_phy": summarize(rows),
-        "he_candidates": fields_summary,
-        "he_color_vs_beacon": dict(color_checks),
+        "he_eht_candidates": fields_summary,
+        "he_eht_color_vs_beacon": dict(color_checks),
+        "he_eht_uplink_vs_frame_control": dict(direction_checks),
     }
 
 

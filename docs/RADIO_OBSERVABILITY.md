@@ -45,8 +45,6 @@ The first inline census's control-frame count used the wrong dictionary key (`ty
 of `ftype`), so its empty control counts are invalid. The separate dwell fixed that key;
 group-mask and frame-count results are unaffected.
 
-## Source evidence and limitations
-
 ## Reproducible receive-vector results
 
 Tool: [`rx_vector_probe.py`](../research/rx_vector_probe.py). Output contains word
@@ -84,6 +82,87 @@ restoration is compatible with an in-flight/buffered descriptor; transitions are
 atomic at the host. There were no USB errors or descriptor-length failures.
 The short runs do not resolve the upstream warning about hardware issues. Default
 driver behavior is unchanged; enabling is confined to the explicit research option.
+
+## Paired clocks, control exchanges, and 5 GHz transmission
+
+Tool: [`dual_radio_probe.py`](../research/dual_radio_probe.py); control helper:
+[`control_frames.py`](../research/control_frames.py). Each radio has one receive
+reader. Both rendezvous with the transmitter before a timed window. Matching uses
+identical beacon/probe-response bytes in memory and excludes fingerprints occurring
+more than once on either radio. Only counts and fit residuals leave the process.
+
+```bash
+MT76_FW_DIR=/path/to/firmware /path/to/venv/bin/python research/dual_radio_probe.py \
+  2.4GHz:6 --seconds 12 --transmit 60 --rate cck1 --tx-status \
+  --acknowledge-experimental-transmit --output /tmp/dual-cck-control.json
+MT76_FW_DIR=/path/to/firmware /path/to/venv/bin/python research/dual_radio_probe.py \
+  5GHz:36 --seconds 12 --transmit 60 --rate ofdm6 --tx-status \
+  --acknowledge-experimental-transmit --output /tmp/dual-ofdm5.json
+```
+
+**A working 5 GHz transmit path was found.** Both runs submitted 60 directed Probe
+Requests, 50 ms apart; the A9000 independently received all 60 with distinct sequence
+numbers. The 2.4 GHz frames decoded as 1 Mb/s CCK; the 5 GHz frames as 6 Mb/s OFDM.
+Both radios answered register reads after both runs. No USB errors were recorded.
+
+The existing injector always encodes CCK. The experiment changes only its fixed-rate
+TX descriptor word to `0x004b0004`: mode 1 (OFDM), legacy rate index 11 (6 Mb/s),
+fixed 20 MHz bandwidth. The probe's Supported Rates element also advertises OFDM.
+This narrows the old 5 GHz negative result to the CCK-only injection configuration;
+it does not qualify arbitrary rates, power control, association, or MT7925 TX.
+The shipped driver retains its existing behavior; rate selection is research-only.
+
+Requesting host TX status produced **60 TXS packets on MT7961** in each run,
+not TXRX_NOTIFY packets. Since these are no-ACK probes, they cannot calibrate ACK
+signal quality or packet-error rate. USB submission alone remains insufficient evidence
+of radiation; the A9000's independent frame decode is the criterion.
+
+Shared receive timestamps support a tight relative time base within each dwell:
+
+| Target | Unique shared beacons/responses | Relative clock drift | Holdout p95 absolute residual | Holdout maximum |
+| --- | ---: | ---: | ---: | ---: |
+| 2.4 GHz ch 6 | 573 | -1.2120 ppm | 1.086 us | 1.420 us |
+| 5 GHz ch 36 | 614 | -0.7133 ppm | 0.752 us | 0.967 us |
+| 5 GHz ch 149 (15 s repeat) | 30 | -0.7948 ppm | 0.635 us | 0.882 us |
+
+A second OFDM burst on channel 149 also decoded **60/60** at 6 Mb/s. Its 60 TXS
+records were format 0, PID 3, rate `0x4b`, ACK-error bits zero, power byte 44.
+The rate corroborates the independent receiver. The power byte's physical units and
+calibration are not established; it is not evidence of 44 dBm output. No-ACK TX
+does not prove acknowledged delivery, regardless of the ACK-error bits.
+
+The model is trained on the first half of pairs and predicts the second half; the
+table is that independent holdout, not an in-sample fit. Tick rates are approximately
+1 MHz against host time (host USB arrival timestamps are noisy). The timestamps are
+32-bit and the fit uses modular differences. This is receiver timestamp alignment,
+not time-of-flight ranging. Cross-channel retuning, longer drift, and temperature
+dependence remain untested.
+
+On channel 36, each observer saw six distinct directed RTS/BlockAck endpoint pairs.
+MT7961 decoded 33 compressed single-TID BlockAcks; A9000 decoded 45. Their summed
+set bits were 38 and 50, respectively, and both saw two zero positions before the
+last set bit. Repeated windows can count packets repeatedly, and zeros can be unsent
+sequences; **neither these sums nor observer differences are a packet-loss rate**.
+This establishes live endpoint/acknowledgment evidence beyond the shipped parser's
+receiver-address-only control path. No endpoint identifiers are committed.
+
+## Extended-vector cross-checks
+
+A second passive matrix on 5 GHz ch 132 / 80 MHz and 6 GHz ch 53 / 160 MHz returned
+1,370 and 1,926 frames. **Group-5 word 6's lower two bytes exactly equaled the
+primary vector's two RCPI bytes in all 3,296 frames.** This validates duplicate
+signal metadata, not an independent RF measurement.
+
+The 5 GHz capture contained 17 HE-SU frames. Four transmitted by an AP with a
+captured HE Operation element had matching RX-vector BSS color (4/4). This is a
+small positive consistency check; the probe now also checks infrastructure direction
+and includes EHT. The 6 GHz capture had 139 EHT-MU frames, excluded by the first
+HE-only probe. No HE result is inferred from those EHT records.
+
+Applying the neighboring MT7915 standalone-vector SNR extraction to MT7925 G5
+word 20 gives numbers in the range 5..10 on these captures. The layout is not
+established; these are explicitly named **hypothesis values**, not a noise floor
+or supported SNR measurement. Low variance alone cannot validate them.
 
 ## Source evidence and limitations
 
