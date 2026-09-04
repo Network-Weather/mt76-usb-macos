@@ -81,3 +81,41 @@ def test_a_channel_that_is_not_a_control_channel_of_any_block_is_refused():
     assert m.center_channel("5GHz", 42, 80) is None
     assert m.center_channel("6GHz", 7, 80) is None
     assert m.center_channel("6GHz", 3, 80) is None
+
+
+def test_six_ghz_blocks_stop_where_the_band_does():
+    # 6 GHz 20 MHz control channels run 1 to 233 in steps of 4, so a block is real only
+    # when its outermost control channel is still in the band. Channel 229 has no 80 MHz
+    # block: one centered at 231 would need control channel 237, which does not exist.
+    assert m.center_channel("6GHz", 229, 80) is None
+    assert m.center_channel("6GHz", 233, 80) is None
+    assert m.center_channel("6GHz", 233, 40) is None
+    assert m.center_channel("6GHz", 213, 80) == 215  # the last real 80 MHz block
+
+
+def test_the_six_ghz_channel_plan_has_the_number_of_blocks_it_is_defined_to_have():
+    assert len(m.CENTER_CHANNELS[("6GHz", 40)]) == 29
+    assert len(m.CENTER_CHANNELS[("6GHz", 80)]) == 14
+    assert len(m.CENTER_CHANNELS[("6GHz", 160)]) == 7
+
+
+def test_no_block_on_any_band_reaches_past_the_top_of_its_band():
+    tops = {"5GHz": 177, "6GHz": m.SIX_GHZ_MAX_CHANNEL}
+    bottoms = {"5GHz": 36, "6GHz": 1}
+    for (band, width), centers in m.CENTER_CHANNELS.items():
+        # A block of width W holds W/20 control channels at odd multiples of 2 channel
+        # numbers from its center, so the outermost one is W/10 - 2 away.
+        outermost = width // 10 - 2
+        assert centers[-1] + outermost <= tops[band], (band, width, centers[-1])
+        assert centers[0] - outermost >= bottoms[band], (band, width, centers[0])
+
+
+def test_each_chip_declares_the_widest_capture_it_has_evidence_for():
+    import mt7925u
+
+    # A width above these makes the radio return nothing rather than fail, so a caller
+    # must be able to refuse it before tuning. Raising either needs hardware evidence.
+    assert m.Mt7921uDevice.MAX_WIDTH_MHZ == 80
+    assert mt7925u.Mt7925uDevice.MAX_WIDTH_MHZ == 160
+    for chip in (m.Mt7921uDevice, mt7925u.Mt7925uDevice):
+        assert chip.MAX_WIDTH_MHZ in m.WIDTH_TO_SNIFFER_BW

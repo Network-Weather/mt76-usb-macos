@@ -289,6 +289,15 @@ def main() -> int:
             parser.error(f"no {args.width} MHz channel on {band} contains control channel {chan}")
 
     dev = m.open_device()
+    # The chip is only known once a device is chosen, so the width-versus-chip check
+    # cannot happen with the rest of argument validation. It still runs before the
+    # firmware download, because a width this chip cannot capture makes the radio look
+    # silent rather than fail, and a silent radio reads as "the client said nothing".
+    if args.lock and args.width > dev.MAX_WIDTH_MHZ:
+        parser.error(
+            f"the attached {dev.CHIP} captures up to {dev.MAX_WIDTH_MHZ} MHz; "
+            f"--width {args.width} would tune a radio that returns no frames"
+        )
     patch, ram = load_firmware(dev.CHIP)
     with dev:
         dev.bringup(patch, ram, log=lambda *a: None)

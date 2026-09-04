@@ -400,6 +400,12 @@ class Mt7921u:
     CHIP_IDS: tuple[int, ...] = (0x7961,)
     # Module whose decode() understands this chip's RX descriptor (see decoder_for()).
     DECODER_MODULE = "rxd"
+    # Widest capture this chip has been shown to produce frames at. The MT7921U returns
+    # zero transfers when configured for 160 MHz, recorded in NEGATIVE_RESULTS.md, so a
+    # caller that asks for it would get a silent radio rather than an error. Raising this
+    # requires dated hardware evidence, as ROADMAP.md's decision rules require for any
+    # new width.
+    MAX_WIDTH_MHZ = 80
 
     def __init__(self, verbose: bool = False, usb_id: str | None = None):
         self.dev = None
@@ -1742,10 +1748,15 @@ CENTER_CHANNELS = {
     ("5GHz", 40): (38, 46, 54, 62, 102, 110, 118, 126, 134, 142, 151, 159, 167),
     ("5GHz", 80): (42, 58, 106, 122, 138, 155, 171),
     ("5GHz", 160): (50, 114, 163),
-    ("6GHz", 40): tuple(range(3, 234, 8)),
-    ("6GHz", 80): tuple(range(7, 234, 16)),
-    ("6GHz", 160): tuple(range(15, 234, 32)),
+    # 6 GHz 20 MHz control channels run 1 to 233 in steps of 4 (plus the standalone
+    # channel 2), so a block is only real when its outermost control channel is still
+    # within the band: centers stop at 227 for 40 MHz, 215 for 80 MHz, and 207 for
+    # 160 MHz. That gives the 29, 14, and 7 channels the band is defined to have.
+    ("6GHz", 40): tuple(range(3, 228, 8)),
+    ("6GHz", 80): tuple(range(7, 216, 16)),
+    ("6GHz", 160): tuple(range(15, 208, 32)),
 }
+SIX_GHZ_MAX_CHANNEL = 233
 
 
 def center_channel(band_name: str, control_ch: int, width_mhz: int) -> int | None:
