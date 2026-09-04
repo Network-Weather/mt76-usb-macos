@@ -1725,6 +1725,55 @@ def _config_sniffer(
 # CMD_CBW_* for mt7921_mcu_set_chan_info and the sniffer TLV's own table, in which 40 MHz
 # is encoded as 20 with the offset carried by sco (mt7921/mt7925 mcu_config_sniffer ch_width[]).
 CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}  # channel_band field of set_chan_info
+
+# Valid center channels per band and width. A wide PPDU is described by its control
+# channel plus the center of the block it sits in; the driver needs the center, and an
+# operator watching a roam knows only the control channel the AP advertises.
+#
+# 5 GHz centers are the operating-class definitions quoted in hostapd
+# src/common/ieee802_11_common.c: class 126/127 (40 MHz), class 128 (80 MHz, centers
+# 42, 58, 106, 122, 138, 155, 171), class 129 (160 MHz, centers 50, 114, 163).
+# 6 GHz centers follow center_idx_to_bw_6ghz() in the same file: a center index is
+# 40 MHz when (idx & 0x7) == 0x3, 80 MHz when (idx & 0xf) == 0x7, and 160 MHz when
+# (idx & 0x1f) == 0xf. Both fetched 2026-09-03.
+# A block of width W spans W/5 channel numbers, so a control channel belongs to the
+# block whose center it is within (W/5 - 2) / 2 channel numbers of.
+CENTER_CHANNELS = {
+    ("5GHz", 40): (38, 46, 54, 62, 102, 110, 118, 126, 134, 142, 151, 159, 167),
+    ("5GHz", 80): (42, 58, 106, 122, 138, 155, 171),
+    ("5GHz", 160): (50, 114, 163),
+    ("6GHz", 40): tuple(range(3, 234, 8)),
+    ("6GHz", 80): tuple(range(7, 234, 16)),
+    ("6GHz", 160): tuple(range(15, 234, 32)),
+}
+
+
+def center_channel(band_name: str, control_ch: int, width_mhz: int) -> int | None:
+    """The center channel of the `width_mhz` block containing `control_ch`.
+
+    Returns None when no block of that width contains the control channel, which
+    includes every 2.4 GHz width above 20 MHz: a 2.4 GHz 40 MHz channel may extend
+    either upward or downward from its control channel, and the control channel alone
+    does not say which. Callers must fail rather than pick one.
+    """
+    if width_mhz == 20:
+        return control_ch
+    centers = CENTER_CHANNELS.get((band_name, width_mhz))
+    if centers is None:
+        return None
+    reach = (width_mhz // 5 - 2) // 2  # channel numbers from the center to the outermost 20 MHz
+    for center in centers:
+        offset = control_ch - center
+        # The 20 MHz control channels of a wide block sit at odd multiples of 2 channel
+        # numbers from its center, so a valid offset is even with an odd half. Testing
+        # only the distance would accept a channel that is not a control channel of any
+        # block: 6 GHz channel 2 is five channel numbers from center 7 and is defined as
+        # 20 MHz only (center_idx_to_bw_6ghz() returns 20 MHz for idx == 2).
+        if abs(offset) <= reach and offset % 4 == 2:
+            return center
+    return None
+
+
 WIDTH_TO_CMD_CBW = {20: CMD_CBW_20MHZ, 40: CMD_CBW_40MHZ, 80: CMD_CBW_80MHZ, 160: CMD_CBW_160MHZ}
 WIDTH_TO_SNIFFER_BW = {20: SNIFFER_BW_20, 40: SNIFFER_BW_20, 80: SNIFFER_BW_80, 160: SNIFFER_BW_160}
 

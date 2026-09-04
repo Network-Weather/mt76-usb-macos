@@ -236,6 +236,42 @@ EID_EXT_CAPABILITY = 127
 EID_MEASURE_REQUEST = 38
 EID_MEASURE_REPORT = 39
 EID_VENDOR_SPECIFIC = 221
+EID_FRAGMENT = 242
+EID_EXTENSION = 255
+
+# Multi-Link element, IEEE 802.11be. Constants verified against Linux
+# include/linux/ieee80211.h at v6.12 (WLAN_EID_EXT_EHT_MULTI_LINK,
+# IEEE80211_ML_CONTROL_*, IEEE80211_MLC_BASIC_PRES_*, IEEE80211_MLE_STA_CONTROL_*,
+# ieee80211_mle_common_size(), ieee80211_mle_basic_sta_prof_size_ok()), 2026-09-03.
+EXT_EID_MULTI_LINK = 107
+ML_CONTROL_TYPE_MASK = 0x0007
+ML_TYPE_BASIC = 0
+ML_TYPE_PROBE_REQ = 1
+ML_TYPE_RECONF = 2
+ML_TYPE_TDLS = 3
+ML_TYPE_PRIO_ACCESS = 4
+ML_TYPE_NAMES = {
+    ML_TYPE_BASIC: "basic",
+    ML_TYPE_PROBE_REQ: "probe-request",
+    ML_TYPE_RECONF: "reconfiguration",
+    ML_TYPE_TDLS: "tdls",
+    ML_TYPE_PRIO_ACCESS: "priority-access",
+}
+# Presence bits of the Basic variant, in the order their subfields appear in
+# Common Info. Each entry is (bit, name, byte width).
+ML_BASIC_PRESENCE = (
+    (0x0010, "link_id", 1),
+    (0x0020, "bss_param_change_count", 1),
+    (0x0040, "medium_sync_delay", 2),
+    (0x0080, "eml_capabilities", 2),
+    (0x0100, "mld_capabilities", 2),
+    (0x0200, "mld_id", 1),
+)
+ML_SUBELEM_PER_STA_PROFILE = 0
+ML_SUBELEM_FRAGMENT = 254
+MLE_STA_CONTROL_LINK_ID = 0x000F
+MLE_STA_CONTROL_COMPLETE_PROFILE = 0x0010
+MLE_STA_CONTROL_STA_MAC_PRESENT = 0x0020
 
 AUTH_ALGORITHMS = {
     0: "open",
@@ -566,6 +602,169 @@ def parse_multi_ap(ie_list: list[tuple[int, bytes]]) -> dict | None:
     }
 
 
+def _reassemble_extension(ie_list: list[tuple[int, bytes]], ext_id: int) -> bytes | None:
+    """Join an extension element with any Fragment elements that follow it.
+
+    An element carrying more than 255 octets is split: the first part is
+    element 255 with a length of exactly 255, and each remaining part is a
+    Fragment element (242). A (Re)Association Request carrying per-STA
+    profiles routinely exceeds one element, so a parser that reads only the
+    first part sees a truncated Link Info field. Returns the payload after
+    the extension id, or None if no such element is present.
+    """
+    for index, (eid, value) in enumerate(ie_list):
+        if eid != EID_EXTENSION or not value or value[0] != ext_id:
+            continue
+        parts = [value[1:]]
+        # Only a first part of the maximum length can have continuations.
+        if len(value) == 255:
+            for next_eid, next_value in ie_list[index + 1 :]:
+                if next_eid != EID_FRAGMENT:
+                    break
+                parts.append(next_value)
+                if len(next_value) != 255:
+                    break
+        return b"".join(parts)
+    return None
+
+
+def _reassemble_subelements(body: bytes) -> tuple[list[tuple[int, bytes]], bool]:
+    """Walk Link Info subelements, joining Fragment (254) continuations."""
+    out: list[tuple[int, bytes]] = []
+    truncated = False
+    offset = 0
+    while offset + 2 <= len(body):
+        sub_id, sub_len = body[offset], body[offset + 1]
+        offset += 2
+        if offset + sub_len > len(body):
+            truncated = True
+            break
+        parts = [body[offset : offset + sub_len]]
+        offset += sub_len
+        last_len = sub_len
+        while last_len == 255 and offset + 2 <= len(body) and body[offset] == ML_SUBELEM_FRAGMENT:
+            frag_len = body[offset + 1]
+            offset += 2
+            if offset + frag_len > len(body):
+                truncated = True
+                break
+            parts.append(body[offset : offset + frag_len])
+            offset += frag_len
+            last_len = frag_len
+        out.append((sub_id, b"".join(parts)))
+    return out, truncated
+
+
+def _parse_per_sta_profile(value: bytes) -> dict | None:
+    """Decode one Per-STA Profile subelement's STA Control and STA Info."""
+    if len(value) < 3:
+        return None
+    control = struct.unpack_from("<H", value, 0)[0]
+    info_len = value[2]
+    # sta_info_len counts itself, so the STA Info field is value[2:2 + info_len].
+    info = value[2 : 2 + info_len]
+    out = {
+        "link_id": control & MLE_STA_CONTROL_LINK_ID,
+        "complete_profile": bool(control & MLE_STA_CONTROL_COMPLETE_PROFILE),
+    }
+    if control & MLE_STA_CONTROL_STA_MAC_PRESENT:
+        if len(info) >= 7:
+            out["sta_mac"] = mac(info[1:7])
+        else:
+            out["truncated"] = True
+    return out
+
+
+def parse_multi_link(ie_list: list[tuple[int, bytes]]) -> dict | None:
+    """Decode the 802.11be Multi-Link element: MLD address and per-link addresses.
+
+    An MLO client's management frames carry only its MLD address in addr2 on
+    some links, while its data frames use a different per-link address on each
+    link. A watcher that matches one address therefore misses the same client
+    on every other link. This returns the addresses the frame itself
+    advertises, so a caller can match on all of them.
+    """
+    body = _reassemble_extension(ie_list, EXT_EID_MULTI_LINK)
+    if body is None or len(body) < 2:
+        return None
+    control = struct.unpack_from("<H", body, 0)[0]
+    ml_type = control & ML_CONTROL_TYPE_MASK
+    out: dict = {
+        "type": ml_type,
+        "type_name": ML_TYPE_NAMES.get(ml_type, "unknown"),
+        "links": [],
+        "truncated": False,
+    }
+    if len(body) < 3:
+        out["truncated"] = True
+        return out
+
+    # Common Info Length counts itself; Link Info starts where it ends.
+    common_len = body[2]
+    common = body[2 : 2 + common_len]
+    if len(common) < common_len:
+        out["truncated"] = True
+        return out
+
+    if ml_type == ML_TYPE_BASIC:
+        if len(common) >= 7:
+            out["mld_mac"] = mac(common[1:7])
+        else:
+            out["truncated"] = True
+        offset = 7
+        for bit, name, width in ML_BASIC_PRESENCE:
+            if not control & bit:
+                continue
+            if len(common) < offset + width:
+                out["truncated"] = True
+                break
+            field = common[offset : offset + width]
+            out[name] = field[0] if width == 1 else struct.unpack("<H", field)[0]
+            offset += width
+    elif ml_type == ML_TYPE_TDLS and len(common) >= 7:
+        out["mld_mac"] = mac(common[1:7])
+
+    subelements, truncated = _reassemble_subelements(body[2 + common_len :])
+    out["truncated"] = out["truncated"] or truncated
+    for sub_id, value in subelements:
+        if sub_id != ML_SUBELEM_PER_STA_PROFILE:
+            continue
+        profile = _parse_per_sta_profile(value)
+        if profile is None:
+            out["truncated"] = True
+            continue
+        out["links"].append(profile)
+    return out
+
+
+def station_addresses(parsed: dict) -> set[str]:
+    """Every address that identifies the station which *transmitted* this frame.
+
+    The transmitter address, plus the MLD address and per-link addresses of any
+    Multi-Link element the frame carries. A Multi-Link element always describes
+    the multi-link device that sent the frame: a client's (re)association
+    request carries the client's, and an AP's beacon or association response
+    carries the AP's. Scoping the set to the transmitter is what keeps a client
+    and its AP from being merged into one identity.
+
+    Matching on this set, rather than on one address, is what lets a watcher
+    follow an 802.11be client across its links, since each link uses a different
+    address and some management frames show only the MLD address.
+    """
+    found = set()
+    transmitter = parsed.get("addr2")
+    if transmitter:
+        found.add(transmitter)
+    multi_link = parsed.get("multi_link")
+    if multi_link:
+        if multi_link.get("mld_mac"):
+            found.add(multi_link["mld_mac"])
+        for link in multi_link.get("links", []):
+            if link.get("sta_mac"):
+                found.add(link["sta_mac"])
+    return found
+
+
 def parse_mesh(ies: dict[int, bytes]) -> dict | None:
     if EID_MESH_ID not in ies and EID_MESH_CONFIG not in ies:
         return None
@@ -890,6 +1089,9 @@ def parse_ies(body: bytes) -> dict:
     multi_ap = parse_multi_ap(out["ie_list"])
     if multi_ap is not None:
         out["multi_ap"] = multi_ap
+    multi_link = parse_multi_link(out["ie_list"])
+    if multi_link is not None:
+        out["multi_link"] = multi_link
     mesh = parse_mesh(ies)
     if mesh is not None:
         out["mesh"] = mesh
@@ -961,6 +1163,7 @@ def _roam_ie_detail(parsed: dict) -> dict:
         "rrm_capabilities",
         "bss_transition",
         "multi_ap",
+        "multi_link",
         "mesh",
     )
     return {key: parsed[key] for key in keys if key in parsed}
