@@ -81,6 +81,11 @@ engine surface.
   patch semaphore, sniffer command, and efuse requirements as hypotheses to reproduce.
 - **Driver and firmware researchers** can use small parsing functions and test vectors to inspect
   MCU/RX structures without first extracting them from a kernel driver.
+- **Radio-environment tools** can consume the research scripts' aggregate JSON for primary CCA,
+  decoded airtime and ED-active time. The counters cover the primary 20 MHz; a wider-channel
+  consumer must sample each constituent primary, and must not label ED-active or
+  CCA-minus-decoded time as non-Wi-Fi interference. The evidence boundary is documented in
+  [MT7925_MIB.md](MT7925_MIB.md).
 - **Offline 802.11 analysis tools** can consume pcap output, but this project should avoid custom
   adapters when a standards-based capture file is sufficient.
 

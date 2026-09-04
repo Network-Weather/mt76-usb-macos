@@ -73,8 +73,8 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Not ruled out:** a per-chain or per-channel source elsewhere in the firmware's MCU event
   set; a calibration or survey command that must run first; a firmware build that never
   reports it over USB.
-- **Code:** none in the repository; same gap as above. Roadmap R12 starts by committing the
-  probe.
+- **Code:** `research/ipi_probe.py` and `research/ipi_hist_cmd.py` reproduce the later attempts;
+  the detailed negative result appears below.
 - **Consequence:** RSSI alone is reported. It must not be presented as SNR.
 
 ## 160 MHz sniffer configuration on MT7921U returns nothing (MT7925U does not share this)
@@ -113,7 +113,7 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Code:** `research/ipi_probe.py`, reproducible from this tree; exits 2 when no histogram
   is found.
 
-## The MT7925 answers no EXT command; its counters are behind UNI, and unidentified
+## The MT7925 answers no EXT command; its initial UNI sweep did not identify counters
 
 - **Tried:** `research/mib_offset_sweep.py --max 32` and `research/mcu_command_probe.py`
   against the reference MT7925U (Netgear A9000, `0846:9072`), 2026-09-03, then the UNI form of
@@ -140,21 +140,21 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   second sample by the whole sweep.
 
   On 2.4 GHz channel 6 over a 6.3 s measured span, 40 of 48 offsets echo and 11 advance.
-  **Offset 18 advances at exactly 100.00% of the interval**, which makes it a free-running
-  microsecond clock -- and that in turn establishes the unit for the rest, since a counter
-  ticking 1:1 with wall clock has to be microseconds. Against it, offsets 17, 19 and 20 each
-  ran at 36-37% of the window and offset 12 at 7.7%; offset 7 advances by exactly 65535, the
-  same signature the MT7921's `CHANNEL_IDLE` shows.
-- **Not identified.** Which counter is which has *not* been established. The MT7921's names were
+  **Offset 18 advances at exactly 100.00% of the interval in this 20 MHz run**, initially
+  suggesting a free-running microsecond clock. The later width matrix below retains the unit
+  evidence but falsifies the general-clock interpretation. Against it, offsets 17, 19 and 20
+  each ran at 36-37% of the window and offset 12 at 7.7%; offset 7 advances by exactly 65535,
+  the same signature the MT7921's `CHANNEL_IDLE` shows.
+- **Not identified at this stage.** Which counter is which had *not* been established. The MT7921's names were
   earned by behaviour across channels and bandwidths and then corroborated against a vendor enum
   whose gaps matched the hardware's; none of that has been done here, and the mt7996 UNI
   offsets (`OBSS_AIRTIME` 26, `NON_WIFI_TIME` 27, `TX_TIME` 28, `RX_TIME` 29) echo back but read
   zero, so they are not this chip's numbering either.
 - **Not ruled out:** that the zero-reading offsets need an enable. `UNI_VOW_RX_AT_AIRTIME_EN`
   exists in the same UNI space and has not been tried.
-- **Consequence:** occupancy is an MT7921U capability *in this tree* because that is the chip
-  whose counters are identified. It is not a chip limitation, and `mib_survey.py` reporting
-  `null` on an MT7925 reflects missing identification rather than missing hardware.
+- **Consequence at this stage:** occupancy remained an MT7921U-only capability. The follow-up
+  in [docs/MT7925_MIB.md](docs/MT7925_MIB.md) behaviorally identifies the MT7925 subset without
+  changing this initial result.
 - **Code:** `research/mib_offset_sweep.py` and `research/mcu_command_probe.py` for the EXT
   silence, `research/uni_mib_probe.py` for the UNI result. Each is runnable from this tree.
 
@@ -217,3 +217,30 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   larger on a busy channel. A quiet channel where NAV is near zero would isolate it; channel 1
   is not that channel.
 - **Code:** `research/cross_measure.py`, `scripts/mib_survey.py` for the control.
+
+## MT7925 ED-active time is not non-Wi-Fi-only time
+
+- **Tried:** bounded valid 802.11 Probe Request bursts from the MT7921U while the MT7925U
+  atomically sampled offsets 12, 13, 17, 19 and 20 on 2.4 GHz channel 6, 2026-09-04.
+- **Observed:** during a 300-frame wildcard burst, decoded airtime rose from 12.65% to 50.72%,
+  CCK receive duration from 12.20% to 48.25%, and offset 20 from 38.54% to 69.25%. The MT7925
+  decoded 298 injected frames and nearby AP responses, so the added energy was unambiguously
+  valid Wi-Fi. Directed and alternating runs received all 300 synthetic-source frames but had
+  too much ambient drift to estimate a per-frame coefficient.
+- **Consequence:** offset 20 is useful ED-active time, but must not be reported as non-Wi-Fi
+  interference. ED overlaps successful Wi-Fi reception. A true non-Wi-Fi-only counter remains
+  unlocated.
+- **Code:** `research/mt7925_mib_perturb.py`; complete measurements in
+  [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
+
+## MT7925 offset 18 is not a general free-running clock
+
+- **Tried:** atomic reads around 20/40/80/160 MHz dwells, followed by primary rotation through
+  channels 36/40/44/48 within a fixed 80 MHz block, 2026-09-04.
+- **Observed:** offset 18 advanced at approximately one microsecond per wall-clock microsecond
+  only at 20 MHz. At wider settings it was small and variable, usually around 0.1% of the
+  dwell, and did not behave as whole-block or secondary-channel occupancy.
+- **Consequence:** the 20 MHz result remains useful evidence that the duration counters use
+  microseconds, but callers must not use offset 18 as elapsed time across channel widths.
+- **Code:** `research/mt7925_mib_characterize.py`; complete measurements in
+  [docs/MT7925_MIB.md](docs/MT7925_MIB.md).

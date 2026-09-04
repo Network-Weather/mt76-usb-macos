@@ -1,15 +1,17 @@
 # Firmware and PHY reconnaissance: energy-domain instruments
 
-Status: spikes, unproven. Fresh as of 2026-09-03.
+Status: measured hardware findings and remaining spikes. Fresh as of 2026-09-04.
 
 ## Why
 
-Everything this driver measures today comes from frames it successfully demodulated. That
-biases every result toward the part of the radio environment that is healthy enough to
-decode. A channel can be unusable for reasons a sniffer cannot see: a microwave oven, a
+Most frame-level observations come from traffic the driver successfully demodulated, which
+biases them toward the part of the radio environment healthy enough to decode. The newly
+identified CCA and ED counters expose additional occupancy, but do not by themselves name its
+source. A channel can be unusable for reasons a sniffer cannot see: a microwave oven, a
 non-Wi-Fi FHSS device, an AP so far away its beacons never resolve, a hidden node whose
 collisions register only as lost airtime. "I heard 4 frames here" and "this channel is
-quiet" are different claims, and the driver currently cannot tell them apart.
+quiet" are different claims. CCA minus decoded airtime can now distinguish them, while remaining
+unexplained occupancy rather than proof of non-Wi-Fi interference.
 
 The chip can. The MT7921 hardware maintains energy-domain counters that are independent of
 demodulation, and the firmware implements more of them than the Linux driver exposes:
@@ -435,6 +437,30 @@ roughly twice as many preambles as it delivers frames.
 This satisfies acceptance criteria 4 and 5 for Spike A's measurement, by a different route
 than Spike A proposed. The MIB *registers* remain dead; the MCU path reaches live counters.
 
+### The MT7925 keeps equivalent instruments behind UNI, with different numbering
+
+The initial connac3 probe established the MT7996-shaped
+`MCU_UNI_CMD_GET_MIB_INFO` (`0x22`) request and found live counters without naming them. A
+follow-up matrix across all three bands and 20/40/80/160 MHz, controlled valid-Wi-Fi traffic,
+primary-channel rotation, and concurrent comparison against the MT7921 now supports this
+behavioral map:
+
+| offs | measured behavior | confidence |
+|---:|---|---|
+| 2 | delivered RX MPDUs | high |
+| 11 | PHY receive attempts / MDRDY count | high |
+| 12 | CCK receive duration, microseconds | high |
+| 13 | OFDM-family receive duration, microseconds | high |
+| 17 | broader busy time; exact CCA/NAV/TX composition unsettled | medium |
+| **19** | **primary-channel CCA busy time, microseconds** | **medium-high** |
+| 20 | primary ED-active time; overlaps valid Wi-Fi | high |
+
+On three quiet 6 GHz comparisons, offset 19 was within 0.019-0.138 percentage points of the
+MT7921's identified `P_CCA_TIME`. Rotating the primary through 36/40/44/48 while holding the
+80 MHz block fixed moved offsets 17/19/20 with the primary, so none is a whole-block measure.
+Offset 18 matches wall time only at 20 MHz and is not a generic clock. The complete dated
+evidence, negative interpretations and runnable tools are in [MT7925_MIB.md](MT7925_MIB.md).
+
 ## Capability map
 
 MediaTek's `mt_wifi` headers list 127 `EXT_CMD_ID` values against mt76's 52
@@ -584,8 +610,8 @@ is the cheapest evidence that something is there; none has been sent to hardware
    says, it is a spectrum view rather than a single occupancy scalar, which is a different
    class of instrument from anything here.
 3. **`EXT_CMD_ID_EDCCA_CTRL` (0x70)** — 24 EDCCA strings in the image, including per-band
-   per-bandwidth thresholds (`B%d_EdccaTh:BW20=...`). Reading the threshold tells us what
-   "busy" *means* for `P_CCA_TIME`, which currently has no calibration at all. Note its
+   per-bandwidth thresholds (`B%d_EdccaTh:BW20=...`). Counter scale is now cross-checked, but
+   reading the threshold would tell us what energy level "busy" means for `P_CCA_TIME`. Its
    dispatch slot handler reads `0x00000000`, so expect a refusal.
 4. **The accepted MIB offsets that stayed at zero** — 1, 4, 5, 6, 8, 9, 10, 17, 20-23. They
    reply, so they exist; they were simply quiet in monitor mode on the channels tried. Free
@@ -593,20 +619,21 @@ is the cheapest evidence that something is there; none has been sent to hardware
 5. **RDD pulse reporting, `RDD_ON_OFF_CTRL` (0x3a) with `SET_RDM_RADAR_THRES` (0x9d)** — radar pulse detection is
    implemented and undriven. Raw pulse reports are a non-Wi-Fi energy source, useful well
    beyond DFS.
-6. **`MIB_CNT_P_ED_TIME`** — primary-channel energy-detect time, the direct non-Wi-Fi
-   interference figure. This firmware refuses its offset; worth re-checking on the MT7925 or
-   a newer MT7921 build, though the MT7925's encrypted image means the offline half of the
-   loop does not run there.
+6. **A true non-Wi-Fi-only counter.** The MT7925 exposes primary ED-active time at UNI offset
+   20, but controlled valid Wi-Fi traffic makes it rise too. The MT7996-style `NON_WIFI_TIME`
+   offset 27 remains zero on this firmware; an enable or different numbering may exist.
 
 Out of reach for now: anything needing the MT7925's dispatch tables, and anything needing
 real disassembly of the Xtensa code regions.
 
 ## Scope boundaries
 
-- Nothing here transmits. Spike A and B are register reads; C touches no hardware.
+- The original spikes A and B are register reads and C touches no hardware. The MT7925
+  follow-up includes a separately named, bounded Wi-Fi perturbation that retains the existing
+  explicit acknowledgement and 300-frame ceiling.
 - No survey orchestration, no place or room naming, no verdict rules. This repo is the
   instrument. Evidence stays chip-generic.
 - No new documented capability without dated hardware evidence in TESTING.md, per the
   ROADMAP decision rules.
-- MT7925 support for A and B is untested and unclaimed; its register map differs and its
-  firmware is opaque.
+- MT7925 register-based CCA and IPI support remains untested and unclaimed; its register map
+  differs and its firmware is opaque. Its separate UNI MIB path is characterized above.

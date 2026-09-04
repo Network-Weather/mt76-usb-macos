@@ -121,10 +121,11 @@ image and a matching firmware string:
 | `0x30` | `EXT_CMD_ID_GET_TX_STATISTICS` | |
 | `0x3a`, `0x9d` | RDD control and radar thresholds | raw radar-pulse reporting, implemented and undriven |
 
-Also unread: the accepted MIB offsets that stayed at zero here (1, 4, 5, 6, 8, 9, 10, 17,
-20-23), and the higher counters the enum defines but this chip refuses -- notably
-`MIB_CNT_P_ED_TIME`, primary-channel energy-detect time, which would be the direct non-Wi-Fi
-interference figure if any MT7921 build exposes it.
+Also unread on the MT7921: the accepted MIB offsets that stayed at zero here (1, 4, 5, 6, 8,
+9, 10, 17, 20-23), and higher counters the enum defines but this chip refuses. The MT7925
+follow-up behaviorally identifies primary ED-active time at UNI offset 20, but controlled valid
+Wi-Fi raises it too; ED time is not a direct non-Wi-Fi interference figure. See
+[docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 
 ### mediatek-connac2-re
 

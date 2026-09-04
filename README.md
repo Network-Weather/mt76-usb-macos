@@ -17,7 +17,8 @@ hosts: an M1 Max for the MT7921 evidence and an M4 for the MT7925 evidence.
 > **Status: research-grade passive capture, not a network driver.** Current release 0.3.0
 > (2026-09-03), with unreleased work on `main`: two-adapter concurrent capture, 802.11be
 > Multi-Link element decoding, a capture width for the roam watcher, and a radiotap VHT
-> length fix. See [CHANGELOG.md](CHANGELOG.md). The receive path is working on the exact hardware below. Injection is experimental and was not part of the
+> length fix, plus MT7925 UNI radio-environment counter characterization. See
+> [CHANGELOG.md](CHANGELOG.md). The receive path is working on the exact hardware below. Injection is experimental and was not part of the
 > current release validation. Read [Testing and evidence](docs/TESTING.md),
 > [Known limits](#known-limits-and-non-goals), [engineering quality](docs/QUALITY.md), and
 > [ROADMAP.md](ROADMAP.md) before relying on it.
@@ -216,7 +217,7 @@ publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTIN
 | EHT (Wi-Fi 7) frames in radiotap | **MT7925: current pass**; both pcap writers emit U-SIG and EHT TLVs, tshark 4.6 shows 802.11be with MCS, streams, bandwidth, and data rate; 973 live EHT frames in 30 s at 160 MHz, 0 malformed |
 | Simultaneous multi-channel capture | Not possible with one radio. **Two adapters: current pass**, one process holding 5 GHz 132 at 80 MHz on the MT7921U and 6 GHz 53 at 160 MHz on the MT7925U, 80 620 frames over five minutes with no USB error and no off-channel frame ([`scripts/dual_capture.py`](scripts/dual_capture.py)). The radios start about a second apart, so the result reports the interval when both were listening |
 | 802.11be Multi-Link element decode | Current pass on both chips; MLD address and per-link addresses, with element and subelement fragments reassembled. 293 beacons on the MT7921U and 391 on the MT7925U carried one MLD address behind two transmitter addresses, and tshark agreed over 246 frames. Per-STA profiles are covered by synthetic fixtures only, since no client association has been captured |
-| Hardware CCA busy / noise floor | Not working; reads zero on the reference device |
+| Hardware CCA busy / noise floor | CCA busy: working over MCU queries on the MT7921U and behaviorally identified through UNI on the MT7925U; noise floor remains unavailable |
 
 ## Injection: read this first
 
@@ -258,12 +259,13 @@ unless `--acknowledge-experimental-transmit` is explicitly supplied.
   `sniff_to_pcap.py --width` selects wider ones.
 - It does not decrypt protected traffic, reconstruct TCP streams, split A-MSDU inner
   frames, or guarantee complete beamformed downlink capture.
-- It is not a spectrum analyzer. Frame counts, RSSI, and FCS errors cannot identify
-  non-Wi-Fi interference; hardware CCA busy and noise-floor readings are not working.
+- It is not a spectrum analyzer. Hardware CCA busy is available, but it cannot by itself
+  identify non-Wi-Fi interference; noise-floor readings remain unavailable. MT7925 ED-active
+  time also rises under valid Wi-Fi and must not be labeled non-Wi-Fi time.
 - PHY rate is metadata, not throughput. Airtime estimates are approximate and a
   channel-local partial view.
-- There is no tested suspend/resume, hot-unplug recovery, long-duration soak test,
-  multi-adapter support, or automatic recovery from a device that stops responding.
+- There is no tested suspend/resume, hot-unplug recovery, long-duration soak test, extended
+  multi-adapter soak, or automatic recovery from a device that stops responding.
 - Firmware is re-uploaded for every process. The MediaTek blobs are fetched separately
   and are never distributed in this repository.
 
@@ -279,8 +281,8 @@ for all of this project's register and descriptor work, while
 MediaTek runtime binaries. [RELATED_WORK.md](RELATED_WORK.md) records the exact relationship
 to both foundational projects and distinguishes them from peer work.
 
-What is distinctive here is the narrow form: about 2,800 lines of readable Python focused
-on passive capture, with the measured firmware/endpoint/efuse bring-up details exposed as
+What is distinctive here is the narrow form: a small readable Python codebase focused on passive
+capture, with the measured firmware/endpoint/efuse bring-up details exposed as
 a compact reference implementation. That can be useful for driver research even when a
 larger end-user tool is the better operational choice.
 
@@ -292,7 +294,7 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 150 offline tests for firmware parsing, MCU framing (both chips, with
+The macOS-only CI runs 388 offline tests for firmware parsing, MCU framing (both chips, with
 the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.
@@ -301,21 +303,23 @@ are intentionally separate because GitHub runners have no radio. See
 [docs/TESTING.md](docs/TESTING.md) for the dated attached-hardware evidence and exact untested
 list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known engineering gaps.
 
-## Planning
+## Documentation index
 
-- [ROADMAP.md](ROADMAP.md): stack-ranked work in three tracks (roaming and steering instrument,
-  community capture source, researcher reference); next up are the C driver's MT7925 port (R26)
-  and EHT radiotap (R27). Fresh as of 2026-09-03.
-- [TODO.md](TODO.md): the current sprint, one line per task. Fresh as of 2026-09-03.
-- [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md): experiments that returned nothing, so they are
-  not re-run by accident. Fresh as of 2026-09-03.
-- [docs/MT7925.md](docs/MT7925.md): the MT7925U (Wi-Fi 7, 160 MHz) port: what differs from the
-  MT7921 in the mt76 source, what the A9000 is, and the stage tracker. Fresh as of 2026-09-03.
-- [research/README.md](research/README.md): open questions and the hardware experiments probing
-  them, kept separate from the working diagnostics in `scripts/`. Fresh as of 2026-09-03.
-- [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md): energy-domain instruments the chip has and
-  the driver does not expose - CCA busy and airtime counters, the missing noise floor, and what
-  the firmware images do and do not let us read. Three unproven spikes. Fresh as of 2026-09-03.
+- Project: [changelog](CHANGELOG.md), [contributing guide](CONTRIBUTING.md),
+  [security policy](SECURITY.md), [license notices](NOTICE.md),
+  [lineage and related work](RELATED_WORK.md), [agent/contributor guidance](CLAUDE.md), and the
+  [pull-request template](.github/PULL_REQUEST_TEMPLATE.md).
+- Engineering: [testing and hardware evidence](docs/TESTING.md),
+  [quality gates and gaps](docs/QUALITY.md), [publishing](docs/PUBLISHING.md),
+  [integration opportunities](docs/INTEGRATIONS.md), and the
+  [native C driver](c/README.md).
+- Planning: [roadmap](ROADMAP.md), [current sprint](TODO.md), and
+  [measured negative results](NEGATIVE_RESULTS.md).
+- MT7925 and firmware research: [MT7925 port notes](docs/MT7925.md),
+  [MT7925 UNI MIB characterization](docs/MT7925_MIB.md),
+  [firmware reconnaissance](docs/FIRMWARE_RECON.md), and the
+  [research-tool index](research/README.md). These research indexes are current through
+  2026-09-04.
 
 ## License and provenance
 

@@ -40,6 +40,11 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
   injection radiates on 2.4 GHz — 60 of 60 frames decoded by an independent adapter — and not on
   5 GHz, which the repository previously could not prove either way
   ([docs/TESTING.md](docs/TESTING.md)).
+- MT7925 UNI MIB characterization tools identify delivered and detected receive counts,
+  CCK/OFDM-family receive duration, primary CCA and ED-active time through atomic counter reads,
+  controlled Wi-Fi perturbation and an independent MT7921 reference. The full counter map,
+  confidence boundaries and wide-channel scope result are in
+  [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 
 ### Changed
 

@@ -390,10 +390,69 @@ Passive, no transmit. Both adapters tuned to the same channel decoded 801 and 82
 apart. That is the control that makes the MT7925's silence to EXT commands interpretable: it is
 receiving correctly, it simply cannot be asked in that language.
 
-The comparison is on decoded airtime rather than occupancy because only the MT7921 has an
-identified CCA counter, so the stronger check cannot run on this pair. The tool compares
+The comparison is on decoded airtime rather than occupancy because, at the time of this run,
+only the MT7921 had an identified CCA counter. The tool compares
 whichever quantity both radios report and evaluates it; it does not report agreement for a
-comparison that did not happen.
+comparison that did not happen. The follow-up below identifies the MT7925 candidate and performs
+the stronger counter comparison with a separate tool.
+
+## MT7925 UNI MIB characterization: 2026-09-04
+
+Both reference adapters attached: MT7925U Netgear A9000 (`0846:9072`) as the receiver and,
+where stated, MT7921U (`0e8d:7961`) as the independent counter reference or bounded
+transmitter. Pinned firmware, macOS 26.6, Python 3.14.7. The passive matrix covered 2.4, 5 and
+6 GHz at 20/40/80/160 MHz. The full measurements and confidence boundaries are in
+[MT7925_MIB.md](MT7925_MIB.md).
+
+```bash
+./.venv/bin/python research/mt7925_mib_characterize.py \
+    2.4GHz:1 2.4GHz:6 2.4GHz:11 5GHz:36 5GHz:36:42:80 \
+    5GHz:149 5GHz:149:155:80 6GHz:37:47:160 --seconds 6
+
+./.venv/bin/python research/mt7925_mib_crosscheck.py \
+    2.4GHz:6 5GHz:36 5GHz:149 6GHz:37 --seconds 5
+./.venv/bin/python research/mt7925_mib_crosscheck.py \
+    6GHz:37 --seconds 5 --repeats 3
+
+./.venv/bin/python research/mt7925_mib_perturb.py \
+    --channel 6 --seconds 5 --transmit 300 --active-phases 3 --gap 0.005 \
+    --acknowledge-experimental-transmit
+```
+
+### Acceptance and result
+
+- **Wire format:** one connac3 `MCU_UNI_CMD_GET_MIB_INFO` (`0x22`) query carries a four-byte
+  band header followed by one or more `{le16 tag, le16 len, le32 offset}` entries. The reply
+  echoes each requested offset with a 64-bit value. Reading every candidate in one request
+  gives them the same interval.
+- **Counts:** offset 2 matched delivered frames within 0-3 frames in each atomic dwell; offset
+  11 was always at least as large and behaves as PHY receive attempts/MDRDY.
+- **Receive duration:** offset 12 moved only for 2.4 GHz CCK traffic. Offset 13 tracked
+  OFDM-family decoded airtime on 5 and 6 GHz. Their sum closely tracked aggregation-aware
+  decoded receive airtime.
+- **Primary CCA:** offset 19 remained above decoded receive duration and, on three quiet 6 GHz
+  comparisons, measured 0.650%, 1.766% and 0.890% against the MT7921U's identified
+  `P_CCA_TIME` at 0.631%, 1.679% and 0.752%. The 0.019-0.138 percentage-point differences
+  rule out an arbitrary counter scale and support primary CCA time in microseconds.
+- **Energy detection:** a 300-frame valid-Wi-Fi perturbation raised offset 20 from 38.54% to
+  69.25%, alongside CCK receive duration and both busy candidates. Offset 20 is therefore
+  ED-active time, not a non-Wi-Fi-only counter.
+- **Scope:** with center channel 42 and width fixed at 80 MHz, rotating the primary through
+  36/40/44/48 moved offsets 17/19/20 with the selected primary. They cover the primary 20 MHz,
+  not the whole 80 MHz block.
+
+### Limits retained
+
+- Offset 17 is a broader busy-time counter but is not named `CCA_NAV_TX_TIME`: the existing
+  MT7921 transmit experiment could not separate CCA from NAV, and the ordering of offsets 17
+  and 19 varied slightly by channel.
+- Offset 18 runs at wall-clock rate at 20 MHz but becomes small and variable at wider settings.
+  That establishes microsecond scale at 20 MHz, not a generally usable free-running clock.
+- Different receivers diverged on busy channels while agreeing closely on quiet 6 GHz. Antenna,
+  placement, sensitivity and ED thresholds are part of the instrument; occupancy percentages
+  are not hardware-independent ground truth.
+- CCA minus decoded airtime is unexplained occupancy, not proof of non-Wi-Fi interference.
+  A controlled non-802.11 source is still required to characterize that distinction.
 
 ## Channel occupancy over the MCU: 2026-09-03
 
@@ -441,11 +500,11 @@ Independent corroboration in the same runs, not designed for: `MIB_CNT_BCN_TX` a
 `MIB_CNT_TX_BW_*` counters read exactly zero on both bands, as they must in a driver that never
 transmits.
 
-**MT7921U only, for now.** The MT7925U answers no EXT command at all -- connac3 uses the UNI
-command space -- so `mib_survey.py` reports `null` rather than a wrong number there. Its
-counters do exist: `MCU_UNI_CMD_GET_MIB_INFO` is answered and ten offsets advance, but which is
-which has not been established to the standard used here, so nothing is claimed
-([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)). As a control, both adapters on one
+**MT7921U only in this tool and original run.** The MT7925U answers no EXT command at all --
+connac3 uses the UNI command space -- so `mib_survey.py` reports `null` rather than a wrong
+number there. The initial UNI sweep found ten advancing offsets but did not name them. The
+subsequent MT7925 characterization above identifies the useful subset with a separate tool. As
+a control, both adapters on one
 channel decoded 801 and 824 frames for 175,142 and 177,971 µs of airtime, so the MT7925 is
 receiving correctly; it simply cannot be asked.
 
@@ -868,15 +927,15 @@ as a current release qualification.
 - capture on USB ids other than `0e8d:7961` and `0846:9072` (the A8500 `0846:9050` and the
   MediaTek `0e8d:7925` ids are in the table but no such device has been attached; the MT7927
   `0e8d:6639` is not in the table at all);
-- 320 MHz (no supported part), 160 MHz on the MT7921U, simultaneous channels, multiple
-  adapters in one process, MT7922, PCIe, and SDIO;
+- 320 MHz (no supported part), 160 MHz on the MT7921U, MT7922, PCIe, and SDIO;
 - association, client mode, AP mode, routing, CoreWLAN, and a BSD network interface;
 - Bluetooth firmware or coexistence;
 - decryption and complete capture of beamformed downlink or A-MSDU inner frames;
-- working noise-floor and CCA-busy measurements;
+- working noise-floor measurements; CCA-busy is now available through the MCU paths documented
+  above;
 - suspend/resume, sleep/wake, hot-unplug recovery, and long-duration soak behavior;
-- sustained or high-rate injection, injection across bands/widths, TX power, TX feedback,
-  and regulatory-domain enforcement; and
+- sustained or high-rate injection, working injection above 2.4 GHz, TX power, TX feedback, and
+  regulatory-domain enforcement; and
 - automatic recovery from a device that stops responding.
 
 Do not turn an item in this section into a positive claim until a dated result, exact test
