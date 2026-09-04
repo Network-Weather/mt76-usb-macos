@@ -426,3 +426,29 @@ def test_scan_dispatch_slots_reports_an_absent_cid_as_an_empty_list():
 def test_the_command_name_table_pins_the_two_ids_the_spikes_depend_on():
     assert ft.EXT_CMD_NAMES[0x5A] == "GET_MIB_INFO"
     assert ft.EXT_CMD_NAMES[0xAD] == "PHY_STAT_INFO"
+
+
+def test_identical_prefixes_across_every_category_read_as_a_stub():
+    # What an MT7921U actually returned on 2026-09-03: one prefix for all 16 categories.
+    entries = [{"answered": True, "reply_prefix": "ad000000fe000000"} for _ in range(16)]
+    verdict = mcs.judge_phy_sweep(entries)
+    assert verdict["distinct_prefixes"] == 1
+    assert verdict["verdict"].startswith("stub")
+
+
+def test_differing_prefixes_are_not_called_a_stub():
+    entries = [{"answered": True, "reply_prefix": f"{i:016x}"} for i in range(16)]
+    assert not mcs.judge_phy_sweep(entries)["verdict"].startswith("stub")
+
+
+def test_a_sweep_that_nobody_answered_is_not_called_a_stub():
+    entries = [{"answered": False} for _ in range(16)]
+    assert mcs.judge_phy_sweep(entries)["answered"] == 0
+    assert not mcs.judge_phy_sweep(entries)["verdict"].startswith("stub")
+
+
+def test_one_identical_prefix_over_only_the_named_categories_is_not_enough():
+    # Five categories agreeing proves much less than sixteen; the guard requires more
+    # categories than upstream names before calling it a stub.
+    entries = [{"answered": True, "reply_prefix": "aa"} for _ in range(5)]
+    assert not mcs.judge_phy_sweep(entries)["verdict"].startswith("stub")

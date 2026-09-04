@@ -152,11 +152,41 @@ def query_phy_category(dev, band: int, category: int, timeout: int = 3000) -> di
         entry["error"] = str(exc)
         return entry
     body = dev.reply_body(rxd)
+    # A reply is not an implementation. Measured on an MT7921U 2026-09-03: every category,
+    # including the five named upstream, answered with the same 8-byte prefix
+    # `ad000000 fe000000` and varying uninitialised tail -- the echoed ext_cid followed by a
+    # fixed non-zero byte. So the shape of the reply is recorded and the judgement about
+    # what it means is made across categories, not from one.
     entry["answered"] = True
     entry["reply_bytes"] = len(body)
+    entry["reply_prefix"] = body[:8].hex()
     entry["reply_head"] = body[:32].hex()
     entry["all_zero"] = not any(body)
     return entry
+
+
+def judge_phy_sweep(entries: list[dict]) -> dict:
+    """Did PHY_STAT_INFO behave like a command, or like a stub?
+
+    A command that is implemented answers its categories differently from one another, and
+    refuses the ones it does not know. One identical prefix across every category -- named
+    and unnamed alike -- is a single code path that ignores the request.
+    """
+    answered = [e for e in entries if e["answered"]]
+    if not answered:
+        return {"verdict": "no category answered", "answered": 0, "distinct_prefixes": 0}
+    prefixes = {e["reply_prefix"] for e in answered}
+    verdict = (
+        "stub: every category returned an identical prefix, so the request is not read"
+        if len(prefixes) == 1 and len(answered) > len(PHY_STATE_NAMES)
+        else "categories answered differently; worth reading the payloads"
+    )
+    return {
+        "verdict": verdict,
+        "answered": len(answered),
+        "distinct_prefixes": len(prefixes),
+        "prefix": min(prefixes) if len(prefixes) == 1 else None,
+    }
 
 
 def sweep_mib(dev, band: int, offsets: list[int], seconds: float) -> dict:
@@ -238,6 +268,7 @@ def main() -> int:
         out["phy_stat"] = [
             query_phy_category(dev, args.band_idx, c) for c in range(args.phy_max + 1)
         ]
+        out["phy_stat_verdict"] = judge_phy_sweep(out["phy_stat"])
 
     print(json.dumps(out, indent=2))
 
@@ -248,11 +279,10 @@ def main() -> int:
         f"{args.seconds}s. Named counters that moved: {', '.join(sorted(set(named_moved))) or 'none'}",
         file=sys.stderr,
     )
-    answered = [e for e in out["phy_stat"] if e["answered"]]
-    unnamed = [e["category"] for e in answered if e["name"] == "unnamed"]
+    verdict = out["phy_stat_verdict"]
     print(
-        f"PHY_STAT_INFO answered {len(answered)}/{len(out['phy_stat'])} categories"
-        + (f"; unnamed ones that answered: {unnamed}" if unnamed else ""),
+        f"PHY_STAT_INFO: {verdict['answered']}/{len(out['phy_stat'])} categories replied, "
+        f"{verdict['distinct_prefixes']} distinct reply prefix(es) -- {verdict['verdict']}",
         file=sys.stderr,
     )
     if not mib["moved"]:

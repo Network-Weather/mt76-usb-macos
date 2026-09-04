@@ -258,6 +258,34 @@ counter reads higher near a known non-Wi-Fi emitter than on a quiet channel.
 
 **Out of scope:** any command that sets rather than gets. This sweep reads.
 
+## Hardware results, 2026-09-03
+
+Reference MT7921U (ALFA AWUS036AXML, `0e8d:7961`), pinned firmware, passive throughout.
+Full detail and the "not ruled out" lists are in
+[NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md); the short version:
+
+| | predicted | measured |
+|---|---|---|
+| `PHY_STAT_INFO` (0xad) | not implemented (no dispatch slot) | **confirmed** — all 16 categories return one identical prefix |
+| `GET_MIB_INFO` (0x5a) | implemented (slot at `0xe02767c0`) | dispatches, but returns a **zeroed echo** of the request |
+| MIB duration counters | should read occupancy | **all zero**, on every channel |
+
+The offline dispatch-table prediction held for `PHY_STAT_INFO`. Nothing else worked, and the
+two failures turn out to be the same failure.
+
+**The MIB block is alive and arming is not the problem.** `MT_MIB_SCR1` reads `0x00f8c311`
+before any write, so `TXDUR_EN | RXDUR_EN` are already set at bring-up, and `MT_MIB_SDR3`
+(FCS errors) moves freely between reads. The block is mapped, readable and counting; only the
+duration counters stand still. A counter that is not running reads zero through the MCU
+exactly as it does through the registers, which is why `GET_MIB_INFO` returns zeros too.
+
+**The likely cause is a command nobody sends.** `mt7915_mcu_init_rx_airtime()`
+(`mt7915/mcu.c:2330`) sends `MCU_EXT_CMD_RX_AIRTIME_CTRL` (0x4a) twice at init, setting
+`airtime_en` and `mibtime_en`. `mt792x`/mt7921 never calls it. The MT7921 firmware *does*
+implement cid 0x4a — the command map found its slot — so the capability is present and simply
+unarmed. Testing that means sending a SET command, which every spike here is scoped out of;
+it needs an explicit decision rather than a quiet scope expansion.
+
 ## Scope boundaries
 
 - Nothing here transmits. Spike A and B are register reads; C touches no hardware.

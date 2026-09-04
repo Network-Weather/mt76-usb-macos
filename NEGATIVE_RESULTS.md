@@ -11,17 +11,52 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 
 ## Hardware channel-busy (CCA) counters read zero
 
-- **Tried:** reading the upstream MIB channel-busy registers after the passive bring-up, on the
-  reference adapter, during initial development before the 2026-08-31 release validation.
-- **Observed:** zero on every read.
-- **Not ruled out:** counters that need a firmware enable, a different register select, or a
-  reset/latch step before they count; a firmware build that does not expose them over USB at
-  all. wifikit reports MIB and test-mode experiments on MT7921AU; those are leads, not evidence
-  here.
-- **Code:** none in the repository. The probe was not shipped, so the observation cannot be
-  reproduced from this tree. Roadmap R11 starts by writing and committing that probe.
-- **Consequence:** frame counts and BSS Load from beacons are the only utilization signals
+- **Tried:** `scripts/mib_survey.py`, reading `MT_MIB_SDR9` (CCA busy), `MT_MIB_SDR36` (TX
+  airtime), `MT_MIB_SDR37` (RX airtime) and `MT_WF_RMAC_MIB_AIRTIME14` (OBSS) after passive
+  bring-up on the reference MT7921U, 2.4 and 5 GHz, 5 s dwells, 2026-09-03.
+- **Observed:** every duration counter reads zero, on every channel, while frames are being
+  decoded (180 frames / 393 ms of decoded airtime on 2.4 GHz ch 6, 567 frames / 111 ms on
+  5 GHz ch 36). One 5 GHz dwell read `cca_busy = 1729` against a 5 s window, which is 0.03%
+  and not credible as occupancy.
+- **The block is alive and the arming is not the problem.** `MT_MIB_SCR1` reads `0x00f8c311`
+  *before* any write, so `TXDUR_EN | RXDUR_EN` (bits 8 and 9) are already set at bring-up.
+  `MT_MIB_SDR3` at `+0x698` (FCS errors) moves freely between reads, so the MIB block is
+  mapped, readable, and counting -- it is specifically the duration counters that do not run.
+- **Likely cause, not yet tested:** airtime accounting is armed by an MCU command that no
+  mt7921 driver sends. `mt7915_mcu_init_rx_airtime()` (mt7915/mcu.c:2330) sends
+  `MCU_EXT_CMD_RX_AIRTIME_CTRL` (0x4a) twice to set `airtime_en` and `mibtime_en`;
+  `mt792x`/mt7921 never calls it. The MT7921 firmware does implement cid 0x4a
+  (`scripts/fw_triage.py --command-map`), so the command exists on this chip.
+- **Not ruled out:** the RX_AIRTIME_CTRL enable above; a per-BSS or per-STA context that
+  monitor mode never creates, which the duration counters may be scoped to; a different
+  register select.
+- **Code:** `scripts/mib_survey.py`, reproducible from this tree. This supersedes the earlier
+  entry, which recorded the same zero readings from an unshipped probe.
+- **Consequence:** frame counts and BSS Load from beacons remain the only utilization signals
   available. They must not be presented as channel busy time.
+
+## MCU GET_MIB_INFO returns a zeroed echo, and PHY_STAT_INFO is a stub
+
+- **Tried:** `scripts/mcu_stats.py` plus targeted probes on the reference MT7921U,
+  2026-09-03. `MCU_EXT_CMD_GET_MIB_INFO` (0x5a) with the mt7915 and mt7916 counter offsets,
+  as SET and as QUERY, in batches and singly; `MCU_EXT_CMD_PHY_STAT_INFO` (0xad) categories
+  0-15.
+- **Observed, GET_MIB_INFO:** the command dispatches -- an empty payload returns 24 bytes --
+  but every reply is `len(request) + 24` bytes of zeros, with the `data` field of each echoed
+  entry left at zero. The handler returns a zeroed copy of the request rather than filling in
+  counters. Offsets 0, 1 and 6 reply; **offset 87 produces no reply at all**, repeatably,
+  which suggests the handler indexes something by `offs` and 87 is out of range on this chip.
+- **Observed, PHY_STAT_INFO:** all 16 categories reply with the identical 8-byte prefix
+  `ad000000 fe000000` and an uninitialised tail -- the echoed ext_cid then a fixed non-zero
+  byte. The five categories named upstream behave no differently from the eleven unnamed
+  ones, so the request is not being read. This matches the offline prediction: cid 0xad has
+  no dispatch slot in any region of the firmware image.
+- **Not ruled out:** a request layout for GET_MIB_INFO that differs from
+  `struct mt7915_mcu_mib`; an MT7921-specific offset numbering that neither published scheme
+  covers (the 0/1/6 replies show *some* offsets are in range); the same RX_AIRTIME_CTRL
+  enable above, since a counter that is not running reads zero through the MCU exactly as it
+  does through the registers.
+- **Code:** `scripts/mcu_stats.py`, reproducible from this tree.
 
 ## Noise floor reads zero
 
