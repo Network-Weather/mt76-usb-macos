@@ -653,12 +653,21 @@ a frame whose descriptor names another channel, and the process exits 0.
 | 60 s | 6GHz:53@160 | mt7925 | 9521 | 0 | 0 | 0 |
 | 90 s | 5GHz:132@80 | mt7921 | 7850 | 0 | 0 | 0 |
 | 90 s | 6GHz:53@160 | mt7925 | 15028 | 0 | 0 | 0 |
+| 300 s | 5GHz:132@80 | mt7921 | 30750 | 0 | 0 | 0 |
+| 300 s | 6GHz:53@160 | mt7925 | 49870 | 0 | 0 | 0 |
 
-Neither chip's throughput suggests contention: the 90 s run collected 22 878 frames between the
-two radios. The single-adapter path is unchanged and its scripts still take one adapter.
+Neither chip's throughput suggests contention: the 300 s run collected 80 620 frames between the
+two radios with no error of any kind. The single-adapter path is unchanged and its scripts still
+take one adapter.
 
-A roam was not forced during either run, so a transition observed on both a source and a target
-channel remains unmeasured; that is the remaining half of R16 and belongs with R15.
+The 300 s run watched the 5 GHz and 6 GHz links of one access point, which the Multi-Link element
+identifies as a single multi-link device, and recorded three management events, all of them
+protected action frames whose bodies are correctly reported as encrypted rather than guessed at.
+No client transition occurred, because none was forced.
+
+A roam observed on both a source and a target channel therefore remains unmeasured. Forcing one
+needs a client driven across a boundary, so it belongs with R15 rather than with this plumbing.
+This is the state of the evidence, not a negative result about the hardware.
 
 ### Port addresses are reassigned on every firmware boot, same day
 
