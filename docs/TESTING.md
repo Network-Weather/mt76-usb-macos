@@ -347,15 +347,22 @@ radiation" for want of an independent receiver. There is one now.
 
 | Band, channel | Frames sent | Decoded by the second radio |
 |---|---|---|
-| 2.4 GHz ch 1 | 300 | **151, 152** (two runs) |
+| 2.4 GHz ch 1 | 300 | **298** |
 | 2.4 GHz ch 1 | 3 | 0 |
 | 5 GHz ch 149 | 300 | **0** (two runs) |
 
+The radios rendezvous on a barrier after tuning and sampling their counters, so the burst lands
+inside the window meant to contain it. Before that barrier existed the same procedure recovered
+151 and 152 of 300: the sender slept a fixed interval instead, which cannot work when the two
+chips take different times to boot firmware, and roughly half of each burst fell outside the
+dwell. A fixed sleep in place of a rendezvous does not fail loudly -- it just returns a smaller
+number.
+
 - **Criterion**: a second radio tuned to the same channel decodes frames whose transmitter is
   the synthetic source address, which nothing else on air uses.
-- **Result**: injection radiates on 2.4 GHz. About half the burst is decoded by the observing
-  radio, which was also handling 2,170 ambient frames in the same window. Three frames were not
-  enough to be caught at that rate.
+- **Result**: injection radiates on 2.4 GHz. 298 of 300 frames are decoded by the observing
+  radio, which was also handling ambient traffic throughout. Three frames were not enough to be
+  caught.
 - **Injection does not radiate on 5 GHz**, consistent with the C driver refusing to submit above
   2.4 GHz. Recorded in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
 
@@ -368,14 +375,18 @@ read around the same window on the transmitting radio:
 |---|---|---|---|---|
 | 3 | 13,095 µs | 16,336 µs | 3,241 µs | 1,080 µs |
 | 300 | 1,359,445 µs | 1,677,954 µs | 318,509 µs | 1,062 µs |
+| 300 | 1,296,697 µs | 1,604,902 µs | 308,205 µs | 1,027 µs |
 
 - **Criterion**: if `CCA_NAV_TX_TIME` includes transmit and `P_CCA_TIME` does not, their
   difference must scale with the number of frames transmitted, and the per-frame figure must
   hold across a large change in count.
-- **Result**: the difference grows 98× for 100× the frames, and the per-frame cost agrees to
-  1.7% across that range. The names are confirmed by behaviour.
-- **Scale check**: 1,062 µs per frame against 448 µs of pure frame airtime (32 bytes at 1 Mbps
-  CCK, 192 µs preamble). The ratio of 2.4 is what DIFS, backoff and NAV add to each
+- **Result**: the difference grows 98× for 100× the frames, and the per-frame cost holds at
+  1,080, 1,062 and 1,027 µs across three runs and a hundredfold change in count — a 5% spread.
+  The names are confirmed by behaviour.
+- **Scale check**: about 1,050 µs per frame against 448 µs of pure frame airtime. The rate is
+  1 Mbps CCK with a 192 µs preamble because `_build_txwi` programs `TX_RATE_1M_CCK`
+  unconditionally, whatever band the radio is tuned to; taking the rate from the band instead
+  would have described a 5 GHz burst as seven times faster than what actually goes out. The ratio of 2.4 is what DIFS, backoff and NAV add to each
   transmission, so the counter is reporting real microseconds rather than an arbitrary tick.
 
 This is the first measurement here with a known ground truth rather than ambient traffic: the
@@ -435,8 +446,7 @@ which has not been established to the standard used here, so nothing is claimed
 channel decoded 801 and 824 frames for 175,142 and 177,971 µs of airtime, so the MT7925 is
 receiving correctly; it simply cannot be asked.
 
-**Not established.** What distinguishes offset 11 from offset 14 (`CCA_NAV_TX_TIME`); they agreed
-exactly on one channel of four and diverged by 9% on another. Offset 0 does not behave like its
+**Not established.** Offset 0 does not behave like its
 vendor name and is unused. `band_idx = 1` is accepted but the USB parts are single-band, so what
 it reports was not investigated. The MIB *registers* remain dead on this part
 ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)); this measurement does not come from them.

@@ -59,6 +59,14 @@ MAX_INJECTED_FRAMES = 1000
 INJECT_GAP_S = 0.005
 #: Injection is implemented for the MT7921 TXWI only.
 TRANSMIT_CHIP = m.CHIP_MT7921
+#: _build_txwi programs MT_TXD6_FIXED_BW with TX_RATE_1M_CCK unconditionally (mt7921u.py),
+#: so expected airtime follows the TXWI and not the band. Deriving it from the band instead
+#: reported a 5 GHz burst at 6 Mb/s OFDM, seven times faster than what actually goes out.
+INJECT_RATE_MBPS = 1.0
+INJECT_PHY_MODE = rxd.MT_PHY_TYPE_CCK
+#: How long a radio may take to reach its dwell before the sender gives up waiting. The two
+#: chips do not boot firmware in the same time, so this cannot be a fixed sleep.
+READY_TIMEOUT_S = 30.0
 #: Locally administered source address, so an injected frame cannot be mistaken for a real
 #: device's traffic by anything watching.
 SYNTHETIC_SRC = bytes.fromhex("02005e105ada")
@@ -70,7 +78,9 @@ AGREEMENT_TOLERANCE = 0.35
 READ_TIMEOUT_MS = 200
 
 
-def measure(dev, band: str, channel: int, seconds: float, out: dict) -> None:
+def measure(
+    dev, band: str, channel: int, seconds: float, out: dict, ready: threading.Barrier | None = None
+) -> None:
     """Occupancy and decoded airtime over one dwell, bracketing the CCA counter tightly."""
     decode = m.decoder_for(dev)
     aggregates = rxd.AggregationTracker()
@@ -80,7 +90,15 @@ def measure(dev, band: str, channel: int, seconds: float, out: dict) -> None:
     #: seeing these is independent proof the burst reached the air, which no counter on the
     #: transmitting radio can provide.
     ours = 0
+    # Read the counter first, then rendezvous. Waiting before this read means the sender is
+    # released while every receiver still owes an MCU round trip, and a short burst can be
+    # over before anyone is in their read loop -- measured: 300 frames, zero received.
     cca_before = survey.read_cca(dev)
+    if ready is not None:
+        # Every radio waits here until all of them are tuned, counters sampled, and about to
+        # listen, so the burst lands inside the window meant to contain it. A fixed sleep
+        # cannot do this: the two chips take different times to boot their firmware.
+        ready.wait(timeout=READY_TIMEOUT_S)
     started = time.monotonic()
     while time.monotonic() - started < seconds:
         try:
@@ -146,9 +164,9 @@ def transmit(dev, count: int, out: dict) -> None:
     )
 
 
-def expected_airtime_us(n: int, frame_len: int, rate_mbps: float, mode: int) -> float:
-    """What n frames of this size should occupy, from the same model the decoder uses."""
-    one = rxd.airtime_us(frame_len, mode, rate_mbps)
+def expected_airtime_us(n: int, frame_len: int) -> float:
+    """What n injected frames should occupy, at the rate the TXWI actually programs."""
+    one = rxd.airtime_us(frame_len, INJECT_PHY_MODE, INJECT_RATE_MBPS)
     return 0.0 if one is None else one * n
 
 
@@ -200,6 +218,18 @@ def main() -> int:
 
     results: dict[str, dict] = {a["address"]: {"usb_id": a["usb_id"]} for a in receivers}
     tx_result: dict = {}
+    #: A thread that dies takes its dwell with it, and join() returns normally either way.
+    #: Without collecting these, a run where no radio measured anything exits 0.
+    failures: list[dict] = []
+    ready = threading.Barrier(len(receivers) + (1 if sender else 0))
+
+    def guard(name: str, fn) -> None:
+        try:
+            fn()
+        except BaseException as exc:
+            failures.append({"worker": name, "error": f"{type(exc).__name__}: {exc}"[:160]})
+            # A radio that never arrives would otherwise hang everyone waiting on it.
+            ready.abort()
 
     def run_receiver(entry: dict) -> None:
         dev = m.open_device_at(entry["address"])
@@ -210,7 +240,7 @@ def main() -> int:
             dev.set_sniffer(True)
             center = m.center_channel(args.band, args.channel, 20) or args.channel
             dev.tune(args.band, args.channel, center, 20)
-            measure(dev, args.band, args.channel, args.seconds, results[entry["address"]])
+            measure(dev, args.band, args.channel, args.seconds, results[entry["address"]], ready)
 
     def run_sender() -> None:
         dev = m.open_device_at(sender["address"])
@@ -221,10 +251,9 @@ def main() -> int:
             dev.set_sniffer(True)
             center = m.center_channel(args.band, args.channel, 20) or args.channel
             dev.tune(args.band, args.channel, center, 20)
-            # Let the receivers settle into their dwell before the burst starts, so the
-            # transmitted airtime lands inside the window being measured rather than at
-            # its edge.
-            time.sleep(1.0)
+            # Wait until every receiver is tuned and entering its dwell, so the burst lands
+            # inside the window being measured rather than beside it.
+            ready.wait(timeout=READY_TIMEOUT_S)
             # The transmitting radio is the only one here that can read the counters, so it
             # brackets its own burst. `cca_nav_tx` includes transmit time and `p_cca` does
             # not, so the pair separates "the medium was busy" from "we made it busy".
@@ -248,26 +277,29 @@ def main() -> int:
             }
             tx_result["burst_window_us"] = round((time.monotonic() - started) * 1e6)
 
-    threads = [threading.Thread(target=run_receiver, args=(a,)) for a in receivers]
+    threads = [
+        threading.Thread(target=guard, args=(a["address"], lambda a=a: run_receiver(a)))
+        for a in receivers
+    ]
     if sender:
-        threads.append(threading.Thread(target=run_sender))
+        threads.append(threading.Thread(target=guard, args=("sender", run_sender)))
     for t in threads:
         t.start()
     for t in threads:
         t.join()
 
     out["radios"] = results
+    if failures:
+        out["failures"] = failures
     if sender:
         out["transmit"] = tx_result | {"from": sender["usb_id"], "at": sender["address"]}
         if tx_result.get("sent"):
-            # Probe requests go out at the lowest basic rate the band offers.
-            rate = 1.0 if args.band == "2.4GHz" else 6.0
-            mode = rxd.MT_PHY_TYPE_CCK if args.band == "2.4GHz" else rxd.MT_PHY_TYPE_OFDM
             out["transmit"]["expected_airtime_us"] = round(
-                expected_airtime_us(tx_result["sent"], tx_result["bytes_each"], rate, mode)
+                expected_airtime_us(tx_result["sent"], tx_result["bytes_each"])
             )
+            out["transmit"]["rate_mbps"] = INJECT_RATE_MBPS
 
-    fractions = [r["busy_fraction"] for r in results.values() if r.get("busy_fraction")]
+    fractions = [r["busy_fraction"] for r in results.values() if r.get("busy_fraction") is not None]
     if len(fractions) == 2 and max(fractions) > 0:
         spread = abs(fractions[0] - fractions[1]) / max(fractions)
         out["agreement"] = {
@@ -284,6 +316,11 @@ def main() -> int:
         }
 
     print(json.dumps(out, indent=2))
+    if failures:
+        for f in failures:
+            print(f"  worker {f['worker']} failed: {f['error']}", file=sys.stderr)
+        print("inconclusive: a radio never ran its dwell", file=sys.stderr)
+        return 2
     agreement = out.get("agreement") or {}
     if agreement.get("agree") is False:
         print(
