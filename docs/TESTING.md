@@ -245,9 +245,8 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 
 - **Criterion**: Submit exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and submit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted by USB endpoint without timeout or I/O errors, chip alive after submission, exit 0 (`status: pass`).
 - **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
-*(This entry establishes host-to-device USB delivery only. Whether those frames radiate is
-measured on `spike/cross-measure` with a second adapter as the receiver, and is not claimed
-here.)*
+*(This entry establishes host-to-device USB delivery only. Radiation is measured separately
+with an independent receiver: see "Injected frames reach the air" above.)*
 
 ### Radiotap PCAP export (Live Hardware Legacy/HT and Synthetic VHT/HE Writer)
 
@@ -325,6 +324,75 @@ tshark -r /tmp/test_c_writer.pcap -O radiotap
         HE Data 5: data Bandwidth/RU allocation: 40 (0x1)
         HE Data 6: 1 space-time stream (0x1)
     ```
+
+## Injected frames reach the air: 2026-09-04
+
+Both reference adapters attached: MT7921U (ALFA, `0e8d:7961`) transmitting and measuring,
+MT7925U (Netgear A9000, `0846:9072`) receiving independently on the same channel. Pinned
+firmware.
+
+```bash
+./.venv/bin/python research/cross_measure.py --band 2.4GHz --channel 1 --seconds 10 \
+    --transmit 60 --acknowledge-experimental-transmit
+```
+
+The transmitting radio sends spaced wildcard Probe Requests from a locally administered address
+that nothing else on air uses; the second radio counts how many of those it decodes. The two
+rendezvous on a barrier after tuning and sampling their counters, so the burst lands inside the
+window meant to contain it.
+
+### Over-the-air radiation
+
+The rate-limited injection entry below establishes host-to-device USB delivery and says it
+cannot establish radiation without an independent receiver. This is that receiver.
+
+| Band, channel | Frames sent | Decoded by the second radio |
+|---|---|---|
+| 2.4 GHz ch 1 | 60 | **60** |
+| 2.4 GHz ch 1 | 300 | 298 |
+| 2.4 GHz ch 1 | 3 | 0 |
+| 5 GHz ch 149 | 300 | **0** (two runs) |
+
+- **Criterion**: the observing radio decodes frames whose transmitter is the synthetic source
+  address, and the transmitting chip still answers afterwards.
+- **Result**: injection radiates on 2.4 GHz, all 60 frames of a burst inside the documented
+  envelope, while the observing radio also handles ambient traffic. Three frames were not enough
+  to be caught.
+- **Injection does not radiate on 5 GHz**, matching the C driver refusing to submit above
+  2.4 GHz ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)).
+- Every frame goes out at 1 Mbps CCK: `_build_txwi` programs `TX_RATE_1M_CCK` whatever band the
+  radio is tuned to, so 60 frames of 32 bytes is 26,880 µs of expected airtime.
+
+**Before the barrier existed** the same procedure recovered 151 and 152 of 300. The sender slept
+a fixed interval instead, which cannot place a burst inside another radio's dwell when the two
+chips take different times to boot firmware, and roughly half of each burst fell outside the
+window. A fixed sleep in place of a rendezvous does not fail loudly; it returns a smaller number
+that looks like a plausible reception rate.
+
+### What does not follow from it
+
+A burst was expected to separate `P_CCA_TIME` (offset 11) from `CCA_NAV_TX_TIME` (offset 14) and
+did not. The difference between them tracks elapsed time, not frames transmitted: a zero-transmit
+control over 10 s on the same channel gives 970,366 µs of difference, 9.7% of the dwell, a
+*higher* rate than the 60-frame burst's 8.9%. See
+[NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md) for what was wrong with the reasoning that first
+suggested otherwise.
+
+### Two radios agree on what they hear
+
+```bash
+./.venv/bin/python research/cross_measure.py --band 5GHz --channel 36 --seconds 8
+```
+
+Passive, no transmit. Both adapters tuned to the same channel decoded 801 and 824 frames for
+175,142 and 177,971 µs of airtime, and on a later run 173,034 against 178,805 µs — 1.6% and 3.2%
+apart. That is the control that makes the MT7925's silence to EXT commands interpretable: it is
+receiving correctly, it simply cannot be asked in that language.
+
+The comparison is on decoded airtime rather than occupancy because only the MT7921 has an
+identified CCA counter, so the stronger check cannot run on this pair. The tool compares
+whichever quantity both radios report and evaluates it; it does not report agreement for a
+comparison that did not happen.
 
 ## Channel occupancy over the MCU: 2026-09-03
 

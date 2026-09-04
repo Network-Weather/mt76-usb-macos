@@ -221,11 +221,16 @@ publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTIN
 ## Injection: read this first
 
 The transmit path (`inject`, `_build_txwi`, `build_probe_request`, and
-`examples/inject_demo.py`) is **experimental, rate-limited, and outside the current
-end-to-end validation.** What has been tested here is small: 60 Probe Requests at 50 ms spacing on
-one 2.4 GHz channel, with the chip alive after every 20 and 677 directed Probe Responses received
-([docs/TESTING.md](docs/TESTING.md#previously-observed-not-rerun-in-the-current-validation)).
-Sustained or high-rate transmit is untested, so treat it as unknown rather than safe. The widely
+`examples/inject_demo.py`) is **experimental and outside the current end-to-end validation**,
+but it is no longer unmeasured. A second adapter listening on the same channel decoded 60 of 60
+and 298 of 300 injected Probe Requests on 2.4 GHz, and 0 of 300 on 5 GHz, with the chip
+responding after every burst ([docs/TESTING.md](docs/TESTING.md)). So the frames radiate, on
+2.4 GHz only, which matches the C driver refusing to submit above that band.
+
+Bursts of 300 frames at 5 ms spacing have been sent without incident. The older figure of 60 at
+50 ms recorded what had been tried rather than a limit that was found. Sustained transmit is
+still untested, and `_build_txwi` fixes every frame at 1 Mbps CCK whatever band the radio is
+tuned to, so treat rate and duration as unknown rather than safe. The widely
 reported Linux symptom, "injection kills the mt7921u" and the interface vanishes until a replug, is
 a host-driver NULL dereference in the `TXRX_NOTIFY` path, fixed upstream in
 [`d367ee6d`](https://github.com/openwrt/mt76/commit/d367ee6d) and present in this repository's

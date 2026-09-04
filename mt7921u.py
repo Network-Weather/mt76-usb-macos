@@ -10,9 +10,10 @@ and usb.c (__mt76u_vendor_request). Register addresses from mt792x_regs.h.
 
 Register I/O, firmware download, MCU command framing, channel and sniffer setup,
 and passive receive. Frame injection (the inject/_build_txwi/build_probe_request
-helpers at the tail of this module) is research-grade and rate-limited: it is
-confirmed only at scan rates (60 frames at 50 ms, chip alive after); sustained or
-high-rate transmit is untested.
+helpers at the tail of this module) is research-grade. It radiates: an independent
+adapter decoded 60 of 60 and 298 of 300 injected frames on 2.4 GHz and none on
+5 GHz, chip alive after every burst. Every frame goes out at 1 Mbps CCK, which
+_build_txwi fixes regardless of band; sustained transmit is untested.
 """
 
 from __future__ import annotations

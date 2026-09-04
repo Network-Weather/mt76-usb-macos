@@ -20,6 +20,7 @@ The background, the capability map and the method these follow are in
 | [`ipi_hist_cmd.py`](ipi_hist_cmd.py) | Will `RDD_IPI_HIST_CTRL` (0xa3) return a noise floor? | **open** — transport works, the sampler stays idle |
 | [`mcu_command_probe.py`](mcu_command_probe.py) | Which MCU commands does this firmware actually implement? | **answered** — the refusal reply identifies them |
 | [`uni_mib_probe.py`](uni_mib_probe.py) | Does the MT7925 keep the same counters behind UNI? | **partly** — 40 offsets echo and 11 advance; none identified |
+| [`cross_measure.py`](cross_measure.py) | Do two radios agree, and do injected frames reach the air? | **answered** — they agree; injection radiates on 2.4 GHz only |
 | [`mib_offset_sweep.py`](mib_offset_sweep.py) | Which MIB counter offsets does this chip accept? | **answered** — 19 on the MT7921, none on the MT7925 |
 
 ## Running these
@@ -33,7 +34,10 @@ MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/mcu_command_probe.py
 MT76_USB_ID=0846:9072 ./.venv/bin/python research/uni_mib_probe.py --max 48
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/ipi_hist_cmd.py
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/ipi_probe.py --band 5GHz --channel 36
+./.venv/bin/python research/cross_measure.py --band 5GHz --channel 36 --seconds 8
 ```
+
+`cross_measure.py` opens both adapters itself and takes no `MT76_USB_ID`.
 
 ## Rules
 

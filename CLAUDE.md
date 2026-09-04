@@ -100,10 +100,15 @@ Each is documented in full elsewhere; these are the ones that bite.
 - Captures are sensitive. No pcaps, SSIDs, BSSIDs, client MACs, or USB serials in the
   repo, tests, issues, or PRs. `scan.py` output is sensitive; `hardware_smoke.py` output
   is redacted by design.
-- Injection (`inject`, `_build_txwi`, `examples/inject_demo.py`) is experimental and
-  rate-limited; only 60 spaced frames have ever been sent here and sustained transmit is
-  untested. Do not extend it toward reliability or
-  present it as dependable.
+- Injection (`inject`, `_build_txwi`, `examples/inject_demo.py`) is experimental and outside
+  the end-to-end validation. It **does** radiate: an independent adapter on the same channel
+  decoded 60 of 60 and 298 of 300 injected frames on 2.4 GHz, and none of 300 on 5 GHz, with the
+  chip answering after every burst ([docs/TESTING.md](docs/TESTING.md)). Bursts up to 300 frames
+  at 5 ms spacing have been sent without incident, so the earlier ceiling of 60 at 50 ms
+  describes what had been tried, not a measured limit. What is still untested is sustained or
+  high-rate transmit, and every rate is fixed at 1 Mbps CCK by `_build_txwi` whatever the band.
+  Do not present it as dependable, and keep `--acknowledge-experimental-transmit` on anything
+  that puts frames on air.
 - Do not promote anything from the "previously observed" or "untested" lists in
   [docs/TESTING.md](docs/TESTING.md) to a claim without adding a dated result, test bed,
   command, and acceptance criterion there. A quiet channel is not a driver failure.
