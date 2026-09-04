@@ -4,6 +4,21 @@ Sprint started 2026-09-01; refocused 2026-09-03 after 0.2.0. Items come from [RO
 item. Strike through when merged. Hardware items need the reference adapter attached and at
 least two APs on one SSID.
 
+## Blocking the two-adapter branch (PR #26)
+
+- [ ] **The two radios do not share a capture window.** Each thread computes its own
+  deadline after its own firmware boot, so the windows are offset by the difference in
+  startup time. Measured on the reference pair, three consecutive runs: the MT7925 is
+  ready at 1.83 s and the MT7921 at 2.81 s, a gap of 0.98 s, reproducible to 0.01 s. So
+  roughly one second at the start of every run has only one radio listening, and the same
+  offset applies at the end. A steering exchange and the reassociation that follows it can
+  be tens of milliseconds apart, so a blind second at either end can take exactly the half
+  of a roam the second radio was added to catch. The result reports a successful run and
+  says nothing about the gap. Fix by joining the threads after tuning and giving them one
+  start and one deadline, and by reporting the gap in the result. Found by the third
+  review pass on the branch, which is where its review loop stops; the fix and its receipt
+  are a separate decision.
+
 ## Build next (R26, R27)
 
 - ~~R26 C driver MT7925: device table, class-based interface selection, chip profiles, UNI
