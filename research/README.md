@@ -14,6 +14,10 @@ The background, the capability map and the method these follow are in
 
 ## What is here
 
+The ongoing [radio observability exploration](../docs/RADIO_OBSERVABILITY.md) follows
+extended receive vectors, control exchanges, and two-radio timing, with dated evidence
+and explicit distinctions between hypotheses and measured capabilities.
+
 | script | question | state |
 |---|---|---|
 | [`ipi_probe.py`](ipi_probe.py) | Is the PHY's power histogram reachable through the USB register window? | **partly answered** — the window is mapped, the histogram is not at mt7915's address |
