@@ -116,12 +116,17 @@ def main() -> int:
         center = m.center_channel(args.band, args.channel, 20) or args.channel
         dev.tune(args.band, args.channel, center, 20)
         time.sleep(1.0)
-        first = {o: read_offset(dev, o, args.band_idx) for o in range(args.max)}
-        echoed = [o for o, v in first.items() if v is not None]
+        # Discover which offsets answer, then baseline only those. Sweeping the whole space
+        # takes far longer than the dwell, and a baseline taken during it is separated from
+        # its second sample by the sweep as well as the sleep -- so the delta would cover an
+        # interval much longer than the one it is divided by.
+        echoed = [o for o in range(args.max) if read_offset(dev, o, args.band_idx) is not None]
+        first = {o: read_offset(dev, o, args.band_idx) for o in echoed}
         started = time.monotonic()
         time.sleep(args.seconds)
-        elapsed = time.monotonic() - started
         second = {o: read_offset(dev, o, args.band_idx) for o in echoed}
+        # From the baseline pass through the second one: what the deltas actually span.
+        elapsed = time.monotonic() - started
 
     counters = {}
     for o in echoed:
@@ -138,7 +143,7 @@ def main() -> int:
         "mt76_usb_macos": m.__version__,
         "chip": dev.CHIP,
         "channel": f"{args.band}:{args.channel}",
-        "dwell_s": round(elapsed, 2),
+        "measured_s": round(elapsed, 2),
         "probed": args.max,
         "echoed": echoed,
         "moved": moved,
@@ -147,7 +152,7 @@ def main() -> int:
     if args.json:
         print(json.dumps(out, indent=2))
     else:
-        print(f"{dev.CHIP} on {args.band} ch{args.channel}, {elapsed:.1f}s dwell\n")
+        print(f"{dev.CHIP} on {args.band} ch{args.channel}, deltas span {elapsed:.1f}s\n")
         print(f"echoed back ({len(echoed)} of {args.max}): {runs(echoed)}")
         print(f"advanced    ({len(moved)}): {runs(sorted(moved))}\n")
         for o in sorted(moved):

@@ -312,14 +312,29 @@ def sweep_mib(
     # One offset per request. Batching is the documented shape and mt7915 uses it, but this
     # chip answers a single-entry request with one counter and no echo, so a batch would be
     # unreadable however it were parsed.
-    batches = [[o] for o in offsets]
-    before: dict[int, int] = {}
+    #
+    # Discovery first, measurement second. An offset this chip does not implement never
+    # answers, so it costs a full timeout: sweeping 128 offsets can spend minutes, and a
+    # baseline taken before that pass is separated from its second sample by the whole of it.
+    # The delta would then cover that time while being divided by the requested dwell.
     errors = []
+    responsive = []
+    for offs in offsets:
+        r = query_mib(dev, band, [offs])
+        if r.get("error"):
+            errors.append(r)
+        if offs in r["values"]:
+            responsive.append(offs)
+
+    batches = [[o] for o in responsive]
+    before: dict[int, int] = {}
     for batch in batches:
         r = query_mib(dev, band, batch)
         before.update(r["values"])
         if r.get("error"):
             errors.append(r)
+    # The window the deltas actually cover: from the baseline pass through the second one.
+    measured_from = time.monotonic()
     time.sleep(seconds)
     after: dict[int, int] = {}
     for batch in batches:
@@ -330,8 +345,9 @@ def sweep_mib(
             # reads as a negative result rather than as a measurement that did not complete.
             errors.append(r)
 
+    measured_us = (time.monotonic() - measured_from) * 1e6
     counters = {}
-    for offs in offsets:
+    for offs in responsive:
         if offs not in after:
             continue
         value = after[offs]
@@ -352,6 +368,10 @@ def sweep_mib(
         }
     return {
         "queried": len(offsets),
+        "responsive": len(responsive),
+        # The interval the deltas span, which is not the requested dwell: it also covers the
+        # second read pass. Percentages must use this, not --seconds.
+        "measured_us": round(measured_us),
         "echoed": len(counters),
         "moved": sum(1 for c in counters.values() if c["moved"]),
         "errors": errors,

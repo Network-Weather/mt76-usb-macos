@@ -134,11 +134,17 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   ```
 
   Acceptance: an offset counts as present only if the firmware echoes it back in the reply, and
-  as running only if it advances between two reads bracketing a dwell. On 2.4 GHz channel 6 over
-  6 s, 40 of 48 offsets echo and 11 advance. Offsets 17, 19 and 20 each grew about 2.4 million,
-  around 40% of the window if the unit is microseconds; offset 18 grew 6.1 million, slightly
-  more than the dwell itself, so it is a clock rather than occupancy; offset 7 advances by
-  exactly 65535, the same signature the MT7921's `CHANNEL_IDLE` shows.
+  as running only if it advances between two reads bracketing a *timed* window. The probe
+  discovers which offsets answer before opening that window, because an offset that never
+  replies costs a full timeout and a baseline taken during discovery is separated from its
+  second sample by the whole sweep.
+
+  On 2.4 GHz channel 6 over a 6.3 s measured span, 40 of 48 offsets echo and 11 advance.
+  **Offset 18 advances at exactly 100.00% of the interval**, which makes it a free-running
+  microsecond clock -- and that in turn establishes the unit for the rest, since a counter
+  ticking 1:1 with wall clock has to be microseconds. Against it, offsets 17, 19 and 20 each
+  ran at 36-37% of the window and offset 12 at 7.7%; offset 7 advances by exactly 65535, the
+  same signature the MT7921's `CHANNEL_IDLE` shows.
 - **Not identified.** Which counter is which has *not* been established. The MT7921's names were
   earned by behaviour across channels and bandwidths and then corroborated against a vendor enum
   whose gaps matched the hardware's; none of that has been done here, and the mt7996 UNI
