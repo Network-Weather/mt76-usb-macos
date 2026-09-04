@@ -35,12 +35,6 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 - [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md): what the firmware images contain, the
   capability map, and the method for establishing whether a given MCU command is implemented.
 
-- `research/cross_measure.py` runs both adapters at once: two receivers on one channel to check
-  they agree, and a bounded transmit burst measured against known airtime. It established that
-  injection radiates on 2.4 GHz (151 of 300 frames decoded by an independent adapter) and not on
-  5 GHz, which the repository previously could not prove either way
-  ([docs/TESTING.md](docs/TESTING.md)).
-
 ### Changed
 
 - `scripts/mib_survey.py` takes its counters from the MCU. The MIB registers read zero on this

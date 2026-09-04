@@ -245,9 +245,9 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 
 - **Criterion**: Submit exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and submit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted by USB endpoint without timeout or I/O errors, chip alive after submission, exit 0 (`status: pass`).
 - **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
-*(This entry establishes host-to-device USB delivery only. Over-the-air radiation is measured
-separately with an independent receiver: see "Injected frames reach the air" above, which
-records 60 of 60 frames decoded by a second adapter on 2.4 GHz and none on 5 GHz.)*
+*(This entry establishes host-to-device USB delivery only. Whether those frames radiate is
+measured on `spike/cross-measure` with a second adapter as the receiver, and is not claimed
+here.)*
 
 ### Radiotap PCAP export (Live Hardware Legacy/HT and Synthetic VHT/HE Writer)
 
@@ -325,81 +325,6 @@ tshark -r /tmp/test_c_writer.pcap -O radiotap
         HE Data 5: data Bandwidth/RU allocation: 40 (0x1)
         HE Data 6: 1 space-time stream (0x1)
     ```
-
-## Injected frames reach the air, and what the CCA counters do while transmitting: 2026-09-03
-
-Both reference adapters attached: MT7921U (ALFA, `0e8d:7961`) transmitting and measuring, MT7925U
-(Netgear A9000, `0846:9072`) receiving independently on the same channel. Pinned firmware.
-
-```bash
-./.venv/bin/python research/cross_measure.py --band 2.4GHz --channel 1 --seconds 10 \
-    --transmit 60 --acknowledge-experimental-transmit
-```
-
-The transmitting radio sends spaced wildcard Probe Requests from a locally administered address
-and brackets the burst with its own MIB counters; the second radio counts how many of those
-frames it actually decodes off the air.
-
-### Over-the-air radiation, previously unproven
-
-The earlier injection entry recorded that bulk-write acceptance "does not prove over-the-air RF
-radiation" for want of an independent receiver. There is one now.
-
-| Band, channel | Frames sent | Decoded by the second radio |
-|---|---|---|
-| 2.4 GHz ch 1 | 60 | **60** |
-| 2.4 GHz ch 1 | 300 | 298 |
-| 2.4 GHz ch 1 | 3 | 0 |
-| 5 GHz ch 149 | 300 | **0** (two runs) |
-
-The radios rendezvous on a barrier after tuning and sampling their counters, so the burst lands
-inside the window meant to contain it. Before that barrier existed the same procedure recovered
-151 and 152 of 300: the sender slept a fixed interval instead, which cannot work when the two
-chips take different times to boot firmware, and roughly half of each burst fell outside the
-dwell. A fixed sleep in place of a rendezvous does not fail loudly -- it just returns a smaller
-number.
-
-- **Criterion**: a second radio tuned to the same channel decodes frames whose transmitter is
-  the synthetic source address, which nothing else on air uses.
-- **Result**: injection radiates on 2.4 GHz. Within the repository's documented 60-frame
-  envelope, all 60 are decoded by the observing radio while it also handles ambient traffic.
-  Three frames were not enough to be caught. The 300-frame row predates the restoration of that
-  limit and is kept because it is the same result at a larger count.
-- **Injection does not radiate on 5 GHz**, consistent with the C driver refusing to submit above
-  2.4 GHz. Recorded in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
-
-### What separates offset 11 from offset 14 is not transmit, and is not established
-
-A controlled burst was expected to settle this and did not. Both counters were read around the
-same window on the transmitting radio:
-
-| Frames sent | Burst window | `p_cca_time` | `cca_nav_tx_time` | difference | difference per second of window |
-|---|---|---|---|---|---|
-| 3 | 34,698 µs | 13,095 µs | 16,336 µs | 3,241 µs | 93,000 µs/s |
-| 300 | 2,174,152 µs | 1,359,445 µs | 1,677,954 µs | 318,509 µs | 146,000 µs/s |
-| 60 | ~3,000,000 µs | — | — | 267,606 µs | 89,000 µs/s |
-| **0 (control)** | 10,006,148 µs | 2,183,232 µs | 3,153,598 µs | **970,366 µs** | **97,000 µs/s** |
-
-**The control is the point.** With nothing transmitted at all, the difference is 9.7% of the
-dwell — a higher rate than during the 60-frame burst. The difference tracks elapsed time, not
-frames transmitted, and transmitting 60 frames does not raise it above the ambient rate.
-
-An earlier reading of the first two rows claimed the difference grows 98× for 100× the frames.
-That comparison changed the frame count and the burst duration together — the window grew 63×
-between them — so it measured duration and attributed it to frames. Per frame it gives 1,080 and
-1,062 µs, which looked like agreement to 1.7%; the 60-frame run gives 4,460 µs for the same
-quantity, and the zero-frame control gives a larger difference than any of them.
-
-What survives: `cca_nav_tx_time` is consistently the larger of the two, by 9-15% of the dwell on
-a busy channel. That is consistent with its name — CCA plus NAV plus TX against primary CCA
-alone — with the NAV component, set by *other* stations' duration fields, dominating whatever
-the local radio transmits. **Nothing here isolates the TX term**, and the transmit contribution
-of 60 frames is below the ambient variation. Distinguishing them needs an experiment on a quiet
-channel where NAV is near zero, which channel 1 is not.
-
-The radiation result above *is* a known ground truth — the number of frames is chosen, not
-observed — and it holds. The counter comparison is not: it was run against ambient traffic that
-turned out to dominate the effect being looked for.
 
 ## Channel occupancy over the MCU: 2026-09-03
 

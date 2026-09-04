@@ -143,32 +143,6 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   `null` on an MT7925 reflects missing identification rather than missing hardware.
 - **Code:** `research/mib_offset_sweep.py`, `research/mcu_command_probe.py`.
 
-## Two radios on one channel agree on decoded airtime
-
-Not a negative result, recorded here because it is the control that makes the entry above
-meaningful: the MT7925 is receiving correctly, it simply will not answer EXT commands.
-
-- **Tried:** `research/cross_measure.py --band 5GHz --channel 36 --seconds 8`, both adapters
-  tuned to the same channel, 2026-09-03.
-- **Observed:** 801 frames and 175,142 µs of decoded airtime on the MT7921 against 824 frames
-  and 177,971 µs on the MT7925 — 2.8% and 1.6% apart. Two independent receivers see the same
-  air, so a disagreement in the counters is about the counters.
-
-## Injection does not radiate on 5 GHz
-
-- **Tried:** `research/cross_measure.py --band 5GHz --channel 149 --transmit 300
-  --acknowledge-experimental-transmit`, twice, 2026-09-03. The MT7921U injected 300 spaced Probe
-  Requests from a synthetic source address while the MT7925U decoded on the same channel.
-- **Observed:** 300 frames accepted by the USB endpoint, the chip alive afterwards, and **zero**
-  decoded by the observing radio. The same procedure on 2.4 GHz channel 1 yields 151 and 152 of
-  300, so the receiver and the matching both work.
-- **Consistent with the C driver**, which fails closed and submits zero frames above 2.4 GHz
-  (docs/TESTING.md, rate-limited probe request submission). This is that restriction observed
-  from the air rather than from the code.
-- **Not ruled out:** a 5 GHz TX path that needs rate or power configuration the injector does not
-  set; regulatory gating in firmware. Nothing here distinguishes those.
-- **Code:** `research/cross_measure.py`.
-
 ## The IPI sampler does not start, by four routes
 
 - **Tried, all on the reference MT7921U:** `RDD_IPI_HIST_CTRL` (0xa3) `CR_INIT`,
@@ -192,19 +166,3 @@ meaningful: the MT7925 is receiving correctly, it simply will not answer EXT com
   mode, which `WIFI_SPECTRUM` also appears to need; a firmware build without it.
 - **Code:** `research/ipi_hist_cmd.py`, `research/ipi_probe.py`.
 
-## A transmit burst does not separate offset 14 from offset 11
-
-- **Tried:** `research/cross_measure.py --transmit` on 2.4 GHz channel 1 with 3, 60 and 300
-  frames, reading `P_CCA_TIME` and `CCA_NAV_TX_TIME` around each burst, 2026-09-03 and 09-04.
-- **Observed:** the difference between the two counters grows with the burst *window*, not with
-  the number of frames. A zero-transmit control over a 10 s dwell on the same channel gives
-  970,366 µs of difference, 9.7% of the dwell — a higher rate than the 60-frame burst's 8.9%.
-- **What went wrong the first time:** comparing 3 frames against 300 changed the frame count and
-  the burst duration together, the window growing 63× between them. The resulting "98× for 100×
-  the frames" measured duration and attributed it to frames, and a per-frame figure that agreed
-  to 1.7% across those two points disagrees by 4× once a third spacing is tried.
-- **Not ruled out:** that `CCA_NAV_TX_TIME` does include a TX term, which its name says. The
-  experiment cannot see it because the NAV component — other stations' duration fields — is far
-  larger on a busy channel. A quiet channel where NAV is near zero would isolate it; channel 1
-  is not that channel.
-- **Code:** `research/cross_measure.py`, `scripts/mib_survey.py` for the control.
