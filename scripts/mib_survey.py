@@ -135,7 +135,8 @@ def mcu_counters(dev, band_idx: int = 0) -> dict[str, int | None]:
                 )
             )
             out[name] = mcs.parse_mt7921_value(body)
-        except (m.McuError, RuntimeError):
+        except (m.McuError, RuntimeError, usb.core.USBError):
+            # USBError derives from OSError; an unimplemented offset simply never answers.
             out[name] = None
     return out
 
@@ -182,7 +183,11 @@ def dwell(
         "width_mhz": width,
         "dwell_us": round(elapsed_us),
         "mcu_counters": mcu,
-        "busy_fraction": round(busy_us / elapsed_us, 4) if (busy_us and elapsed_us) else None,
+        # `busy_us or 0` would discard a genuine zero, which is exactly what a silent
+        # channel reports and is a result worth keeping.
+        "busy_fraction": (
+            round(busy_us / elapsed_us, 4) if (busy_us is not None and elapsed_us) else None
+        ),
         "frames_decoded": frames,
         "decoded_airtime_us": round(decoded_airtime_us),
         # The number this script exists to produce. Positive means the hardware counted
@@ -192,7 +197,7 @@ def dwell(
         # Read the sign as "the decoder saw essentially all of it", not as a fault. Measured
         # 2026-09-03: +149,217 us on 2.4 GHz channel 6 against -8,836 us on 5 GHz channel 36
         # in the same run.
-        "undecoded_busy_us": round(busy_us - decoded_airtime_us) if busy_us else None,
+        "undecoded_busy_us": (round(busy_us - decoded_airtime_us) if busy_us is not None else None),
         "usb_errors": usb_errors,
         "warnings": [],
     }
@@ -204,6 +209,11 @@ def dwell(
     if busy_us is None:
         result["warnings"].append("the MCU did not return a CCA counter")
         return result
+    if busy_us == 0:
+        result["warnings"].append(
+            "zero occupancy: a real reading on a silent channel, but "
+            "also what a stopped counter looks like"
+        )
     # A counter wrap over a short dwell would also land here, which is why the wrap period is
     # stated above: at 1 us/tick nothing under 16 s can wrap once.
     if busy_us > elapsed_us:

@@ -94,3 +94,21 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   and decodes them under the same configuration: 1736 frames at 160 MHz in 10 s, including HE
   data from a known transmitter ([docs/TESTING.md](docs/TESTING.md#160-mhz-capture-with-a-controlled-transmitter-same-day)),
   so this entry is a per-chip limit, not a driver one.
+
+## The IPI histogram is not at the mt7915 register address on MT7921
+
+- **Tried:** `research/ipi_probe.py` on the reference MT7921U, 5 GHz channel 36, 2026-09-03.
+  Read-only survey of `MT_WF_IRPI_BASE` (`0x83000000`), `MT_WF_PHY_BASE` (`0x83080000`) and
+  1024 words at `MT_WF_IRPI_NSS(0, 0)` (`0x83006000`), plus both chains' 11 bins.
+- **Observed:** the address space is reachable -- 64 words at each base read without error,
+  48 and 12 distinct values respectively -- so the USB register window does reach
+  `0x83xxxxxx`. The IRPI window itself reads a single value, `0x00000000`, across all 1024
+  words, and every bin on both chains is zero. `0x83000000`'s live words are dominated by
+  `0x35353535` (ASCII `5555`), which is not register-shaped; `0x83080000` is
+  (`0x1000`, `0x3800`, `0xfffcfffc`).
+- **Not ruled out:** the histogram living at a different offset on this part; the sampler
+  being off, since `RDD_IPI_HIST_CTRL` reports all-zero bins *and* a stopped free-running
+  counter over the MCU, which is consistent with nothing sampling anywhere rather than with
+  the wrong address; a write to `MT_WF_PHY_RX_CTRL1_IPI_EN` starting it.
+- **Code:** `research/ipi_probe.py`, reproducible from this tree; exits 2 when no histogram
+  is found.

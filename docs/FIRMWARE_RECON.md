@@ -188,7 +188,7 @@ Read, per dwell: `MT_MIB_SDR9` bits 23:0 (CCA busy µs), `MT_MIB_SDR36` (TX airt
    driver decodes little — i.e. the counter sees something the sniffer does not. This is the
    whole point; if it fails, Spike A measures nothing new.
 
-### Spike B — IPI/IRPI histogram, a real noise floor (`scripts/ipi_probe.py`)
+### Spike B — IPI/IRPI histogram, a real noise floor (`research/ipi_probe.py`)
 
 Confidence: unknown, and now the fallback rather than the main route -- Spike D reaches a
 comparable measurement through a documented command interface. Keep it for the case where
@@ -492,6 +492,26 @@ or the sampler may need a PHY register poked directly, which is where Spike B's
 verify against, which is what it lacked before.
 
 If that works it is a real noise floor on a part whose driver reports none.
+
+### Spike B, run: the window is mapped, the histogram is not there
+
+Run for the first time 2026-09-03, and it answered the question it was written for. The USB
+register window **does** reach `0x83xxxxxx`: 64 words at `0x83000000` returned 48 distinct
+values with no errors, and `0x83080000` likewise. So "can we reach the PHY register space
+over USB at all" is settled, yes.
+
+The histogram is not at mt7915's address. The 1024-word window at
+`MT_WF_IRPI_NSS(0, 0)` = `0x83006000` reads as a single value, `0x00000000`, and both chains'
+bins are zero. Nor does `0x83000000` look like a register block on this part: its live words
+are dominated by `0x35353535`, which is ASCII `5555` — mapped memory holding something else.
+`0x83080000` reads more like registers (`0x1000`, `0x3800`, `0xfffcfffc`).
+
+That makes the spike's remaining value concrete rather than speculative. A write to
+`MT_WF_PHY_RX_CTRL1_IPI_EN` was previously untestable, because there was no way to check
+whether it had done anything. There is now: `RDD_IPI_HIST_CTRL` returns a documented 56-byte
+histogram whose bins and free-running counter are all zero, so a write that starts the
+sampler would be visible immediately. The probe still refuses `--enable`; lifting that is a
+deliberate step, taken with a verification path in hand.
 
 ## How to hunt a command
 

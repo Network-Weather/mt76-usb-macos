@@ -33,6 +33,8 @@ import time
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
 
+import usb.core  # noqa: E402
+
 import mt7921u as m  # noqa: E402
 
 FW_DIR = m.firmware_dir()
@@ -195,7 +197,10 @@ def query_mib(dev, band: int, offsets: list[int], timeout: int = 3000) -> dict:
     req = build_mib_request(band, offsets)
     try:
         rxd = dev.mcu_cmd_word(m.MCU_EXT_CMD(MCU_EXT_CMD_GET_MIB_INFO), req, timeout=timeout)
-    except (m.McuError, RuntimeError) as exc:
+    except (m.McuError, RuntimeError, usb.core.USBError) as exc:
+        # An offset this chip does not implement never answers at all, so a timeout here is
+        # an ordinary result. usb.core.USBError derives from OSError, not RuntimeError, and
+        # leaving it uncaught crashed the sweep on hardware (2026-09-03).
         return {"offsets": offsets, "error": str(exc), "values": {}}
     body = dev.reply_body(rxd)
     if is_refusal(body, MCU_EXT_CMD_GET_MIB_INFO):
@@ -205,7 +210,15 @@ def query_mib(dev, band: int, offsets: list[int], timeout: int = 3000) -> dict:
             "values": {},
             "error": "firmware does not implement GET_MIB_INFO",
         }
-    values = parse_mib_reply(body, band, offsets)
+    # This chip does not echo {band, offs} pairs back and does not fill the entry's `data`
+    # field, so the documented parser finds nothing here. A single-entry request carries its
+    # counter as one word at a fixed position instead; anything longer is read the documented
+    # way, since that is the only shape parse_mib_reply can make sense of.
+    if len(offsets) == 1:
+        value = parse_mt7921_value(body)
+        values = {offsets[0]: value} if value is not None else {}
+    else:
+        values = parse_mib_reply(body, band, offsets)
     result = {"offsets": offsets, "reply_bytes": len(body), "values": values}
     missing = [o for o in offsets if o not in values]
     if missing:
@@ -221,7 +234,7 @@ def query_phy_category(dev, band: int, category: int, timeout: int = 3000) -> di
     entry = {"category": category, "name": PHY_STATE_NAMES.get(category, "unnamed")}
     try:
         rxd = dev.mcu_cmd_word(m.MCU_EXT_CMD(MCU_EXT_CMD_PHY_STAT_INFO), req, timeout=timeout)
-    except (m.McuError, RuntimeError) as exc:
+    except (m.McuError, RuntimeError, usb.core.USBError) as exc:
         entry["answered"] = False
         entry["error"] = str(exc)
         return entry
@@ -275,7 +288,10 @@ def judge_phy_sweep(entries: list[dict]) -> dict:
 
 def sweep_mib(dev, band: int, offsets: list[int], seconds: float) -> dict:
     """Read every offset twice around a dwell; a counter is only real if it moves."""
-    batches = [offsets[i : i + MIB_BATCH] for i in range(0, len(offsets), MIB_BATCH)]
+    # One offset per request. Batching is the documented shape and mt7915 uses it, but this
+    # chip answers a single-entry request with one counter and no echo, so a batch would be
+    # unreadable however it were parsed.
+    batches = [[o] for o in offsets]
     before: dict[int, int] = {}
     errors = []
     for batch in batches:
@@ -294,15 +310,19 @@ def sweep_mib(dev, band: int, offsets: list[int], seconds: float) -> dict:
         if offs not in after:
             continue
         value = after[offs]
-        delta = value - before.get(offs, 0)
+        # A missing baseline is not a zero baseline. Substituting one turns "we failed to
+        # read this before the dwell" into a delta equal to the whole free-running counter,
+        # which reads as a spectacular amount of traffic.
+        base = before.get(offs)
+        delta = None if base is None else value - base
         counters[offs] = {
             "name": NAMED_OFFSETS.get(offs),
-            "before": before.get(offs),
+            "before": base,
             "after": value,
             "delta": delta,
             # Only a counter that moved is evidence of a live measurement. A static
             # non-zero value may still be meaningful, so it is reported, not discarded.
-            "moved": delta > 0,
+            "moved": bool(delta and delta > 0),
             "dead_value": value in DEAD_VALUES,
         }
     return {
@@ -320,6 +340,12 @@ def main() -> int:
     parser.add_argument("--channel", type=int, default=36)
     parser.add_argument("--seconds", type=float, default=4.0)
     parser.add_argument("--sweep", type=parse_sweep, help="also try this offset range, e.g. 0:128")
+    parser.add_argument(
+        "--published",
+        action="store_true",
+        help="use the mt7915/mt7916 offsets instead; this chip refuses them, and the option "
+        "exists so that result stays reproducible",
+    )
     parser.add_argument("--phy-max", type=int, default=PHY_CATEGORY_DEFAULT_MAX)
     parser.add_argument("--band-idx", type=int, default=0, help="hardware band index")
     args = parser.parse_args()
@@ -328,7 +354,10 @@ def main() -> int:
     if not 0 <= args.phy_max <= 255:
         parser.error("--phy-max must be between 0 and 255")
 
-    offsets = sorted(NAMED_OFFSETS)
+    # Default to what this chip accepts, not to the published schemes it refuses -- each
+    # unimplemented offset costs a full timeout and returns nothing. --published asks for
+    # the mt7915/mt7916 numbering, which is how that negative result stays reproducible.
+    offsets = sorted(NAMED_OFFSETS) if args.published else list(MT7921_ACCEPTED_OFFSETS)
     if args.sweep:
         offsets = sorted(set(offsets) | set(args.sweep))
 

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 # Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
-"""Offline tests for the firmware/PHY reconnaissance spikes.
+"""Offline tests for the firmware reconnaissance work, in scripts/ and research/.
 
 No adapter, no firmware upload, no USB. These cover the pure helpers that decide what a
 reading means -- the classification thresholds, the plausibility guards, and the noise-floor
@@ -15,8 +15,8 @@ import struct
 import pytest
 
 import mt7921u as ms_mod  # the driver itself, for its MCU command-word encoder
+from research import ipi_probe as ip
 from scripts import fw_triage as ft
-from scripts import ipi_probe as ip
 from scripts import mcu_stats as mcs
 from scripts import mib_survey as ms
 
@@ -523,3 +523,77 @@ def test_the_offsets_the_sweep_rejected_are_the_ones_the_vendor_enum_leaves_unde
 def test_primary_cca_time_is_the_offset_named_for_channel_occupancy():
     assert mcs.MIB_PRIMARY_CCA_TIME == 11
     assert mcs.MIB_OFFSETS_MT7921[mcs.MIB_PRIMARY_CCA_TIME].endswith("_us")
+
+
+# --- the sweep path end to end, which is where the parser choice actually bites -----------
+
+
+class _FakeMcuDev:
+    """Just enough device to drive query_mib/sweep_mib without hardware.
+
+    Answers a single-entry request the way an MT7921U does: 24 bytes of header, then a copy
+    of the request, with the counter as one word at byte 28 and no echoed {band, offs} pair.
+    """
+
+    MCU_RXD_LEN = 0
+
+    def __init__(self, values, fail_first=()):
+        self.values = dict(values)
+        self.fail_first = set(fail_first)
+        self.seen = []
+
+    def reply_body(self, rxd):
+        return rxd
+
+    def mcu_cmd_word(self, cmd, payload, timeout=0):
+        _band, offs = struct.unpack_from("<II", payload, 0)
+        self.seen.append(offs)
+        if offs in self.fail_first:
+            self.fail_first.discard(offs)
+            raise RuntimeError("no response")
+        body = bytearray(24 + len(payload))
+        struct.pack_into("<I", body, 28, self.values.get(offs, 0))
+        return bytes(body)
+
+
+def test_query_mib_reads_a_single_entry_reply_the_way_this_chip_answers():
+    dev = _FakeMcuDev({11: 573949})
+    out = mcs.query_mib(dev, 0, [11])
+    assert out["values"] == {11: 573949}
+    assert "not_echoed" not in out
+
+
+def test_sweep_mib_finds_a_counter_that_moved():
+    # The entry point, not the parser: this is the path a caller actually runs, and it is
+    # where using the documented parser instead of this chip's would silently find nothing.
+    class Advancing(_FakeMcuDev):
+        def mcu_cmd_word(self, cmd, payload, timeout=0):
+            body = super().mcu_cmd_word(cmd, payload, timeout)
+            self.values[11] += 500  # the counter runs while we read it
+            return body
+
+    out = mcs.sweep_mib(Advancing({11: 1000}), 0, [11], 0.0)
+    entry = out["counters"]["11"]
+    assert out["echoed"] == 1
+    assert entry["before"] == 1000
+    assert entry["delta"] == 500
+    assert entry["moved"] is True
+    assert out["moved"] == 1
+
+
+def test_sweep_mib_sends_one_offset_per_request():
+    dev = _FakeMcuDev(dict.fromkeys((2, 11, 14), 1))
+    mcs.sweep_mib(dev, 0, [2, 11, 14], 0.0)
+    # Two passes over three offsets, one offset per request.
+    assert dev.seen == [2, 11, 14, 2, 11, 14]
+
+
+def test_a_failed_baseline_read_does_not_become_a_zero_baseline():
+    # The whole free-running counter would otherwise be reported as one dwell's traffic.
+    dev = _FakeMcuDev({11: 5_000_000}, fail_first=[11])
+    out = mcs.sweep_mib(dev, 0, [11], 0.0)
+    entry = out["counters"]["11"]
+    assert entry["before"] is None
+    assert entry["delta"] is None
+    assert entry["moved"] is False
+    assert out["moved"] == 0
