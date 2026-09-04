@@ -5,6 +5,24 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+### Added
+
+- `rxd.parse_multi_link` decodes the 802.11be Multi-Link element: the MLD address, the Basic
+  variant's Common Info subfields, and each Per-STA Profile's link id and address, reassembling
+  element (242) and subelement (254) fragments first. `rxd.station_addresses` returns every
+  address identifying a frame's transmitter, so a watcher can follow a multi-link client across
+  links where each link uses a different address.
+- `roam_watch.py --width` captures at 20, 40, 80, or 160 MHz, resolving the center channel from
+  the control channel with `mt7921u.center_channel`. It refuses a 2.4 GHz width above 20 MHz, a
+  channel outside every block of that width, and a width the attached chip has no evidence for
+  (`MAX_WIDTH_MHZ`, 80 on the MT7921U and 160 on the MT7925U).
+- `scripts/dual_capture.py` runs two adapters at once, each on its own band, channel, and width,
+  merged into one event log on one clock (roadmap R16). Adapters are selected by USB id or by the
+  port they are attached to, so two of the same model are separable without a serial number.
+  `mt7921u.describe_supported_devices()` is the inventory behind it. The result reports the
+  interval when every radio was actually listening, since each boots its own firmware and the
+  chips do not take the same time to do it.
+
 ### Documentation
 
 - MT7921U regression on the 0.3.0 code with both adapters attached: both tools refuse an ambiguous

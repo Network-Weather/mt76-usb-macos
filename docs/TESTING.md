@@ -624,6 +624,100 @@ partial_aid(2). `tests/test_pcap.py` now derives the expected `it_len` from the 
 every mode the writer emits, which fails on the old code and passes on the new.
 
 The C writer in `c/mt7921_rxd.c` was already correct and is unchanged.
+## Two adapters capturing at once: 2026-09-03
+
+**Claim**: one process can drive both reference adapters concurrently, each locked to its own
+band, channel, and width, with per-radio counters and one shared clock. This is what lets a
+roam be watched on the source and target channels at the same time (roadmap R16).
+
+**Test bed**: MT7921U `0e8d:7961` (ALFA AWUS036AXML) on 5 GHz control channel 132 at 80 MHz, and
+MT7925U `0846:9072` (Netgear Nighthawk A9000) on 6 GHz control channel 53 at 160 MHz, both
+attached to the same host. Ambient traffic, no controlled transmitter. macOS 15, Python 3.14.
+
+**Command**:
+
+```
+./.venv/bin/python scripts/dual_capture.py --list
+./.venv/bin/python scripts/dual_capture.py \
+    --radio 0e8d:7961=5GHz:132@80 --radio 0846:9072=6GHz:53@160 --duration 90
+```
+
+**Acceptance criterion**: both radios report frames, neither reports a USB error, neither reports
+a frame whose descriptor names another channel, and the process exits 0.
+
+**Result**: two runs, 60 s and 90 s, both clean.
+
+| run | radio | chip | frames | off channel | USB errors | USB timeouts |
+| --- | --- | --- | --- | --- | --- | --- |
+| 60 s | 5GHz:132@80 | mt7921 | 5918 | 0 | 0 | 0 |
+| 60 s | 6GHz:53@160 | mt7925 | 9521 | 0 | 0 | 0 |
+| 90 s | 5GHz:132@80 | mt7921 | 7850 | 0 | 0 | 0 |
+| 90 s | 6GHz:53@160 | mt7925 | 15028 | 0 | 0 | 0 |
+| 300 s | 5GHz:132@80 | mt7921 | 30750 | 0 | 0 | 0 |
+| 300 s | 6GHz:53@160 | mt7925 | 49870 | 0 | 0 | 0 |
+
+Neither chip's throughput suggests contention: the 300 s run collected 80 620 frames between the
+two radios with no error of any kind. The single-adapter path is unchanged and its scripts still
+take one adapter.
+
+The 300 s run watched the 5 GHz and 6 GHz links of one access point, which the Multi-Link element
+identifies as a single multi-link device, and recorded three management events, all of them
+protected action frames whose bodies are correctly reported as encrypted rather than guessed at.
+No client transition occurred, because none was forced.
+
+A roam observed on both a source and a target channel therefore remains unmeasured. Forcing one
+needs a client driven across a boundary, so it belongs with R15 rather than with this plumbing.
+This is the state of the evidence, not a negative result about the hardware.
+
+### The radios do not start together, same day
+
+Each radio starts its window once its own firmware is up, and the two chips do not take the same
+time. Timed three consecutive times with the threading the capture uses, the MT7925 was ready at
+1.83 s and the MT7921 at 2.81 s, a gap of 0.98 s that repeated to 0.01 s. A 30 s run reported
+`startup_gap_s` 0.985 and a shared window of 29.02 s, agreeing with the separate measurement.
+
+So a run has roughly one second at each end during which only one radio is listening. That sits
+at the beginning, before an operator has triggered anything, which is why it has not affected any
+result recorded here. It would matter for a roam, where the steering exchange and the
+reassociation that answers it are milliseconds apart on two channels. The result reports the
+interval when every radio was listening rather than implying the whole run was covered; closing
+the gap needs a barrier after tuning with one shared deadline.
+
+### Port addresses are reassigned on every firmware boot, same day
+
+`--list` reported the adapters at `2:9` and `2:20`, and after a capture run the same two adapters
+were at `2:21` and `2:22`. A USB device address is assigned at enumeration, and booting firmware
+re-enumerates the adapter, so a port address is valid for the run that follows the listing and
+not for the next one. This is why `--radio` accepts a USB id as well: an id names the model and
+survives, while a port address is only needed to separate two adapters that share an id, and must
+be read immediately before use.
+
+## Multi-Link elements over the air on both chips: 2026-09-03
+
+**Claim**: the Multi-Link element decoder reads real 802.11be beacons on both chips, and the MLD
+address it reports differs from the transmitter address, which is the case that defeats matching a
+station by one address.
+
+**Test bed**: the same two adapters. A Wi-Fi 7 access point in range advertising on 5 and 6 GHz.
+
+**Acceptance criterion**: frames carrying element 255 extension 107 decode without truncation, and
+tshark independently reports the same MLD address for the same transmitter.
+
+**Result**: on the MT7921U at 5 GHz 132 / 80 MHz, 293 beacons in 30 s carried a Basic Multi-Link
+element that decoded with no truncation, reporting an MLD address two octets different from the
+transmitter address, plus link id, BSS parameters change count, EML capabilities, and MLD
+capabilities. On the MT7925U at 6 GHz 53 / 160 MHz, 391 beacons in 40 s carried the same MLD
+address from a different transmitter address, confirming across chips and bands that the element
+ties an access point's per-band addresses to one device.
+
+A 25 s pcap from the same channel was dissected with tshark, whose
+`wlan.eht.multi_link.common_info.mld_mac_address` field matched this decoder's `mld_mac` exactly
+for the one transmitter present, over 246 frames.
+
+Per-STA profiles carrying a client's per-link addresses were not captured: an access point's
+beacon does not include them, and no client association was observed during these runs. The
+decoder's handling of per-STA profiles and of element and subelement fragmentation is covered by
+synthetic fixtures cross-checked against tshark in `tests/test_multi_link.py`, not by air.
 
 ## Previously observed, not rerun in the current validation
 

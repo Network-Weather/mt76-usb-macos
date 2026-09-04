@@ -128,3 +128,45 @@ def test_the_uppermost_five_ghz_forty_megahertz_block_exists():
     assert m.center_channel("5GHz", 173, 40) == 175
     assert m.center_channel("5GHz", 177, 40) == 175
     assert len(m.CENTER_CHANNELS[("5GHz", 40)]) == 14
+
+
+@pytest.mark.parametrize(
+    ("band", "channel"),
+    [("5GHz", 999), ("2.4GHz", 999), ("6GHz", 234), ("5GHz", 34), ("2.4GHz", 15), ("6GHz", 0)],
+)
+def test_a_channel_the_band_does_not_have_is_refused_at_twenty_megahertz_too(band, channel):
+    # A 20 MHz channel is its own center, so without a channel-plan check any integer
+    # would validate and be handed to the firmware.
+    assert m.center_channel(band, channel, 20) is None
+
+
+@pytest.mark.parametrize(
+    ("band", "channel"),
+    [("2.4GHz", 1), ("2.4GHz", 14), ("5GHz", 36), ("5GHz", 177), ("6GHz", 1), ("6GHz", 233)],
+)
+def test_the_edges_of_each_band_are_still_accepted(band, channel):
+    assert m.center_channel(band, channel, 20) == channel
+
+
+def test_six_ghz_channel_two_is_a_real_twenty_megahertz_channel():
+    # center_idx_to_bw_6ghz() reports 20 MHz for index 2 specifically, so it is valid at
+    # 20 MHz even though it belongs to no wider block.
+    assert m.center_channel("6GHz", 2, 20) == 2
+    assert m.center_channel("6GHz", 2, 40) is None
+    assert m.center_channel("6GHz", 2, 80) is None
+
+
+def test_every_control_channel_a_block_implies_is_in_its_band_plan():
+    for (band, width), centers in m.CENTER_CHANNELS.items():
+        outermost = width // 10 - 2
+        for center in centers:
+            for offset in range(-outermost, outermost + 1, 4):
+                channel = center + offset
+                assert channel in m.CONTROL_CHANNELS[band], (band, width, center, channel)
+
+
+def test_each_band_has_the_number_of_twenty_megahertz_channels_it_is_defined_to_have():
+    assert len(m.CONTROL_CHANNELS["2.4GHz"]) == 14
+    assert len(m.CONTROL_CHANNELS["5GHz"]) == 28
+    # 59 channels at 1, 5, 9 ... 233, plus the standalone channel 2.
+    assert len(m.CONTROL_CHANNELS["6GHz"]) == 60
