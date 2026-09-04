@@ -572,7 +572,7 @@ def test_sweep_mib_finds_a_counter_that_moved():
             self.values[11] += 500  # the counter runs while we read it
             return body
 
-    out = mcs.sweep_mib(Advancing({11: 1000}), 0, [11], 0.0)
+    out = mcs.sweep_mib(Advancing({11: 1000}), 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
     entry = out["counters"]["11"]
     assert out["echoed"] == 1
     assert entry["before"] == 1000
@@ -583,7 +583,7 @@ def test_sweep_mib_finds_a_counter_that_moved():
 
 def test_sweep_mib_sends_one_offset_per_request():
     dev = _FakeMcuDev(dict.fromkeys((2, 11, 14), 1))
-    mcs.sweep_mib(dev, 0, [2, 11, 14], 0.0)
+    mcs.sweep_mib(dev, 0, [2, 11, 14], 0.0, mcs.MIB_OFFSETS_MT7921)
     # Two passes over three offsets, one offset per request.
     assert dev.seen == [2, 11, 14, 2, 11, 14]
 
@@ -591,9 +591,53 @@ def test_sweep_mib_sends_one_offset_per_request():
 def test_a_failed_baseline_read_does_not_become_a_zero_baseline():
     # The whole free-running counter would otherwise be reported as one dwell's traffic.
     dev = _FakeMcuDev({11: 5_000_000}, fail_first=[11])
-    out = mcs.sweep_mib(dev, 0, [11], 0.0)
+    out = mcs.sweep_mib(dev, 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
     entry = out["counters"]["11"]
     assert entry["before"] is None
     assert entry["delta"] is None
     assert entry["moved"] is False
     assert out["moved"] == 0
+
+
+def test_the_default_sweep_names_counters_with_this_chips_map():
+    # The defect this replaced: offsets 6 and 8 were labelled tx_time and rx_time from the
+    # mt7916 scheme while the counters that actually move came back unnamed.
+    default = mcs.names_for(published=False)
+    assert default is mcs.MIB_OFFSETS_MT7921
+    assert default.get(6) is None
+    assert default.get(8) is None
+    assert default[11] == "p_cca_time_us"
+    published = mcs.names_for(published=True)
+    assert published[6] == "tx_time"
+    assert published[87] == "non_wifi_time"
+
+
+def test_the_named_counters_survive_a_default_sweep():
+    dev = _FakeMcuDev({2: 5, 11: 100, 14: 120})
+    out = mcs.sweep_mib(dev, 0, [2, 11, 14], 0.0, mcs.names_for(published=False))
+    assert [c["name"] for c in out["counters"].values()] == [
+        "rx_mpdu",
+        "p_cca_time_us",
+        "cca_nav_tx_time_us",
+    ]
+
+
+def test_a_failure_in_the_second_pass_is_recorded_not_dropped():
+    # Otherwise a measurement that did not complete reads as "nothing moved", which is a
+    # negative result rather than a missing one.
+    class FailsLate(_FakeMcuDev):
+        def mcu_cmd_word(self, cmd, payload, timeout=0):
+            body = super().mcu_cmd_word(cmd, payload, timeout)
+            if self.seen.count(11) > 1:
+                raise RuntimeError("timed out after the dwell")
+            return body
+
+    out = mcs.sweep_mib(FailsLate({11: 7}), 0, [11], 0.0, mcs.MIB_OFFSETS_MT7921)
+    assert out["errors"]
+    assert out["moved"] == 0
+
+
+def test_one_answered_category_is_not_evidence_that_categories_differ():
+    verdict = mcs.judge_phy_sweep([{"answered": True, "refused": False, "reply_prefix": "aa"}])
+    assert verdict["verdict"].startswith("insufficient evidence")
+    assert "1 category answered" in verdict["verdict"]

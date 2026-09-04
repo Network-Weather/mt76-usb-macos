@@ -273,11 +273,17 @@ def judge_phy_sweep(entries: list[dict]) -> dict:
             "distinct_prefixes": len({e["reply_prefix"] for e in answered}),
         }
     prefixes = {e["reply_prefix"] for e in answered}
-    verdict = (
-        "stub: every category returned an identical prefix, so the request is not read"
-        if len(prefixes) == 1 and len(answered) > len(PHY_STATE_NAMES)
-        else "categories answered differently; worth reading the payloads"
-    )
+    if len(prefixes) == 1 and len(answered) > len(PHY_STATE_NAMES):
+        verdict = "stub: every category returned an identical prefix, so the request is not read"
+    elif len(prefixes) > 1:
+        verdict = "categories answered differently; worth reading the payloads"
+    else:
+        # One reply, or too few to have compared anything. Saying they "answered differently"
+        # here would promote a single sample into evidence about how the command behaves.
+        verdict = (
+            f"insufficient evidence: {len(answered)} categor"
+            f"{'y' if len(answered) == 1 else 'ies'} answered, nothing to compare"
+        )
     return {
         "verdict": verdict,
         "answered": len(answered),
@@ -286,8 +292,23 @@ def judge_phy_sweep(entries: list[dict]) -> dict:
     }
 
 
-def sweep_mib(dev, band: int, offsets: list[int], seconds: float) -> dict:
+def names_for(published: bool) -> dict[int, str]:
+    """The naming that goes with the offset scheme being swept.
+
+    An explicit choice rather than something inferred from the offsets, because the two
+    schemes overlap numerically and mean different things: 6 and 8 are `tx_time` and
+    `rx_time` under mt7916's numbering, and are accepted-but-unidentified counters on the
+    MT7921. Guessing from the offset set gets that backwards, and naming a sweep with the
+    wrong map does not fail loudly -- it mislabels, which is worse.
+    """
+    return NAMED_OFFSETS if published else MIB_OFFSETS_MT7921
+
+
+def sweep_mib(
+    dev, band: int, offsets: list[int], seconds: float, names: dict[int, str] | None = None
+) -> dict:
     """Read every offset twice around a dwell; a counter is only real if it moves."""
+    names = names_for(offsets) if names is None else names
     # One offset per request. Batching is the documented shape and mt7915 uses it, but this
     # chip answers a single-entry request with one counter and no echo, so a batch would be
     # unreadable however it were parsed.
@@ -304,6 +325,10 @@ def sweep_mib(dev, band: int, offsets: list[int], seconds: float) -> dict:
     for batch in batches:
         r = query_mib(dev, band, batch)
         after.update(r["values"])
+        if r.get("error"):
+            # Dropping this turns a failed second read into a silent "did not move", which
+            # reads as a negative result rather than as a measurement that did not complete.
+            errors.append(r)
 
     counters = {}
     for offs in offsets:
@@ -316,7 +341,7 @@ def sweep_mib(dev, band: int, offsets: list[int], seconds: float) -> dict:
         base = before.get(offs)
         delta = None if base is None else value - base
         counters[offs] = {
-            "name": NAMED_OFFSETS.get(offs),
+            "name": names.get(offs),
             "before": base,
             "after": value,
             "delta": delta,
@@ -377,7 +402,7 @@ def main() -> int:
         dev.set_sniffer(True)
         dev.tune(args.band, args.channel, args.channel, 20)
 
-        out["mib"] = sweep_mib(dev, args.band_idx, offsets, args.seconds)
+        out["mib"] = sweep_mib(dev, args.band_idx, offsets, args.seconds, names_for(args.published))
         out["phy_stat"] = [
             query_phy_category(dev, args.band_idx, c) for c in range(args.phy_max + 1)
         ]
