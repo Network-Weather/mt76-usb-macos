@@ -285,6 +285,56 @@ def triage(path: str, min_len: int = MIN_STRING_LEN) -> dict:
     return result
 
 
+def extract_regions(images: list[str], out_dir: str, min_len: int) -> int:
+    """Split every image into per-region files named for their load address and kind.
+
+    Written outside the repository by intent: firmware/ is gitignored and the blobs are
+    licensed (NOTICE.md), so these stay reproducible from the pinned images rather than
+    stored. Regenerate rather than keep.
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    written = 0
+    for path in images:
+        with open(path, "rb") as fh:
+            blob = fh.read()
+        stem = os.path.basename(path).removesuffix(".bin")
+        is_patch = "patch" in stem.lower()
+        try:
+            header = m.parse_patch(blob) if is_patch else m.parse_ram(blob)
+        except (ValueError, KeyError, IndexError) as exc:
+            print(f"skipping {stem}: {exc}", file=sys.stderr)
+            continue
+        if is_patch:
+            pieces = [
+                (
+                    f"s{i}",
+                    sec["addr"],
+                    blob[sec["offs"] : sec["offs"] + sec["size"]],
+                    "code" if patch_section_encryption(sec["sec_key_idx"]) == "PLAIN" else "enc",
+                )
+                for i, sec in enumerate(header.get("sections", []))
+            ]
+        else:
+            pieces = []
+            for region in split_regions(blob, header):
+                data = region["_data"]
+                feature_set = region["_feature_set"]
+                kind = classify_region(feature_set, entropy(data), 0, len(data))
+                if kind not in ("encrypted", "not-downloaded", "empty"):
+                    kind = classify_region(
+                        feature_set, entropy(data), len(extract_strings(data, min_len)), len(data)
+                    )
+                pieces.append((f"r{region['index']}", int(region["load_addr"], 16), data, kind))
+        for tag, addr, data, kind in pieces:
+            name = f"{stem}.{tag}.0x{addr:08x}.{kind}.bin"
+            with open(os.path.join(out_dir, name), "wb") as fh:
+                fh.write(data)
+            print(f"{name:<62} {len(data):>9,} B")
+            written += 1
+    print(f"\n{written} regions written to {out_dir}", file=sys.stderr)
+    return 0 if written else 2
+
+
 def print_report(results: list[dict]) -> None:
     for r in results:
         print(f"{r['image']}   {r['bytes']:,} bytes   build {r.get('build_date', '?')}")
@@ -325,6 +375,12 @@ def main() -> int:
     parser.add_argument("--strings-for", metavar="NAME", help="dump strings of one image")
     parser.add_argument("--region", type=int, help="with --strings-for, limit to one region")
     parser.add_argument("--min-len", type=int, default=MIN_STRING_LEN)
+    parser.add_argument(
+        "--extract-regions",
+        metavar="DIR",
+        help="write every region to DIR as <image>.r<N>.<load_addr>.<kind>.bin, for "
+        "disassembly experiments. The blobs are licensed and must never be committed.",
+    )
     args = parser.parse_args()
     if args.min_len < 1:
         parser.error("--min-len must be at least 1")
@@ -357,6 +413,9 @@ def main() -> int:
         for s in extract_strings(data, args.min_len):
             print(s)
         return 0
+
+    if args.extract_regions:
+        return extract_regions(images, args.extract_regions, args.min_len)
 
     results = [triage(p, args.min_len) for p in images]
     if args.json:

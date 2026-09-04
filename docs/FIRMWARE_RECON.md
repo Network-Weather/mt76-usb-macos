@@ -185,13 +185,27 @@ Done, 2026-09-03. Findings are in the two sections above. The disassembly follow
 meant to scope is **not** the next step: the MCU command interface below reaches the same
 measurements without needing the ISA.
 
-### Spike D — MIB and PHY stats over the MCU (not yet written)
+### Spike D — MIB and PHY stats over the MCU (`scripts/mcu_stats.py`)
 
 Confidence: high for `GET_MIB_INFO`, unknown for the unnamed `PHY_STAT_INFO` categories.
 
-Query `MCU_EXT_CMD_GET_MIB_INFO` for the counter offsets named in `mt7915/mcu.h:186`,
-`MIB_NON_WIFI_TIME` first, and sweep `MCU_EXT_CMD_PHY_STAT_INFO` categories past the five
-upstream names them.
+Queries `MCU_EXT_CMD_GET_MIB_INFO` for both published offset schemes at once — mt7915's
+81/82/86/87/88 and mt7916's 6/8/490/491 — reading every offset twice around a dwell, because
+a counter that does not move is not a live measurement. `--sweep LO:HI` widens the search
+when neither published scheme answers. `MCU_EXT_CMD_PHY_STAT_INFO` categories are then swept
+past the five named upstream, to see whether the firmware answers any others.
+
+Two details that decide whether the output means anything:
+
+- **The reply preamble length is unknown.** mt7915 skips 20 bytes before the counter array
+  and mt7916 skips none (`mt7915/mcu.c:3241`); MT7921's is published nowhere. So the parser
+  searches the reply for each echoed `{band, offs}` pair and reads the counter beside it,
+  which works whatever the preamble turns out to be and fails visibly rather than
+  misaligning by 20 bytes and reporting plausible nonsense.
+- **A refusal is a real answer.** The firmware carries
+  `%s: MIB counter index = %d not supported.`, so an out-of-range index is rejected rather
+  than answered with zeros. An offset that is not echoed back is reported as `not_echoed`
+  rather than as a zero counter.
 
 **What must be true:** the firmware answers the command at all on an MT7921U; supported
 indices return counters that grow with dwell time while unsupported ones are refused rather

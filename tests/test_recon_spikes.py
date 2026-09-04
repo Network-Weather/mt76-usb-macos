@@ -10,11 +10,14 @@ measurement. See docs/FIRMWARE_RECON.md.
 
 import argparse
 import math
+import struct
 
 import pytest
 
+import mt7921u as ms_mod  # the driver itself, for its MCU command-word encoder
 from scripts import fw_triage as ft
 from scripts import ipi_probe as ip
+from scripts import mcu_stats as mcs
 from scripts import mib_survey as ms
 
 # ---------------------------------------------------------------- fw_triage (Spike C)
@@ -303,3 +306,91 @@ def test_source_files_extracts_the_firmwares_own_build_paths():
 
 def test_source_files_ignores_a_bare_extension_without_a_stem():
     assert ft.source_files(["ends in .c", "and .h too"]) == []
+
+
+# ---------------------------------------------------------------- mcu_stats (Spike D)
+
+
+def test_mcu_command_ids_match_the_upstream_header():
+    # mt76 mt76_connac_mcu.h:1292 and :1309 at baseline c5a3bd91.
+    assert mcs.MCU_EXT_CMD_GET_MIB_INFO == 0x5A
+    assert mcs.MCU_EXT_CMD_PHY_STAT_INFO == 0xAD
+    # And the driver's own encoder must put them where fill_message looks.
+    assert ms_mod.MCU_EXT_CMD(mcs.MCU_EXT_CMD_GET_MIB_INFO) == 0xED | (0x5A << 8)
+
+
+def test_the_mib_entry_is_the_sixteen_byte_upstream_struct():
+    # struct mt7915_mcu_mib { __le32 band; __le32 offs; __le64 data; }
+    assert mcs.MIB_ENTRY_LEN == 16
+
+
+def test_both_published_offset_schemes_are_carried_and_disagree():
+    # The point of sweeping: mt7915 and mt7916 number the same four quantities differently,
+    # so MT7921's numbering cannot be assumed from either.
+    assert mcs.MIB_OFFSETS_V1[87] == "non_wifi_time"
+    assert mcs.MIB_OFFSETS_V2[491] == "non_wifi_time"
+    assert not set(mcs.MIB_OFFSETS_V1) & set(mcs.MIB_OFFSETS_V2)
+    assert "non_wifi_time" in mcs.NAMED_OFFSETS.values()
+
+
+def test_build_mib_request_lays_out_one_entry_per_offset_with_zero_data():
+    req = mcs.build_mib_request(1, [87, 81])
+    assert len(req) == 2 * mcs.MIB_ENTRY_LEN
+    band, offs, data = struct.unpack_from(mcs.MIB_ENTRY, req, 0)
+    assert (band, offs, data) == (1, 87, 0)
+    band, offs, data = struct.unpack_from(mcs.MIB_ENTRY, req, mcs.MIB_ENTRY_LEN)
+    assert (band, offs, data) == (1, 81, 0)
+
+
+def test_reply_parsing_survives_an_unknown_preamble_length():
+    # mt7915 skips 20 bytes and mt7916 skips 0; MT7921's is unknown, so the parser locates
+    # the echoed {band, offs} pair rather than trusting a fixed offset.
+    entry = struct.pack(mcs.MIB_ENTRY, 0, 87, 4242)
+    for preamble in (0, 4, 20, 37):
+        body = bytes(preamble) + entry
+        assert mcs.parse_mib_reply(body, 0, [87]) == {87: 4242}
+
+
+def test_reply_parsing_reports_nothing_for_an_offset_the_firmware_did_not_echo():
+    body = bytes(20) + struct.pack(mcs.MIB_ENTRY, 0, 87, 4242)
+    assert mcs.parse_mib_reply(body, 0, [81]) == {}
+
+
+def test_reply_parsing_does_not_read_past_the_end_of_a_truncated_reply():
+    # The pair is echoed but the 64-bit counter behind it is cut off.
+    body = bytes(8) + struct.pack("<II", 0, 87) + b"\x01\x02\x03"
+    assert mcs.parse_mib_reply(body, 0, [87]) == {}
+
+
+def test_reply_parsing_keys_on_the_band_so_another_bands_entry_is_not_misread():
+    body = struct.pack(mcs.MIB_ENTRY, 1, 87, 999)
+    assert mcs.parse_mib_reply(body, 0, [87]) == {}
+    assert mcs.parse_mib_reply(body, 1, [87]) == {87: 999}
+
+
+def test_the_five_named_phy_categories_match_upstream():
+    # enum at mt76_connac_mcu.h:1199; anything past 4 is unnamed and is what we are probing.
+    assert mcs.PHY_STATE_NAMES == {
+        0: "TX_RATE",
+        1: "RX_RATE",
+        2: "RSSI",
+        3: "CONTENTION_RX_RATE",
+        4: "OFDMLQ_CNINFO",
+    }
+
+
+def test_parse_sweep_accepts_a_bounded_range():
+    assert mcs.parse_sweep("0:16") == range(16)
+    assert mcs.parse_sweep("0x50:0x60") == range(80, 96)
+
+
+@pytest.mark.parametrize("bad", ["16", "8:8", "20:10", "-1:5", "0:2048", "a:b"])
+def test_parse_sweep_rejects_inverted_negative_or_oversized_ranges(bad):
+    with pytest.raises(argparse.ArgumentTypeError):
+        mcs.parse_sweep(bad)
+
+
+def test_the_batch_size_matches_what_upstream_sends():
+    # mt7915 declares req[5] and fills all five; a longer request is a plausible way to
+    # earn a blanket refusal that says nothing about the individual offsets.
+    assert mcs.MIB_BATCH == 5
