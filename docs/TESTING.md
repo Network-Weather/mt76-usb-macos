@@ -586,6 +586,45 @@ tshark -r py80.pcap -Y "_ws.malformed || _ws.expert.severity==error" | wc -l
   Python driver, 10 s: 865 frames, 7 of them 80 MHz PPDUs; 29 frames flagged by tshark, the
   VHT NDP Announcement population described above.
 
+## VHT radiotap length: 2026-09-03
+
+**Claim**: the Python pcap writer emitted the radiotap VHT field two bytes short, so Wireshark
+rejected every VHT frame it wrote; the field is now complete and the frames dissect.
+
+**Test bed**: MT7921U `0e8d:7961` (ALFA AWUS036AXML), macOS 15, 5 GHz control channel 132 with an
+80 MHz center, 25 to 30 second passive captures of ambient traffic. tshark 4.x for validation.
+
+**Commands**:
+
+```
+./.venv/bin/python examples/sniff_to_pcap.py 132 30 /tmp/vht.pcap 5GHz --width 80 --center 138
+tshark -r /tmp/vht.pcap -Y 'radiotap.present.vht == 1' | wc -l
+tshark -r /tmp/vht.pcap -Y '_ws.malformed' | wc -l
+```
+
+**Acceptance criterion**: zero packets match `_ws.malformed`, and a VHT frame's bandwidth, MCS,
+guard interval, and coding are all readable in the dissection.
+
+**Result**: before the fix, every frame carrying the VHT field was malformed and no frame was
+malformed for any other reason, in two independent captures.
+
+| capture | total frames | VHT present | malformed |
+| --- | --- | --- | --- |
+| before the fix | 2184 | 19 | 19 |
+| before the fix, second run | 2326 | 6 | 6 |
+| after the fix | 2721 | 14 | 0 |
+
+After the fix tshark reports `Bandwidth: 80 MHz (4)`, `MCS index 0: 9 (256-QAM 5/6)`,
+`Coding 0: LDPC (1)`, and `Short GI: True` on those frames.
+
+The header is 26 bytes when the field is 10 bytes long and 28 when it is 12: 8 fixed, Flags 1,
+one pad, Channel 4, dBm Antenna Signal 1, one pad, then the VHT field. The radiotap specification
+defines that field as known(2) flags(1) bandwidth(1) mcs_nss[4] coding(1) group_id(1)
+partial_aid(2). `tests/test_pcap.py` now derives the expected `it_len` from the present bitmap for
+every mode the writer emits, which fails on the old code and passes on the new.
+
+The C writer in `c/mt7921_rxd.c` was already correct and is unchanged.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
