@@ -247,7 +247,7 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 - **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
 *(This entry establishes host-to-device USB delivery only. Over-the-air radiation is measured
 separately with an independent receiver: see "Injected frames reach the air" above, which
-records 151 of 300 frames decoded by a second adapter on 2.4 GHz and none on 5 GHz.)*
+records 298 of 300 frames decoded by a second adapter on 2.4 GHz and none on 5 GHz.)*
 
 ### Radiotap PCAP export (Live Hardware Legacy/HT and Synthetic VHT/HE Writer)
 
@@ -368,8 +368,8 @@ number.
 
 ### Offset 14 counts transmit time; offset 11 does not
 
-Previously listed as not established. A controlled burst settles it, and the two counters were
-read around the same window on the transmitting radio:
+A controlled burst separates them, with both counters read around the same window on the
+transmitting radio:
 
 | Frames sent | `p_cca_time` | `cca_nav_tx_time` | difference | difference per frame |
 |---|---|---|---|---|
