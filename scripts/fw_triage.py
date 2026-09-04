@@ -32,6 +32,7 @@ import json
 import math
 import os
 import re
+import struct
 import sys
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -110,6 +111,40 @@ PRINTABLE = re.compile(rb"[\x20-\x7e]{%d,}" % MIN_STRING_LEN)
 # rdmGetIpiHist and RDD strings come from. Matched loosely because the paths are relative,
 # absolute, and build-tree-relative in the same image.
 SOURCE_PATH = re.compile(r"[\w./-]*\w+\.[ch]\b")
+
+# Command dispatch tables are plain data in the rodata region, so which commands a firmware
+# implements can be read without disassembling anything. A slot is {u32 handler, u32 cid};
+# the MT7921 image carries at least three tables in that shape, with different strides, so
+# the scan looks for the shape anywhere rather than assuming a table address.
+#
+# A handler must point at somewhere code can live. Ranges are the load addresses this image
+# actually declares (see the region table in docs/FIRMWARE_RECON.md) plus the mask ROM the
+# patch overlays. A cid paired with an address outside all of them is coincidence.
+CODE_RANGES = (
+    (0x00800000, 0x00870000),  # mask ROM
+    (0x00900000, 0x00915000),  # patch section load address
+    (0x00915000, 0x0096DC10),  # RAM region 0
+    (0xE0270000, 0xE027CAD0),  # RAM region 3, IRAM
+)
+
+
+def in_code(addr: int) -> bool:
+    return any(lo <= addr < hi for lo, hi in CODE_RANGES)
+
+
+def scan_dispatch_slots(data: bytes, cids: dict[int, str]) -> dict[int, list[tuple[int, int]]]:
+    """Every 4-aligned {handler, cid} pair whose handler points into code.
+
+    Asymmetric evidence, and the asymmetry matters: a hit is weak (a plausible address may
+    sit beside a small integer by chance -- CHANNEL_SWITCH, a command known to work on this
+    hardware, produces nine), while zero hits across every region is a real absence claim.
+    """
+    found: dict[int, list[tuple[int, int]]] = {c: [] for c in cids}
+    for off in range(0, len(data) - 8, 4):
+        handler, cid = struct.unpack_from("<II", data, off)
+        if cid in found and in_code(handler):
+            found[cid].append((off, handler))
+    return found
 
 
 def entropy(blob: bytes) -> float:
@@ -335,6 +370,71 @@ def extract_regions(images: list[str], out_dir: str, min_len: int) -> int:
     return 0 if written else 2
 
 
+# enum mcu_ext_cmd, mt76 mt76_connac_mcu.h:1258 at baseline c5a3bd91. The names are the
+# driver's; whether a given firmware implements one is what the scan answers.
+EXT_CMD_NAMES = {
+    0x01: "EFUSE_ACCESS",
+    0x02: "RF_REG_ACCESS",
+    0x04: "RF_TEST",
+    0x05: "RADIO_ON_OFF_CTRL",
+    0x07: "PM_STATE_CTRL",
+    0x08: "CHANNEL_SWITCH",
+    0x11: "SET_TX_POWER_CTRL",
+    0x13: "FW_LOG_2_HOST",
+    0x1E: "TXBF_ACTION",
+    0x21: "EFUSE_BUFFER_MODE",
+    0x2A: "DEV_INFO_UPDATE",
+    0x2C: "THERMAL_CTRL",
+    0x38: "SET_FEATURE_CTRL",
+    0x3A: "SET_RDD_CTRL",
+    0x46: "MAC_INIT_CTRL",
+    0x4A: "RX_AIRTIME_CTRL",
+    0x4E: "SET_RX_PATH",
+    0x58: "TX_POWER_FEATURE_CTRL",
+    0x5A: "GET_MIB_INFO",
+    0x7C: "SET_RADAR_TH",
+    0x7D: "SET_RDD_PATTERN",
+    0x94: "TWT_AGRT_UPDATE",
+    0x9D: "SET_RDD_TH",
+    0xA8: "SET_SPR",
+    0xAD: "PHY_STAT_INFO",
+}
+
+
+def command_map(images: list[str]) -> int:
+    """Which EXT commands each firmware has a dispatch handler for. Offline, no hardware."""
+    for path in images:
+        with open(path, "rb") as fh:
+            blob = fh.read()
+        name = os.path.basename(path)
+        if "patch" in name.lower():
+            continue
+        try:
+            header = m.parse_ram(blob)
+        except (ValueError, KeyError, IndexError) as exc:
+            print(f"{name}: unparsed: {exc}", file=sys.stderr)
+            continue
+        regions = split_regions(blob, header)
+        if any(r["_feature_set"] & FW_FEATURE_SET_ENCRYPT for r in regions):
+            print(f"{name}: encrypted regions, dispatch tables unreadable\n")
+            continue
+        totals: dict[int, list] = {c: [] for c in EXT_CMD_NAMES}
+        for region in regions:
+            for cid, slots in scan_dispatch_slots(region["_data"], EXT_CMD_NAMES).items():
+                totals[cid].extend((region["index"], off, h) for off, h in slots)
+        print(f"{name}")
+        for cid, hits in sorted(totals.items()):
+            mark = "yes" if hits else "NO "
+            where = f"r{hits[0][0]}->0x{hits[0][2]:08x}" if hits else "no slot in any region"
+            extra = f" (+{len(hits) - 1} more)" if len(hits) > 1 else ""
+            print(f"  0x{cid:02x} {EXT_CMD_NAMES[cid]:<22} {mark}  {where}{extra}")
+        print(
+            "\n  A hit is weak evidence (a code-shaped address can sit beside a small "
+            "integer by chance);\n  zero hits across every region is the stronger claim.\n"
+        )
+    return 0
+
+
 def print_report(results: list[dict]) -> None:
     for r in results:
         print(f"{r['image']}   {r['bytes']:,} bytes   build {r.get('build_date', '?')}")
@@ -376,6 +476,11 @@ def main() -> int:
     parser.add_argument("--region", type=int, help="with --strings-for, limit to one region")
     parser.add_argument("--min-len", type=int, default=MIN_STRING_LEN)
     parser.add_argument(
+        "--command-map",
+        action="store_true",
+        help="report which MCU_EXT_CMD ids this firmware has a dispatch handler for",
+    )
+    parser.add_argument(
         "--extract-regions",
         metavar="DIR",
         help="write every region to DIR as <image>.r<N>.<load_addr>.<kind>.bin, for "
@@ -413,6 +518,9 @@ def main() -> int:
         for s in extract_strings(data, args.min_len):
             print(s)
         return 0
+
+    if args.command_map:
+        return command_map(images)
 
     if args.extract_regions:
         return extract_regions(images, args.extract_regions, args.min_len)

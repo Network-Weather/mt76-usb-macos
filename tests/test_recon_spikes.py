@@ -394,3 +394,35 @@ def test_the_batch_size_matches_what_upstream_sends():
     # mt7915 declares req[5] and fills all five; a longer request is a plausible way to
     # earn a blanket refusal that says nothing about the individual offsets.
     assert mcs.MIB_BATCH == 5
+
+
+def test_code_ranges_cover_the_load_addresses_the_image_declares():
+    # The MT7921 RAM image's own region table, plus the mask ROM the patch overlays.
+    assert ft.in_code(0x00915000)  # region 0 base
+    assert ft.in_code(0xE02767C0)  # the GET_MIB_INFO handler, in region 3 IRAM
+    assert ft.in_code(0x00918340)  # a dispatcher in region 0
+    assert not ft.in_code(0x1818CDEF)  # a magic number, not an address
+    assert not ft.in_code(0x02015C00)  # rodata is not code
+    assert not ft.in_code(0)
+
+
+def test_scan_dispatch_slots_finds_a_handler_cid_pair():
+    blob = b"\xff" * 12 + struct.pack("<II", 0xE02767C0, 0x5A) + b"\x00" * 8
+    found = ft.scan_dispatch_slots(blob, {0x5A: "GET_MIB_INFO"})
+    assert found[0x5A] == [(12, 0xE02767C0)]
+
+
+def test_scan_dispatch_slots_ignores_a_cid_beside_a_non_code_word():
+    blob = struct.pack("<II", 0x1818CDEF, 0x5A)
+    assert ft.scan_dispatch_slots(blob, {0x5A: "GET_MIB_INFO"})[0x5A] == []
+
+
+def test_scan_dispatch_slots_reports_an_absent_cid_as_an_empty_list():
+    blob = struct.pack("<II", 0xE02767C0, 0x5A)
+    found = ft.scan_dispatch_slots(blob, {0x5A: "x", 0xAD: "PHY_STAT_INFO"})
+    assert found[0xAD] == []
+
+
+def test_the_command_name_table_pins_the_two_ids_the_spikes_depend_on():
+    assert ft.EXT_CMD_NAMES[0x5A] == "GET_MIB_INFO"
+    assert ft.EXT_CMD_NAMES[0xAD] == "PHY_STAT_INFO"

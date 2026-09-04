@@ -80,18 +80,56 @@ strings come from `wifi/core/wificore/rlm/rdm_phy.c`, alongside `rlm_phy.c`, `cn
 and a `hal_cal_flow.c` reached through a build path naming the project
 `wifi_mobile_ram_ccn16`.
 
-**The instruction set of the code regions is unidentified.** Signature sweeps for ARM Thumb,
-ARM A32, MIPS, RISC-V, Xtensa, ARC and NDS32 across regions r0, r3 and the patch section all
-returned densities at or *below* what uniform-random bytes would produce -- ARM Thumb
-`push {…,lr}` appears 0.49 times per KB in r0 where chance alone predicts about 2. The
-regions are not encrypted (the header says so, and the string region beside them is plainly
-readable), so they are plaintext code in an ISA not yet named. Identifying it is a
-prerequisite for any disassembly and is not currently blocking anything else.
+**The code regions are Tensilica Xtensa LX**, 32-bit little-endian, with Code Density, the
+Windowed ABI, and vendor TIE extensions. Verified here by decoding the entry point: region 0
+begins `46 00 09`, which as a little-endian 24-bit word is `0x090046` -- `op0 = 6`, `n = 0`,
+`imm18 = 9217`, so `j PC + 4 + 9217` = `j 0x00917405`, an ordinary unconditional jump.
 
-Direct string cross-referencing also failed: of 874 words in r1 pointing inside r1's own
-declared address range, only 8 land on a string start. The logging format
-(`%06d& SCHEING Hit& %s,L%d,…`) suggests an indexed logging scheme rather than pointer-based
-format strings, so recovering call sites will not be as simple as following pointers.
+A first signature sweep wrongly concluded no ISA matched, because it scanned on 2-byte
+alignment. Xtensa instructions are 2 or 3 bytes and **byte**-aligned, so an aligned scan
+cannot see them; the density figures it produced were meaningless for every candidate.
+
+Direct string cross-referencing does not work: of 874 words in r1 pointing inside r1's own
+declared address range, only 8 land on a string start. Recovering call sites will not be as
+simple as following pointers.
+
+Disassembly proper is not attempted here. Roughly a quarter of instructions use undocumented
+MediaTek TIE encodings that stock Ghidra, Capstone and LLVM mis-decode, so it needs the
+vendor-specific processor definition described in
+[RELATED_WORK.md](../RELATED_WORK.md#mediatek-connac2-re).
+
+## What the dispatch tables say, without disassembling anything
+
+Command dispatch tables are plain data in the rodata region, so which commands a firmware
+implements can be read straight out of the image. A slot is `{u32 handler, u32 cid}`, and
+`scripts/fw_triage.py --command-map` scans every region for that shape at 4-byte alignment,
+accepting a slot only when the handler points into an address range the image itself declares
+as code.
+
+The evidence is asymmetric and the asymmetry decides how to read the output. A hit is weak:
+a code-shaped address can sit beside a small integer by chance, and `CHANNEL_SWITCH` -- a
+command this driver uses successfully on hardware -- produces nine. Zero hits across every
+region is the stronger claim.
+
+Measured on the MT7921 image, 2026-09-03:
+
+- **`GET_MIB_INFO` (0x5a) is implemented**, one slot, handler `0xe02767c0` in region 3's
+  IRAM. Spike D's primary command exists in this firmware.
+- **`PHY_STAT_INFO` (0xad) has no slot in any region.** Also absent: `SET_RADAR_TH` (0x7c)
+  and `SET_FEATURE_CTRL` (0x38).
+- `SET_RDD_CTRL` (0x3a), `SET_RDD_TH` (0x9d) and `SET_RDD_PATTERN` (0x7d) are all present,
+  so radar-pulse detection is implemented even though no mt7921 driver drives it.
+- `RX_AIRTIME_CTRL` (0x4a) is present, which is how per-station airtime accounting is armed
+  on the AP parts. Not yet investigated.
+
+The MT7925 image's regions are encrypted, so none of this can be repeated there.
+
+Cross-checks against the independent analysis cited in RELATED_WORK.md, both read from the
+image here rather than taken on trust: the region map agrees byte-for-byte on every offset,
+load address and size; the module descriptor at `0x02022cbc` reads `0x00916478`; the stride-8
+EXT table at `0x02022ce0` has cid `0x01` handled at `0x0091837e`; and UNI cid `0x23`
+(`GET_STAT_INFO`) dispatches to the shared TLV handler `0x009182ae`. The large-cid stride-16
+table at `0x02018c98` that carries `GET_MIB_INFO` is not described there.
 
 ## The better lead: these are named MCU commands
 
@@ -188,6 +226,11 @@ measurements without needing the ISA.
 ### Spike D — MIB and PHY stats over the MCU (`scripts/mcu_stats.py`)
 
 Confidence: high for `GET_MIB_INFO`, unknown for the unnamed `PHY_STAT_INFO` categories.
+
+The dispatch-table scan above already settles half of this offline: `GET_MIB_INFO` is
+implemented and `PHY_STAT_INFO` is not, so the PHY category sweep is expected to be refused
+and its refusal is not a bug. It is kept because a refusal measured on hardware is worth more
+than an absence inferred from a table, and because it costs one command per category.
 
 Queries `MCU_EXT_CMD_GET_MIB_INFO` for both published offset schemes at once — mt7915's
 81/82/86/87/88 and mt7916's 6/8/490/491 — reading every offset twice around a dwell, because

@@ -84,6 +84,27 @@ The comparison below was reviewed at
 (GPL-2.0). Its source may inform experiments and clean, independent implementation, but it
 must not be copied into this BSD-licensed project without an explicit license decision.
 
+## Firmware analysis references
+
+### mediatek-connac2-re
+
+[germiBest/mediatek-connac2-re](https://github.com/germiBest/mediatek-connac2-re), Apache-2.0.
+A Ghidra processor extension and Kaitai parsers for the connac2 Wi-Fi MCU firmware, covering
+the same MT7921/MT7961 images this project loads. It establishes that the MCU is Tensilica
+Xtensa LX with vendor TIE extensions, ships the `Xtensa:LE:32:MTK` language definition needed
+to disassemble it (stock Ghidra, Capstone and LLVM mis-decode the TIE encodings), and
+documents the image's region map, command dispatch tables and ROM layout. Its findings
+distinguish claims read byte-exact from the image from those inferred, which makes them
+checkable rather than merely assertable.
+
+**Read-only reference, like wifikit and wifit3.** Nothing from it is translated into this
+repository. Where its findings inform work here they are re-derived from the firmware images
+directly and the cross-check recorded, as in
+[docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md); its region map, module descriptor and
+dispatch-table entries were each confirmed independently before use. Should this project ever
+need actual disassembly, the extension is the tool to reach for and its license terms apply
+to anything derived from it.
+
 ## Selected downstream and backport projects
 
 These projects redistribute, package, backport, or document Linux mt76. They are useful for
