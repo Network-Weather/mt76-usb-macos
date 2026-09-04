@@ -63,16 +63,34 @@ MIB_OFFSETS_V2 = {  # mt7916
 }
 NAMED_OFFSETS = {**MIB_OFFSETS_V1, **MIB_OFFSETS_V2}
 
-# Neither published scheme works on the MT7921. Measured on the reference adapter
+# Neither published mt76 scheme works on the MT7921. Measured on the reference adapter
 # 2026-09-03 by sweeping every offset 0-127: exactly 19 are accepted (0-12, 14, 17, 20-23)
-# and the rest return no reply at all, so the numbering is its own. These names are
-# behavioural -- what the counter was observed to track across four channels -- not names
-# read out of any header, and they are stated that way deliberately.
+# and the rest return no reply at all, so this chip has its own numbering.
+#
+# The names below were arrived at by measurement first -- what each counter tracked across
+# four channels and two bandwidths -- and then corroborated against MediaTek's own
+# ENUM_MIB_COUNTER_T, which numbers the same quantities identically and is undefined at
+# exactly the offsets that returned no reply here (13, 15, 16). See RELATED_WORK.md; that
+# header is proprietary, so only the counters confirmed on hardware are named here rather
+# than the enum being transcribed.
+#
+# Evidence for each, from the runs recorded in docs/FIRMWARE_RECON.md:
+#   2   matched the decoder's own frame count to within one, on four channels
+#   3   read exactly 65535 on every channel and every bandwidth; not a usable counter
+#   7   ran about 2x the delivered MPDU count: preambles detected but not delivered
+#   11  microseconds, >= the airtime of decoded frames on every channel
+#   12  512 us at 20 MHz against 3224 and 3772 at 80 MHz -- it needs a secondary channel
+#   14  microseconds, tracks 11 and exceeds it
 MIB_OFFSETS_MT7921 = {
-    2: "rx_frames",  # matched the decoder's own frame count to within one, four times
-    11: "airtime_a_us",  # microseconds; >= decoded airtime on every channel measured
-    14: "airtime_b_us",  # microseconds; tracks airtime_a, diverging on one channel of four
+    2: "rx_mpdu",
+    3: "channel_idle",
+    7: "mdrdy",
+    11: "p_cca_time_us",
+    12: "s_cca_time_us",
+    14: "cca_nav_tx_time_us",
 }
+#: The counter to use for channel occupancy: primary-channel CCA busy time, microseconds.
+MIB_PRIMARY_CCA_TIME = 11
 #: Offsets the firmware accepts. Anything else got no reply at all, which stalls a sweep.
 MT7921_ACCEPTED_OFFSETS = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 17, 20, 21, 22, 23)
 # The counter sits at this byte of the reply body, which is 24 bytes of header followed by a

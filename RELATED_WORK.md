@@ -86,6 +86,46 @@ must not be copied into this BSD-licensed project without an explicit license de
 
 ## Firmware analysis references
 
+Where the facts about MediaTek's MCU interface actually come from, and what is still
+unread in each. Nothing here is a substitute for measuring the behaviour on hardware; all
+three have been wrong or inapplicable at least once, and every claim this project makes
+from them is re-derived from the images or the adapter first. See
+[docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md) for the cross-checks.
+
+### MediaTek `mt_wifi` driver headers
+
+MediaTek's own AP driver for the connac family, vendored into several open router-firmware
+trees. The copy read here is `hanwckf/rt-n56u` at
+`trunk/proprietary/rt_wifi/rtpci/7.3.0.1/mt7915/include/mcu/mt_cmd.h`; the same file appears
+in `hanwckf/padavan-4.4`, `bricco1981/MT7622-mtkwifi` and others, under
+`.../mt_wifi/include/mcu/`. Siblings worth reading are `fwdl.h` (firmware download) and
+`mt_fdb.h`.
+
+This is the **host side of the interface the firmware implements**, and it is far more
+complete than mt76: 132 `EXT_CMD_ID_*` values against mt76's 52, plus the request and reply
+structs for each. `ENUM_MIB_COUNTER_T` in that header is what named the MIB counters this
+project measured -- it numbers the same quantities identically and is undefined at exactly
+the offsets the hardware refused.
+
+**Licensing: the file is MediaTek proprietary, vendored into GPL trees.** It is a reference
+to read, never to copy from. Constants are named here only where the behaviour was measured
+first, and the enum is not transcribed.
+
+Unexplored leads visible in it, all of which have a matching dispatch slot in the MT7921
+image and a matching firmware string:
+
+| id | command | why it is interesting |
+|---|---|---|
+| `0x56` | `EXT_CMD_ID_WIFI_SPECTRUM` | the firmware carries `%s : Wifi-spectrum is enable !!` and a handler at `0x009214c8` |
+| `0x70` | `EXT_CMD_ID_EDCCA_CTRL` | the energy-detect threshold the PHY calls the medium busy at; 24 EDCCA strings in the image. Its dispatch slot handler reads `0x00000000` |
+| `0x30` | `EXT_CMD_ID_GET_TX_STATISTICS` | |
+| `0x3a`, `0x9d` | RDD control and radar thresholds | raw radar-pulse reporting, implemented and undriven |
+
+Also unread: the accepted MIB offsets that stayed at zero here (1, 4, 5, 6, 8, 9, 10, 17,
+20-23), and the higher counters the enum defines but this chip refuses -- notably
+`MIB_CNT_P_ED_TIME`, primary-channel energy-detect time, which would be the direct non-Wi-Fi
+interference figure if any MT7921 build exposes it.
+
 ### mediatek-connac2-re
 
 [germiBest/mediatek-connac2-re](https://github.com/germiBest/mediatek-connac2-re), Apache-2.0.

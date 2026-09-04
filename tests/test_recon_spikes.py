@@ -486,7 +486,9 @@ def test_a_partly_refused_sweep_is_not_reported_as_not_implemented():
 def test_the_mt7921_offsets_are_labelled_by_behaviour_not_by_a_published_name():
     # These were identified by what they tracked across four channels, and neither published
     # scheme's numbering overlaps them, so they must not be conflated with the named enums.
-    assert mcs.MIB_OFFSETS_MT7921 == {2: "rx_frames", 11: "airtime_a_us", 14: "airtime_b_us"}
+    assert mcs.MIB_OFFSETS_MT7921[2] == "rx_mpdu"
+    assert mcs.MIB_OFFSETS_MT7921[mcs.MIB_PRIMARY_CCA_TIME] == "p_cca_time_us"
+    assert mcs.MIB_OFFSETS_MT7921[12] == "s_cca_time_us"
     assert not set(mcs.MIB_OFFSETS_MT7921) & set(mcs.MIB_OFFSETS_V1)
     assert set(mcs.MIB_OFFSETS_MT7921) <= set(mcs.MT7921_ACCEPTED_OFFSETS)
 
@@ -506,3 +508,18 @@ def test_the_counter_is_read_from_the_measured_reply_position():
 def test_a_reply_too_short_to_hold_a_counter_returns_none():
     assert mcs.parse_mt7921_value(bytes(28)) is None
     assert mcs.parse_mt7921_value(b"") is None
+
+
+def test_the_offsets_the_sweep_rejected_are_the_ones_the_vendor_enum_leaves_undefined():
+    # ENUM_MIB_COUNTER_T defines 0..12, then 14, then 17; 13, 15 and 16 have no name. Those
+    # three are exactly the offsets below 17 that returned no reply on hardware, which is
+    # what ties the measured numbering to that enum.
+    for undefined in (13, 15, 16):
+        assert undefined not in mcs.MT7921_ACCEPTED_OFFSETS
+    for defined in (12, 14, 17):
+        assert defined in mcs.MT7921_ACCEPTED_OFFSETS
+
+
+def test_primary_cca_time_is_the_offset_named_for_channel_occupancy():
+    assert mcs.MIB_PRIMARY_CCA_TIME == 11
+    assert mcs.MIB_OFFSETS_MT7921[mcs.MIB_PRIMARY_CCA_TIME].endswith("_us")

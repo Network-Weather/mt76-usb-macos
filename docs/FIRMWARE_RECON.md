@@ -343,10 +343,29 @@ own frame count and summed airtime (6 s per channel, 2026-09-03):
   some kind, not occupancy. `offs 3` reads exactly 65535 on every channel and is not a
   counter. The remaining accepted offsets sat at zero throughout.
 
-Names here are **behavioural** — what each counter was observed to track — not names read out
-of any header, and `scripts/mcu_stats.py` labels them that way on purpose. What separates
-`offs 11` from `offs 14` is not established: they agree exactly on one channel of four and
-diverge by 9% on another.
+### The counters have real names
+
+The numbering was then corroborated against MediaTek's own `ENUM_MIB_COUNTER_T`
+([RELATED_WORK.md](../RELATED_WORK.md#mediatek-mt_wifi-driver-headers)), which numbers the
+same quantities identically. The tie is not just that the names fit: the enum is **undefined
+at 13, 15 and 16**, and those are exactly the offsets below 17 that returned no reply here.
+
+| offs | vendor name | measured behaviour |
+|---|---|---|
+| 2 | `MIB_CNT_RX_MPDU` | matched the decoder's frame count to within one, four channels |
+| 3 | `MIB_CNT_CHANNEL_IDLE` | exactly 65535 everywhere; not a usable counter |
+| 7 | `MIB_CNT_MDRDY` | ~2× the delivered MPDU count — preambles detected, not delivered |
+| **11** | **`MIB_CNT_P_CCA_TIME`** | **primary-channel CCA busy time, µs** |
+| 12 | `MIB_CNT_S_CCA_TIME` | 512 µs at 20 MHz against 3224 and 3772 at 80 MHz |
+| 14 | `MIB_CNT_CCA_NAV_TX_TIME` | µs, tracks 11 and exceeds it |
+
+`offs 12` was a falsifiable prediction and it held: a *secondary*-channel counter must stay
+near zero without a secondary channel, and it rose six- to sevenfold when the sniffer moved
+from 20 MHz to 80 MHz.
+
+So **`offs 11` is the channel-occupancy measurement** this effort was for, and `offs 7`
+against `offs 2` is a second, independent view of the same blind spot: the PHY detects
+roughly twice as many preambles as it delivers frames.
 
 This satisfies acceptance criteria 4 and 5 for Spike A's measurement, by a different route
 than Spike A proposed. The MIB *registers* remain dead; the MCU path reaches live counters.
