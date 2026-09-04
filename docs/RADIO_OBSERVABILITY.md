@@ -2,6 +2,11 @@
 
 Started 2026-09-04. Branch: `spike/radio-observability`.
 
+Selected redacted machine-readable results are preserved in
+[`radio-observability-2026-09-04.json`](../research/evidence/radio-observability-2026-09-04.json).
+Detailed Group-5 word distributions are omitted from that record; commands below
+regenerate them. No network identifiers, payloads, or packet hashes are included.
+
 ## Questions and experiment order
 
 1. What is in the extended receive vectors already delivered by MT7925 USB?
@@ -135,8 +140,8 @@ The model is trained on the first half of pairs and predicts the second half; th
 table is that independent holdout, not an in-sample fit. Tick rates are approximately
 1 MHz against host time (host USB arrival timestamps are noisy). The timestamps are
 32-bit and the fit uses modular differences. This is receiver timestamp alignment,
-not time-of-flight ranging. Cross-channel retuning, longer drift, and temperature
-dependence remain untested.
+not time-of-flight ranging. Retuning is tested below; longer drift, temperature
+dependence, and receive-pipeline offsets while on different channels remain untested.
 
 On channel 36, each observer saw six distinct directed RTS/BlockAck endpoint pairs.
 MT7961 decoded 33 compressed single-TID BlockAcks; A9000 decoded 45. Their summed
@@ -163,6 +168,68 @@ Applying the neighboring MT7915 standalone-vector SNR extraction to MT7925 G5
 word 20 gives numbers in the range 5..10 on these captures. The layout is not
 established; these are explicitly named **hypothesis values**, not a noise floor
 or supported SNR measurement. Low variance alone cannot validate them.
+
+The final 15-second-per-channel pass strengthens the independently checked fields:
+
+| PHY / target | BSS color vs beacon | Uplink bit vs infrastructure frame header |
+| --- | ---: | ---: |
+| HE-SU, 5 GHz ch 132 / 80 MHz | 28/28 match | 28/28 match (19 downlink, 9 uplink) |
+| EHT-MU, 6 GHz ch 53 / 160 MHz | 32/32 match | 32/32 match (uplink only) |
+
+Comparison uses the inferred infrastructure BSSID (RA on uplink, TA on downlink),
+not the client's transmitter address, and ignores FCS-failed frames. No mismatches
+were observed. Spatial-reuse candidates were zero throughout; their semantics are
+still unvalidated. TXOP candidates varied but were not independently checked.
+Another 3,135 frames had exact duplicate RCPI bytes, bringing that check to 6,431/6,431.
+
+## Clock calibration across a retune
+
+Tool: [`clock_retune_probe.py`](../research/clock_retune_probe.py). Both radios listen
+on 5 GHz channel 36 / 20 MHz for 15 seconds. One radio tunes away for two seconds,
+returns, and both listen for another 15 seconds. Neither is rebooted between phases.
+The pre-excursion model predicts every matched post-excursion frame; the holdout split
+is at the actual phase boundary, not half of the combined sample count.
+
+```bash
+MT76_FW_DIR=/path/to/firmware /path/to/venv/bin/python research/clock_retune_probe.py \
+  5GHz:36 5GHz:149 --radio mt7921 --seconds 15 --output /tmp/clock-retune-mt7921.json
+MT76_FW_DIR=/path/to/firmware /path/to/venv/bin/python research/clock_retune_probe.py \
+  5GHz:36 6GHz:53:47:160 --radio mt7925 --seconds 15 --output /tmp/clock-retune-mt7925.json
+```
+
+| Moving radio / excursion | Before / after matched frames | Post-return p95 prediction error | Maximum |
+| --- | ---: | ---: | ---: |
+| MT7961, 5 GHz ch 149 / 20 MHz | 842 / 792 | 1.751 us | 2.323 us |
+| MT7925, 6 GHz ch 53 / 160 MHz | 824 / 854 | 0.786 us | 1.085 us |
+
+These results support clock continuity through the tested band/channel/width changes,
+with approximately 32.5 seconds spanned by each experiment. They do not measure a
+channel-dependent timestamp bias while the radios are apart, or establish long-term
+clock stability. Exact-frame matching itself does not infer forwarding: forwarded
+traffic generally changes its 802.11 header and cannot use the same matching rule.
+Both radios remained register-responsive and reported no USB errors.
+
+## Verification and next evidence needed
+
+The full project gate passed during this work: formatting/lint, documentation, Python
+tests, source/wheel builds, dependency checks, and C build/offline tests. The final Python
+suite has 400 passing tests on this host, including four optional independent TShark
+checks. TShark 4.6.8 (`e677bf052328`) agrees on compressed BA type, starting sequence,
+bitmap length, and acknowledgment count for synthetic 64/256/512/1024-bit bitmaps.
+Unsupported BA variants are explicit; trailing zero bitmap positions are not called loss.
+
+Next experiments, in order of new evidence they could provide:
+
+1. Validate extended RXV fields across more transmitters and conditions; investigate
+   per-chain quality with documented layouts, not arbitrary byte correlations.
+2. Test cross-channel clock biases with a known timing reference, longer drift, and
+   periodic recalibration before using timing to correlate backhaul forwarding.
+3. Associate observed BlockAck windows with matching data sequences and TIDs, retaining
+   separate labels for receiver-reported receipt, observer visibility, and retransmission.
+4. Characterize higher-level TX status with a cooperating receiver if acknowledged
+   traffic is needed; no-ACK probes cannot establish bidirectional link quality.
+5. Pursue ICAP/true noise-floor interfaces as a separate spike. No non-Wi-Fi classifier,
+   calibrated SNR, calibrated power setting, or complete mesh reconstruction was obtained.
 
 ## Source evidence and limitations
 

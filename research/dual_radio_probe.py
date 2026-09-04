@@ -45,7 +45,7 @@ def delta32(value, origin):
     return ((value - origin + (1 << 31)) % (1 << 32)) - (1 << 31)
 
 
-def fit_clock(pairs):
+def fit_clock(pairs, split_index=None):
     """Fit shared beacon timestamps, including independent second-half validation."""
     if len(pairs) < 20:
         return {"status": "insufficient_pairs", "pairs": len(pairs)}
@@ -71,7 +71,9 @@ def fit_clock(pairs):
         }
 
     full = fit(xs, ys)
-    split = len(xs) // 2
+    split = len(xs) // 2 if split_index is None else split_index
+    if not 2 <= split <= len(xs) - 2:
+        return {"status": "insufficient_split_pairs", "pairs": len(pairs)}
     train = fit(xs[:split], ys[:split])
     if full is None or train is None:
         return {"status": "degenerate", "pairs": len(pairs)}

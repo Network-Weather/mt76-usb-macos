@@ -36,6 +36,10 @@ def test_clock_wrap_drift_and_holdout():
     assert result["relative_drift_ppm"] == 20
     assert result["second_half_prediction"]["max_us_if_1mhz"] == 0
     assert fit_clock(pairs[:3])["status"] == "insufficient_pairs"
+    assert fit_clock(pairs, split_index=0)["status"] == "insufficient_split_pairs"
+    assert fit_clock(pairs, split_index=30)["second_half_prediction"]["max_us_if_1mhz"] == 0
+    stepped = [(a, b if i < 30 else b + 1000, t) for i, (a, b, t) in enumerate(pairs)]
+    assert fit_clock(stepped, split_index=30)["second_half_prediction"]["median_us_if_1mhz"] == 1000
 
 
 def test_fixed_ofdm_changes_only_rate_word_and_keeps_no_ack():
