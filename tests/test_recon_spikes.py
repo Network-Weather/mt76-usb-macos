@@ -32,20 +32,79 @@ def test_entropy_of_empty_input_is_zero_rather_than_a_domain_error():
     assert ft.entropy(b"") == 0.0
 
 
-def test_classify_puts_the_two_measured_extremes_in_the_right_buckets():
-    # The values the four pinned blobs actually measured on 2026-09-03.
-    assert ft.classify(6.030, 1981) == "readable"
-    assert ft.classify(7.956, 2638) == "opaque"
-    assert ft.classify(7.999, 306) == "opaque"
+def test_feature_flag_bits_match_the_upstream_header():
+    # mt76 mt76_connac_mcu.h:9-13 at baseline c5a3bd91.
+    assert ft.FW_FEATURE_SET_ENCRYPT == 0x01
+    assert ft.FW_FEATURE_SET_KEY_IDX == 0x06
+    assert ft.FW_FEATURE_ENCRY_MODE == 0x10
+    assert ft.FW_FEATURE_OVERRIDE_ADDR == 0x20
+    assert ft.FW_FEATURE_NON_DL == 0x40
 
 
-def test_classify_refuses_to_guess_inside_the_gap():
-    assert ft.classify(7.0, 1000) == "indeterminate"
+def test_feature_flags_name_the_bits_measured_in_the_pinned_images():
+    # The five values the two RAM images actually carry, 2026-09-03.
+    assert ft.feature_flags(0x20) == ["OVERRIDE_ADDR"]
+    assert ft.feature_flags(0x00) == []
+    assert ft.feature_flags(0x40) == ["NON_DL"]
+    assert ft.feature_flags(0x21) == ["ENCRYPT", "OVERRIDE_ADDR", "KEY_IDX=0"]
+    assert ft.feature_flags(0x01) == ["ENCRYPT", "KEY_IDX=0"]
 
 
-def test_classify_flags_a_low_entropy_image_that_still_has_no_strings():
-    # Low entropy alone does not mean the symbols survived; padding is low entropy too.
-    assert ft.classify(3.0, 5) == "readable-few-strings"
+def test_feature_flags_report_a_nonzero_key_index():
+    assert "KEY_IDX=3" in ft.feature_flags(ft.FW_FEATURE_SET_ENCRYPT | 0b110)
+
+
+def test_encryption_is_taken_from_the_header_not_from_entropy():
+    # A declared-encrypted region stays encrypted however readable its bytes look, and a
+    # plain region is never called encrypted just because it is dense. This is the whole
+    # point of the rewrite: entropy corroborates, the header decides.
+    assert ft.classify_region(ft.FW_FEATURE_SET_ENCRYPT, 1.0, 9999, 4096) == "encrypted"
+    assert ft.classify_region(0, 6.874, 224, 363536) == "code"
+
+
+def test_a_non_downloaded_region_is_named_for_what_it_is():
+    # Both images carry one at load address 0, packed, never sent to the chip.
+    assert ft.classify_region(ft.FW_FEATURE_NON_DL, 7.951, 266, 88416) == "not-downloaded"
+    assert ft.classify_region(ft.FW_FEATURE_NON_DL, 7.465, 864, 303936) == "not-downloaded"
+
+
+def test_the_measured_mt7921_regions_classify_as_code_text_and_table():
+    # Values measured from WIFI_RAM_CODE_MT7961_1.bin on 2026-09-03.
+    assert ft.classify_region(0, 6.874, 224, 363536) == "code"  # r0
+    assert ft.classify_region(0, 2.548, 1457, 272400) == "text"  # r1, the string region
+    assert ft.classify_region(0, 3.953, 0, 15376) == "table"  # r2, no strings at all
+    assert ft.classify_region(0, 6.799, 30, 51920) == "code"  # r3
+
+
+def test_a_plain_region_that_is_still_random_is_called_packed_not_code():
+    assert ft.classify_region(0, 7.99, 10, 100000) == "packed"
+
+
+def test_an_empty_region_is_not_misreported_as_text():
+    assert ft.classify_region(0, 0.0, 0, 0) == "empty"
+
+
+def test_every_unreadable_kind_carries_a_stated_reason():
+    kinds = {"encrypted", "packed", "not-downloaded", "empty"}
+    assert set(ft.UNREADABLE_REASONS) == kinds
+    assert not kinds & ft.READABLE_KINDS
+    assert all(ft.UNREADABLE_REASONS[k] for k in kinds)
+
+
+def test_patch_section_encryption_matches_the_pinned_images():
+    # mt76_connac2_get_data_mode reads PATCH_SEC_ENC_TYPE_MASK, GENMASK(31, 24), from
+    # sec_key_idx. MT7921's patch declares 0x0 and MT7925's declares 0x1000000.
+    assert ft.patch_section_encryption(0x00000000) == "PLAIN"
+    assert ft.patch_section_encryption(0x01000000) == "AES"
+    assert ft.patch_section_encryption(0x02000000) == "SCRAMBLE"
+
+
+def test_patch_section_not_support_is_plain_because_the_loader_short_circuits():
+    assert ft.patch_section_encryption(ft.PATCH_SEC_NOT_SUPPORT) == "PLAIN"
+
+
+def test_an_unknown_patch_encryption_type_is_reported_rather_than_assumed_plain():
+    assert "UNKNOWN" in ft.patch_section_encryption(0x7F000000)
 
 
 def test_extract_strings_honours_the_minimum_length():
