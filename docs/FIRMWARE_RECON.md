@@ -370,6 +370,55 @@ roughly twice as many preambles as it delivers frames.
 This satisfies acceptance criteria 4 and 5 for Spike A's measurement, by a different route
 than Spike A proposed. The MIB *registers* remain dead; the MCU path reaches live counters.
 
+## How to hunt a command
+
+The four instruments built here compose into a loop that takes an hour and needs no
+disassembly. It is written down because every lead below runs through the same steps.
+
+1. **Is it in the image?** `scripts/fw_triage.py --command-map` scans the rodata dispatch
+   tables. Zero hits across every region is a real absence; a hit only makes it a candidate.
+2. **Does the firmware admit to it?** Send it and check for the refusal:
+   16 bytes, echoed ext_cid, `0xfe`. `scripts/mcu_stats.py` recognises this. Calibrate against
+   a control that works (`THERMAL_CTRL` 0x2c returns a temperature) so a broken send is not
+   mistaken for a refusal.
+3. **What does it accept?** Sweep the parameter with a short timeout and record which values
+   reply and which go silent. The accepted set is usually its own numbering, and its *gaps*
+   are the fingerprint that identifies it.
+4. **What does it mean?** Read twice around a dwell across several channels and bandwidths,
+   beside a quantity you already trust — the decoder's frame count and summed airtime. Name
+   counters by what they track, then look for a vendor header that numbers the same
+   quantities with the same gaps.
+
+Step 4 before step 3's fingerprint is what makes the naming safe: `MIB_CNT_S_CCA_TIME` was a
+prediction that survived a 20 vs 80 MHz test before it was a name.
+
+## What to hunt next
+
+Ranked. Each has a dispatch slot in the MT7921 image *and* a matching firmware string, which
+is the cheapest evidence that something is there; none has been sent to hardware.
+
+1. **`EXT_CMD_ID_WIFI_SPECTRUM` (0x56)** — handler `0x009214c8`, and the image carries
+   `%s : Wifi-spectrum is enable !!`. Nothing in mt76 drives it. If it does what its name
+   says, it is a spectrum view rather than a single occupancy scalar, which is a different
+   class of instrument from anything here.
+2. **`EXT_CMD_ID_EDCCA_CTRL` (0x70)** — 24 EDCCA strings in the image, including per-band
+   per-bandwidth thresholds (`B%d_EdccaTh:BW20=...`). Reading the threshold tells us what
+   "busy" *means* for `P_CCA_TIME`, which currently has no calibration at all. Note its
+   dispatch slot handler reads `0x00000000`, so expect a refusal.
+3. **The accepted MIB offsets that stayed at zero** — 1, 4, 5, 6, 8, 9, 10, 17, 20-23. They
+   reply, so they exist; they were simply quiet in monitor mode on the channels tried. Free
+   to check, since the sweep already runs.
+4. **RDD, `SET_RDD_CTRL` (0x3a) with `SET_RDD_TH` (0x9d)** — radar pulse detection is
+   implemented and undriven. Raw pulse reports are a non-Wi-Fi energy source, useful well
+   beyond DFS.
+5. **`MIB_CNT_P_ED_TIME`** — primary-channel energy-detect time, the direct non-Wi-Fi
+   interference figure. This firmware refuses its offset; worth re-checking on the MT7925 or
+   a newer MT7921 build, though the MT7925's encrypted image means the offline half of the
+   loop does not run there.
+
+Out of reach for now: anything needing the MT7925's dispatch tables, and anything needing
+real disassembly of the Xtensa code regions.
+
 ## Scope boundaries
 
 - Nothing here transmits. Spike A and B are register reads; C touches no hardware.
