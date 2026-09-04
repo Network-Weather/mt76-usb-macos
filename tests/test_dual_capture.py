@@ -32,6 +32,9 @@ def test_a_radio_argument_without_a_width_captures_twenty_megahertz():
         "2:20=5GHz:132@33",  # not a width the sniffer takes
         "2:20=2.4GHz:6@40",  # ambiguous: a 2.4 GHz 40 MHz channel may extend either way
         "2:20=6GHz:229@80",  # no 80 MHz block reaches channel 229
+        "2:20=5GHz:999",  # no such channel, and a 20 MHz channel is its own center
+        "2:20=2.4GHz:15",  # one past the top of the band
+        "2:20=6GHz:234",  # one past the top of the band
     ],
 )
 def test_an_unusable_radio_argument_is_refused(text):
@@ -106,3 +109,63 @@ def test_a_usb_id_selector_names_a_model_and_a_port_address_names_a_port():
 def test_a_selector_that_is_neither_form_is_refused(selector):
     with pytest.raises(argparse.ArgumentTypeError):
         dual.parse_radio(f"{selector}=5GHz:132@80")
+
+
+def test_a_width_above_the_chips_limit_is_a_radio_error_not_a_quiet_capture(monkeypatch):
+    # An MT7921 tuned to 160 MHz returns no transfers and no error, so a run would report
+    # zero frames and exit 0. The radio must refuse before the firmware download instead.
+    class FakeDevice:
+        CHIP = "mt7921"
+        MAX_WIDTH_MHZ = 80
+
+        def __enter__(self):
+            raise AssertionError("the device must not be brought up at an unusable width")
+
+        def __exit__(self, *exc):
+            return False
+
+    monkeypatch.setattr(dual.m, "open_device", lambda **kwargs: FakeDevice())
+    monkeypatch.setattr(
+        dual.m, "load_firmware", lambda *a: pytest.fail("firmware must not be loaded")
+    )
+
+    radio = dual.parse_radio("0e8d:7961=6GHz:53@160")
+    radio.run(dual.Timeline(None), duration=1.0, identify=False)
+
+    assert radio.error is not None
+    assert "captures up to 80 MHz" in radio.error
+    assert radio.chip == "mt7921"
+
+
+def test_a_width_the_chip_supports_reaches_the_firmware_download(monkeypatch):
+    class FakeDevice:
+        CHIP = "mt7925"
+        MAX_WIDTH_MHZ = 160
+
+    reached = []
+    monkeypatch.setattr(dual.m, "open_device", lambda **kwargs: FakeDevice())
+    monkeypatch.setattr(dual.m, "firmware_dir", lambda: "firmware")
+
+    def fake_load(chip, directory):
+        reached.append(chip)
+        raise RuntimeError("stop here, the rest needs USB")
+
+    monkeypatch.setattr(dual.m, "load_firmware", fake_load)
+
+    radio = dual.parse_radio("0846:9072=6GHz:53@160")
+    radio.run(dual.Timeline(None), duration=1.0, identify=False)
+
+    assert reached == ["mt7925"]
+    assert "stop here" in radio.error
+
+
+def test_one_radios_failure_is_recorded_and_does_not_raise(monkeypatch):
+    def explode(**kwargs):
+        raise OSError("adapter went away")
+
+    monkeypatch.setattr(dual.m, "open_device", explode)
+    radio = dual.parse_radio("0e8d:7961=5GHz:132@80")
+    radio.run(dual.Timeline(None), duration=1.0, identify=False)
+
+    assert radio.error == "OSError: adapter went away"
+    assert radio.counts["frames"] == 0

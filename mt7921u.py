@@ -327,19 +327,30 @@ def find_supported_devices(usb_id: str | None = None, address: str | None = None
     return found
 
 
-def describe_supported_devices(usb_id: str | None = None) -> list[dict]:
+def describe_supported_devices() -> list[dict]:
     """One record per attached supported adapter: where it is, what it is.
 
     The inventory a caller needs to drive more than one adapter, and the only place
-    that has to know how an adapter is addressed.
+    that has to know how an adapter is addressed. Ordered by bus then device address so
+    two runs of the same command list the same adapters in the same order.
+
+    It deliberately ignores $MT76_USB_ID and $MT76_USB_ADDR. Those pick one adapter for
+    a single-radio command, and an inventory that hid every other adapter because such a
+    variable was left exported would report an attached adapter as absent.
     """
+    found = [
+        dev
+        for dev in usb.core.find(find_all=True)
+        if (dev.idVendor, dev.idProduct) in SUPPORTED_DEVICES
+    ]
+    found.sort(key=lambda dev: (dev.bus, dev.address))
     return [
         {
             "address": device_address(dev),
             "usb_id": f"{dev.idVendor:04x}:{dev.idProduct:04x}",
             "chip": SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)],
         }
-        for dev in find_supported_devices(usb_id)
+        for dev in found
     ]
 
 
@@ -1806,15 +1817,33 @@ CENTER_CHANNELS = {
 }
 SIX_GHZ_MAX_CHANNEL = 233
 
+# The 20 MHz control channels each band actually has. Without this a width of 20 would
+# accept any integer, since a 20 MHz channel is its own center: `5GHz:999` would pass
+# validation and be handed to the firmware.
+#   2.4 GHz: channels 1 to 14 (802.11-2020 Annex E, Table E-1).
+#   5 GHz: the 20 MHz channels of operating classes 115, 118, 121, and 125, which is
+#     36 to 64, 100 to 144, and 149 to 177, all in steps of 4.
+#   6 GHz: 1 to 233 in steps of 4, plus the standalone channel 2, matching
+#     center_idx_to_bw_6ghz() in hostapd src/common/ieee802_11_common.c, which reports
+#     20 MHz for index 2 and for every index where (idx & 0x3) == 0x1.
+CONTROL_CHANNELS = {
+    "2.4GHz": tuple(range(1, 15)),
+    "5GHz": tuple(range(36, 65, 4)) + tuple(range(100, 145, 4)) + tuple(range(149, 178, 4)),
+    "6GHz": (2, *range(1, SIX_GHZ_MAX_CHANNEL + 1, 4)),
+}
+
 
 def center_channel(band_name: str, control_ch: int, width_mhz: int) -> int | None:
     """The center channel of the `width_mhz` block containing `control_ch`.
 
-    Returns None when no block of that width contains the control channel, which
-    includes every 2.4 GHz width above 20 MHz: a 2.4 GHz 40 MHz channel may extend
-    either upward or downward from its control channel, and the control channel alone
-    does not say which. Callers must fail rather than pick one.
+    Returns None when the control channel is not one its band has, or when no block of
+    that width contains it. The latter includes every 2.4 GHz width above 20 MHz: a
+    2.4 GHz 40 MHz channel may extend either upward or downward from its control
+    channel, and the control channel alone does not say which. Callers must fail rather
+    than pick one.
     """
+    if control_ch not in CONTROL_CHANNELS.get(band_name, ()):
+        return None
     if width_mhz == 20:
         return control_ch
     centers = CENTER_CHANNELS.get((band_name, width_mhz))

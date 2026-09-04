@@ -285,6 +285,8 @@ def main() -> int:
         if band not in CHAN_BAND or not chan_text.isdigit():
             parser.error("--lock wants BAND:CHANNEL, for example 5GHz:44")
         chan = int(chan_text)
+        if chan not in m.CONTROL_CHANNELS[band]:
+            parser.error(f"{band} has no channel {chan}")
         if m.center_channel(band, chan, args.width) is None:
             parser.error(f"no {args.width} MHz channel on {band} contains control channel {chan}")
 

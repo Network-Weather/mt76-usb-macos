@@ -108,3 +108,36 @@ def test_a_selected_device_keeps_its_address_so_it_reopens_the_same_port(attache
     assert device.address == "2:20"
     assert device.usb_id == "0e8d:7961"
     assert device.CHIP == "mt7921"
+
+
+def test_the_inventory_ignores_a_single_device_selector_left_in_the_environment(
+    attached, monkeypatch
+):
+    # MT76_USB_ID picks one adapter for a single-radio command. An inventory that
+    # honoured it would report the other attached adapter as absent, which is exactly
+    # what a two-radio command must not believe.
+    alfa = FakeUsbDevice(ALFA, bus=2, address=20)
+    a9000 = FakeUsbDevice(A9000, bus=2, address=9)
+    attached([alfa, a9000])
+    monkeypatch.setenv("MT76_USB_ID", "0e8d:7961")
+    monkeypatch.setenv("MT76_USB_ADDR", "2:20")
+
+    assert [entry["usb_id"] for entry in m.describe_supported_devices()] == [
+        "0846:9072",
+        "0e8d:7961",
+    ]
+
+
+def test_the_inventory_is_ordered_by_bus_then_device_address(attached):
+    attached(
+        [
+            FakeUsbDevice(ALFA, bus=2, address=20),
+            FakeUsbDevice(A9000, bus=1, address=30),
+            FakeUsbDevice(ALFA, bus=2, address=3),
+        ]
+    )
+    assert [entry["address"] for entry in m.describe_supported_devices()] == [
+        "1:30",
+        "2:3",
+        "2:20",
+    ]

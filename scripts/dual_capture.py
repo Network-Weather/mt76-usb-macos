@@ -133,6 +133,15 @@ class Radio:
     def _run(self, timeline: Timeline, duration: float, identify: bool) -> None:
         dev = m.open_device(usb_id=self.usb_id, address=self.address)
         self.chip = dev.CHIP
+        # The chip is only known once a device is chosen, so this cannot happen during
+        # argument parsing. It happens before the firmware download because a width this
+        # chip cannot capture returns no transfers rather than an error, and a radio that
+        # reports zero frames with no error looks like a quiet channel.
+        if self.width > dev.MAX_WIDTH_MHZ:
+            raise ValueError(
+                f"the {dev.CHIP} at {self.selector} captures up to {dev.MAX_WIDTH_MHZ} MHz; "
+                f"{self.width} MHz would tune a radio that returns no frames"
+            )
         patch, ram = m.load_firmware(dev.CHIP, m.firmware_dir())
         with dev:
             dev.bringup(patch, ram, log=lambda *a: None)
@@ -236,6 +245,8 @@ def parse_radio(text: str) -> Radio:
             f"width must be one of {sorted(m.WIDTH_TO_SNIFFER_BW)} MHz, got {width}"
         )
     channel = int(channel_text)
+    if channel not in m.CONTROL_CHANNELS[band]:
+        raise argparse.ArgumentTypeError(f"{band} has no channel {channel}")
     if m.center_channel(band, channel, width) is None:
         raise argparse.ArgumentTypeError(
             f"no {width} MHz channel on {band} contains control channel {channel}"
@@ -279,10 +290,8 @@ def main() -> int:
     except argparse.ArgumentTypeError as exc:
         parser.error(str(exc))
 
-    selectors = [radio.selector for radio in radios]
-    if len(set(selectors)) != len(selectors):
-        parser.error("each --radio needs a different adapter")
     inventory = m.describe_supported_devices()
+    resolved: dict[str, str] = {}
     for radio in radios:
         matched = [
             entry for entry in inventory if radio.selector in (entry["address"], entry["usb_id"])
@@ -297,6 +306,16 @@ def main() -> int:
                 f"{radio.selector!r} matches {len(matched)} attached adapters (at {where}); "
                 "use a port address to pick one"
             )
+        # Two different selectors can name one adapter: its USB id, and the port it is
+        # plugged into. Comparing selector strings would accept that pair and then have
+        # both threads claim the same interface, so compare what each one resolves to.
+        port = matched[0]["address"]
+        if port in resolved:
+            parser.error(
+                f"--radio {radio.selector!r} and {resolved[port]!r} are the same adapter, "
+                f"at {port}; each radio needs a different one"
+            )
+        resolved[port] = radio.selector
 
     client = args.client.lower() if args.client else None
     timeline = Timeline(client)
