@@ -182,7 +182,7 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Code:** `research/ipi_hist_cmd.py`, `research/ipi_probe.py`.
 
 
-## Injection does not radiate on 5 GHz
+## CCK-only injection does not radiate on 5 GHz
 
 - **Tried:** twice, 2026-09-03. The MT7921U injected spaced Probe Requests from a synthetic
   source address while the MT7925U decoded on the same channel:
@@ -199,6 +199,14 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Not ruled out:** a 5 GHz TX path needing rate or power configuration the injector does not
   set; regulatory gating in firmware. Nothing here distinguishes those.
 - **Code:** `research/cross_measure.py`.
+
+- **Follow-up, 2026-09-04:** a research-only fixed-rate OFDM descriptor (6 Mb/s)
+  radiated on 5 GHz channel 36: the A9000 independently decoded 60 of 60 directed
+  probes, and both radios remained responsive. The earlier result applies to the
+  CCK-only configuration, not to all 5 GHz TX. See
+  [radio observability](docs/RADIO_OBSERVABILITY.md) and
+  [`research/dual_radio_probe.py`](research/dual_radio_probe.py). Shipped injection
+  still uses CCK; no general-purpose TX capability is claimed.
 
 ## A transmit burst does not separate offset 14 from offset 11
 

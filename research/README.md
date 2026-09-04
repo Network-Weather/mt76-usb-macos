@@ -14,13 +14,21 @@ The background, the capability map and the method these follow are in
 
 ## What is here
 
+The ongoing [radio observability exploration](../docs/RADIO_OBSERVABILITY.md) follows
+extended receive vectors, control exchanges, and two-radio timing, with dated evidence
+and explicit distinctions between hypotheses and measured capabilities.
+
 | script | question | state |
 |---|---|---|
+| [`rx_vector_probe.py`](rx_vector_probe.py) | What does the extended receive vector contain, and is Group 5 delivered? | **partly answered** — MT7961 enable works; MT7925 duplicate RCPI and HE/EHT color/direction checked |
+| [`dual_radio_probe.py`](dual_radio_probe.py) | Can shared packets align clocks, and do controlled rates reach the air? | **partly answered** — microsecond clock agreement and 60/60 OFDM TX at 5 GHz channels 36/149 |
+| [`clock_retune_probe.py`](clock_retune_probe.py) | Does a clock model survive a channel excursion? | **answered for tested excursions** — both radios preserve calibration after returning; long-term stability untested |
+| [`control_frames.py`](control_frames.py) | What do control exchanges say about endpoints and delivered sequences? | **helper** — bounded single-TID compressed BlockAck decoder; no loss-rate claim |
 | [`ipi_probe.py`](ipi_probe.py) | Is the PHY's power histogram reachable through the USB register window? | **partly answered** — the window is mapped, the histogram is not at mt7915's address |
 | [`ipi_hist_cmd.py`](ipi_hist_cmd.py) | Will `RDD_IPI_HIST_CTRL` (0xa3) return a noise floor? | **open** — transport works, the sampler stays idle |
 | [`mcu_command_probe.py`](mcu_command_probe.py) | Which MCU commands does this firmware actually implement? | **answered** — the refusal reply identifies them |
 | [`uni_mib_probe.py`](uni_mib_probe.py) | Does the MT7925 keep the same counters behind UNI? | **partly** — established transport and the accepted/running offset set; follow-up tools identify the useful subset |
-| [`cross_measure.py`](cross_measure.py) | Do two radios agree, and do injected frames reach the air? | **answered** — they agree; injection radiates on 2.4 GHz only |
+| [`cross_measure.py`](cross_measure.py) | Do two radios agree, and do injected frames reach the air? | **answered** — they agree; this CCK-only path radiates on 2.4 GHz; see `dual_radio_probe.py` for 5 GHz OFDM |
 | [`mib_offset_sweep.py`](mib_offset_sweep.py) | Which EXT MIB counter offsets does this chip accept? | **answered** — MT7921 numbering identified; MT7925 uses the separate UNI probe |
 | [`mt7925_mib_characterize.py`](mt7925_mib_characterize.py) | Which MT7925 UNI counters track frames, receive duration, CCA and ED? | **answered in part** — offsets 2/11/12/13/19/20 identified behaviorally; 17 remains provisional |
 | [`mt7925_mib_crosscheck.py`](mt7925_mib_crosscheck.py) | Does the MT7925 CCA candidate agree with the identified MT7921 counter? | **answered** — offset 19 agrees closely on quiet 6 GHz; receiver differences dominate busy channels |

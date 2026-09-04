@@ -6,6 +6,21 @@ hardware result, and a packet seen once is not presented as a reliability guaran
 
 ## Offline test suite
 
+### Radio-observability research, 2026-09-04
+
+The [radio observability report](RADIO_OBSERVABILITY.md) records new research-only
+results on the same MT7961/A9000 test pair and pinned firmware: a reversible MT7961
+Group-5 descriptor enable; MT7925 HE/EHT metadata cross-checks; 60/60 observed OFDM
+probe transmission on each of 5 GHz channels 36 and 149; TXS reports; control-frame
+decoding; and shared-beacon clock calibration before/after channel excursions.
+Commands, acceptance criteria, measured residuals, firmware hashes, limitations, and
+redacted machine-readable evidence are linked there. These experiments do not change
+the shipped driver's default configuration or qualify general-purpose transmission.
+
+The project gate passed for this work. The final Python suite reports 400 passing tests
+on the reference host; the independent TShark checks are skipped if TShark is absent.
+The historical suite/release results below retain their original dates.
+
 Run on macOS from the repository root:
 
 ```bash

@@ -1,0 +1,952 @@
+{
+  "description": "Redacted probe results with detailed Group-5 distributions omitted. See docs/RADIO_OBSERVABILITY.md for interpretation.",
+  "records": [
+    {
+      "chip": "mt7921",
+      "date_utc": "2026-09-04T22:52:53.587804+00:00",
+      "firmware_sha256": {
+        "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      },
+      "restored_register": true,
+      "runs": [
+        {
+          "control_subtypes": {
+            "ACK": 6,
+            "BlockAck": 1,
+            "BlockAckReq": 1,
+            "RTS": 2
+          },
+          "dcr0_readback": "0x2773400",
+          "elapsed_s": 5.026,
+          "group_masks": {
+            "07": 295
+          },
+          "he_candidates": {
+            "bss_color": {},
+            "spatial_reuse": {},
+            "txop": {},
+            "uplink": {}
+          },
+          "he_color_vs_beacon": {},
+          "packets": {
+            "NORMAL": 295,
+            "fcs_errors": 0
+          },
+          "phase": "baseline",
+          "target": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ]
+        },
+        {
+          "control_subtypes": {
+            "ACK": 4,
+            "BlockAck": 2,
+            "RTS": 1
+          },
+          "dcr0_readback": "0x2f73400",
+          "elapsed_s": 5.017,
+          "group_masks": {
+            "17": 289
+          },
+          "he_candidates": {
+            "bss_color": {},
+            "spatial_reuse": {},
+            "txop": {},
+            "uplink": {}
+          },
+          "he_color_vs_beacon": {},
+          "packets": {
+            "NORMAL": 289,
+            "fcs_errors": 0
+          },
+          "phase": "enabled",
+          "target": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ]
+        },
+        {
+          "control_subtypes": {
+            "CTS": 2
+          },
+          "dcr0_readback": "0x2773400",
+          "elapsed_s": 5.004,
+          "group_masks": {
+            "17": 1,
+            "07": 267
+          },
+          "he_candidates": {
+            "bss_color": {},
+            "spatial_reuse": {},
+            "txop": {},
+            "uplink": {}
+          },
+          "he_color_vs_beacon": {},
+          "packets": {
+            "NORMAL": 268,
+            "fcs_errors": 0
+          },
+          "phase": "restored",
+          "target": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ]
+        },
+        {
+          "control_subtypes": {
+            "BlockAck": 15,
+            "CTS": 8,
+            "RTS": 21
+          },
+          "dcr0_readback": "0x2773400",
+          "elapsed_s": 5.017,
+          "group_masks": {
+            "07": 326
+          },
+          "he_candidates": {
+            "bss_color": {},
+            "spatial_reuse": {},
+            "txop": {},
+            "uplink": {}
+          },
+          "he_color_vs_beacon": {},
+          "packets": {
+            "NORMAL": 326,
+            "fcs_errors": 0
+          },
+          "phase": "baseline",
+          "target": [
+            "5GHz",
+            36,
+            42,
+            80
+          ]
+        },
+        {
+          "control_subtypes": {
+            "BlockAck": 9,
+            "CTS": 4,
+            "RTS": 23
+          },
+          "dcr0_readback": "0x2f73400",
+          "elapsed_s": 5.017,
+          "group_masks": {
+            "17": 331
+          },
+          "he_candidates": {
+            "bss_color": {},
+            "spatial_reuse": {},
+            "txop": {},
+            "uplink": {}
+          },
+          "he_color_vs_beacon": {},
+          "packets": {
+            "NORMAL": 331,
+            "fcs_errors": 0
+          },
+          "phase": "enabled",
+          "target": [
+            "5GHz",
+            36,
+            42,
+            80
+          ]
+        },
+        {
+          "control_subtypes": {
+            "BlockAck": 12,
+            "CTS": 8,
+            "RTS": 44
+          },
+          "dcr0_readback": "0x2773400",
+          "elapsed_s": 5.01,
+          "group_masks": {
+            "07": 332
+          },
+          "he_candidates": {
+            "bss_color": {},
+            "spatial_reuse": {},
+            "txop": {},
+            "uplink": {}
+          },
+          "he_color_vs_beacon": {},
+          "packets": {
+            "NORMAL": 332,
+            "fcs_errors": 0
+          },
+          "phase": "restored",
+          "target": [
+            "5GHz",
+            36,
+            42,
+            80
+          ]
+        }
+      ],
+      "tool": "rx_vector_probe",
+      "usb_id": "0e8d:7961"
+    },
+    {
+      "chip": "mt7925",
+      "date_utc": "2026-09-04T22:59:23.981283+00:00",
+      "firmware_sha256": {
+        "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      },
+      "runs": [
+        {
+          "control_subtypes": {
+            "ACK": 22,
+            "BlockAck": 45,
+            "CTS": 6,
+            "RTS": 6,
+            "Trigger": 3
+          },
+          "elapsed_s": 15.065,
+          "group_masks": {
+            "17": 1148
+          },
+          "he_eht_color_vs_beacon": {
+            "match": 28
+          },
+          "he_eht_uplink_vs_frame_control": {
+            "match": 28
+          },
+          "packets": {
+            "NORMAL": 1148,
+            "fcs_errors": 0,
+            "g5_rcpi01_equal_prxv": 1148
+          },
+          "phase": "baseline",
+          "target": [
+            "5GHz",
+            132,
+            138,
+            80
+          ]
+        },
+        {
+          "control_subtypes": {
+            "ACK": 7,
+            "BlockAck": 92,
+            "CTS": 35,
+            "RTS": 64
+          },
+          "elapsed_s": 15.011,
+          "group_masks": {
+            "17": 1987
+          },
+          "he_eht_color_vs_beacon": {
+            "match": 32
+          },
+          "he_eht_uplink_vs_frame_control": {
+            "match": 32
+          },
+          "packets": {
+            "NORMAL": 1987,
+            "fcs_errors": 0,
+            "g5_rcpi01_equal_prxv": 1987
+          },
+          "phase": "baseline",
+          "target": [
+            "6GHz",
+            53,
+            47,
+            160
+          ]
+        }
+      ],
+      "tool": "rx_vector_probe",
+      "usb_id": "0846:9072"
+    },
+    {
+      "beacon_matching": {
+        "common": 573,
+        "radio_unique_fingerprints": [
+          687,
+          573
+        ],
+        "unambiguous_common": 573
+      },
+      "clock": {
+        "all_fit": {
+          "max_us_if_1mhz": 1.041,
+          "median_us_if_1mhz": 0.294,
+          "p95_us_if_1mhz": 0.782
+        },
+        "host_span_s": 11.999,
+        "pairs": 573,
+        "radio1_ticks_per_host_second": 999713.9,
+        "relative_drift_ppm": -1.212,
+        "second_half_prediction": {
+          "max_us_if_1mhz": 1.42,
+          "median_us_if_1mhz": 0.369,
+          "p95_us_if_1mhz": 1.086
+        },
+        "status": "fit"
+      },
+      "date_utc": "2026-09-04T22:56:50.180369+00:00",
+      "radios": [
+        {
+          "ba_types": {},
+          "blockack_ack_bits_sum_not_unique_packets": 0,
+          "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+          "chip": "mt7921",
+          "control_subtypes": {
+            "ACK": 7,
+            "RTS": 3
+          },
+          "distinct_directed_control_pairs": 1,
+          "duration_s": 12.011,
+          "packets": {
+            "NORMAL": 715,
+            "TXS": 60
+          },
+          "synthetic_frames": 0,
+          "synthetic_phys": {},
+          "synthetic_rssi_median": null,
+          "synthetic_unique_sequences": 0
+        },
+        {
+          "ba_types": {},
+          "blockack_ack_bits_sum_not_unique_packets": 0,
+          "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+          "chip": "mt7925",
+          "control_subtypes": {},
+          "distinct_directed_control_pairs": 0,
+          "duration_s": 12.008,
+          "packets": {
+            "NORMAL": 633
+          },
+          "synthetic_frames": 60,
+          "synthetic_phys": {
+            "CCK:1.0": 60
+          },
+          "synthetic_rssi_median": -36,
+          "synthetic_unique_sequences": 60
+        }
+      ],
+      "rate": "cck1",
+      "register_alive_after": [
+        true,
+        true
+      ],
+      "target": [
+        "2.4GHz",
+        6,
+        6,
+        20
+      ],
+      "tool": "dual_radio_probe",
+      "transmit_requested": 60,
+      "transmit_submitted": 60
+    },
+    {
+      "beacon_matching": {
+        "common": 614,
+        "radio_unique_fingerprints": [
+          745,
+          669
+        ],
+        "unambiguous_common": 614
+      },
+      "clock": {
+        "all_fit": {
+          "max_us_if_1mhz": 0.99,
+          "median_us_if_1mhz": 0.317,
+          "p95_us_if_1mhz": 0.77
+        },
+        "host_span_s": 11.973,
+        "pairs": 614,
+        "radio1_ticks_per_host_second": 1002371.1,
+        "relative_drift_ppm": -0.7133,
+        "second_half_prediction": {
+          "max_us_if_1mhz": 0.967,
+          "median_us_if_1mhz": 0.332,
+          "p95_us_if_1mhz": 0.752
+        },
+        "status": "fit"
+      },
+      "date_utc": "2026-09-04T22:57:41.686564+00:00",
+      "radios": [
+        {
+          "ba_types": {
+            "2": 33
+          },
+          "blockack_ack_bits_sum_not_unique_packets": 38,
+          "blockack_zero_positions_through_last_ack_not_loss_rate": 2,
+          "chip": "mt7921",
+          "control_subtypes": {
+            "BlockAck": 33,
+            "CTS": 32,
+            "RTS": 92
+          },
+          "distinct_directed_control_pairs": 6,
+          "duration_s": 12.006,
+          "packets": {
+            "NORMAL": 1079,
+            "TXS": 60,
+            "decoded_blockacks": 33
+          },
+          "synthetic_frames": 0,
+          "synthetic_phys": {},
+          "synthetic_rssi_median": null,
+          "synthetic_unique_sequences": 0
+        },
+        {
+          "ba_types": {
+            "2": 45
+          },
+          "blockack_ack_bits_sum_not_unique_packets": 50,
+          "blockack_zero_positions_through_last_ack_not_loss_rate": 2,
+          "chip": "mt7925",
+          "control_subtypes": {
+            "ACK": 1,
+            "BlockAck": 45,
+            "CTS": 30,
+            "RTS": 72
+          },
+          "distinct_directed_control_pairs": 6,
+          "duration_s": 12.006,
+          "packets": {
+            "NORMAL": 960,
+            "decoded_blockacks": 45
+          },
+          "synthetic_frames": 60,
+          "synthetic_phys": {
+            "OFDM:6.0": 60
+          },
+          "synthetic_rssi_median": -41,
+          "synthetic_unique_sequences": 60
+        }
+      ],
+      "rate": "ofdm6",
+      "register_alive_after": [
+        true,
+        true
+      ],
+      "target": [
+        "5GHz",
+        36,
+        36,
+        20
+      ],
+      "tool": "dual_radio_probe",
+      "transmit_requested": 60,
+      "transmit_submitted": 60
+    },
+    {
+      "beacon_matching": {
+        "common": 30,
+        "radio_unique_fingerprints": [
+          46,
+          84
+        ],
+        "unambiguous_common": 30
+      },
+      "clock": {
+        "all_fit": {
+          "max_us_if_1mhz": 0.803,
+          "median_us_if_1mhz": 0.314,
+          "p95_us_if_1mhz": 0.593
+        },
+        "host_span_s": 11.982,
+        "pairs": 30,
+        "radio1_ticks_per_host_second": 1000000.3,
+        "relative_drift_ppm": -0.7948,
+        "second_half_prediction": {
+          "max_us_if_1mhz": 0.882,
+          "median_us_if_1mhz": 0.295,
+          "p95_us_if_1mhz": 0.635
+        },
+        "status": "fit"
+      },
+      "date_utc": "2026-09-04T22:58:27.502938+00:00",
+      "firmware_sha256": {
+        "mt7921": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "mt7925": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        }
+      },
+      "radios": [
+        {
+          "ba_types": {
+            "2": 20
+          },
+          "blockack_ack_bits_sum_not_unique_packets": 1212,
+          "blockack_zero_positions_through_last_ack_not_loss_rate": 68,
+          "chip": "mt7921",
+          "control_subtypes": {
+            "ACK": 29,
+            "BlockAck": 20,
+            "CF-End": 8,
+            "CTS": 140,
+            "RTS": 45,
+            "VHT-NDPA": 43
+          },
+          "distinct_directed_control_pairs": 5,
+          "duration_s": 15.096,
+          "packets": {
+            "NORMAL": 352,
+            "TXS": 60,
+            "decoded_blockacks": 20,
+            "timeouts": 36
+          },
+          "synthetic_frames": 0,
+          "synthetic_phys": {},
+          "synthetic_rssi_median": null,
+          "synthetic_unique_sequences": 0,
+          "tx_status_records": [
+            {
+              "count": 60,
+              "fields": {
+                "ack_error_bits": 0,
+                "format": 0,
+                "pid": 3,
+                "rate": 75,
+                "tx_power_raw": 44
+              }
+            }
+          ]
+        },
+        {
+          "ba_types": {
+            "2": 29
+          },
+          "blockack_ack_bits_sum_not_unique_packets": 1856,
+          "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+          "chip": "mt7925",
+          "control_subtypes": {
+            "ACK": 56,
+            "BlockAck": 29,
+            "CF-End": 130,
+            "CTS": 259,
+            "RTS": 2,
+            "VHT-NDPA": 26
+          },
+          "distinct_directed_control_pairs": 2,
+          "duration_s": 15.006,
+          "packets": {
+            "NORMAL": 678,
+            "decoded_blockacks": 29,
+            "timeouts": 14
+          },
+          "synthetic_frames": 60,
+          "synthetic_phys": {
+            "OFDM:6.0": 60
+          },
+          "synthetic_rssi_median": -46,
+          "synthetic_unique_sequences": 60,
+          "tx_status_records": []
+        }
+      ],
+      "rate": "ofdm6",
+      "register_alive_after": [
+        true,
+        true
+      ],
+      "target": [
+        "5GHz",
+        149,
+        149,
+        20
+      ],
+      "tool": "dual_radio_probe",
+      "transmit_requested": 60,
+      "transmit_submitted": 60
+    },
+    {
+      "across_retune": {
+        "all_fit": {
+          "max_us_if_1mhz": 1.428,
+          "median_us_if_1mhz": 0.322,
+          "p95_us_if_1mhz": 0.854
+        },
+        "host_span_s": 32.734,
+        "pairs": 1634,
+        "radio1_ticks_per_host_second": 1000001.6,
+        "relative_drift_ppm": -1.0839,
+        "second_half_prediction": {
+          "max_us_if_1mhz": 2.323,
+          "median_us_if_1mhz": 0.797,
+          "p95_us_if_1mhz": 1.751
+        },
+        "status": "fit"
+      },
+      "date_utc": "2026-09-04T23:00:52.516369+00:00",
+      "excursion": [
+        "5GHz",
+        149,
+        149,
+        20
+      ],
+      "firmware_sha256": {
+        "mt7921": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "mt7925": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        }
+      },
+      "phases": [
+        {
+          "clock": {
+            "all_fit": {
+              "max_us_if_1mhz": 1.149,
+              "median_us_if_1mhz": 0.3,
+              "p95_us_if_1mhz": 0.775
+            },
+            "host_span_s": 14.978,
+            "pairs": 842,
+            "radio1_ticks_per_host_second": 999971.4,
+            "relative_drift_ppm": -1.1289,
+            "second_half_prediction": {
+              "max_us_if_1mhz": 1.205,
+              "median_us_if_1mhz": 0.35,
+              "p95_us_if_1mhz": 0.885
+            },
+            "status": "fit"
+          },
+          "phase": "before",
+          "radios": [
+            {
+              "ba_types": {
+                "2": 28
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 28,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7921",
+              "control_subtypes": {
+                "BlockAck": 28,
+                "CTS": 32,
+                "RTS": 58
+              },
+              "distinct_directed_control_pairs": 7,
+              "duration_s": 15.005,
+              "packets": {
+                "NORMAL": 1194,
+                "decoded_blockacks": 28
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            },
+            {
+              "ba_types": {
+                "2": 30
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 30,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7925",
+              "control_subtypes": {
+                "ACK": 4,
+                "BlockAck": 30,
+                "CTS": 33,
+                "RTS": 69
+              },
+              "distinct_directed_control_pairs": 7,
+              "duration_s": 15.004,
+              "packets": {
+                "NORMAL": 1091,
+                "decoded_blockacks": 30
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            }
+          ]
+        },
+        {
+          "clock": {
+            "all_fit": {
+              "max_us_if_1mhz": 0.973,
+              "median_us_if_1mhz": 0.291,
+              "p95_us_if_1mhz": 0.785
+            },
+            "host_span_s": 15.008,
+            "pairs": 792,
+            "radio1_ticks_per_host_second": 1012574,
+            "relative_drift_ppm": -1.0494,
+            "second_half_prediction": {
+              "max_us_if_1mhz": 1.164,
+              "median_us_if_1mhz": 0.336,
+              "p95_us_if_1mhz": 0.834
+            },
+            "status": "fit"
+          },
+          "phase": "after",
+          "radios": [
+            {
+              "ba_types": {
+                "2": 9
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 12,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7921",
+              "control_subtypes": {
+                "BlockAck": 9,
+                "CTS": 20,
+                "RTS": 101
+              },
+              "distinct_directed_control_pairs": 6,
+              "duration_s": 15.009,
+              "packets": {
+                "NORMAL": 999,
+                "decoded_blockacks": 9
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            },
+            {
+              "ba_types": {
+                "2": 27
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 31,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7925",
+              "control_subtypes": {
+                "BlockAck": 27,
+                "CTS": 40,
+                "RTS": 265
+              },
+              "distinct_directed_control_pairs": 8,
+              "duration_s": 15.009,
+              "packets": {
+                "NORMAL": 1350,
+                "decoded_blockacks": 27
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            }
+          ]
+        }
+      ],
+      "register_alive_after": [
+        true,
+        true
+      ],
+      "retuned_radio": "mt7921",
+      "target": [
+        "5GHz",
+        36,
+        36,
+        20
+      ],
+      "tool": "clock_retune_probe"
+    },
+    {
+      "across_retune": {
+        "all_fit": {
+          "max_us_if_1mhz": 1.023,
+          "median_us_if_1mhz": 0.304,
+          "p95_us_if_1mhz": 0.785
+        },
+        "host_span_s": 32.47,
+        "pairs": 1678,
+        "radio1_ticks_per_host_second": 999992.6,
+        "relative_drift_ppm": -0.9603,
+        "second_half_prediction": {
+          "max_us_if_1mhz": 1.085,
+          "median_us_if_1mhz": 0.312,
+          "p95_us_if_1mhz": 0.786
+        },
+        "status": "fit"
+      },
+      "date_utc": "2026-09-04T23:01:48.866494+00:00",
+      "excursion": [
+        "6GHz",
+        53,
+        47,
+        160
+      ],
+      "firmware_sha256": {
+        "mt7921": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "mt7925": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        }
+      },
+      "phases": [
+        {
+          "clock": {
+            "all_fit": {
+              "max_us_if_1mhz": 0.996,
+              "median_us_if_1mhz": 0.304,
+              "p95_us_if_1mhz": 0.78
+            },
+            "host_span_s": 15,
+            "pairs": 824,
+            "radio1_ticks_per_host_second": 999995.3,
+            "relative_drift_ppm": -0.9632,
+            "second_half_prediction": {
+              "max_us_if_1mhz": 0.986,
+              "median_us_if_1mhz": 0.287,
+              "p95_us_if_1mhz": 0.822
+            },
+            "status": "fit"
+          },
+          "phase": "before",
+          "radios": [
+            {
+              "ba_types": {
+                "2": 34
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 37,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7921",
+              "control_subtypes": {
+                "BlockAck": 34,
+                "CTS": 24,
+                "RTS": 130
+              },
+              "distinct_directed_control_pairs": 7,
+              "duration_s": 15.018,
+              "packets": {
+                "NORMAL": 1239,
+                "decoded_blockacks": 34
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            },
+            {
+              "ba_types": {
+                "2": 33
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 36,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7925",
+              "control_subtypes": {
+                "BlockAck": 33,
+                "CTS": 24,
+                "RTS": 122
+              },
+              "distinct_directed_control_pairs": 8,
+              "duration_s": 15.018,
+              "packets": {
+                "NORMAL": 1133,
+                "decoded_blockacks": 33
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            }
+          ]
+        },
+        {
+          "clock": {
+            "all_fit": {
+              "max_us_if_1mhz": 0.997,
+              "median_us_if_1mhz": 0.302,
+              "p95_us_if_1mhz": 0.78
+            },
+            "host_span_s": 14.976,
+            "pairs": 854,
+            "radio1_ticks_per_host_second": 1014759.1,
+            "relative_drift_ppm": -0.9548,
+            "second_half_prediction": {
+              "max_us_if_1mhz": 1.144,
+              "median_us_if_1mhz": 0.339,
+              "p95_us_if_1mhz": 0.811
+            },
+            "status": "fit"
+          },
+          "phase": "after",
+          "radios": [
+            {
+              "ba_types": {
+                "2": 54
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 59,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7921",
+              "control_subtypes": {
+                "BlockAck": 54,
+                "CTS": 31,
+                "RTS": 146
+              },
+              "distinct_directed_control_pairs": 6,
+              "duration_s": 15,
+              "packets": {
+                "NORMAL": 1258,
+                "decoded_blockacks": 54
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            },
+            {
+              "ba_types": {
+                "2": 56
+              },
+              "blockack_ack_bits_sum_not_unique_packets": 61,
+              "blockack_zero_positions_through_last_ack_not_loss_rate": 0,
+              "chip": "mt7925",
+              "control_subtypes": {
+                "BlockAck": 56,
+                "CTS": 39,
+                "RTS": 142
+              },
+              "distinct_directed_control_pairs": 7,
+              "duration_s": 15,
+              "packets": {
+                "NORMAL": 1168,
+                "decoded_blockacks": 56
+              },
+              "synthetic_frames": 0,
+              "synthetic_phys": {},
+              "synthetic_rssi_median": null,
+              "synthetic_unique_sequences": 0,
+              "tx_status_records": []
+            }
+          ]
+        }
+      ],
+      "register_alive_after": [
+        true,
+        true
+      ],
+      "retuned_radio": "mt7925",
+      "target": [
+        "5GHz",
+        36,
+        36,
+        20
+      ],
+      "tool": "clock_retune_probe"
+    }
+  ]
+}
