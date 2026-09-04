@@ -4,6 +4,46 @@ Sprint started 2026-09-01; refocused 2026-09-03 after 0.2.0. Items come from [RO
 item. Strike through when merged. Hardware items need the reference adapter attached and at
 least two APs on one SSID.
 
+## Fix the occupancy comparison before PR #25 lands
+
+Found by review pass three on `spike/firmware-recon`. The occupancy counter is sound; the
+quantity it is compared against is not. Each step below is checkable, and the numbers already
+published in `docs/TESTING.md` are wrong until step 4 replaces them.
+
+- [x] ~~**1. Count aggregated airtime once, not per subframe.** `scripts/mib_survey.py` sums
+  `rxd.airtime_us` per frame, charging every A-MPDU subframe a full preamble. Forty 100-byte
+  HE subframes at 100 Mbps come to 2400 µs that way against 384.8 µs through `rxd.Aggregate`.
+  Use `rxd.AggregationTracker`, feeding `(decoded, len(frame), addr2)` and summing
+  `Aggregate.airtime_us()` over what `feed()` returns plus a final `flush()`.
+  *Done when:* a test drives the dwell loop with a synthetic A-MPDU and shows the summed
+  airtime matching the aggregate rather than the per-frame total.~~ Done. Note the measured
+  captures contain no A-MPDU subframes at all, so this fixed a latent defect rather than the
+  numbers: it was **not** the cause of the negative 5 GHz residual, contrary to what the pass
+  three write-up assumed.
+- [x] ~~**2. Measure the counter over the interval the denominator describes.** The offset-11
+  baseline is currently read before two further MCU queries and its final value after three,
+  while frames are counted only between `started` and the loop exit, so occupancy during five
+  round trips lands in the numerator but not the denominator. Read the CCA counter last before
+  the dwell and first after it, and take `elapsed_us` across those two reads.
+  *Done when:* a test asserts the dwell window encloses the frame loop, and `busy_fraction`
+  cannot exceed 1 for that reason.~~ Done.
+- [x] ~~**3. Stop counting ordinary receive timeouts as transport errors.**
+  `usb.core.USBTimeoutError` subclasses `USBError`, so every routine 250 ms `rx_read` timeout
+  on a quiet channel increments `usb_errors`; a silent one-second dwell reports about four.
+  `scripts/retune_drops.py` already separates them. *Done when:* a test feeds a timeout and a
+  real transport error and only the second is counted.~~ Done.
+- [x] ~~**4. Re-measure, then rewrite the numbers.** Every occupancy figure in
+  `docs/TESTING.md` and `docs/FIRMWARE_RECON.md` was produced with the inflated decoded
+  airtime and must be replaced, not annotated. Delete the explanation of the negative 5 GHz
+  value in both the docs and `mib_survey.py`: it attributes the sign to accumulated per-frame
+  rounding, which was asserted without testing and is wrong. The cause was this defect.
+  *Done when:* the docs carry fresh figures from a dated run and no retracted text survives.~~
+  Done, and the explanation replaced rather than corrected in place: the 5 GHz residual is
+  noise around zero, −9,607 µs on one dwell and +18,331 µs on the next, not a systematic
+  negative needing a cause.
+- [ ] **5. Review, then land.** One `codex-review` pass over the result. PR #25 stays a draft
+  until steps 1-4 are done.
+
 ## Known limits of the two-adapter capture
 
 - [ ] **The radios do not share one capture clock.** Each thread starts its own window once

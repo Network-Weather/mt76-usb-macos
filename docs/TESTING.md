@@ -245,7 +245,9 @@ No Python runtime, PyUSB, or libusb was linked or invoked.
 
 - **Criterion**: Submit exactly 3 wildcard Probe Requests on 2.4 GHz channel 1 at 50 ms spacing with 1 Mbps CCK rate. Fail closed and submit 0 frames on 5 GHz and 6 GHz. Bulk writes accepted by USB endpoint without timeout or I/O errors, chip alive after submission, exit 0 (`status: pass`).
 - **Result**: 3 frames submitted to USB bulk OUT endpoint on 2.4 GHz, 0 on 5 GHz and 6 GHz; bulk writes accepted; device responded to post-submission liveness check; exit code 0 (`status: pass`).
-*(Note: Without firmware TX status reporting enabled or an independent RF receiver recording over-the-air packets, bulk-write acceptance establishes successful host-to-device USB delivery and USB transfer completion, but does not prove over-the-air RF radiation.)*
+*(This entry establishes host-to-device USB delivery only. Whether those frames radiate is
+measured on `spike/cross-measure` with a second adapter as the receiver, and is not claimed
+here.)*
 
 ### Radiotap PCAP export (Live Hardware Legacy/HT and Synthetic VHT/HE Writer)
 
@@ -323,6 +325,65 @@ tshark -r /tmp/test_c_writer.pcap -O radiotap
         HE Data 5: data Bandwidth/RU allocation: 40 (0x1)
         HE Data 6: 1 space-time stream (0x1)
     ```
+
+## Channel occupancy over the MCU: 2026-09-03
+
+Same host and reference MT7921U adapter (`0e8d:7961`) as the 2026-08-31 test bed; macOS 26.6,
+pinned firmware, passive receive only. The second adapter was attached, so the id is pinned.
+
+```bash
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python scripts/mib_survey.py 2.4GHz:6 5GHz:36 --seconds 8
+MT76_USB_ID=0e8d:7961 ./.venv/bin/python scripts/mcu_stats.py --band 5GHz --channel 36
+```
+
+Occupancy comes from `MCU_EXT_CMD_GET_MIB_INFO` offset 11 (`MIB_CNT_P_CCA_TIME`), primary-channel
+CCA busy time in microseconds. The offsets are this chip's own numbering, established by sweeping
+0-127 and corroborated against MediaTek's `ENUM_MIB_COUNTER_T`; the derivation, the full accepted
+set and the counters that were rejected are in [FIRMWARE_RECON.md](FIRMWARE_RECON.md).
+
+| Channel | Dwell | Busy | Frames decoded | Decoded airtime | Busy minus decoded |
+|---|---|---|---|---|---|
+| 2.4 GHz ch 6 | 8 s | 10.03% | 274 | 641,536 µs | **+165,303 µs** |
+| 5 GHz ch 36 | 8 s | 2.34% | 807 | 197,163 µs | −9,607 µs |
+| 2.4 GHz ch 6 | 12 s | 9.07% | 388 | 938,308 µs | **+150,142 µs** |
+| 5 GHz ch 36 | 12 s | 2.35% | 1,155 | 264,371 µs | +18,331 µs |
+
+Decoded airtime is aggregation-aware (`rxd.AggregationTracker`), so an A-MPDU is billed one
+preamble rather than one per subframe. In these captures it changed nothing measurable --
+every frame was flagged `non_ampdu`, 0 of 400 sampled frames were A-MPDU subframes -- but on
+aggregated traffic the naive sum inflates decoded airtime severalfold and would mask the gap
+this table is about.
+
+**Acceptance criteria and how they were met.** The counter must advance (it does, on every
+run); busy time must not exceed wall clock (10.03% peak); it must order channels consistently
+(2.4 GHz channel 6 above 5 GHz channel 36 on both dwells, and 5 GHz channel 149 at 0.17% in a
+separate sweep); and it must exceed the airtime of frames the driver decoded, which is the
+claim that makes it worth having. On 2.4 GHz it does so by roughly a sixth of the total, on
+both dwells.
+
+**On 5 GHz the two figures are within noise of each other**, −9,607 µs on one dwell and
++18,331 µs on the next, i.e. ±5% of the decoded total in both directions. The honest reading
+is that on this channel the decoder accounted for essentially all the occupancy, and the
+residual is the difference between a hardware measurement and a model
+(`rxd.airtime_us` estimates preamble plus payload at the decoded rate). The sign of that
+residual is not stable across runs and carries no information about the channel.
+
+Independent corroboration in the same runs, not designed for: `MIB_CNT_BCN_TX` and all four
+`MIB_CNT_TX_BW_*` counters read exactly zero on both bands, as they must in a driver that never
+transmits.
+
+**MT7921U only, for now.** The MT7925U answers no EXT command at all -- connac3 uses the UNI
+command space -- so `mib_survey.py` reports `null` rather than a wrong number there. Its
+counters do exist: `MCU_UNI_CMD_GET_MIB_INFO` is answered and ten offsets advance, but which is
+which has not been established to the standard used here, so nothing is claimed
+([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)). As a control, both adapters on one
+channel decoded 801 and 824 frames for 175,142 and 177,971 µs of airtime, so the MT7925 is
+receiving correctly; it simply cannot be asked.
+
+**Not established.** Offset 0 does not behave like its
+vendor name and is unused. `band_idx = 1` is accepted but the USB parts are single-band, so what
+it reports was not investigated. The MIB *registers* remain dead on this part
+([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)); this measurement does not come from them.
 
 ## MT7925U descriptor discovery and chip identity: 2026-09-03
 

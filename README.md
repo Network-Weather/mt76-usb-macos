@@ -306,6 +306,11 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
   not re-run by accident. Fresh as of 2026-09-03.
 - [docs/MT7925.md](docs/MT7925.md): the MT7925U (Wi-Fi 7, 160 MHz) port: what differs from the
   MT7921 in the mt76 source, what the A9000 is, and the stage tracker. Fresh as of 2026-09-03.
+- [research/README.md](research/README.md): open questions and the hardware experiments probing
+  them, kept separate from the working diagnostics in `scripts/`. Fresh as of 2026-09-03.
+- [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md): energy-domain instruments the chip has and
+  the driver does not expose - CCA busy and airtime counters, the missing noise floor, and what
+  the firmware images do and do not let us read. Three unproven spikes. Fresh as of 2026-09-03.
 
 ## License and provenance
 
