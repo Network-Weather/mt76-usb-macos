@@ -341,20 +341,30 @@ set and the counters that were rejected are in [FIRMWARE_RECON.md](FIRMWARE_RECO
 
 | Channel | Dwell | Busy | Frames decoded | Decoded airtime | Busy minus decoded |
 |---|---|---|---|---|---|
-| 2.4 GHz ch 6 | 8 s | 9.48% | 258 | 615,408 µs | **+149,217 µs** |
-| 5 GHz ch 36 | 8 s | 2.23% | 816 | 187,491 µs | −8,836 µs |
-| 2.4 GHz ch 6 | 12 s | 9.79% | 413 | 972,163 µs | **+211,856 µs** |
-| 5 GHz ch 36 | 12 s | 2.30% | 1,181 | 274,626 µs | +2,004 µs |
+| 2.4 GHz ch 6 | 8 s | 10.03% | 274 | 641,536 µs | **+165,303 µs** |
+| 5 GHz ch 36 | 8 s | 2.34% | 807 | 197,163 µs | −9,607 µs |
+| 2.4 GHz ch 6 | 12 s | 9.07% | 388 | 938,308 µs | **+150,142 µs** |
+| 5 GHz ch 36 | 12 s | 2.35% | 1,155 | 264,371 µs | +18,331 µs |
 
-**Acceptance criteria and how they were met.** The counter must advance (it does, on every run);
-busy time must not exceed wall clock (9.79% peak); it must order channels consistently (2.4 GHz
-channel 6 above 5 GHz channel 36 in both runs, and 5 GHz channel 149 at 0.17% in a separate
-sweep); and it must exceed the airtime of frames the driver decoded, which is the claim that
-makes it worth having. On 2.4 GHz it does so by roughly a quarter of the total.
+Decoded airtime is aggregation-aware (`rxd.AggregationTracker`), so an A-MPDU is billed one
+preamble rather than one per subframe. In these captures it changed nothing measurable --
+every frame was flagged `non_ampdu`, 0 of 400 sampled frames were A-MPDU subframes -- but on
+aggregated traffic the naive sum inflates decoded airtime severalfold and would mask the gap
+this table is about.
 
-The negative 5 GHz figure is expected rather than a fault: `rxd.airtime_us` estimates preamble
-plus payload at the decoded rate, so a few microseconds of per-frame overestimate accumulates
-over 816 frames. It reads as "the decoder saw essentially all of it".
+**Acceptance criteria and how they were met.** The counter must advance (it does, on every
+run); busy time must not exceed wall clock (10.03% peak); it must order channels consistently
+(2.4 GHz channel 6 above 5 GHz channel 36 on both dwells, and 5 GHz channel 149 at 0.17% in a
+separate sweep); and it must exceed the airtime of frames the driver decoded, which is the
+claim that makes it worth having. On 2.4 GHz it does so by roughly a sixth of the total, on
+both dwells.
+
+**On 5 GHz the two figures are within noise of each other**, −9,607 µs on one dwell and
++18,331 µs on the next, i.e. ±5% of the decoded total in both directions. The honest reading
+is that on this channel the decoder accounted for essentially all the occupancy, and the
+residual is the difference between a hardware measurement and a model
+(`rxd.airtime_us` estimates preamble plus payload at the decoded rate). The sign of that
+residual is not stable across runs and carries no information about the channel.
 
 Independent corroboration in the same runs, not designed for: `MIB_CNT_BCN_TX` and all four
 `MIB_CNT_TX_BW_*` counters read exactly zero on both bands, as they must in a driver that never

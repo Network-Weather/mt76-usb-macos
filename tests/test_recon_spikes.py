@@ -13,12 +13,18 @@ import math
 import struct
 
 import pytest
+import usb.core
 
 import mt7921u as ms_mod  # the driver itself, for its MCU command-word encoder
+import rxd
 from research import ipi_probe as ip
 from scripts import fw_triage as ft
 from scripts import mcu_stats as mcs
 from scripts import mib_survey as ms
+
+#: Locally administered, so they cannot collide with a real device seen in a capture.
+SYNTHETIC_TRANSMITTER_A = bytes.fromhex("02aaaaaaaa01")
+SYNTHETIC_TRANSMITTER_B = bytes.fromhex("02bbbbbbbb02")
 
 # ---------------------------------------------------------------- fw_triage (Spike C)
 
@@ -641,3 +647,125 @@ def test_one_answered_category_is_not_evidence_that_categories_differ():
     verdict = mcs.judge_phy_sweep([{"answered": True, "refused": False, "reply_prefix": "aa"}])
     assert verdict["verdict"].startswith("insufficient evidence")
     assert "1 category answered" in verdict["verdict"]
+
+
+# --- the dwell loop itself: aggregation, window, and error accounting ---------------------
+
+
+class _FakeRadio:
+    """A device that replays canned RX transfers and serves MIB counters.
+
+    Enough of the interface for mib_survey.dwell to run with no adapter: tune and the sniffer
+    calls are no-ops, rx_read replays a script, and the MCU returns a counter that advances by
+    a fixed amount per read so the CCA delta is predictable.
+    """
+
+    CHIP = ms_mod.CHIP_MT7921
+    MCU_RXD_LEN = 0
+
+    def __init__(self, transfers, cca_step=0, decoded=None):
+        self.transfers = list(transfers)
+        self.cca_step = cca_step
+        self.cca = 0
+        self.decoded = decoded or {}
+        self.reads = 0
+
+    def tune(self, *a, **k):
+        pass
+
+    def set_monitor_mode(self, *a, **k):
+        pass
+
+    def set_sniffer(self, *a, **k):
+        pass
+
+    def rx_read(self, timeout=0):
+        self.reads += 1
+        if not self.transfers:
+            raise usb.core.USBTimeoutError("timed out", 60, 60)
+        item = self.transfers.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    def reply_body(self, rxd_bytes):
+        return rxd_bytes
+
+    def mcu_cmd_word(self, cmd, payload, timeout=0):
+        _band, offs = struct.unpack_from("<II", payload, 0)
+        value = 0
+        if offs == mcs.MIB_PRIMARY_CCA_TIME:
+            self.cca += self.cca_step
+            value = self.cca
+        body = bytearray(24 + len(payload))
+        struct.pack_into("<I", body, 28, value)
+        return bytes(body)
+
+
+def _ampdu_subframes(n, frame_len=100, rate=100.0, start_ts=1000, spacing=10):
+    """n A-MPDU subframes from one transmitter, close enough in time to be one aggregate."""
+    return [
+        {
+            "frame": b"\x08\x00"
+            + b"\x00" * 8
+            + SYNTHETIC_TRANSMITTER_A
+            + b"\x00" * (frame_len - 16),
+            "non_ampdu": False,
+            "timestamp": start_ts + i * spacing,
+            "phy": {"mode": rxd.MT_PHY_TYPE_HE_SU, "rate_mbps": rate},
+        }
+        for i in range(n)
+    ]
+
+
+def _run_dwell(monkeypatch, decoded, cca_step=0, secs=0.05):
+    """Drive mib_survey.dwell with a decoder that returns canned frames."""
+    radio = _FakeRadio([b"\x00" * 64] * len(decoded), cca_step=cca_step)
+    queue = list(decoded)
+    monkeypatch.setattr(
+        ms.m, "decoder_for", lambda dev: lambda raw: queue.pop(0) if queue else None
+    )
+    return ms.dwell(radio, "5GHz", 36, 36, 20, secs)
+
+
+def test_an_ampdu_is_billed_one_preamble_not_one_per_subframe(monkeypatch):
+    # The defect this replaces: forty subframes were charged forty preambles, inflating
+    # decoded airtime far past the truth and hiding the occupancy gap being measured.
+    frames = _ampdu_subframes(40)
+    out = _run_dwell(monkeypatch, frames)
+    naive = sum(rxd.airtime_us(100, rxd.MT_PHY_TYPE_HE_SU, 100.0) for _ in frames)
+    assert out["frames_decoded"] == 40
+    assert out["aggregates"] == 1
+    assert out["decoded_airtime_us"] < naive / 4
+
+
+def test_separate_transmitters_are_not_merged_into_one_aggregate(monkeypatch):
+    a = _ampdu_subframes(2, start_ts=1000)
+    b = _ampdu_subframes(2, start_ts=9_000_000)
+    for f in b:
+        f["frame"] = f["frame"][:10] + SYNTHETIC_TRANSMITTER_B + f["frame"][16:]
+    out = _run_dwell(monkeypatch, a + b)
+    assert out["aggregates"] == 2
+
+
+def test_a_receive_timeout_is_not_a_transport_error(monkeypatch):
+    # A quiet channel raises one per READ_TIMEOUT_MS; counting them made a healthy adapter
+    # report several transport errors a second.
+    out = _run_dwell(monkeypatch, [], secs=0.05)
+    assert out["usb_errors"] == 0
+    assert out["read_timeouts"] >= 1
+
+
+def test_a_real_transport_error_is_still_counted(monkeypatch):
+    radio = _FakeRadio([usb.core.USBError("pipe stalled")])
+    monkeypatch.setattr(ms.m, "decoder_for", lambda dev: lambda raw: None)
+    out = ms.dwell(radio, "5GHz", 36, 36, 20, 0.05)
+    assert out["usb_errors"] == 1
+
+
+def test_the_cca_delta_is_taken_across_the_dwell_and_nothing_else(monkeypatch):
+    # Each CCA read advances the fake counter by one step. Exactly two reads bracket the
+    # dwell, so the delta must be one step: any other MCU query landing between them would
+    # put occupancy in the numerator that the denominator does not cover.
+    out = _run_dwell(monkeypatch, [], cca_step=1000, secs=0.05)
+    assert out["mcu_counters"]["p_cca_time_us"] == 1000

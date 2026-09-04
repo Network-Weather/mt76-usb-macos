@@ -381,16 +381,27 @@ is not investigated.
 (`--registers` still reads those, so that negative result stays reproducible). An 8 s dwell
 per channel, 2026-09-03:
 
-| channel | busy | decoded airtime | occupancy the decoder missed |
-|---|---:|---:|---:|
-| 2.4 GHz ch6 | 9.48% | 615,408 µs | **+149,217 µs** |
-| 5 GHz ch36 | 2.23% | 187,491 µs | −8,836 µs |
+| channel | dwell | busy | decoded airtime | occupancy the decoder missed |
+|---|---|---:|---:|---:|
+| 2.4 GHz ch6 | 8 s | 10.03% | 641,536 µs | **+165,303 µs** |
+| 2.4 GHz ch6 | 12 s | 9.07% | 938,308 µs | **+150,142 µs** |
+| 5 GHz ch36 | 8 s | 2.34% | 197,163 µs | −9,607 µs |
+| 5 GHz ch36 | 12 s | 2.35% | 264,371 µs | +18,331 µs |
 
-The negative figure is expected and is not a fault. `rxd.airtime_us` models preamble plus
-payload at the decoded rate, so a per-frame overestimate of a few microseconds accumulates
-over 816 frames; the sign should be read as "the decoder saw essentially all of it". The
-2.4 GHz number is the interesting one, and it is consistent across every run: roughly a
-quarter of that channel's occupancy never becomes a frame this driver can show you.
+Decoded airtime is aggregation-aware, so an A-MPDU costs one preamble rather than one per
+subframe. That made no measurable difference in these captures — every frame came back flagged
+`non_ampdu`, and 0 of 400 sampled frames were A-MPDU subframes — but the naive sum inflates
+decoded airtime severalfold on aggregated traffic, which would mask the gap entirely.
+
+The 2.4 GHz result is the durable one: roughly a sixth of that channel's occupancy never
+becomes a frame this driver can show you, on both dwells.
+
+**On 5 GHz the residual is noise around zero**, −9,607 µs on one dwell and +18,331 µs on the
+next, about ±5% of the decoded total in each direction. The reading is that the decoder
+accounted for essentially all the occupancy there, and what is left is the difference between
+a hardware measurement and a model: `rxd.airtime_us` estimates preamble plus payload at the
+decoded rate. The sign of that residual is not stable across runs, so it carries no
+information about the channel and should not be read as one.
 
 ### The counters have real names
 

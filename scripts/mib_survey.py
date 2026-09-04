@@ -66,6 +66,10 @@ MT_WF_RMAC_MIB_RXTIME_CLR = 1 << 31  # MT_WF_RMAC_MIB_RXTIME_CLR
 # SDR37_RXTIME_MASK, MT_MIB_OBSSTIME_MASK are each GENMASK(23, 0)).
 COUNTER_MASK = (1 << 24) - 1
 COUNTER_WRAP_US = 1 << 24  # 16.78 s at 1 us/tick; dwells are bounded well below this
+#: A --registers dwell must stay clear of the 24-bit wrap above.
+REGISTER_DWELL_MAX_S = 10.0
+#: The MCU counter is 32-bit, so the ceiling here is patience, not arithmetic.
+MCU_DWELL_MAX_S = 120.0
 
 # mt76 adds these fields straight into mt76_channel_state's cc_busy/cc_tx/cc_rx, which
 # cfg80211 reports as milliseconds after dividing by 1000 (mt76/mac80211.c), so upstream
@@ -122,23 +126,32 @@ def plausible(counters: dict[str, int]) -> str | None:
     return None
 
 
+def read_mcu_offset(dev, offs: int, band_idx: int = 0) -> int | None:
+    """One MIB counter over the MCU. Free-running, so callers difference two reads."""
+    try:
+        body = dev.reply_body(
+            dev.mcu_cmd_word(
+                m.MCU_EXT_CMD(mcs.MCU_EXT_CMD_GET_MIB_INFO),
+                struct.pack("<IIQ", band_idx, offs, 0),
+                timeout=MCU_TIMEOUT_MS,
+            )
+        )
+    except (m.McuError, RuntimeError, usb.core.USBError):
+        # USBError derives from OSError; an unimplemented offset simply never answers.
+        return None
+    return mcs.parse_mt7921_value(body)
+
+
+def read_cca(dev, band_idx: int = 0) -> int | None:
+    """Primary-channel CCA busy time, the one counter the dwell window must bracket."""
+    return read_mcu_offset(dev, mcs.MIB_PRIMARY_CCA_TIME, band_idx)
+
+
 def mcu_counters(dev, band_idx: int = 0) -> dict[str, int | None]:
     """The occupancy counters, over the MCU. Free-running, so callers difference them."""
-    out = {}
-    for offs, name in mcs.MIB_OFFSETS_MT7921.items():
-        try:
-            body = dev.reply_body(
-                dev.mcu_cmd_word(
-                    m.MCU_EXT_CMD(mcs.MCU_EXT_CMD_GET_MIB_INFO),
-                    struct.pack("<IIQ", band_idx, offs, 0),
-                    timeout=MCU_TIMEOUT_MS,
-                )
-            )
-            out[name] = mcs.parse_mt7921_value(body)
-        except (m.McuError, RuntimeError, usb.core.USBError):
-            # USBError derives from OSError; an unimplemented offset simply never answers.
-            out[name] = None
-    return out
+    return {
+        name: read_mcu_offset(dev, offs, band_idx) for offs, name in mcs.MIB_OFFSETS_MT7921.items()
+    }
 
 
 def dwell(
@@ -148,14 +161,38 @@ def dwell(
     before = mcu_counters(dev)
     if use_registers:
         reset_counters(dev)
+    # The CCA counter is read last before the dwell and first after it, so the interval it
+    # measures is the interval `elapsed_us` describes. Reading it further out puts occupancy
+    # from the intervening MCU round trips into the numerator but not the denominator.
+    cca_before = read_cca(dev)
     started = time.monotonic()
     frames = 0
     usb_errors = 0
-    decoded_airtime_us = 0.0
+    timeouts = 0
     decode = m.decoder_for(dev)
+    # A-MPDU subframes arrive as separate transfers, and charging each one a full preamble is
+    # the single largest error in naive airtime accounting (rxd.py). The tracker groups them
+    # so an aggregate is billed one preamble, which matters here because this figure is
+    # subtracted from measured occupancy: inflating it hides exactly what we are looking for.
+    aggregates = rxd.AggregationTracker()
+    decoded_airtime_us = 0.0
+
+    def bill(done):
+        total = 0.0
+        for aggregate in done:
+            air = aggregate.airtime_us()
+            if air:
+                total += air
+        return total
+
     while time.monotonic() - started < secs:
         try:
             raw = bytes(dev.rx_read(timeout=READ_TIMEOUT_MS))
+        except usb.core.USBTimeoutError:
+            # A quiet channel produces one of these every READ_TIMEOUT_MS. Counting them as
+            # transport errors made a healthy adapter look like a failing one.
+            timeouts += 1
+            continue
         except usb.core.USBError:
             usb_errors += 1
             continue
@@ -165,16 +202,19 @@ def dwell(
         if not d or not d.get("frame"):
             continue
         frames += 1
-        phy = d.get("phy") or {}
-        air = rxd.airtime_us(len(d["frame"]), phy.get("mode"), phy.get("rate_mbps"))
-        if air:
-            decoded_airtime_us += air
+        parsed = rxd.parse_80211(d["frame"])
+        decoded_airtime_us += bill(aggregates.feed(d, len(d["frame"]), parsed.get("addr2")))
+    decoded_airtime_us += bill(aggregates.flush())
     elapsed_us = (time.monotonic() - started) * 1e6
+    cca_after = read_cca(dev)
     after = mcu_counters(dev)
     mcu = {
         k: (after[k] - before[k]) if (after[k] is not None and before[k] is not None) else None
         for k in after
     }
+    mcu["p_cca_time_us"] = (
+        None if (cca_before is None or cca_after is None) else cca_after - cca_before
+    )
     busy_us = mcu.get("p_cca_time_us")
     counters = read_counters(dev) if use_registers else dict.fromkeys(COUNTERS, 0)
     result = {
@@ -189,16 +229,14 @@ def dwell(
             round(busy_us / elapsed_us, 4) if (busy_us is not None and elapsed_us) else None
         ),
         "frames_decoded": frames,
+        "aggregates": aggregates.completed,
         "decoded_airtime_us": round(decoded_airtime_us),
-        # The number this script exists to produce. Positive means the hardware counted
-        # occupancy the frame decoder never saw. Small negatives are expected and are not an
-        # error: rxd.airtime_us models preamble plus payload at the decoded rate, so a
-        # per-frame overestimate of a few microseconds accumulates over hundreds of frames.
-        # Read the sign as "the decoder saw essentially all of it", not as a fault. Measured
-        # 2026-09-03: +149,217 us on 2.4 GHz channel 6 against -8,836 us on 5 GHz channel 36
-        # in the same run.
+        # The number this script exists to produce: occupancy the frame decoder never saw.
+        # Both terms are airtime over the same interval, so a persistently negative value
+        # means the decoded side is being over-counted rather than that the channel is quiet.
         "undecoded_busy_us": (round(busy_us - decoded_airtime_us) if busy_us is not None else None),
         "usb_errors": usb_errors,
+        "read_timeouts": timeouts,
         "warnings": [],
     }
     if use_registers:
@@ -235,10 +273,13 @@ def main() -> int:
         "(NEGATIVE_RESULTS.md); kept so that result stays reproducible",
     )
     args = parser.parse_args()
-    # The 24-bit counters wrap after 16.78 s at the assumed tick, so a dwell must stay well
-    # under that for the wrap check above to mean anything.
-    if not 1 <= args.seconds <= 10:
-        parser.error("--seconds must be between 1 and 10 (24-bit counters wrap at ~16.8 s)")
+    # The register counters are 24-bit and wrap after 16.78 s at one microsecond per tick, so
+    # a --registers dwell must stay well under that for the wrap check to mean anything. The
+    # MCU counter is 32-bit -- offset 0 was observed above 51 million in a 12 s window -- so
+    # the default path is not bound by that limit.
+    limit = REGISTER_DWELL_MAX_S if args.registers else MCU_DWELL_MAX_S
+    if not 1 <= args.seconds <= limit:
+        parser.error(f"--seconds must be between 1 and {limit:g}")
 
     dev = m.open_device()
     patch, ram = m.load_firmware(dev.CHIP, FW_DIR)
