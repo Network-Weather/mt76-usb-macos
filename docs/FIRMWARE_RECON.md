@@ -269,7 +269,8 @@ Full detail and the "not ruled out" lists are in
 | `PHY_STAT_INFO` (0xad) | not implemented (no dispatch slot) | **confirmed** — refused, all 16 categories |
 | `GET_MIB_INFO` (0x5a) | implemented (slot at `0xe02767c0`) | **confirmed dispatched**, but returns a zeroed echo |
 | `RX_AIRTIME_CTRL` (0x4a) | implemented (has a slot) | **wrong** — refused outright |
-| MIB duration counters | should read occupancy | **all zero**, on every channel |
+| MIB duration counters (registers) | should read occupancy | **all zero**, on every channel |
+| MIB counters over the MCU | mt7915/mt7916 offsets | **wrong offsets** — this chip has its own 19, and they are live |
 
 The offline dispatch-table prediction held for `PHY_STAT_INFO`. Nothing else worked, and the
 two failures turn out to be the same failure.
@@ -311,11 +312,44 @@ handler runs and returns zeros. So the counters are dead behind a live handler, 
 airtime-enable theory above is dead with it: the command that would arm them does not exist
 on this chip.
 
-What is left for the duration counters is no longer "send the enable". Untested candidates,
-in order: an MT7921-specific `GET_MIB_INFO` request layout (offsets 0, 1 and 6 reply while 87
-does not, so *some* index space is valid and the numbering is simply not either published
-scheme); a per-BSS or per-STA context that monitor mode never creates, which the counters may
-be scoped to; or the counters genuinely not being wired on this part.
+### The counters are there, under their own numbering
+
+Sweeping every offset from 0 to 127 settled it. **Exactly 19 are accepted** — 0-12, 14, 17
+and 20-23 — and every other offset returns no reply at all. None of the published values
+(81/82/86/87/88 for mt7915, 490/491 for mt7916) is in that set, which is why the first
+hardware run read nothing: it asked for offsets this chip does not have.
+
+The reply shape is also its own. Instead of filling the entry's `data` field, the firmware
+returns 24 bytes of header plus a zeroed copy of the request, with the counter as a 32-bit
+word at **byte 28**.
+
+Reading the accepted offsets twice around a dwell, on four channels, alongside the decoder's
+own frame count and summed airtime (6 s per channel, 2026-09-03):
+
+| channel | frames decoded | decoded airtime | offs 2 | offs 11 | offs 14 |
+|---|---:|---:|---:|---:|---:|
+| 5 GHz 36 | 602 | 132,658 µs | **604** | 124,864 | 136,007 |
+| 5 GHz 149 | 28 | 992 µs | **28** | 5,374 | 47,432 |
+| 2.4 GHz 6 | 209 | 485,615 µs | **209** | 573,949 | 575,313 |
+| 5 GHz 100 | 129 | 62,267 µs | **130** | 64,750 | 64,750 |
+
+- **`offs 2` is an RX frame counter**, matching the decoder to within one frame on all four
+  channels.
+- **`offs 11` and `offs 14` are microsecond airtime counters**, and on every channel they are
+  **greater than or equal to the airtime of the frames that were decoded**. That gap is the
+  thing this whole effort was after: on 2.4 GHz channel 6, 88 ms of occupancy per 6 s window
+  that the sniffer cannot see; on the near-empty 5 GHz 149, 5.4× the decoded airtime.
+- `offs 0` advances at millions per second and does not correlate with traffic — a clock of
+  some kind, not occupancy. `offs 3` reads exactly 65535 on every channel and is not a
+  counter. The remaining accepted offsets sat at zero throughout.
+
+Names here are **behavioural** — what each counter was observed to track — not names read out
+of any header, and `scripts/mcu_stats.py` labels them that way on purpose. What separates
+`offs 11` from `offs 14` is not established: they agree exactly on one channel of four and
+diverge by 9% on another.
+
+This satisfies acceptance criteria 4 and 5 for Spike A's measurement, by a different route
+than Spike A proposed. The MIB *registers* remain dead; the MCU path reaches live counters.
 
 ## Scope boundaries
 

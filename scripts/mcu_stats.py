@@ -63,6 +63,22 @@ MIB_OFFSETS_V2 = {  # mt7916
 }
 NAMED_OFFSETS = {**MIB_OFFSETS_V1, **MIB_OFFSETS_V2}
 
+# Neither published scheme works on the MT7921. Measured on the reference adapter
+# 2026-09-03 by sweeping every offset 0-127: exactly 19 are accepted (0-12, 14, 17, 20-23)
+# and the rest return no reply at all, so the numbering is its own. These names are
+# behavioural -- what the counter was observed to track across four channels -- not names
+# read out of any header, and they are stated that way deliberately.
+MIB_OFFSETS_MT7921 = {
+    2: "rx_frames",  # matched the decoder's own frame count to within one, four times
+    11: "airtime_a_us",  # microseconds; >= decoded airtime on every channel measured
+    14: "airtime_b_us",  # microseconds; tracks airtime_a, diverging on one channel of four
+}
+#: Offsets the firmware accepts. Anything else got no reply at all, which stalls a sweep.
+MT7921_ACCEPTED_OFFSETS = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 17, 20, 21, 22, 23)
+# The counter sits at this byte of the reply body, which is 24 bytes of header followed by a
+# copy of the request. Found by sweep, not from a published struct.
+MIB_VALUE_OFFSET = 28
+
 # mt7915 batches 5 entries per command; keep to that shape rather than inventing a larger
 # one, since an over-long request is a plausible way to get a blanket refusal that says
 # nothing about the individual offsets.
@@ -123,6 +139,18 @@ def parse_sweep(text: str) -> range:
 
 def build_mib_request(band: int, offsets: list[int]) -> bytes:
     return b"".join(struct.pack(MIB_ENTRY, band, offs, 0) for offs in offsets)
+
+
+def parse_mt7921_value(body: bytes) -> int | None:
+    """The counter in a single-entry MT7921 GET_MIB_INFO reply.
+
+    The documented reply shape does not apply here: the firmware returns 24 bytes of header
+    plus a zeroed copy of the request, with the counter as a 32-bit word at byte 28 rather
+    than in the entry's own `data` field. Measured, not published.
+    """
+    if len(body) < MIB_VALUE_OFFSET + 4:
+        return None
+    return struct.unpack_from("<I", body, MIB_VALUE_OFFSET)[0]
 
 
 def parse_mib_reply(body: bytes, band: int, offsets: list[int]) -> dict[int, int]:

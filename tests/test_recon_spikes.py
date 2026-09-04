@@ -481,3 +481,28 @@ def test_a_sweep_that_is_refused_throughout_is_reported_as_not_implemented():
 def test_a_partly_refused_sweep_is_not_reported_as_not_implemented():
     entries = [{"answered": True, "refused": i > 0, "reply_prefix": f"{i:016x}"} for i in range(16)]
     assert not mcs.judge_phy_sweep(entries)["verdict"].startswith("not implemented")
+
+
+def test_the_mt7921_offsets_are_labelled_by_behaviour_not_by_a_published_name():
+    # These were identified by what they tracked across four channels, and neither published
+    # scheme's numbering overlaps them, so they must not be conflated with the named enums.
+    assert mcs.MIB_OFFSETS_MT7921 == {2: "rx_frames", 11: "airtime_a_us", 14: "airtime_b_us"}
+    assert not set(mcs.MIB_OFFSETS_MT7921) & set(mcs.MIB_OFFSETS_V1)
+    assert set(mcs.MIB_OFFSETS_MT7921) <= set(mcs.MT7921_ACCEPTED_OFFSETS)
+
+
+def test_the_published_offsets_are_not_accepted_by_this_chip():
+    # 81/82/86/87 and 490/491 all fall outside the accepted set, which is why the first
+    # hardware run read nothing at all.
+    for offs in (81, 82, 86, 87, 88, 490, 491):
+        assert offs not in mcs.MT7921_ACCEPTED_OFFSETS
+
+
+def test_the_counter_is_read_from_the_measured_reply_position():
+    body = bytes(28) + struct.pack("<I", 573949) + bytes(8)
+    assert mcs.parse_mt7921_value(body) == 573949
+
+
+def test_a_reply_too_short_to_hold_a_counter_returns_none():
+    assert mcs.parse_mt7921_value(bytes(28)) is None
+    assert mcs.parse_mt7921_value(b"") is None
