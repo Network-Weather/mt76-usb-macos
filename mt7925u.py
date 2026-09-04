@@ -127,6 +127,8 @@ class Mt7925uDevice(m.Mt7921uDevice):
 
     CHIP = m.CHIP_MT7925
     CHIP_IDS = (0x7925,)  # 0x6639 (MT7927) needs the mt7927/ blobs and is refused
+    # 160 MHz capture is evidenced on this chip in docs/TESTING.md; 320 MHz is not.
+    MAX_WIDTH_MHZ = 160
     DECODER_MODULE = "rxd_connac3"
 
     TXD1 = MT7925_TXD1

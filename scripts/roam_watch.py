@@ -10,12 +10,19 @@ Two modes:
       802.11k/v/r flags it advertises. Use this to learn which channel a client's current
       AP is on before locking.
 
-  roam_watch.py --lock BAND:CHANNEL [--client MAC] [--duration SECONDS]
+  roam_watch.py --lock BAND:CHANNEL [--width MHZ] [--client MAC] [--duration SECONDS]
       Lock the radio to one channel and print every management event the decoder
       classifies (BTM query/request/response, neighbor reports, deauth/disassoc with
       reason, authentication, association, reassociation, FT variants) with a timestamp.
       With --client, data frames to or from that address are counted per second so the
       client's last data frame on this channel is visible next to the steering events.
+      --width matches the AP's operating width; a 20 MHz sniffer misses the wider PPDUs
+      a modern client sends, so a client that is talking can look silent.
+
+  An 802.11be client uses a different address on each of its links and shows only its
+  MLD address in some management frames. --client therefore matches every address the
+  Multi-Link element of a captured (re)association frame ties to the same station, and
+  reports each address it learns.
 
 This is a diagnostic for the operator's own network. Output includes MAC addresses and
 SSIDs; treat the terminal output as sensitive and do not commit it.
@@ -60,8 +67,11 @@ def load_firmware(chip: str) -> tuple[bytes, bytes]:
     return m.load_firmware(chip, FW_DIR)
 
 
-def tune(dev: m.Mt7921uDevice, band: str, chan: int) -> None:
-    dev.tune(band, chan)
+def tune(dev: m.Mt7921uDevice, band: str, chan: int, width_mhz: int = 20) -> None:
+    center = m.center_channel(band, chan, width_mhz)
+    if center is None:
+        raise ValueError(f"no {width_mhz} MHz channel on {band} contains control channel {chan}")
+    dev.tune(band, chan, center, width_mhz)
 
 
 def frames(dev: m.Mt7921uDevice, seconds: float):
@@ -151,15 +161,29 @@ def find(dev: m.Mt7921uDevice, ssid: str) -> int:
     return 0
 
 
-def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, duration: float) -> int:
-    tune(dev, band, chan)
-    print(f"locked to {band}:{chan}; watching {duration:g}s" + (f" for {client}" if client else ""))
+def watch(
+    dev: m.Mt7921uDevice,
+    band: str,
+    chan: int,
+    client: str | None,
+    duration: float,
+    width_mhz: int = 20,
+) -> int:
+    tune(dev, band, chan, width_mhz)
+    where = f"{band}:{chan} at {width_mhz} MHz"
+    print(f"locked to {where}; watching {duration:g}s" + (f" for {client}" if client else ""))
     start = time.monotonic()
     events = Counter()
     client_data_per_sec: dict[int, int] = defaultdict(int)
     last_client_data = None
     aps: dict[str, dict] = {}
     off_channel = 0
+    # Every address known to belong to the client. An 802.11be client uses a different
+    # address per link, so a set seeded with one address grows as (re)association frames
+    # reveal the rest. Addresses are only ever added from a frame the client itself
+    # transmitted, so an AP's own Multi-Link element never joins this set.
+    client_addresses = {client} if client else set()
+    learned: list[tuple[float, str]] = []
 
     for d, p in frames(dev, duration):
         t = time.monotonic() - start
@@ -175,8 +199,17 @@ def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, durati
                 {"ssid": p.get("ssid"), "ds_channel": p.get("ds_channel"), **ap_flags(p)},
             )
             continue
-        if client and p.get("ftype") == FTYPE_DATA:
-            if client in (p.get("addr1"), p.get("addr2")):
+        if client_addresses:
+            transmitted = rxd.station_addresses(p)
+            if transmitted & client_addresses:
+                for address in sorted(transmitted - client_addresses):
+                    learned.append((t, address))
+                    print(
+                        f"{t:8.3f}s  client address learned from its Multi-Link element: {address}"
+                    )
+                client_addresses |= transmitted
+        if client_addresses and p.get("ftype") == FTYPE_DATA:
+            if client_addresses & {p.get("addr1"), p.get("addr2")}:
                 client_data_per_sec[int(t)] += 1
                 last_client_data = t
             continue
@@ -184,7 +217,11 @@ def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, durati
         if ev is None:
             continue
         name, detail = ev
-        if client and client not in (p.get("addr1"), p.get("addr2"), p.get("addr3")):
+        if client_addresses and not client_addresses & {
+            p.get("addr1"),
+            p.get("addr2"),
+            p.get("addr3"),
+        }:
             continue
         events[name] += 1
         # Management frames carry no channel IE, so the only provenance is where the
@@ -196,18 +233,23 @@ def watch(dev: m.Mt7921uDevice, band: str, chan: int, client: str | None, durati
         )
 
     print()
-    print(f"APs heard while tuned to {band}:{chan} (ds = channel the AP itself advertises):")
+    print(f"APs heard while tuned to {where} (ds = channel the AP itself advertises):")
     for bssid, e in aps.items():
         ds = e["ds_channel"]
-        where = "ds ?" if ds is None else (f"ds {ds}" if ds == chan else f"ds {ds} ADJACENT")
+        note = "ds ?" if ds is None else (f"ds {ds}" if ds == chan else f"ds {ds} ADJACENT")
         print(
-            f"  {bssid}  {where:<14} {e['ssid']!r}  k={e['k_neighbor_report']} "
+            f"  {bssid}  {note:<14} {e['ssid']!r}  k={e['k_neighbor_report']} "
             f"v={e['v_bss_transition']} r={bool(e['r_mobility_domain'])}"
         )
     print("management events:", dict(events) or "none")
     print(f"frames ignored because the descriptor named another channel: {off_channel}")
     if client:
         secs = sorted(client_data_per_sec)
+        print(f"client addresses matched: {' '.join(sorted(client_addresses))}")
+        if learned:
+            print(f"  {len(learned)} of them learned from Multi-Link elements during this watch")
+        else:
+            print("  no Multi-Link element from this client was captured on this channel")
         print(
             f"client data frames: {sum(client_data_per_sec.values())} over "
             f"{len(secs)} active seconds; last at {last_client_data!s:>6}s"
@@ -222,12 +264,40 @@ def main() -> int:
     mode.add_argument("--lock", metavar="BAND:CHANNEL", help="lock to one channel and watch")
     parser.add_argument("--client", metavar="MAC", help="only report events involving this MAC")
     parser.add_argument("--duration", type=float, default=120.0, help="seconds to watch")
+    parser.add_argument(
+        "--width",
+        type=int,
+        default=20,
+        choices=sorted(m.WIDTH_TO_SNIFFER_BW),
+        help="sniffer bandwidth in MHz for --lock (default 20); match the AP's width, "
+        "since a 20 MHz sniffer does not decode the wider PPDUs a modern client sends",
+    )
     args = parser.parse_args()
     if not 1 <= args.duration <= 3600:
         parser.error("--duration must be between 1 and 3600 seconds")
     client = args.client.lower() if args.client else None
 
+    # Resolve the channel before touching USB: an unusable width should fail here, not
+    # after a firmware download.
+    band = chan = None
+    if args.lock:
+        band, _, chan_text = args.lock.partition(":")
+        if band not in CHAN_BAND or not chan_text.isdigit():
+            parser.error("--lock wants BAND:CHANNEL, for example 5GHz:44")
+        chan = int(chan_text)
+        if m.center_channel(band, chan, args.width) is None:
+            parser.error(f"no {args.width} MHz channel on {band} contains control channel {chan}")
+
     dev = m.open_device()
+    # The chip is only known once a device is chosen, so the width-versus-chip check
+    # cannot happen with the rest of argument validation. It still runs before the
+    # firmware download, because a width this chip cannot capture makes the radio look
+    # silent rather than fail, and a silent radio reads as "the client said nothing".
+    if args.lock and args.width > dev.MAX_WIDTH_MHZ:
+        parser.error(
+            f"the attached {dev.CHIP} captures up to {dev.MAX_WIDTH_MHZ} MHz; "
+            f"--width {args.width} would tune a radio that returns no frames"
+        )
     patch, ram = load_firmware(dev.CHIP)
     with dev:
         dev.bringup(patch, ram, log=lambda *a: None)
@@ -235,10 +305,7 @@ def main() -> int:
         dev.set_sniffer(True)
         if args.find:
             return find(dev, args.find)
-        band, _, chan = args.lock.partition(":")
-        if band not in CHAN_BAND or not chan.isdigit():
-            parser.error("--lock wants BAND:CHANNEL, for example 5GHz:44")
-        return watch(dev, band, int(chan), client, args.duration)
+        return watch(dev, band, chan, client, args.duration, args.width)
 
 
 if __name__ == "__main__":
