@@ -410,16 +410,37 @@ that is a free-running counter incrementing once per 8 µs — the denominator t
 counts into dwell fractions. Those boundaries are exactly mt7915's `nf_power[]` table, which
 is what confirms the two are the same instrument reached by different routes.
 
-**Measured 2026-09-03:** the MT7921U accepts the command. Every get type — all-counts,
-bins 0-10, bins 2-10, free-run — returns `a3000000 00000000`, status **zero**, which is
-categorically different from the `0xfe` refusal that `RX_AIRTIME_CTRL` and `PHY_STAT_INFO`
-return. It is accepted and acknowledged.
+**Measured 2026-09-03.** The command is accepted, and **the reply arrives on the command
+itself when the QUERY bit is set** — no asynchronous event to catch. Without the bit it
+returns a 16-byte acknowledgement, `a3000000 00000000`, status zero, which is categorically
+different from the `0xfe` refusal `RX_AIRTIME_CTRL` and `PHY_STAT_INFO` return. *With* the
+bit it returns exactly 56 bytes: `sizeof(EXT_EVENT_RDD_IPI_HIST)`, with `ipi_hist_idx`
+correctly echoed in byte 0 for every index 0-14 tried, `band_idx` in byte 1, the twelve
+counters at byte 4 and the TX-assert time at byte 52.
 
-What it does *not* do yet is produce the histogram. `EXT_EVENT_ID_RDD_IPI_HIST_CTRL` is a
-separate asynchronous event, and none arrived on the RX endpoint in 5 s of watching after a
-`CR_INIT` and `HIST_RESET`. The untested next step is that IPI lives under the RDD module, so
-it plausibly needs RDD started via `RDD_ON_OFF_CTRL` (0x3a) first, and/or the `RDD_SET_IDLE_PWR`
-parameters — threshold, max count, duration — set before it will sample anything.
+So the transport is solved and the reply layout is confirmed against the vendor struct.
+**The sampling engine is not running:** every bin reads zero, and so does the free-running
+counter that should tick once per 8 µs regardless of what the radio hears. Three ways to
+start it were tried and none worked:
+
+| attempt | result |
+|---|---|
+| `RDD_SET_IPI_CR_INIT`, then `HIST_RESET` | accepted, no effect |
+| `RDD_SET_IDLE_PWR` with threshold −92, max count 0xffff, duration 100000 | accepted, no effect |
+| `RDD_ON_OFF_CTRL` (0x3a) `RDD_START`, on a DFS channel and a non-DFS one | **no reply at all** — neither answered nor refused |
+| `EDCCA_CTRL` (0x70) `EDCCA_CTRL_EN` | **refused** |
+
+The `EDCCA_CTRL` refusal is a second successful offline prediction: the command-map scan found
+its dispatch slot handler reads `0x00000000`, a null pointer, and the hardware refuses it.
+
+What is left is a genuine unknown rather than one more parameter to try. Candidates, in the
+order worth attempting: `RDD_ON_OFF_CTRL`'s silence may mean it needs a longer timeout or a
+different `rdd_idx`/`rx_sel` than 0, and the whole IPI block may be gated behind that; the
+`set_val` and `idle_pwr_cmd_type` fields may not carry the set type the way this attempt
+assumed, since all three set forms were accepted without complaint and none changed anything;
+or the sampler may need a PHY register poked directly, which is where Spike B's
+`MT_WF_PHY_RX_CTRL1_IPI_EN` comes back into scope — now with a documented reply format to
+verify against, which is what it lacked before.
 
 If that works it is a real noise floor on a part whose driver reports none.
 
@@ -450,9 +471,11 @@ prediction that survived a 20 vs 80 MHz test before it was a name.
 Ranked. Each has a dispatch slot in the MT7921 image *and* a matching firmware string, which
 is the cheapest evidence that something is there; none has been sent to hardware.
 
-1. **Finish `RDD_IPI_HIST_CTRL` (0xa3).** It is accepted, specified, and one step from a
-   noise floor: start RDD with `RDD_ON_OFF_CTRL` (0x3a), or set the idle-power parameters,
-   then watch for the event. This is the highest-value lead on the list by some distance.
+1. **Start the IPI sampler.** Transport, reply layout and command acceptance are all solved
+   (above); only the engine is idle. `RDD_ON_OFF_CTRL` (0x3a) not answering is the most
+   suspicious thread — every other command either answers or refuses. Failing that, Spike B's
+   `MT_WF_PHY_RX_CTRL1_IPI_EN` write, which is now worth much more than it was because a
+   documented 56-byte reply exists to verify it against. Highest-value lead by some distance.
 2. **`EXT_CMD_ID_WIFI_SPECTRUM` (0x56)** — handler `0x009214c8`, and the image carries
    `%s : Wifi-spectrum is enable !!`. Nothing in mt76 drives it. If it does what its name
    says, it is a spectrum view rather than a single occupancy scalar, which is a different
