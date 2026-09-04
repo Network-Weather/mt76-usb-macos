@@ -19,6 +19,7 @@ The background, the capability map and the method these follow are in
 | [`ipi_probe.py`](ipi_probe.py) | Is the PHY's power histogram reachable through the USB register window? | **partly answered** — the window is mapped, the histogram is not at mt7915's address |
 | [`ipi_hist_cmd.py`](ipi_hist_cmd.py) | Will `RDD_IPI_HIST_CTRL` (0xa3) return a noise floor? | **open** — transport works, the sampler stays idle |
 | [`mcu_command_probe.py`](mcu_command_probe.py) | Which MCU commands does this firmware actually implement? | **answered** — the refusal reply identifies them |
+| [`uni_mib_probe.py`](uni_mib_probe.py) | Does the MT7925 keep the same counters behind UNI? | **partly** — 40 offsets echo and 11 advance; none identified |
 | [`mib_offset_sweep.py`](mib_offset_sweep.py) | Which MIB counter offsets does this chip accept? | **answered** — 19 on the MT7921, none on the MT7925 |
 
 ## Running these
@@ -29,6 +30,7 @@ adapters are usually attached here:
 ```bash
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/mib_offset_sweep.py
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/mcu_command_probe.py
+MT76_USB_ID=0846:9072 ./.venv/bin/python research/uni_mib_probe.py --max 48
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/ipi_hist_cmd.py
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/ipi_probe.py --band 5GHz --channel 36
 ```

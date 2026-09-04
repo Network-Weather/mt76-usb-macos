@@ -127,10 +127,18 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   language, and the EXT silence says nothing about whether the counters exist.
 - **Observed, UNI:** `MCU_UNI_CMD_GET_MIB_INFO` (0x22), framed as `mt7996_mcu_get_chan_mib_info`
   does -- a `{u8 band, u8 rsv[3]}` header then `{le16 tag, le16 len, le32 offs}` entries -- **is
-  answered**. Sweeping offsets 0-47 on 2.4 GHz channel 6: 40 echo back, and 10 advance over a
-  6 s dwell. Offsets 17, 19 and 20 each grew about 1.3 million over 6 s, roughly 22% of the
-  window and microsecond-scale; offset 7 reads exactly 65535 twice, the same signature the
-  MT7921's `CHANNEL_IDLE` shows.
+  answered**.
+
+  ```bash
+  MT76_USB_ID=0846:9072 ./.venv/bin/python research/uni_mib_probe.py --max 48
+  ```
+
+  Acceptance: an offset counts as present only if the firmware echoes it back in the reply, and
+  as running only if it advances between two reads bracketing a dwell. On 2.4 GHz channel 6 over
+  6 s, 40 of 48 offsets echo and 11 advance. Offsets 17, 19 and 20 each grew about 2.4 million,
+  around 40% of the window if the unit is microseconds; offset 18 grew 6.1 million, slightly
+  more than the dwell itself, so it is a clock rather than occupancy; offset 7 advances by
+  exactly 65535, the same signature the MT7921's `CHANNEL_IDLE` shows.
 - **Not identified.** Which counter is which has *not* been established. The MT7921's names were
   earned by behaviour across channels and bandwidths and then corroborated against a vendor enum
   whose gaps matched the hardware's; none of that has been done here, and the mt7996 UNI
@@ -141,7 +149,8 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Consequence:** occupancy is an MT7921U capability *in this tree* because that is the chip
   whose counters are identified. It is not a chip limitation, and `mib_survey.py` reporting
   `null` on an MT7925 reflects missing identification rather than missing hardware.
-- **Code:** `research/mib_offset_sweep.py`, `research/mcu_command_probe.py`.
+- **Code:** `research/mib_offset_sweep.py` and `research/mcu_command_probe.py` for the EXT
+  silence, `research/uni_mib_probe.py` for the UNI result. Each is runnable from this tree.
 
 ## The IPI sampler does not start, by four routes
 
