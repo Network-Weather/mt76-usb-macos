@@ -119,3 +119,12 @@ def test_each_chip_declares_the_widest_capture_it_has_evidence_for():
     assert mt7925u.Mt7925uDevice.MAX_WIDTH_MHZ == 160
     for chip in (m.Mt7921uDevice, mt7925u.Mt7925uDevice):
         assert chip.MAX_WIDTH_MHZ in m.WIDTH_TO_SNIFFER_BW
+
+
+def test_the_uppermost_five_ghz_forty_megahertz_block_exists():
+    # Operating classes 126/127 define a 40 MHz block centered at 175, holding control
+    # channels 173 and 177. The 80 MHz block at 171 and the 160 MHz block at 163 already
+    # reach that far, so omitting it refused a channel the other widths accept.
+    assert m.center_channel("5GHz", 173, 40) == 175
+    assert m.center_channel("5GHz", 177, 40) == 175
+    assert len(m.CENTER_CHANNELS[("5GHz", 40)]) == 14

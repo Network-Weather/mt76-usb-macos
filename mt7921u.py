@@ -1745,7 +1745,7 @@ CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}  # channel_band field of set_cha
 # A block of width W spans W/5 channel numbers, so a control channel belongs to the
 # block whose center it is within (W/5 - 2) / 2 channel numbers of.
 CENTER_CHANNELS = {
-    ("5GHz", 40): (38, 46, 54, 62, 102, 110, 118, 126, 134, 142, 151, 159, 167),
+    ("5GHz", 40): (38, 46, 54, 62, 102, 110, 118, 126, 134, 142, 151, 159, 167, 175),
     ("5GHz", 80): (42, 58, 106, 122, 138, 155, 171),
     ("5GHz", 160): (50, 114, 163),
     # 6 GHz 20 MHz control channels run 1 to 233 in steps of 4 (plus the standalone

@@ -722,7 +722,10 @@ def parse_multi_link(ie_list: list[tuple[int, bytes]]) -> dict | None:
             out[name] = field[0] if width == 1 else struct.unpack("<H", field)[0]
             offset += width
     elif ml_type == ML_TYPE_TDLS and len(common) >= 7:
-        out["mld_mac"] = mac(common[1:7])
+        # ieee80211_mle_tdls_common_info holds ap_mld_mac_addr, the AP's MLD address and
+        # not the transmitter's. Naming it mld_mac would put an access point into the
+        # identity of the client that sent the frame.
+        out["ap_mld_mac"] = mac(common[1:7])
 
     subelements, truncated = _reassemble_subelements(body[2 + common_len :])
     out["truncated"] = out["truncated"] or truncated

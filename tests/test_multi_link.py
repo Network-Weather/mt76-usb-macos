@@ -204,3 +204,17 @@ def test_roaming_event_detail_carries_the_link_addresses():
     name, detail = rxd.management_event(parsed)
     assert name == "reassoc_req"
     assert detail["multi_link"]["links"][0]["sta_mac"] == "02:00:00:00:00:11"
+
+
+def test_a_tdls_element_reports_the_access_points_address_as_the_access_points():
+    # ieee80211_mle_tdls_common_info: len(1) then ap_mld_mac_addr(6). Treating that as
+    # the transmitter's MLD address would fold an access point into a client's identity.
+    ap_mld = bytes.fromhex("0200000000cc")
+    payload = struct.pack("<H", rxd.ML_TYPE_TDLS) + bytes([1 + 6]) + ap_mld
+    parsed = rxd.parse_80211(reassoc_req(MLD_MAC, element_chain(107, payload)))
+
+    multi_link = parsed["multi_link"]
+    assert multi_link["type_name"] == "tdls"
+    assert multi_link["ap_mld_mac"] == "02:00:00:00:00:cc"
+    assert "mld_mac" not in multi_link
+    assert rxd.station_addresses(parsed) == {"02:00:00:00:00:01"}
