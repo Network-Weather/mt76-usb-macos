@@ -380,10 +380,19 @@ suggested otherwise.
 
 ### Two radios agree on what they hear
 
-Passive, no transmit: both adapters tuned to 5 GHz channel 36 for 8 s decoded 801 and 824 frames
-for 175,142 and 177,971 µs of airtime — 2.8% and 1.6% apart. That is the control that makes the
-MT7925's silence to EXT commands interpretable: it is receiving correctly, it simply cannot be
-asked in that language.
+```bash
+./.venv/bin/python research/cross_measure.py --band 5GHz --channel 36 --seconds 8
+```
+
+Passive, no transmit. Both adapters tuned to the same channel decoded 801 and 824 frames for
+175,142 and 177,971 µs of airtime, and on a later run 173,034 against 178,805 µs — 1.6% and 3.2%
+apart. That is the control that makes the MT7925's silence to EXT commands interpretable: it is
+receiving correctly, it simply cannot be asked in that language.
+
+The comparison is on decoded airtime rather than occupancy because only the MT7921 has an
+identified CCA counter, so the stronger check cannot run on this pair. The tool compares
+whichever quantity both radios report and evaluates it; it does not report agreement for a
+comparison that did not happen.
 
 ## Channel occupancy over the MCU: 2026-09-03
 

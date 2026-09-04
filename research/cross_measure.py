@@ -153,7 +153,7 @@ def measure(
         raise RuntimeError(f"{usb_errors} USB errors during the dwell; this dwell measured nothing")
 
 
-def transmit(dev, count: int, out: dict) -> None:
+def transmit(dev, count: int, out: dict, gap: float = INJECT_GAP_S) -> None:
     """Send `count` spaced probe requests, and report the airtime that should imply."""
     frames = []
     for seq in range(count):
@@ -168,7 +168,7 @@ def transmit(dev, count: int, out: dict) -> None:
         except (usb.core.USBError, RuntimeError) as exc:
             out.setdefault("errors", []).append(str(exc)[:60])
             break
-        time.sleep(INJECT_GAP_S)
+        time.sleep(gap)
     if sent != count:
         out["incomplete"] = True
     out.update(
@@ -176,15 +176,21 @@ def transmit(dev, count: int, out: dict) -> None:
             "requested": count,
             "sent": sent,
             "bytes_each": len(frames[0]) if frames else 0,
+            "gap_s": gap,
             "elapsed_s": round(time.monotonic() - started, 2),
             "alive_after": dev.alive(),
         }
     )
 
 
+#: The hardware appends a 4-byte FCS to every frame, so what goes on air is longer than the
+#: frame handed to inject().
+FCS_BYTES = 4
+
+
 def expected_airtime_us(n: int, frame_len: int) -> float:
     """What n injected frames should occupy, at the rate the TXWI actually programs."""
-    one = rxd.airtime_us(frame_len, INJECT_PHY_MODE, INJECT_RATE_MBPS)
+    one = rxd.airtime_us(frame_len + FCS_BYTES, INJECT_PHY_MODE, INJECT_RATE_MBPS)
     return 0.0 if one is None else one * n
 
 
@@ -200,6 +206,12 @@ def main() -> int:
         help=f"inject this many spaced frames (max {MAX_INJECTED_FRAMES})",
     )
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
+    parser.add_argument(
+        "--gap",
+        type=float,
+        default=INJECT_GAP_S,
+        help="seconds between injected frames (default %(default)s)",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     if not 1 <= args.seconds <= 120:
@@ -209,8 +221,13 @@ def main() -> int:
             parser.error(f"--transmit is capped at {MAX_INJECTED_FRAMES} frames")
         if not args.acknowledge_experimental_transmit:
             parser.error("refusing to transmit without --acknowledge-experimental-transmit")
-        if args.transmit * INJECT_GAP_S > args.seconds:
-            parser.error("the dwell is shorter than the burst it is supposed to contain")
+        if not 0.001 <= args.gap <= 1.0:
+            parser.error("--gap must be between 0.001 and 1.0 seconds")
+        if args.transmit * args.gap > args.seconds:
+            parser.error(
+                f"a {args.transmit}-frame burst at {args.gap}s spacing needs "
+                f"{args.transmit * args.gap:.0f}s; --seconds is {args.seconds:g}"
+            )
 
     adapters = m.describe_supported_devices()
     if len(adapters) < 2:
@@ -280,7 +297,7 @@ def main() -> int:
                 for offs, name in mcs.MIB_OFFSETS_MT7921.items()
             }
             started = time.monotonic()
-            transmit(dev, args.transmit, tx_result)
+            transmit(dev, args.transmit, tx_result, args.gap)
             if tx_result.get("sent") != args.transmit:
                 raise RuntimeError(
                     f"sent {tx_result.get('sent')} of {args.transmit} frames; the burst the "
@@ -324,20 +341,39 @@ def main() -> int:
             )
             out["transmit"]["rate_mbps"] = INJECT_RATE_MBPS
 
+    # Two things can be compared between radios, and which is available depends on the pair.
+    # Occupancy is the stronger check but needs both chips to have an identified CCA counter,
+    # which the MT7925 does not -- so on the validated pair that comparison never runs.
+    # Decoded airtime needs only that both radios are receiving, which is what they can
+    # actually compare. Whichever is available is evaluated; a check that could not run must
+    # not be reported as one that passed.
     fractions = [r["busy_fraction"] for r in results.values() if r.get("busy_fraction") is not None]
+    airtimes = [r["decoded_airtime_us"] for r in results.values() if r.get("decoded_airtime_us")]
     if len(fractions) == 2 and max(fractions) > 0:
         spread = abs(fractions[0] - fractions[1]) / max(fractions)
         out["agreement"] = {
-            "busy_fractions": fractions,
+            "compared": "busy_fraction",
+            "values": fractions,
             "relative_spread": round(spread, 4),
             "agree": spread <= AGREEMENT_TOLERANCE,
             "tolerance": AGREEMENT_TOLERANCE,
         }
-    elif fractions:
+    elif len(airtimes) == 2 and max(airtimes) > 0:
+        spread = abs(airtimes[0] - airtimes[1]) / max(airtimes)
         out["agreement"] = {
-            "busy_fractions": fractions,
+            "compared": "decoded_airtime_us",
+            "values": airtimes,
+            "relative_spread": round(spread, 4),
+            "agree": spread <= AGREEMENT_TOLERANCE,
+            "tolerance": AGREEMENT_TOLERANCE,
+            "note": "only one radio has an identified CCA counter; comparing what both report",
+        }
+    else:
+        out["agreement"] = {
+            "compared": None,
             "agree": None,
-            "note": "only one radio reported occupancy",
+            "note": "fewer than two radios reported a comparable quantity, so nothing was "
+            "compared -- expected with --transmit, which leaves one receiver",
         }
 
     print(json.dumps(out, indent=2))

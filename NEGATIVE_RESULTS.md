@@ -184,9 +184,13 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 
 ## Injection does not radiate on 5 GHz
 
-- **Tried:** `research/cross_measure.py --band 5GHz --channel 149 --transmit 300
-  --acknowledge-experimental-transmit`, twice, 2026-09-03. The MT7921U injected spaced Probe
-  Requests from a synthetic source address while the MT7925U decoded on the same channel.
+- **Tried:** twice, 2026-09-03. The MT7921U injected spaced Probe Requests from a synthetic
+  source address while the MT7925U decoded on the same channel:
+
+  ```bash
+  ./.venv/bin/python research/cross_measure.py --band 5GHz --channel 149 --seconds 10 \
+      --transmit 300 --gap 0.005 --acknowledge-experimental-transmit
+  ```
 - **Observed:** every frame accepted by the USB endpoint, the chip alive afterwards, and **zero**
   decoded by the observing radio. The same procedure on 2.4 GHz channel 1 decodes 60 of 60, so
   the receiver and the address matching both work.
