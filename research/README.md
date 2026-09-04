@@ -1,6 +1,6 @@
 # research
 
-Open questions and the experiments that probed them. Fresh as of 2026-09-03.
+Open questions and the experiments that probed them. Fresh as of 2026-09-04.
 
 Everything here touches hardware, answers a question that is **not yet settled**, and is not
 part of the supported surface. Scripts in [`../scripts/`](../scripts/mib_survey.py) are diagnostics that
@@ -19,9 +19,12 @@ The background, the capability map and the method these follow are in
 | [`ipi_probe.py`](ipi_probe.py) | Is the PHY's power histogram reachable through the USB register window? | **partly answered** — the window is mapped, the histogram is not at mt7915's address |
 | [`ipi_hist_cmd.py`](ipi_hist_cmd.py) | Will `RDD_IPI_HIST_CTRL` (0xa3) return a noise floor? | **open** — transport works, the sampler stays idle |
 | [`mcu_command_probe.py`](mcu_command_probe.py) | Which MCU commands does this firmware actually implement? | **answered** — the refusal reply identifies them |
-| [`uni_mib_probe.py`](uni_mib_probe.py) | Does the MT7925 keep the same counters behind UNI? | **partly** — 40 offsets echo and 11 advance; none identified |
+| [`uni_mib_probe.py`](uni_mib_probe.py) | Does the MT7925 keep the same counters behind UNI? | **partly** — established transport and the accepted/running offset set; follow-up tools identify the useful subset |
 | [`cross_measure.py`](cross_measure.py) | Do two radios agree, and do injected frames reach the air? | **answered** — they agree; injection radiates on 2.4 GHz only |
-| [`mib_offset_sweep.py`](mib_offset_sweep.py) | Which MIB counter offsets does this chip accept? | **answered** — 19 on the MT7921, none on the MT7925 |
+| [`mib_offset_sweep.py`](mib_offset_sweep.py) | Which EXT MIB counter offsets does this chip accept? | **answered** — MT7921 numbering identified; MT7925 uses the separate UNI probe |
+| [`mt7925_mib_characterize.py`](mt7925_mib_characterize.py) | Which MT7925 UNI counters track frames, receive duration, CCA and ED? | **answered in part** — offsets 2/11/12/13/19/20 identified behaviorally; 17 remains provisional |
+| [`mt7925_mib_crosscheck.py`](mt7925_mib_crosscheck.py) | Does the MT7925 CCA candidate agree with the identified MT7921 counter? | **answered** — offset 19 agrees closely on quiet 6 GHz; receiver differences dominate busy channels |
+| [`mt7925_mib_perturb.py`](mt7925_mib_perturb.py) | Does valid Wi-Fi traffic separate the MT7925 busy and ED candidates? | **answered in part** — valid Wi-Fi raises offset 20, disproving a non-Wi-Fi-only interpretation |
 
 ## Running these
 
@@ -35,9 +38,13 @@ MT76_USB_ID=0846:9072 ./.venv/bin/python research/uni_mib_probe.py --max 48
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/ipi_hist_cmd.py
 MT76_USB_ID=0e8d:7961 ./.venv/bin/python research/ipi_probe.py --band 5GHz --channel 36
 ./.venv/bin/python research/cross_measure.py --band 5GHz --channel 36 --seconds 8
+./.venv/bin/python research/mt7925_mib_characterize.py 2.4GHz:1 5GHz:36 6GHz:37 --seconds 6
+./.venv/bin/python research/mt7925_mib_crosscheck.py 5GHz:36 6GHz:37 --seconds 5
 ```
 
-`cross_measure.py` opens both adapters itself and takes no `MT76_USB_ID`.
+`cross_measure.py` and `mt7925_mib_crosscheck.py` open both adapters themselves and take no
+`MT76_USB_ID`. `mt7925_mib_perturb.py` transmits and is intentionally omitted from the passive
+command list; its docstring records the explicit acknowledgement and frame ceiling.
 
 ## Rules
 

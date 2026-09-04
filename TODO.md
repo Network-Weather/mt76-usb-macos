@@ -78,8 +78,11 @@ published in `docs/TESTING.md` are wrong until step 4 replaces them.
   parsing `rxd.py` already has. Schema file beside it, offline test on synthetic beacons.
 - [ ] **R1 remainder.** Requested-versus-actual channel per step and a `not_tested` status in
   `scripts/hardware_smoke.py`.
-- [ ] **R11/R12 spike.** Write and ship the probe script that reads the CCA/MIB and noise-floor
-  paths, whatever it returns. The earlier zero reading has no code in the repo to reproduce it.
+- [x] **R11 CCA/MIB.** MCU paths now expose primary CCA on both chips: identified MT7921 EXT
+  offset 11 and behaviorally identified MT7925 UNI offset 19, with reproducible probes and dated
+  evidence.
+- [ ] **R12 noise floor.** The available paths remain zero or idle; continue the documented IPI
+  and PHY investigation without presenting RSSI as SNR.
 
 ## Landed this sprint
 

@@ -41,6 +41,8 @@ adapters attached, pick one with `MT76_USB_ID=vvvv:pppp`):
 ./.venv/bin/python scripts/hardware_smoke.py --plan all   # redacted; exit 0 pass, 1 fail, 2 inconclusive, 3 unsupported
 ./.venv/bin/python examples/scan.py [2.4|5|6|all]
 ./.venv/bin/python examples/sniff_to_pcap.py <chan> <secs> [out.pcap] [2.4GHz|5GHz|6GHz]
+./.venv/bin/python research/mt7925_mib_characterize.py 2.4GHz:1 5GHz:36 6GHz:37 --seconds 6
+./.venv/bin/python research/mt7925_mib_crosscheck.py 5GHz:36 6GHz:37 --seconds 5
 ./c/mt7921_smoke --plan quick --fw firmware [--usb-id vvvv:pppp]   # C driver, either chip
 ```
 
@@ -69,6 +71,10 @@ Four flat modules, no package:
   A-MPDU aggregation tracking. Its tests need no fakes at all.
 - `rxd_connac3.py` is the connac3 (MT7925) `decode()`, same dict keys, reusing everything in
   `rxd.py` below the descriptor. Callers get the right one from `mt7921u.decoder_for(dev)`.
+- `research/mt7925_mib_characterize.py` atomically reads connac3 UNI MIB counters around an
+  aggregation-aware dwell. Its companions cross-check against the MT7921 and apply a separately
+  gated Wi-Fi perturbation. Offset 19 is the primary-CCA candidate; offset 20 is ED-active and
+  must not be called non-Wi-Fi time. See [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 
 Capture pipeline, in the order the examples call it:
 `dev = open_device()` → `load_firmware(dev.CHIP)` → `bringup(patch, ram)` (ends by pushing

@@ -44,3 +44,8 @@ checked against. If you exercised hardware, use the evidence format in
 [docs/TESTING.md](docs/TESTING.md), preferably attach the redacted output from
 `scripts/hardware_smoke.py`, and state exactly what was not tested. Never attach its ambient
 traffic or an unredacted pcap.
+
+Keep documentation discoverable: every tracked Markdown document must be linked from the
+[README documentation index](README.md#documentation-index) or from a linked local index such as
+[`research/README.md`](research/README.md). `scripts/check_docs.py` catches broken local links;
+review must also catch a new document with no inbound index link.

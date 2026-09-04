@@ -164,10 +164,10 @@ follow-ups fall out of it:
 
 ### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 
-Both currently read zero and the code that observed the zero is not in the repository (see
-[NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md)). These are research-risk items that may end as
-documented negatives, so run them beside Track A rather than after it, and ship the probe
-scripts whatever the outcome.
+R11 is now answered through MCU queries rather than the dead register path: MT7921 EXT offset 11
+and MT7925 UNI offset 19 provide primary CCA time. R12 remains open: the noise-floor helper reads
+zero and the IPI sampler remains idle. The reproducible probes and negative paths are in
+[docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md) and [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 
 - **R11. Hardware CCA/channel-busy counters.** Determine whether the missing step is firmware
   configuration, counter selection, reset/latch behavior, or a firmware limitation. wifikit
@@ -176,6 +176,9 @@ scripts whatever the outcome.
   counters correlate with controlled traffic across repeated trials, including idle and busy
   channels, or when a documented negative result explains why they are unavailable. Frame counts
   must not be relabeled as channel utilization.
+  **Done 2026-09-04:** live counters correlate with decoded airtime, controlled traffic, primary
+  rotation, and an independent receiver. They measure the primary 20 MHz, not an entire wide
+  channel.
 - **R12. Noise floor.** The `mt792x_phy_get_nf()` path returns zero. Find and validate a real
   per-channel or per-chain source, or document that this firmware path does not expose one.
   Done when values respond plausibly to controlled RF conditions and are compared with an
@@ -284,12 +287,8 @@ release commit with the A9000; the redacted result is attached to the GitHub rel
 
 ### ~~R18. Publish 0.1.0~~ (tagged 2026-09-02)
 
-The repository is private and untagged. `0.1.0` is the first planned tag; its candidate notes sit
-under Unreleased in [CHANGELOG.md](CHANGELOG.md). Work the [publication checklist](docs/PUBLISHING.md):
-visibility, description and topics, branch protection, issues and private vulnerability
-reporting, and the release tag. Nothing in this track is discoverable until this lands.
-
-Done when the tag exists, the checklist is complete, and CHANGELOG and the GitHub release agree.
+Done: `0.1.0`, `0.2.0`, and `0.3.0` are published with matching changelog sections and release
+metadata. Future releases follow the [publication checklist](docs/PUBLISHING.md).
 
 ### R20. Recorded-USB corpus and fake transport
 
