@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 import struct
 
-from research.delivery_evidence import DeliveryWindow, qos_key
+from research.delivery_evidence import DeliveryWindow, compare, qos_key
 
 A, B = bytes.fromhex("020000000001"), bytes.fromhex("020000000002")
 
@@ -53,3 +53,38 @@ def test_skip_null_multicast_and_fragmented_data():
     frame = bytearray(data(7))
     frame[22] |= 1
     assert qos_key(frame) is None
+
+
+def test_four_address_qos_offset_and_ack_policy():
+    frame = bytearray(data(7))
+    frame[1] = 3
+    frame[24:24] = A
+    assert qos_key(frame) == (A, B, 5, 7)
+    frame[30] |= 0x20  # No-ACK policy: no BlockAck expectation.
+    assert qos_key(frame) is None
+    frame[30] = 5 | 0x60
+    assert qos_key(frame) == (A, B, 5, 7)
+
+
+def test_pair_comparison_gates_and_visibility_categories():
+    first = {i: [(i * 100000, i / 10)] for i in range(30)}
+    second = {i: [(i * 100000 + 700, i / 10)] for i in range(30)}
+    a = {"good": [(1000000, {1, 2, 3, 4}, {1, 2})]}
+    b = {"good": [(1000700, {1, 2, 3, 4}, {1, 3})]}
+    a["late"] = [(1000000, {1}, {1})]
+    b["late"] = [(1001700, {1}, {1})]
+    a["repeated"] = [(1000000, {1}, {1})] * 2
+    b["repeated"] = [(1000700, {1}, {1})]
+    counts = compare([({}, first, a), ({}, second, b)])["counts"]
+    assert counts["shared_ba_events"] == 1
+    assert counts["ba_outside_100us_gate"] == 1
+    assert counts["repeated_ba_fingerprints_excluded"] == 1
+    for key in (
+        "ack_bits_data_seen_by_both",
+        "ack_bits_data_seen_only_mt7921",
+        "ack_bits_data_seen_only_mt7925",
+        "ack_bits_data_seen_by_neither_recently",
+    ):
+        assert counts[key] == 1
+    result = compare([({}, {}, {}), ({}, {}, {})])
+    assert result["comparison"] == "no_usable_clock_fit"

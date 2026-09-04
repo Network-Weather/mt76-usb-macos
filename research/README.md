@@ -23,7 +23,7 @@ test BlockAck/data visibility and bounded per-packet attenuation.
 
 | script | question | state |
 |---|---|---|
-| [`delivery_evidence.py`](delivery_evidence.py) | Can receiver-reported receipt distinguish the two observers' visibility? | **open** — passive QoS/BlockAck history comparison, no link-loss-rate claim |
+| [`delivery_evidence.py`](delivery_evidence.py) | Can receiver-reported receipt distinguish the two observers' visibility? | **partly answered** — shared BlockAcks expose complementary recent-data visibility; no link-loss-rate claim |
 | [`tx_power_probe.py`](tx_power_probe.py) | Do per-packet power-offset codes change actual received signal? | **partly answered** — negative codes lower independently measured signal; absolute power/units uncalibrated |
 | [`rx_vector_probe.py`](rx_vector_probe.py) | What does the extended receive vector contain, and is Group 5 delivered? | **partly answered** — MT7961 enable works; MT7925 duplicate RCPI and HE/EHT color/direction checked |
 | [`dual_radio_probe.py`](dual_radio_probe.py) | Can shared packets align clocks, and do controlled rates reach the air? | **partly answered** — microsecond clock agreement and 60/60 OFDM TX at 5 GHz channels 36/149 |

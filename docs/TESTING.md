@@ -927,11 +927,15 @@ synthetic fixtures cross-checked against tshark in `tests/test_multi_link.py`, n
 
 The dated [receiver-evidence report](RECEIVER_EVIDENCE.md) records the test bed,
 commands, acceptance criteria, aggregate evidence, and limitations. At 5 GHz
-channel 36 / 20 MHz, 100/100 controlled OFDM probes were independently decoded;
+channels 36 and 149 / 20 MHz, 100/100 controlled OFDM probes per channel were independently decoded;
 TXWI offset codes -8 and -16 reduced received signal and TX status power relative
 to interleaved zero-code controls. Absolute transmit power remains uncalibrated.
-The passive BlockAck comparison has not yet met its recent-data visibility
-criterion and must not be presented as a packet-loss estimator.
+The passive BlockAck comparison met its recent-data visibility criterion on
+channel 132 / 80 MHz: 101 shared BlockAcks exposed acknowledged sequence positions
+whose data was observed by both radios (70), only MT7961 (31), only MT7925 (one),
+or neither recently (five). These are repeated-window opportunities, not unique
+packets, and must not be presented as a packet-loss estimator. Channel 149's
+initial dwell did not meet the recent-data criterion.
 
 ## Previously observed, not rerun in the current validation
 
