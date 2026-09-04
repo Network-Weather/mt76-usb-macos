@@ -187,3 +187,47 @@ def test_one_radios_failure_is_recorded_and_does_not_raise(monkeypatch):
 
     assert radio.error == "OSError: adapter went away"
     assert radio.counts["frames"] == 0
+
+
+def ready_radio(selector, ready_at, stopped_at):
+    radio = dual.parse_radio(selector)
+    radio.ready_at = ready_at
+    radio.stopped_at = stopped_at
+    return radio
+
+
+def test_the_shared_window_is_when_every_radio_was_listening():
+    # The MT7925 is ready about a second before the MT7921 on the reference pair, and
+    # each stops one duration after its own start, so the windows are offset at both ends.
+    radios = [
+        ready_radio("0846:9072=6GHz:53@160", 1.83, 61.83),
+        ready_radio("0e8d:7961=5GHz:132@80", 2.81, 62.81),
+    ]
+    window = dual.shared_window(radios)["shared_window"]
+
+    assert window["from_s"] == 2.81
+    assert window["to_s"] == 61.83
+    assert window["seconds"] == 59.02
+    assert window["startup_gap_s"] == 0.98
+
+
+def test_a_radio_that_never_started_leaves_no_shared_window_and_is_counted():
+    radios = [
+        ready_radio("0846:9072=6GHz:53@160", 1.83, 61.83),
+        dual.parse_radio("0e8d:7961=5GHz:132@80"),  # refused its width, never tuned
+    ]
+    result = dual.shared_window(radios)
+
+    assert result["shared_window"] is None
+    assert result["radios_that_never_started"] == 1
+
+
+def test_windows_that_do_not_overlap_report_no_shared_seconds_not_a_negative():
+    radios = [
+        ready_radio("0846:9072=6GHz:53@160", 1.0, 3.0),
+        ready_radio("0e8d:7961=5GHz:132@80", 5.0, 7.0),
+    ]
+    window = dual.shared_window(radios)["shared_window"]
+
+    assert window["seconds"] == 0.0
+    assert window["startup_gap_s"] == 4.0

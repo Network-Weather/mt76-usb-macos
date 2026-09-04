@@ -669,6 +669,20 @@ A roam observed on both a source and a target channel therefore remains unmeasur
 needs a client driven across a boundary, so it belongs with R15 rather than with this plumbing.
 This is the state of the evidence, not a negative result about the hardware.
 
+### The radios do not start together, same day
+
+Each radio starts its window once its own firmware is up, and the two chips do not take the same
+time. Timed three consecutive times with the threading the capture uses, the MT7925 was ready at
+1.83 s and the MT7921 at 2.81 s, a gap of 0.98 s that repeated to 0.01 s. A 30 s run reported
+`startup_gap_s` 0.985 and a shared window of 29.02 s, agreeing with the separate measurement.
+
+So a run has roughly one second at each end during which only one radio is listening. That sits
+at the beginning, before an operator has triggered anything, which is why it has not affected any
+result recorded here. It would matter for a roam, where the steering exchange and the
+reassociation that answers it are milliseconds apart on two channels. The result reports the
+interval when every radio was listening rather than implying the whole run was covered; closing
+the gap needs a barrier after tuning with one shared deadline.
+
 ### Port addresses are reassigned on every firmware boot, same day
 
 `--list` reported the adapters at `2:9` and `2:20`, and after a capture run the same two adapters

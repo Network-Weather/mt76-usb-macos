@@ -132,6 +132,8 @@ separable without a serial number ([docs/TESTING.md](docs/TESTING.md#two-adapter
 
 Remaining: a forced roam observed on both the source and the target channel in one run. That
 needs a client driven across a boundary, so it belongs with R15 rather than with the plumbing.
+The radios also start about a second apart, since each boots its own firmware; the result reports
+the interval when both were listening, and one shared deadline is work for R15.
 
 ### ~~R22. MT7925U port for 160 MHz and Wi-Fi 7~~ (landed 2026-09-03)
 

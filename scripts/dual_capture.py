@@ -113,10 +113,6 @@ class Radio:
         # selector is resolved to one port before the radio opens anything.
         self.usb_id = selector if USB_ID_RE.match(selector) else None
         self.port: str | None = None
-
-    def resolve(self, port: str) -> None:
-        """Bind this radio to the one adapter its selector named."""
-        self.port = port
         self.counts = {
             "frames": 0,
             "off_channel": 0,
@@ -128,12 +124,23 @@ class Radio:
         self.chip: str | None = None
         self.error: str | None = None
         self.last_client_data: float | None = None
+        # When this radio actually started and stopped receiving, on the shared clock.
+        # Each radio boots its own firmware, and the two chips do not take the same time
+        # to do it, so the windows are offset. Reporting both ends lets a caller compute
+        # the interval when both radios were listening instead of assuming there was one.
+        self.ready_at: float | None = None
+        self.stopped_at: float | None = None
+
+    def resolve(self, port: str) -> None:
+        """Bind this radio to the one adapter its selector named."""
+        self.port = port
 
     def run(self, timeline: Timeline, duration: float, identify: bool) -> None:
         try:
             self._run(timeline, duration, identify)
         except Exception as exc:  # a failed radio must not take the other one down
             self.error = f"{type(exc).__name__}: {exc}"
+            self.stopped_at = timeline.stamp()
 
     def _run(self, timeline: Timeline, duration: float, identify: bool) -> None:
         if self.port is None:
@@ -165,6 +172,7 @@ class Radio:
                 )
             dev.tune(self.band, self.channel, center, self.width)
             decode = m.decoder_for(dev)
+            self.ready_at = timeline.stamp()
             deadline = time.monotonic() + duration
             while time.monotonic() < deadline:
                 try:
@@ -184,6 +192,7 @@ class Radio:
                     continue
                 self.counts["frames"] += 1
                 self._handle(descriptor, timeline, identify)
+            self.stopped_at = timeline.stamp()
 
     def _handle(self, descriptor: dict, timeline: Timeline, identify: bool) -> None:
         if descriptor.get("band") != self.band or descriptor.get("channel") != self.channel:
@@ -232,6 +241,35 @@ class Radio:
             record["bssid"] = parsed.get("addr3")
             record["detail"] = detail
         timeline.add(record)
+
+
+def shared_window(radios: list[Radio]) -> dict:
+    """When every radio was listening at once, measured rather than assumed.
+
+    Each radio boots its own firmware before it can receive, and the chips do not take
+    the same time, so the windows are offset by that difference. On the reference pair
+    the MT7925 is ready about a second before the MT7921. The offset sits at the start of
+    a run, before an operator has triggered anything, so it rarely matters, but a result
+    that did not report it would let a caller believe both radios covered the whole run.
+
+    An event outside the shared window was heard by one radio only, which for a roam
+    means one side of it. Radios that never became ready are excluded and counted.
+    """
+    ready = [radio.ready_at for radio in radios if radio.ready_at is not None]
+    stopped = [radio.stopped_at for radio in radios if radio.stopped_at is not None]
+    never = sum(1 for radio in radios if radio.ready_at is None)
+    if len(ready) < 2 or len(stopped) < 2:
+        return {"shared_window": None, "radios_that_never_started": never}
+    start, end = max(ready), min(stopped)
+    return {
+        "shared_window": {
+            "from_s": round(start, 3),
+            "to_s": round(end, 3),
+            "seconds": round(max(0.0, end - start), 3),
+            "startup_gap_s": round(max(ready) - min(ready), 3),
+        },
+        "radios_that_never_started": never,
+    }
 
 
 def parse_radio(text: str) -> Radio:
@@ -345,6 +383,7 @@ def main() -> int:
     result = {
         "duration_s": args.duration,
         "identify": args.identify,
+        **shared_window(radios),
         "radios": [
             {
                 "selector": radio.selector,
@@ -353,6 +392,8 @@ def main() -> int:
                 "channel": radio.channel,
                 "width_mhz": radio.width,
                 "error": radio.error,
+                "ready_at_s": radio.ready_at,
+                "stopped_at_s": radio.stopped_at,
                 "last_client_data_s": radio.last_client_data,
                 **radio.counts,
             }

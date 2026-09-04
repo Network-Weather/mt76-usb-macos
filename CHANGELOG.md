@@ -19,7 +19,9 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 - `scripts/dual_capture.py` runs two adapters at once, each on its own band, channel, and width,
   merged into one event log on one clock (roadmap R16). Adapters are selected by USB id or by the
   port they are attached to, so two of the same model are separable without a serial number.
-  `mt7921u.describe_supported_devices()` is the inventory behind it.
+  `mt7921u.describe_supported_devices()` is the inventory behind it. The result reports the
+  interval when every radio was actually listening, since each boots its own firmware and the
+  chips do not take the same time to do it.
 
 ### Documentation
 
