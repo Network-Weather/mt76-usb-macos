@@ -17,22 +17,17 @@ least two APs on one SSID.
   never comes up cannot hang the other. Do that with R15, where a lost second actually
   costs a measurement.
 
-## Build next (R26, R27)
-
-- ~~R26 C driver MT7925: device table, class-based interface selection, chip profiles, UNI
-  commands, connac3 decoder; `c/mt7921_smoke --plan all` passes on the A9000.~~
-- ~~R27 EHT radiotap: U-SIG and EHT TLVs in both writers; 973 live EHT frames dissected by
-  tshark at 160 MHz; 0.3.0.~~
-
 ## Measure before building
 
-- [ ] **R14/R15 hypothesis check, second attempt.** The first attempt (2026-09-02) locked one
+- [ ] **R14/R15 hypothesis check, second attempt.** This is the next thing to do and it needs
+  a person: nothing else on this list is blocked. The first attempt (2026-09-02) locked one
   radio to one channel and saw none of five roams of an MLO client; the network's own
   management log did. Both named causes are fixed: ~~Multi-Link element parsing, so every link
   address of the client matches~~ and ~~watching at the access point's own width~~. A second
   radio can now hold the target channel (`scripts/dual_capture.py`). What remains is the run:
   force a roam of a known client with the controller log as the reference, one radio on the
-  source channel and one on the target.
+  source channel and one on the target. Fix the shared capture clock first, since a roam is
+  short enough for a one-second offset to hide half of it.
 - ~~**roam_watch --width.** The watcher takes 20/40/80/160 MHz, resolves the center channel from
   the control channel, and refuses a width the attached chip has no evidence for.~~
 
@@ -48,6 +43,21 @@ least two APs on one SSID.
 
 ## Landed this sprint
 
+- ~~R16 plumbing: `scripts/dual_capture.py` runs both adapters at once, each on its own band,
+  channel, and width, into one event log; 80620 frames over five minutes with no USB error.
+  Adapters are picked by USB id or by the port they occupy, so two of the same model are
+  separable without a serial number.~~
+- ~~802.11be Multi-Link element decode and `rxd.station_addresses`, so a watcher follows a
+  client across links that each use a different address; fixtures cross-checked against tshark,
+  and 293 / 391 live beacons decoded on the two chips.~~
+- ~~`roam_watch --width` at 20/40/80/160 MHz, with `mt7921u.center_channel` and per-chip
+  `MAX_WIDTH_MHZ`, so a width that would tune a silent radio is refused instead.~~
+- ~~Radiotap VHT field corrected from 10 bytes to 12. Every VHT frame this driver wrote was
+  rejected by Wireshark as malformed; 19 of 19 before, 0 of 14 after.~~
+- ~~R26 C driver MT7925: device table, class-based interface selection, chip profiles, UNI
+  commands, connac3 decoder; `c/mt7921_smoke --plan all` passes on the A9000.~~
+- ~~R27 EHT radiotap: U-SIG and EHT TLVs in both writers; 973 live EHT frames dissected by
+  tshark at 160 MHz; 0.3.0.~~
 - ~~R22 / R2: MT7925U port. The Nighthawk A9000 boots, receives on 2.4 / 5 / 6 GHz, decodes to
   radiotap pcap, and captures 160 MHz HE data from a known transmitter; 0.2.0.~~
 - ~~A9000 day one: descriptors recorded with pyusb, chip id `0x7925` read, no Bluetooth

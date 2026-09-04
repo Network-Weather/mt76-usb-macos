@@ -15,7 +15,9 @@ is independent of its built-in radio: the built-in radio can stay associated (an
 hosts: an M1 Max for the MT7921 evidence and an M4 for the MT7925 evidence.
 
 > **Status: research-grade passive capture, not a network driver.** Current release 0.3.0
-> (2026-09-03). The receive path is working on the exact hardware below. Injection is experimental and was not part of the
+> (2026-09-03), with unreleased work on `main`: two-adapter concurrent capture, 802.11be
+> Multi-Link element decoding, a capture width for the roam watcher, and a radiotap VHT
+> length fix. See [CHANGELOG.md](CHANGELOG.md). The receive path is working on the exact hardware below. Injection is experimental and was not part of the
 > current release validation. Read [Testing and evidence](docs/TESTING.md),
 > [Known limits](#known-limits-and-non-goals), [engineering quality](docs/QUALITY.md), and
 > [ROADMAP.md](ROADMAP.md) before relying on it.
@@ -116,7 +118,7 @@ The codebase includes both a high-level Python library and a zero-dependency C d
 |---|---|
 | `mt7921u.py` | Python driver: USB vendor transfers, register I/O, MCU command framing, firmware download, channel and sniffer setup, receive, and injection; device table, descriptor discovery, and the `open_device()` factory |
 | `mt7925u.py` | MT7925U (connac3) subclass: its WFSYS reset, MCU framing geometry, UNI capability/efuse/RX-filter commands, and TLV-only tuning. Boots, receives, and writes radiotap pcap on the Nighthawk A9000 |
-| `rxd.py` | Python connac2 (MT7921) RX descriptor decode and the shared 802.11 frame parsing (IE analysis, AKM suites, PHY rate, airtime accounting) |
+| `rxd.py` | Python connac2 (MT7921) RX descriptor decode and the shared 802.11 frame parsing (IE analysis, AKM suites, 802.11be Multi-Link element and per-link addresses, PHY rate, airtime accounting) |
 | `rxd_connac3.py` | connac3 (MT7925) RX descriptor decode producing the same dict, so everything downstream of the descriptor is chip-agnostic |
 | [`c/`](c/README.md) | Pure C driver for both chips: native macOS IOKit USB transport (zero external dependencies), chip profiles, MCU framing, connac2 and connac3 decoders, TXWI injection (MT7921), radiotap PCAP writer through EHT, and `mt7921_smoke` CLI |
 
@@ -203,7 +205,7 @@ publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTIN
 | Upload and boot checksum-pinned firmware | Current pass |
 | Retune and receive on 2.4 / 5 / 6 GHz | Current pass; 24 / 37 / 6 BSSIDs in one sweep |
 | Passive management and data frame capture | Current pass |
-| Radiotap pcap readable by Wireshark | Current pass; 353 6 GHz packets, 0 malformed |
+| Radiotap pcap readable by Wireshark | Current pass; 353 6 GHz packets, 0 malformed. VHT frames included since the radiotap VHT field was corrected to its full 12 bytes; before that every VHT frame was rejected as malformed |
 | Control frame receive | Previously observed; absent from the five-second validation sample |
 | Per-frame PHY rate, width, MCS, RSSI, retry bit | Previously observed; offline calculations tested |
 | 802.11k/v/r, PMF, EasyMesh, and 802.11s parsing | Synthetic offline tests; opportunistic live coverage |
@@ -212,7 +214,8 @@ publication run. Exact commands and results are in [docs/TESTING.md](docs/TESTIN
 | 160 MHz capture | MT7921: not supported (measured zero transfers). **MT7925: current pass**, 1736 frames decoded at 160 MHz in 10 s, 193 HE data frames from a known transmitter |
 | 320 MHz capture | No supported part; decoded as a width, no rate |
 | EHT (Wi-Fi 7) frames in radiotap | **MT7925: current pass**; both pcap writers emit U-SIG and EHT TLVs, tshark 4.6 shows 802.11be with MCS, streams, bandwidth, and data rate; 973 live EHT frames in 30 s at 160 MHz, 0 malformed |
-| Simultaneous multi-channel capture | Not possible with one radio |
+| Simultaneous multi-channel capture | Not possible with one radio. **Two adapters: current pass**, one process holding 5 GHz 132 at 80 MHz on the MT7921U and 6 GHz 53 at 160 MHz on the MT7925U, 80 620 frames over five minutes with no USB error and no off-channel frame ([`scripts/dual_capture.py`](scripts/dual_capture.py)). The radios start about a second apart, so the result reports the interval when both were listening |
+| 802.11be Multi-Link element decode | Current pass on both chips; MLD address and per-link addresses, with element and subelement fragments reassembled. 293 beacons on the MT7921U and 391 on the MT7925U carried one MLD address behind two transmitter addresses, and tshark agreed over 246 frames. Per-STA profiles are covered by synthetic fixtures only, since no client association has been captured |
 | Hardware CCA busy / noise floor | Not working; reads zero on the reference device |
 
 ## Injection: read this first
