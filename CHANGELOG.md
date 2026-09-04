@@ -13,6 +13,11 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Fixed
 
+- The Python pcap writer emits the radiotap VHT field at its full 12 bytes. It was writing 10,
+  omitting `partial_aid`, so `it_len` under-counted what the present bitmap claimed and Wireshark
+  rejected every VHT frame as malformed. User 0's coding bit now reports LDPC, matching the C
+  writer. Measured on the MT7921U at 80 MHz: 19 of 19 VHT frames malformed before, 0 of 14 after
+  ([docs/TESTING.md](docs/TESTING.md#vht-radiotap-length-2026-09-03)).
 - C decoders convert RCPI to dBm as `rcpi / 2 - 110` with integer division, matching upstream
   `to_rssi()` and the Python decoders; the previous `(rcpi - 220) / 2` truncated toward zero and
   read odd RCPI values 1 dB high.
