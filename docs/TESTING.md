@@ -427,9 +427,11 @@ Independent corroboration in the same runs, not designed for: `MIB_CNT_BCN_TX` a
 `MIB_CNT_TX_BW_*` counters read exactly zero on both bands, as they must in a driver that never
 transmits.
 
-**MT7921U only.** The MT7925U answers no EXT command at all -- connac3 uses the UNI command
-space -- so every offset returns nothing and `mib_survey.py` reports `null` rather than a wrong
-number there ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)). As a control, both adapters on one
+**MT7921U only, for now.** The MT7925U answers no EXT command at all -- connac3 uses the UNI
+command space -- so `mib_survey.py` reports `null` rather than a wrong number there. Its
+counters do exist: `MCU_UNI_CMD_GET_MIB_INFO` is answered and ten offsets advance, but which is
+which has not been established to the standard used here, so nothing is claimed
+([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)). As a control, both adapters on one
 channel decoded 801 and 824 frames for 175,142 and 177,971 µs of airtime, so the MT7925 is
 receiving correctly; it simply cannot be asked.
 

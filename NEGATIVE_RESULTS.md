@@ -113,26 +113,34 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
 - **Code:** `research/ipi_probe.py`, reproducible from this tree; exits 2 when no histogram
   is found.
 
-## The MCU occupancy counters are MT7921-only; the MT7925 answers no EXT command
+## The MT7925 answers no EXT command; its counters are behind UNI, and unidentified
 
-- **Tried:** `research/mib_offset_sweep.py --max 32` and `research/mcu_command_probe.py` against
-  the reference MT7925U (Netgear A9000, `0846:9072`), 5 GHz channel 36, 2026-09-03, with the
-  same firmware and bring-up that its capture path uses successfully.
-- **Observed:** every `GET_MIB_INFO` offset from 0 to 31 returns no reply. The command probe
-  then failed to calibrate and refused to report, which is the more informative result: all
-  four of its controls went silent, including `THERMAL_CTRL` and `EFUSE_ACCESS`, which the
-  driver uses successfully on the MT7921. The MT7925 answers **no** EXT command tried, not
-  merely the ones under investigation.
-- **Why, and it is not a defect:** connac3 does not use the EXT command space. `mt7925u.py`
-  drives capability and efuse through UNI commands with tag/length TLVs, and the MT7925's
-  `MCU_UNI_CMD_*` ids are a different interface entirely. Asking it EXT commands is asking in
-  the wrong language.
-- **Not ruled out:** the same counters behind `MCU_UNI_CMD_GET_MIB_INFO` (0x22 in mt76's UNI
-  enum), which has not been tried. The MT7925's firmware regions are AES-encrypted, so the
-  offline dispatch-map method that found the MT7921's numbering cannot be repeated to predict
-  it; it would have to be swept blind.
-- **Consequence:** channel occupancy is an MT7921U capability in this tree. `mib_survey.py`
-  reports `null` counters on an MT7925 rather than a wrong number.
+- **Tried:** `research/mib_offset_sweep.py --max 32` and `research/mcu_command_probe.py`
+  against the reference MT7925U (Netgear A9000, `0846:9072`), 2026-09-03, then the UNI form of
+  the same query, 2026-09-04.
+- **Observed, EXT:** every `GET_MIB_INFO` offset from 0 to 31 returns no reply, and the command
+  probe then failed to calibrate and refused to report -- all four of its controls went silent,
+  including `THERMAL_CTRL` and `EFUSE_ACCESS`, which work on the MT7921. The MT7925 answers
+  **no** EXT command tried.
+- **Why:** connac3 does not use the EXT command space. `mt7925u.py` drives capability and efuse
+  through UNI commands with tag/length TLVs. Asking it EXT commands is asking in the wrong
+  language, and the EXT silence says nothing about whether the counters exist.
+- **Observed, UNI:** `MCU_UNI_CMD_GET_MIB_INFO` (0x22), framed as `mt7996_mcu_get_chan_mib_info`
+  does -- a `{u8 band, u8 rsv[3]}` header then `{le16 tag, le16 len, le32 offs}` entries -- **is
+  answered**. Sweeping offsets 0-47 on 2.4 GHz channel 6: 40 echo back, and 10 advance over a
+  6 s dwell. Offsets 17, 19 and 20 each grew about 1.3 million over 6 s, roughly 22% of the
+  window and microsecond-scale; offset 7 reads exactly 65535 twice, the same signature the
+  MT7921's `CHANNEL_IDLE` shows.
+- **Not identified.** Which counter is which has *not* been established. The MT7921's names were
+  earned by behaviour across channels and bandwidths and then corroborated against a vendor enum
+  whose gaps matched the hardware's; none of that has been done here, and the mt7996 UNI
+  offsets (`OBSS_AIRTIME` 26, `NON_WIFI_TIME` 27, `TX_TIME` 28, `RX_TIME` 29) echo back but read
+  zero, so they are not this chip's numbering either.
+- **Not ruled out:** that the zero-reading offsets need an enable. `UNI_VOW_RX_AT_AIRTIME_EN`
+  exists in the same UNI space and has not been tried.
+- **Consequence:** occupancy is an MT7921U capability *in this tree* because that is the chip
+  whose counters are identified. It is not a chip limitation, and `mib_survey.py` reporting
+  `null` on an MT7925 reflects missing identification rather than missing hardware.
 - **Code:** `research/mib_offset_sweep.py`, `research/mcu_command_probe.py`.
 
 ## Two radios on one channel agree on decoded airtime
@@ -160,3 +168,26 @@ meaningful: the MT7925 is receiving correctly, it simply will not answer EXT com
 - **Not ruled out:** a 5 GHz TX path that needs rate or power configuration the injector does not
   set; regulatory gating in firmware. Nothing here distinguishes those.
 - **Code:** `research/cross_measure.py`.
+
+## The IPI sampler does not start, by four routes
+
+- **Tried, all on the reference MT7921U:** `RDD_IPI_HIST_CTRL` (0xa3) `CR_INIT`,
+  `HIST_RESET` and `SET_IDLE_PWR`; `RDD_ON_OFF_CTRL` (0x3a) `RDD_START` on a DFS and a non-DFS
+  channel; `EDCCA_CTRL` (0x70) enable; and writing mt7915's `MT_WF_PHY_RX_CTRL1_IPI_EN` field
+  plus the `RXTD12` clear bits directly, 2026-09-03 and 09-04.
+- **Observed:** the MCU command is accepted and, under the QUERY bit, returns exactly the
+  documented 56-byte event with the index echoed -- so transport and reply layout are solved.
+  Every bin reads zero, and so does the free-running counter that should tick once per 8 µs
+  regardless of what the radio hears. `RDD_ON_OFF_CTRL` is silent, `EDCCA_CTRL` is refused.
+- **The PHY register writes take.** `0x83082004` read `0x00000000` and read back `0x00000005`
+  after the write; `0x83088230` read `0x8000c2c2` and read back `0xa004c2c2`, both requested
+  bits set. So that block is writable as well as readable, and the histogram still did not
+  start. Neither mt7915's IRPI layout (`0x83006000`) nor mt7916's (`0x83001000`) accumulated,
+  and of 2048 words swept across `0x83000000`-`0x83010000` only four grew, all at rates that
+  look like clocks rather than bin counts.
+- **Note what that write was:** mt7921's PHY register map is not published, so setting a field
+  at mt7915's offset is a guess about what lives there. It is recorded as an attempt with an
+  unknown effect, not as a correct enable that failed.
+- **Not ruled out:** an mt7921-specific PHY offset for the enable; the sampler requiring RF-test
+  mode, which `WIFI_SPECTRUM` also appears to need; a firmware build without it.
+- **Code:** `research/ipi_hist_cmd.py`, `research/ipi_probe.py`.
