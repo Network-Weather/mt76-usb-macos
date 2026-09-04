@@ -97,9 +97,19 @@ as unobserved (never inferred), the per-hop blind interval is measured and repor
 event log is schema-checked and redacted by default.
 
 An MLO client (Wi-Fi 7) associates on several links with per-link addresses; a management view shows
-only the MLD address. The watcher must learn the link addresses from the Multi-Link element in
-(re)association frames and match on all of them, or it will miss the client on most links; this
-was observed on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#single-radio-roaming-observation-same-day)).
+only the MLD address. A watcher matching one address misses the client on every other link, which
+is what happened on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#single-radio-roaming-observation-same-day)).
+The decoder now reads those addresses: `rxd.parse_multi_link` returns the MLD address and each
+Per-STA Profile's link address, and `rxd.station_addresses` scopes them to the frame's
+transmitter so an AP cannot join a client's identity. `roam_watch --client` and
+`scripts/dual_capture.py` grow their address set from the client's own frames. What is still
+unproven is the part that needs a client: no per-STA profile has been captured on air, because a
+beacon does not carry one and no association has been observed, so that path rests on synthetic
+fixtures cross-checked against tshark.
+
+Both prerequisites the 2026-09-02 attempt failed on are now in place, and a second radio can hold
+the target channel. What remains is the run itself: force a roam of a known client with the
+network's own log as the reference, one radio on the source channel and one on the target.
 
 ### R3. Failure handling and soak evidence
 
