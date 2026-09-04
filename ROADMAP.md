@@ -97,9 +97,19 @@ as unobserved (never inferred), the per-hop blind interval is measured and repor
 event log is schema-checked and redacted by default.
 
 An MLO client (Wi-Fi 7) associates on several links with per-link addresses; a management view shows
-only the MLD address. The watcher must learn the link addresses from the Multi-Link element in
-(re)association frames and match on all of them, or it will miss the client on most links; this
-was observed on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#single-radio-roaming-observation-same-day)).
+only the MLD address. A watcher matching one address misses the client on every other link, which
+is what happened on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#single-radio-roaming-observation-same-day)).
+The decoder now reads those addresses: `rxd.parse_multi_link` returns the MLD address and each
+Per-STA Profile's link address, and `rxd.station_addresses` scopes them to the frame's
+transmitter so an AP cannot join a client's identity. `roam_watch --client` and
+`scripts/dual_capture.py` grow their address set from the client's own frames. What is still
+unproven is the part that needs a client: no per-STA profile has been captured on air, because a
+beacon does not carry one and no association has been observed, so that path rests on synthetic
+fixtures cross-checked against tshark.
+
+Both prerequisites the 2026-09-02 attempt failed on are now in place, and a second radio can hold
+the target channel. What remains is the run itself: force a roam of a known client with the
+network's own log as the reference, one radio on the source channel and one on the target.
 
 ### R3. Failure handling and soak evidence
 
@@ -112,7 +122,7 @@ appear in the result. Tests must include a short bulk write, a stale or wrong-se
 an unsolicited event, and a stalled endpoint. Hot-unplug remains explicitly untested until
 exercised on hardware.
 
-### R16. Multiple adapters
+### R16. Multiple adapters (partly done)
 
 On 2026-09-02 a client moved through five APs on three bands in ten minutes while a single
 locked radio observed none of the transitions ([docs/TESTING.md](docs/TESTING.md)).
@@ -123,6 +133,17 @@ distinguished without relying on serial numbers appearing in output.
 Done when two reference adapters capture concurrently with per-device counters, a forced roam
 is observed on both source and target channels in one run, and the single-adapter path is
 unchanged.
+
+~~Concurrent capture with per-radio counters~~ (`scripts/dual_capture.py`, 2026-09-03): both
+adapters run in one process, each locked to its own band, channel, and width, merged into one
+event log on one clock, with a client's link addresses learned on either radio matched on both.
+An adapter is picked by USB id or by the port it is attached to, so two of the same model are
+separable without a serial number ([docs/TESTING.md](docs/TESTING.md#two-adapters-capturing-at-once-2026-09-03)).
+
+Remaining: a forced roam observed on both the source and the target channel in one run. That
+needs a client driven across a boundary, so it belongs with R15 rather than with the plumbing.
+The radios also start about a second apart, since each boots its own firmware; the result reports
+the interval when both were listening, and one shared deadline is work for R15.
 
 ### ~~R22. MT7925U port for 160 MHz and Wi-Fi 7~~ (landed 2026-09-03)
 

@@ -127,6 +127,8 @@ class Mt7925uDevice(m.Mt7921uDevice):
 
     CHIP = m.CHIP_MT7925
     CHIP_IDS = (0x7925,)  # 0x6639 (MT7927) needs the mt7927/ blobs and is refused
+    # 160 MHz capture is evidenced on this chip in docs/TESTING.md; 320 MHz is not.
+    MAX_WIDTH_MHZ = 160
     DECODER_MODULE = "rxd_connac3"
 
     TXD1 = MT7925_TXD1
@@ -142,8 +144,10 @@ class Mt7925uDevice(m.Mt7921uDevice):
     WFSYS_RST_DELAY_S = 0.020
     WFSYS_NEED_STATUS_SEL = False
 
-    def __init__(self, verbose: bool = False, usb_id: str | None = None):
-        super().__init__(verbose=verbose, usb_id=usb_id)
+    def __init__(
+        self, verbose: bool = False, usb_id: str | None = None, address: str | None = None
+    ):
+        super().__init__(verbose=verbose, usb_id=usb_id, address=address)
         self.nic_caps: dict[int, bytes] = {}
         self.phy_cap: dict | None = None
 

@@ -7,6 +7,21 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- `rxd.parse_multi_link` decodes the 802.11be Multi-Link element: the MLD address, the Basic
+  variant's Common Info subfields, and each Per-STA Profile's link id and address, reassembling
+  element (242) and subelement (254) fragments first. `rxd.station_addresses` returns every
+  address identifying a frame's transmitter, so a watcher can follow a multi-link client across
+  links where each link uses a different address.
+- `roam_watch.py --width` captures at 20, 40, 80, or 160 MHz, resolving the center channel from
+  the control channel with `mt7921u.center_channel`. It refuses a 2.4 GHz width above 20 MHz, a
+  channel outside every block of that width, and a width the attached chip has no evidence for
+  (`MAX_WIDTH_MHZ`, 80 on the MT7921U and 160 on the MT7925U).
+- `scripts/dual_capture.py` runs two adapters at once, each on its own band, channel, and width,
+  merged into one event log on one clock (roadmap R16). Adapters are selected by USB id or by the
+  port they are attached to, so two of the same model are separable without a serial number.
+  `mt7921u.describe_supported_devices()` is the inventory behind it. The result reports the
+  interval when every radio was actually listening, since each boots its own firmware and the
+  chips do not take the same time to do it.
 - Channel occupancy measurement. `scripts/mib_survey.py` reports primary-channel CCA busy time
   beside the airtime of the frames actually decoded, so the gap between them -- occupancy that
   never becomes a decodable frame -- is visible. Measured 9.48% busy with 149 ms per 8 s window
@@ -34,6 +49,11 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Fixed
 
+- The Python pcap writer emits the radiotap VHT field at its full 12 bytes. It was writing 10,
+  omitting `partial_aid`, so `it_len` under-counted what the present bitmap claimed and Wireshark
+  rejected every VHT frame as malformed. User 0's coding bit now reports LDPC, matching the C
+  writer. Measured on the MT7921U at 80 MHz: 19 of 19 VHT frames malformed before, 0 of 14 after
+  ([docs/TESTING.md](docs/TESTING.md#vht-radiotap-length-2026-09-03)).
 - C decoders convert RCPI to dBm as `rcpi / 2 - 110` with integer division, matching upstream
   `to_rssi()` and the Python decoders; the previous `(rcpi - 220) / 2` truncated toward zero and
   read odd RCPI values 1 dB high.

@@ -294,19 +294,75 @@ def parse_usb_id(text: str) -> tuple[int, int]:
         raise ValueError(f"usb id must look like 0e8d:7961, got {text!r}") from exc
 
 
-def find_supported_devices(usb_id: str | None = None) -> list:
-    """Attached pyusb devices whose VID:PID is supported, optionally one exact ID.
+def device_address(dev) -> str:
+    """Where an adapter is plugged in, as "bus:address".
 
-    usb_id defaults to $MT76_USB_ID so a host with two adapters can pick one without
-    changing code. Returns pyusb device objects; nothing is opened or claimed.
+    Two adapters of the same model share a USB id, so the id cannot tell them apart.
+    Bus and device address are the port the adapter is attached to: they distinguish
+    identical units without reading a serial number, which the device treats as
+    identifying information and which this project keeps out of its output. The value
+    is not stable across a replug, which is why it names a port rather than a device.
+    """
+    return f"{dev.bus}:{dev.address}"
+
+
+def find_supported_devices(usb_id: str | None = None, address: str | None = None) -> list:
+    """Attached pyusb devices whose VID:PID is supported, optionally narrowed.
+
+    usb_id defaults to $MT76_USB_ID and address to $MT76_USB_ADDR, so a host with two
+    adapters can pick one without changing code. With two adapters of the same model,
+    only address separates them. Returns pyusb device objects; nothing is opened or
+    claimed.
     """
     wanted = usb_id or os.environ.get("MT76_USB_ID") or None
+    where = address or os.environ.get("MT76_USB_ADDR") or None
     keys = {parse_usb_id(wanted)} if wanted else set(SUPPORTED_DEVICES)
     found = []
     for dev in usb.core.find(find_all=True):
-        if (dev.idVendor, dev.idProduct) in keys:
-            found.append(dev)
+        if (dev.idVendor, dev.idProduct) not in keys:
+            continue
+        if where is not None and device_address(dev) != where:
+            continue
+        found.append(dev)
     return found
+
+
+def describe_supported_devices() -> list[dict]:
+    """One record per attached supported adapter: where it is, what it is.
+
+    The inventory a caller needs to drive more than one adapter, and the only place
+    that has to know how an adapter is addressed. Ordered by bus then device address so
+    two runs of the same command list the same adapters in the same order.
+
+    It deliberately ignores $MT76_USB_ID and $MT76_USB_ADDR. Those pick one adapter for
+    a single-radio command, and an inventory that hid every other adapter because such a
+    variable was left exported would report an attached adapter as absent.
+    """
+    found = [
+        dev
+        for dev in usb.core.find(find_all=True)
+        if (dev.idVendor, dev.idProduct) in SUPPORTED_DEVICES
+    ]
+    found.sort(key=lambda dev: (dev.bus, dev.address))
+    return [
+        {
+            "address": device_address(dev),
+            "usb_id": f"{dev.idVendor:04x}:{dev.idProduct:04x}",
+            "chip": SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)],
+        }
+        for dev in found
+    ]
+
+
+def _ambiguous(candidates: list) -> str:
+    """The message for an open that matched more than one adapter."""
+    ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
+    where = ", ".join(device_address(d) for d in candidates)
+    return (
+        f"{len(candidates)} supported devices attached ({ids}); "
+        f"pass usb_id or set MT76_USB_ID to pick one, or address / MT76_USB_ADDR "
+        f"for two of the same model (attached at {where})"
+    )
 
 
 # usb.h: USB_TYPE_VENDOR = 0x40, USB_DIR_IN = 0x80
@@ -400,11 +456,20 @@ class Mt7921u:
     CHIP_IDS: tuple[int, ...] = (0x7961,)
     # Module whose decode() understands this chip's RX descriptor (see decoder_for()).
     DECODER_MODULE = "rxd"
+    # Widest capture this chip has been shown to produce frames at. The MT7921U returns
+    # zero transfers when configured for 160 MHz, recorded in NEGATIVE_RESULTS.md, so a
+    # caller that asks for it would get a silent radio rather than an error. Raising this
+    # requires dated hardware evidence, as ROADMAP.md's decision rules require for any
+    # new width.
+    MAX_WIDTH_MHZ = 80
 
-    def __init__(self, verbose: bool = False, usb_id: str | None = None):
+    def __init__(
+        self, verbose: bool = False, usb_id: str | None = None, address: str | None = None
+    ):
         self.dev = None
         self.verbose = verbose
         self.usb_id = usb_id  # "vvvv:pppp" to pick one adapter; None = any supported
+        self.address = address  # "bus:addr" to pick between two of the same model
         self._claimed = []
         self.layout: UsbLayout | None = None
         # Endpoint roles. Defaults are the reference adapter's so an object built
@@ -423,16 +488,14 @@ class Mt7921u:
 
     def open(self) -> None:
         """Find one supported device, resolve its layout, claim the Wi-Fi interface."""
-        candidates = find_supported_devices(self.usb_id)
+        candidates = find_supported_devices(self.usb_id, self.address)
         if not candidates:
             wanted = self.usb_id or os.environ.get("MT76_USB_ID") or "any supported"
-            raise UnsupportedDevice(f"device not found (looked for {wanted})")
+            where = self.address or os.environ.get("MT76_USB_ADDR")
+            at = f" at {where}" if where else ""
+            raise UnsupportedDevice(f"device not found (looked for {wanted}{at})")
         if len(candidates) > 1:
-            ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
-            raise UnsupportedDevice(
-                f"{len(candidates)} supported devices attached ({ids}); "
-                "pass usb_id or set MT76_USB_ID to pick one"
-            )
+            raise UnsupportedDevice(_ambiguous(candidates))
         dev = candidates[0]
         layout = layout_from_pyusb(dev)
         if layout.chip != self.CHIP:
@@ -707,8 +770,10 @@ class Mt7921uMcu(Mt7921u):
     RXD_SEQ_OFFSET = RXD_SEQ_OFFSET
     RXD_STATUS_OFFSET = RXD_STATUS_OFFSET
 
-    def __init__(self, verbose: bool = False, usb_id: str | None = None):
-        super().__init__(verbose=verbose, usb_id=usb_id)
+    def __init__(
+        self, verbose: bool = False, usb_id: str | None = None, address: str | None = None
+    ):
+        super().__init__(verbose=verbose, usb_id=usb_id, address=address)
         self.msg_seq = 0
         self.evt_ep4 = False  # set once dma_rx_evt_ep4 has run
         # Counters for what mcu_wait throws away while hunting for a reply on the
@@ -1725,6 +1790,78 @@ def _config_sniffer(
 # CMD_CBW_* for mt7921_mcu_set_chan_info and the sniffer TLV's own table, in which 40 MHz
 # is encoded as 20 with the offset carried by sco (mt7921/mt7925 mcu_config_sniffer ch_width[]).
 CHAN_BAND = {"2.4GHz": 0, "5GHz": 1, "6GHz": 2}  # channel_band field of set_chan_info
+
+# Valid center channels per band and width. A wide PPDU is described by its control
+# channel plus the center of the block it sits in; the driver needs the center, and an
+# operator watching a roam knows only the control channel the AP advertises.
+#
+# 5 GHz centers are the operating-class definitions quoted in hostapd
+# src/common/ieee802_11_common.c: class 126/127 (40 MHz), class 128 (80 MHz, centers
+# 42, 58, 106, 122, 138, 155, 171), class 129 (160 MHz, centers 50, 114, 163).
+# 6 GHz centers follow center_idx_to_bw_6ghz() in the same file: a center index is
+# 40 MHz when (idx & 0x7) == 0x3, 80 MHz when (idx & 0xf) == 0x7, and 160 MHz when
+# (idx & 0x1f) == 0xf. Both fetched 2026-09-03.
+# A block of width W spans W/5 channel numbers, so a control channel belongs to the
+# block whose center it is within (W/5 - 2) / 2 channel numbers of.
+CENTER_CHANNELS = {
+    ("5GHz", 40): (38, 46, 54, 62, 102, 110, 118, 126, 134, 142, 151, 159, 167, 175),
+    ("5GHz", 80): (42, 58, 106, 122, 138, 155, 171),
+    ("5GHz", 160): (50, 114, 163),
+    # 6 GHz 20 MHz control channels run 1 to 233 in steps of 4 (plus the standalone
+    # channel 2), so a block is only real when its outermost control channel is still
+    # within the band: centers stop at 227 for 40 MHz, 215 for 80 MHz, and 207 for
+    # 160 MHz. That gives the 29, 14, and 7 channels the band is defined to have.
+    ("6GHz", 40): tuple(range(3, 228, 8)),
+    ("6GHz", 80): tuple(range(7, 216, 16)),
+    ("6GHz", 160): tuple(range(15, 208, 32)),
+}
+SIX_GHZ_MAX_CHANNEL = 233
+
+# The 20 MHz control channels each band actually has. Without this a width of 20 would
+# accept any integer, since a 20 MHz channel is its own center: `5GHz:999` would pass
+# validation and be handed to the firmware.
+#   2.4 GHz: channels 1 to 14 (802.11-2020 Annex E, Table E-1).
+#   5 GHz: the 20 MHz channels of operating classes 115, 118, 121, and 125, which is
+#     36 to 64, 100 to 144, and 149 to 177, all in steps of 4.
+#   6 GHz: 1 to 233 in steps of 4, plus the standalone channel 2, matching
+#     center_idx_to_bw_6ghz() in hostapd src/common/ieee802_11_common.c, which reports
+#     20 MHz for index 2 and for every index where (idx & 0x3) == 0x1.
+CONTROL_CHANNELS = {
+    "2.4GHz": tuple(range(1, 15)),
+    "5GHz": tuple(range(36, 65, 4)) + tuple(range(100, 145, 4)) + tuple(range(149, 178, 4)),
+    "6GHz": (2, *range(1, SIX_GHZ_MAX_CHANNEL + 1, 4)),
+}
+
+
+def center_channel(band_name: str, control_ch: int, width_mhz: int) -> int | None:
+    """The center channel of the `width_mhz` block containing `control_ch`.
+
+    Returns None when the control channel is not one its band has, or when no block of
+    that width contains it. The latter includes every 2.4 GHz width above 20 MHz: a
+    2.4 GHz 40 MHz channel may extend either upward or downward from its control
+    channel, and the control channel alone does not say which. Callers must fail rather
+    than pick one.
+    """
+    if control_ch not in CONTROL_CHANNELS.get(band_name, ()):
+        return None
+    if width_mhz == 20:
+        return control_ch
+    centers = CENTER_CHANNELS.get((band_name, width_mhz))
+    if centers is None:
+        return None
+    reach = (width_mhz // 5 - 2) // 2  # channel numbers from the center to the outermost 20 MHz
+    for center in centers:
+        offset = control_ch - center
+        # The 20 MHz control channels of a wide block sit at odd multiples of 2 channel
+        # numbers from its center, so a valid offset is even with an odd half. Testing
+        # only the distance would accept a channel that is not a control channel of any
+        # block: 6 GHz channel 2 is five channel numbers from center 7 and is defined as
+        # 20 MHz only (center_idx_to_bw_6ghz() returns 20 MHz for idx == 2).
+        if abs(offset) <= reach and offset % 4 == 2:
+            return center
+    return None
+
+
 WIDTH_TO_CMD_CBW = {20: CMD_CBW_20MHZ, 40: CMD_CBW_40MHZ, 80: CMD_CBW_80MHZ, 160: CMD_CBW_160MHZ}
 WIDTH_TO_SNIFFER_BW = {20: SNIFFER_BW_20, 40: SNIFFER_BW_20, 80: SNIFFER_BW_80, 160: SNIFFER_BW_160}
 
@@ -2002,23 +2139,56 @@ def device_class_for(chip: str):
     raise UnsupportedDevice(f"no driver class for chip {chip!r}")
 
 
-def open_device(usb_id: str | None = None, verbose: bool = False):
+def open_device_at(address: str, verbose: bool = False):
+    """Open exactly the adapter at this port address, consulting no environment.
+
+    open_device() falls back to $MT76_USB_ID and $MT76_USB_ADDR so a single-radio
+    command can be pointed at one adapter without changing code. A caller that has
+    already decided which adapter it wants must not inherit those: a variable left
+    exported from an earlier single-radio run would make one radio of a two-radio
+    capture fail to open even though the inventory had just found it.
+    """
+    matched = [
+        dev
+        for dev in usb.core.find(find_all=True)
+        if (dev.idVendor, dev.idProduct) in SUPPORTED_DEVICES and device_address(dev) == address
+    ]
+    if not matched:
+        raise UnsupportedDevice(f"no supported adapter at {address}")
+    if len(matched) > 1:
+        # A bus and device address identify one attached device, so this cannot happen
+        # while the enumeration is consistent. Refuse rather than pick.
+        raise UnsupportedDevice(f"{len(matched)} devices report the address {address}")
+    dev = matched[0]
+    chip = SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)]
+    return device_class_for(chip)(
+        verbose=verbose,
+        usb_id=f"{dev.idVendor:04x}:{dev.idProduct:04x}",
+        address=address,
+    )
+
+
+def open_device(usb_id: str | None = None, verbose: bool = False, address: str | None = None):
     """Return an unopened device object of the right class for the attached adapter.
 
     Use it as a context manager exactly like Mt7921uDevice(). With several supported
-    adapters attached, usb_id (or $MT76_USB_ID) picks one.
+    adapters attached, usb_id (or $MT76_USB_ID) picks one; between two adapters of the
+    same model, only address (or $MT76_USB_ADDR, "bus:addr") can, and the returned
+    object keeps it so it reopens the same port rather than whichever it finds.
     """
-    candidates = find_supported_devices(usb_id)
+    candidates = find_supported_devices(usb_id, address)
     if not candidates:
         wanted = usb_id or os.environ.get("MT76_USB_ID") or "any supported"
-        raise UnsupportedDevice(f"device not found (looked for {wanted})")
+        where = address or os.environ.get("MT76_USB_ADDR")
+        at = f" at {where}" if where else ""
+        raise UnsupportedDevice(f"device not found (looked for {wanted}{at})")
     if len(candidates) > 1:
-        ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
-        raise UnsupportedDevice(
-            f"{len(candidates)} supported devices attached ({ids}); "
-            "pass usb_id or set MT76_USB_ID to pick one"
-        )
+        raise UnsupportedDevice(_ambiguous(candidates))
     dev = candidates[0]
     chip = SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)]
     cls = device_class_for(chip)
-    return cls(verbose=verbose, usb_id=f"{dev.idVendor:04x}:{dev.idProduct:04x}")
+    return cls(
+        verbose=verbose,
+        usb_id=f"{dev.idVendor:04x}:{dev.idProduct:04x}",
+        address=device_address(dev),
+    )

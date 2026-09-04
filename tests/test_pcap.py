@@ -229,3 +229,64 @@ def test_eht_pcap_dissects_in_tshark(tmp_path):
     assert fields[3].startswith("1134.")  # MCS 11, 2 streams, 80 MHz (from U-SIG BW), 1.6 us GI
     assert int(fields[4], 0) == 2  # U-SIG BW code for 80 MHz
     assert len(fields) < 6 or fields[5] == ""
+
+
+# Byte widths and alignments of each radiotap field this writer emits, from the radiotap
+# specification (https://www.radiotap.org/fields). it_len must account for every field the
+# present bitmap claims; a short header makes Wireshark reject the packet as malformed,
+# and no assertion on the field contents alone can catch that.
+RADIOTAP_FIELD_SIZES = {
+    "RT_FLAGS": (1, 1),
+    "RT_RATE": (1, 1),
+    "RT_CHANNEL": (4, 2),
+    "RT_DBM_ANTSIGNAL": (1, 1),
+    "RT_MCS": (3, 1),
+    "RT_VHT": (12, 2),
+    "RT_HE": (12, 2),
+}
+
+
+def expected_radiotap_length(present: int) -> int:
+    """The length a radiotap header with these present bits must have."""
+    offset = 8  # version, pad, it_len, it_present
+    for name, (size, align) in RADIOTAP_FIELD_SIZES.items():
+        if not present & getattr(capture, name):
+            continue
+        offset += -offset % align
+        offset += size
+    return offset
+
+
+@pytest.mark.parametrize(
+    ("label", "phy"),
+    [
+        ("no phy", None),
+        ("cck", {"mode": 0, "rate_mbps": 1.0}),
+        ("ofdm", {"mode": 1, "rate_mbps": 54.0}),
+        ("ht", {"mode": 2, "mcs": 3, "bw_mhz": 20, "gi": 1}),
+        ("vht 20", {"mode": 4, "mcs": 9, "nss": 2, "bw_mhz": 20, "gi": 0}),
+        ("vht 80", {"mode": 4, "mcs": 9, "nss": 2, "bw_mhz": 80, "gi": 1, "stbc": False}),
+        ("vht 160", {"mode": 4, "mcs": 7, "nss": 1, "bw_mhz": 160, "gi": 0}),
+        ("he su", {"mode": 8, "mcs": 5, "nss": 2, "nsts": 2, "bw_mhz": 80, "gi": 0}),
+        ("he mu", {"mode": 11, "mcs": 5, "nss": 1, "nsts": 1, "bw_mhz": 20, "ru_tones": 52}),
+    ],
+)
+def test_radiotap_length_accounts_for_every_field_the_present_bitmap_claims(label, phy):
+    header = capture.radiotap(5180, "5GHz", -45, False, phy=phy)
+    it_len = struct.unpack_from("<H", header, 2)[0]
+    present = struct.unpack_from("<I", header, 4)[0]
+
+    assert it_len == len(header), label
+    assert it_len == expected_radiotap_length(present), label
+
+
+def test_the_vht_field_is_twelve_bytes_and_carries_coding():
+    # known(2) flags(1) bandwidth(1) mcs_nss[4] coding(1) group_id(1) partial_aid(2).
+    phy = {"mode": 4, "mcs": 9, "nss": 2, "bw_mhz": 80, "gi": 1, "ldpc": True}
+    header = capture.radiotap(5180, "5GHz", -45, False, phy=phy)
+
+    # Flags(1) at 8, pad(1), Channel(4) at 10, signal(1) at 14, pad(1), VHT at 16.
+    vht = header[16:]
+    assert len(vht) == 12
+    assert vht[8] & 0x01  # user 0 coding, LDPC
+    assert struct.unpack_from("<H", vht, 10)[0] == 0  # partial_aid present and zero

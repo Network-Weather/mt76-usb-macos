@@ -155,7 +155,14 @@ def radiotap(freq: int, band: str, rssi, bad_fcs: bool, phy: dict | None = None)
         flags = (1 if phy.get("stbc") else 0) | (gi_val << 2)
         nss = max(1, phy.get("nss", 1))
         user0 = ((phy.get("mcs", 0) & 0x0F) << 4) | (nss & 0x0F)
-        body.extend(struct.pack("<HBBBBBBBB", vht_known, flags, bw_val, user0, 0, 0, 0, 0, 0))
+        coding = 1 if phy.get("ldpc") else 0  # bit 0 is user 0's coding, 1 = LDPC
+        # known(u16) flags(u8) bandwidth(u8) mcs_nss[4](u8) coding(u8) group_id(u8)
+        # partial_aid(u16), per the VHT field of the radiotap specification. All 12
+        # bytes must be present: it_len covers every field the present bitmap claims,
+        # and a short one makes Wireshark reject the packet as malformed.
+        body.extend(
+            struct.pack("<HBBBBBBBBH", vht_known, flags, bw_val, user0, 0, 0, 0, coding, 0, 0)
+        )
 
     # Bit 23: HE (12 bytes, align 2)
     if has_he:
