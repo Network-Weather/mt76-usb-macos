@@ -72,6 +72,51 @@ or scoped to the MT7921 alone.
 Roadmap context: [ROADMAP.md](../ROADMAP.md). Chip-generic results land in
 [TESTING.md](TESTING.md); disproven ideas land in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
 
+## What the MT7921 image says about itself
+
+The image carries its own `__FILE__` paths: 60 source files from MediaTek's build tree,
+which map the firmware's modules far better than symbol names do. The IPI, RDD and EDCCA
+strings come from `wifi/core/wificore/rlm/rdm_phy.c`, alongside `rlm_phy.c`, `cnm_radio.c`,
+and a `hal_cal_flow.c` reached through a build path naming the project
+`wifi_mobile_ram_ccn16`.
+
+**The instruction set of the code regions is unidentified.** Signature sweeps for ARM Thumb,
+ARM A32, MIPS, RISC-V, Xtensa, ARC and NDS32 across regions r0, r3 and the patch section all
+returned densities at or *below* what uniform-random bytes would produce -- ARM Thumb
+`push {…,lr}` appears 0.49 times per KB in r0 where chance alone predicts about 2. The
+regions are not encrypted (the header says so, and the string region beside them is plainly
+readable), so they are plaintext code in an ISA not yet named. Identifying it is a
+prerequisite for any disassembly and is not currently blocking anything else.
+
+Direct string cross-referencing also failed: of 874 words in r1 pointing inside r1's own
+declared address range, only 8 land on a string start. The logging format
+(`%06d& SCHEING Hit& %s,L%d,…`) suggests an indexed logging scheme rather than pointer-based
+format strings, so recovering call sites will not be as simple as following pointers.
+
+## The better lead: these are named MCU commands
+
+Disassembly turned out not to be the shortest path. mt76 already names the command
+interface, and the MT7921 firmware answers to it:
+
+- `MCU_EXT_CMD_GET_MIB_INFO = 0x5a` (`mt76_connac_mcu.h:1292`) takes an array of
+  `{band, offs}` pairs and returns 64-bit counters. The offsets are an enum in
+  `mt7915/mcu.h:186`, and it includes **`MIB_NON_WIFI_TIME`** -- time the medium was busy
+  with energy that is not Wi-Fi at all. That is the interference measurement this whole
+  investigation was reaching for, already exposed through a command our driver can frame.
+- `MCU_EXT_CMD_PHY_STAT_INFO = 0xad` (`mt76_connac_mcu.h:1309`) takes a one-byte `category`
+  from the `MCU_PHY_STATE_*` enum (`mt76_connac_mcu.h:1199`), of which only five values are
+  named upstream. Whether the firmware answers more categories is a question a probe can
+  settle.
+- The firmware's own strings corroborate that both are enumerable rather than fixed:
+  `CmdMibInfo,event packet alloc fail.` and `%s: MIB counter index = %d not supported.` --
+  the second is an out-of-range reply, which means unsupported indices are *refused* rather
+  than answered with garbage.
+
+This is a bounded, read-only, passive probe over an interface the driver already speaks, and
+it does not require knowing the MCU's instruction set. It supersedes Spike B as the cheapest
+route to a noise/interference figure; Spike B remains the fallback if the firmware refuses
+every interesting index.
+
 ## Where the work happens
 
 Worktree `~/dev/mt76-usb-macos-firmware-recon`, branch `spike/firmware-recon`, tracking PR
@@ -107,7 +152,9 @@ Read, per dwell: `MT_MIB_SDR9` bits 23:0 (CCA busy µs), `MT_MIB_SDR36` (TX airt
 
 ### Spike B — IPI/IRPI histogram, a real noise floor (`scripts/ipi_probe.py`)
 
-Confidence: unknown. This is the actual open question.
+Confidence: unknown, and now the fallback rather than the main route -- Spike D reaches a
+comparable measurement through a documented command interface. Keep it for the case where
+the firmware refuses the interesting MIB indices.
 
 `MT_WF_IRPI_BASE` is `0x83000000` and `MT_WF_PHY_BASE` is `0x83080000` on mt7915. No
 `0x83xxxxxx` region appears anywhere in mt7921's headers or its PCI `fixed_map`, so we do
@@ -134,9 +181,25 @@ disassembling before anyone spends time disassembling it.
 readable/opaque classification is reproducible across the four pinned blobs; the RF-relevant
 symbol inventory is regenerable rather than hand-copied.
 
-Next step if C says the MT7921 image is worth it: identify the MCU ISA, then locate the
-command dispatch table using the extracted strings as anchors, to recover the command ID
-behind `rdmGetIpiHist`. That is a project, not a spike, and it is not started.
+Done, 2026-09-03. Findings are in the two sections above. The disassembly follow-on it was
+meant to scope is **not** the next step: the MCU command interface below reaches the same
+measurements without needing the ISA.
+
+### Spike D — MIB and PHY stats over the MCU (not yet written)
+
+Confidence: high for `GET_MIB_INFO`, unknown for the unnamed `PHY_STAT_INFO` categories.
+
+Query `MCU_EXT_CMD_GET_MIB_INFO` for the counter offsets named in `mt7915/mcu.h:186`,
+`MIB_NON_WIFI_TIME` first, and sweep `MCU_EXT_CMD_PHY_STAT_INFO` categories past the five
+upstream names them.
+
+**What must be true:** the firmware answers the command at all on an MT7921U; supported
+indices return counters that grow with dwell time while unsupported ones are refused rather
+than answered with zeros (the `MIB counter index = %d not supported` string says refusal is
+implemented, but that it is *reachable* is the thing to confirm); and a non-Wi-Fi time
+counter reads higher near a known non-Wi-Fi emitter than on a quiet channel.
+
+**Out of scope:** any command that sets rather than gets. This sweep reads.
 
 ## Scope boundaries
 

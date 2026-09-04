@@ -105,6 +105,11 @@ SYMBOL_CLASSES = {
     ),
 }
 PRINTABLE = re.compile(rb"[\x20-\x7e]{%d,}" % MIN_STRING_LEN)
+# The MT7921 image carries __FILE__ paths from its own build tree, which map the firmware's
+# modules far better than symbol names do: wifi/core/wificore/rlm/rdm_phy.c is where the
+# rdmGetIpiHist and RDD strings come from. Matched loosely because the paths are relative,
+# absolute, and build-tree-relative in the same image.
+SOURCE_PATH = re.compile(r"[\w./-]*\w+\.[ch]\b")
 
 
 def entropy(blob: bytes) -> float:
@@ -172,6 +177,16 @@ UNREADABLE_REASONS = {
 }
 
 
+def source_files(strings: list[str]) -> list[str]:
+    """The firmware's own __FILE__ paths, deduplicated by basename-bearing full path."""
+    found = set()
+    for s in strings:
+        for hit in SOURCE_PATH.findall(s):
+            if "/" in hit or hit.count(".") == 1:
+                found.add(hit)
+    return sorted(found)
+
+
 def symbol_inventory(strings: list[str]) -> dict:
     """Group the RF-relevant strings by what class of instrument they name."""
     out = {}
@@ -215,6 +230,7 @@ def describe_region(region: dict, min_len: int) -> dict:
     region["kind"] = classify_region(feature_set, ent, len(strings), len(data))
     if region["kind"] in READABLE_KINDS:
         region["rf_symbols"] = symbol_inventory(strings)
+        region["source_files"] = source_files(strings)
     else:
         region["rf_symbols"] = None
         region["note"] = (
@@ -297,6 +313,9 @@ def print_report(results: list[dict]) -> None:
             for cls, info in (reg["rf_symbols"] or {}).items():
                 if info["count"]:
                     print(f"       {cls:<9} {info['count']:>3}  e.g. {info['samples'][0][:56]}")
+            src = reg.get("source_files") or []
+            if src:
+                print(f"       {'sources':<9} {len(src):>3}  e.g. {src[-1][:56]}")
         print()
 
 

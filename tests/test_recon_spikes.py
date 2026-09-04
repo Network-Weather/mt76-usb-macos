@@ -287,3 +287,19 @@ def test_the_default_window_contains_the_first_chains_histogram():
 def test_parse_window_rejects_misaligned_inverted_or_oversized_ranges(bad):
     with pytest.raises(argparse.ArgumentTypeError):
         ip.parse_window(bad)
+
+
+def test_source_files_extracts_the_firmwares_own_build_paths():
+    strings = [
+        "assert at wifi/core/wificore/rlm/rdm_phy.c line 210",
+        "mcu/coex/_core/conn_coex_cmm.c",
+        "no path here at all",
+    ]
+    found = ft.source_files(strings)
+    assert "wifi/core/wificore/rlm/rdm_phy.c" in found
+    assert "mcu/coex/_core/conn_coex_cmm.c" in found
+    assert len(found) == 2
+
+
+def test_source_files_ignores_a_bare_extension_without_a_stem():
+    assert ft.source_files(["ends in .c", "and .h too"]) == []
