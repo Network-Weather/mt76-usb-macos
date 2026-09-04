@@ -11,7 +11,7 @@ from scripts import dual_capture as dual
 
 def test_a_radio_argument_carries_its_address_channel_and_width():
     radio = dual.parse_radio("2:20=5GHz:132@80")
-    assert radio.address == "2:20"
+    assert radio.selector == "2:20"
     assert radio.band == "5GHz"
     assert radio.channel == 132
     assert radio.width == 80
@@ -98,11 +98,26 @@ def test_events_from_both_radios_share_the_timeline():
 def test_a_usb_id_selector_names_a_model_and_a_port_address_names_a_port():
     by_id = dual.parse_radio("0e8d:7961=5GHz:132@80")
     assert by_id.usb_id == "0e8d:7961"
-    assert by_id.address is None
 
     by_port = dual.parse_radio("2:21=5GHz:132@80")
     assert by_port.usb_id is None
-    assert by_port.address == "2:21"
+
+    # Neither is bound to an adapter until the inventory resolves it to one port.
+    assert by_id.port is None
+    assert by_port.port is None
+
+
+def test_a_usb_id_selector_is_accepted_in_either_case_and_matched_in_one():
+    # The inventory reports lowercase, so an uppercase selector that parses must also
+    # match rather than being rejected later as an adapter that is not attached.
+    assert dual.parse_radio("0E8D:7961=5GHz:132@80").usb_id == "0e8d:7961"
+    assert dual.parse_radio("0E8D:7961=5GHz:132@80").selector == "0e8d:7961"
+
+
+def test_a_radio_that_was_never_resolved_refuses_to_open_anything():
+    radio = dual.parse_radio("0e8d:7961=5GHz:132@80")
+    radio.run(dual.Timeline(None), duration=1.0, identify=False)
+    assert "never resolved" in radio.error
 
 
 @pytest.mark.parametrize("selector", ["alfa", "2", "0e8d:796", "2:", ":21", "0e8d-7961"])
@@ -124,12 +139,13 @@ def test_a_width_above_the_chips_limit_is_a_radio_error_not_a_quiet_capture(monk
         def __exit__(self, *exc):
             return False
 
-    monkeypatch.setattr(dual.m, "open_device", lambda **kwargs: FakeDevice())
+    monkeypatch.setattr(dual.m, "open_device_at", lambda port, **kwargs: FakeDevice())
     monkeypatch.setattr(
         dual.m, "load_firmware", lambda *a: pytest.fail("firmware must not be loaded")
     )
 
     radio = dual.parse_radio("0e8d:7961=6GHz:53@160")
+    radio.resolve("2:20")
     radio.run(dual.Timeline(None), duration=1.0, identify=False)
 
     assert radio.error is not None
@@ -143,7 +159,7 @@ def test_a_width_the_chip_supports_reaches_the_firmware_download(monkeypatch):
         MAX_WIDTH_MHZ = 160
 
     reached = []
-    monkeypatch.setattr(dual.m, "open_device", lambda **kwargs: FakeDevice())
+    monkeypatch.setattr(dual.m, "open_device_at", lambda port, **kwargs: FakeDevice())
     monkeypatch.setattr(dual.m, "firmware_dir", lambda: "firmware")
 
     def fake_load(chip, directory):
@@ -153,6 +169,7 @@ def test_a_width_the_chip_supports_reaches_the_firmware_download(monkeypatch):
     monkeypatch.setattr(dual.m, "load_firmware", fake_load)
 
     radio = dual.parse_radio("0846:9072=6GHz:53@160")
+    radio.resolve("2:9")
     radio.run(dual.Timeline(None), duration=1.0, identify=False)
 
     assert reached == ["mt7925"]
@@ -160,11 +177,12 @@ def test_a_width_the_chip_supports_reaches_the_firmware_download(monkeypatch):
 
 
 def test_one_radios_failure_is_recorded_and_does_not_raise(monkeypatch):
-    def explode(**kwargs):
+    def explode(port, **kwargs):
         raise OSError("adapter went away")
 
-    monkeypatch.setattr(dual.m, "open_device", explode)
+    monkeypatch.setattr(dual.m, "open_device_at", explode)
     radio = dual.parse_radio("0e8d:7961=5GHz:132@80")
+    radio.resolve("2:20")
     radio.run(dual.Timeline(None), duration=1.0, identify=False)
 
     assert radio.error == "OSError: adapter went away"

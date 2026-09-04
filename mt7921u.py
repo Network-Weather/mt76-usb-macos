@@ -2139,6 +2139,35 @@ def device_class_for(chip: str):
     raise UnsupportedDevice(f"no driver class for chip {chip!r}")
 
 
+def open_device_at(address: str, verbose: bool = False):
+    """Open exactly the adapter at this port address, consulting no environment.
+
+    open_device() falls back to $MT76_USB_ID and $MT76_USB_ADDR so a single-radio
+    command can be pointed at one adapter without changing code. A caller that has
+    already decided which adapter it wants must not inherit those: a variable left
+    exported from an earlier single-radio run would make one radio of a two-radio
+    capture fail to open even though the inventory had just found it.
+    """
+    matched = [
+        dev
+        for dev in usb.core.find(find_all=True)
+        if (dev.idVendor, dev.idProduct) in SUPPORTED_DEVICES and device_address(dev) == address
+    ]
+    if not matched:
+        raise UnsupportedDevice(f"no supported adapter at {address}")
+    if len(matched) > 1:
+        # A bus and device address identify one attached device, so this cannot happen
+        # while the enumeration is consistent. Refuse rather than pick.
+        raise UnsupportedDevice(f"{len(matched)} devices report the address {address}")
+    dev = matched[0]
+    chip = SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)]
+    return device_class_for(chip)(
+        verbose=verbose,
+        usb_id=f"{dev.idVendor:04x}:{dev.idProduct:04x}",
+        address=address,
+    )
+
+
 def open_device(usb_id: str | None = None, verbose: bool = False, address: str | None = None):
     """Return an unopened device object of the right class for the attached adapter.
 

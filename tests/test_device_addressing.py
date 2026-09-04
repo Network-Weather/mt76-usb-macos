@@ -141,3 +141,30 @@ def test_the_inventory_is_ordered_by_bus_then_device_address(attached):
         "2:3",
         "2:20",
     ]
+
+
+def test_open_device_at_ignores_the_environment_entirely(attached, monkeypatch):
+    # A selector left exported from a single-radio run must not reach a caller that has
+    # already resolved which adapter it wants, or one radio of a two-radio capture opens
+    # nothing while the inventory says the adapter is right there.
+    attached([FakeUsbDevice(ALFA, bus=2, address=20), FakeUsbDevice(A9000, bus=2, address=9)])
+    monkeypatch.setenv("MT76_USB_ID", "0e8d:7961")
+    monkeypatch.setenv("MT76_USB_ADDR", "2:20")
+
+    device = m.open_device_at("2:9")
+    assert device.CHIP == "mt7925"
+    assert device.address == "2:9"
+    assert device.usb_id == "0846:9072"
+
+
+def test_open_device_at_a_port_with_no_supported_adapter_says_so(attached):
+    attached([FakeUsbDevice(ALFA, bus=2, address=20)])
+
+    with pytest.raises(m.UnsupportedDevice) as raised:
+        m.open_device_at("2:9")
+    assert "2:9" in str(raised.value)
+
+
+def test_open_device_at_names_the_port_it_opened(attached):
+    attached([FakeUsbDevice(ALFA, bus=2, address=20)])
+    assert m.open_device_at("2:20").address == "2:20"

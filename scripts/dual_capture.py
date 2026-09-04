@@ -109,9 +109,14 @@ class Radio:
         self.label = f"{band}:{channel}@{width}"
         # A USB id names a model; a port address names where one is plugged in. Only the
         # second can separate two identical adapters, and only the first survives a
-        # re-enumeration, so a caller picks whichever its situation needs.
+        # re-enumeration, so a caller picks whichever its situation needs. Either way the
+        # selector is resolved to one port before the radio opens anything.
         self.usb_id = selector if USB_ID_RE.match(selector) else None
-        self.address = None if self.usb_id else selector
+        self.port: str | None = None
+
+    def resolve(self, port: str) -> None:
+        """Bind this radio to the one adapter its selector named."""
+        self.port = port
         self.counts = {
             "frames": 0,
             "off_channel": 0,
@@ -131,7 +136,12 @@ class Radio:
             self.error = f"{type(exc).__name__}: {exc}"
 
     def _run(self, timeline: Timeline, duration: float, identify: bool) -> None:
-        dev = m.open_device(usb_id=self.usb_id, address=self.address)
+        if self.port is None:
+            raise ValueError(f"radio {self.selector} was never resolved to an adapter")
+        # By port, and by nothing else. open_device() would fall back to $MT76_USB_ID and
+        # $MT76_USB_ADDR, and a variable left exported from a single-radio run would then
+        # make one of these two radios fail to open an adapter the inventory just listed.
+        dev = m.open_device_at(self.port)
         self.chip = dev.CHIP
         # The chip is only known once a device is chosen, so this cannot happen during
         # argument parsing. It happens before the firmware download because a width this
@@ -230,6 +240,9 @@ def parse_radio(text: str) -> Radio:
         raise argparse.ArgumentTypeError(
             f"--radio wants SELECTOR=BAND:CHANNEL[@WIDTH], got {text!r}"
         )
+    # The inventory reports USB ids in lowercase, so an accepted uppercase selector must
+    # be folded here rather than failing to match later. A port address is digits only.
+    selector = selector.lower()
     if not USB_ID_RE.match(selector) and not PORT_ADDRESS_RE.match(selector):
         raise argparse.ArgumentTypeError(
             f"{selector!r} is neither a USB id (0e8d:7961) nor a port address (2:21); "
@@ -316,6 +329,7 @@ def main() -> int:
                 f"at {port}; each radio needs a different one"
             )
         resolved[port] = radio.selector
+        radio.resolve(port)
 
     client = args.client.lower() if args.client else None
     timeline = Timeline(client)
