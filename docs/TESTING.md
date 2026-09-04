@@ -937,6 +937,15 @@ or neither recently (five). These are repeated-window opportunities, not unique
 packets, and must not be presented as a packet-loss estimator. Channel 149's
 initial dwell did not meet the recent-data criterion.
 
+## MT7925 bounded transmit (2026-09-04)
+
+The [MT7925 transmit report](MT7925_TRANSMIT.md) records source derivation, test bed,
+commands, acceptance criteria, and failures. Ten of ten controlled channel 36 /
+20 MHz OFDM probes from the A9000 were independently decoded by the MT7961 when
+matching their synthetic payload. Their source addresses were rewritten, so the
+earlier source-only matcher had falsely suggested no reception. TX status alone
+was not used as proof. The production MT7925 injection API remains unsupported.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
