@@ -229,6 +229,14 @@ def main() -> int:
                 f"{args.transmit * args.gap:.0f}s; --seconds is {args.seconds:g}"
             )
 
+    # center_channel returns None when the band does not have this control channel, and its
+    # contract is that callers fail rather than substitute one. Resolved once here so an
+    # impossible channel is refused before any adapter is opened or any firmware loaded,
+    # rather than each radio falling back to the control channel and dwelling on nothing.
+    center = m.center_channel(args.band, args.channel, 20)
+    if center is None:
+        parser.error(f"{args.band} has no 20 MHz channel {args.channel}")
+
     adapters = m.describe_supported_devices()
     if len(adapters) < 2:
         print(f"need two adapters, found {len(adapters)}", file=sys.stderr)
@@ -273,7 +281,6 @@ def main() -> int:
             dev.bringup(patch, ram, log=lambda *a: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            center = m.center_channel(args.band, args.channel, 20) or args.channel
             dev.tune(args.band, args.channel, center, 20)
             measure(dev, args.band, args.channel, args.seconds, results[entry["address"]], ready)
 
@@ -284,18 +291,18 @@ def main() -> int:
             dev.bringup(patch, ram, log=lambda *a: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            center = m.center_channel(args.band, args.channel, 20) or args.channel
             dev.tune(args.band, args.channel, center, 20)
-            # Wait until every receiver is tuned and entering its dwell, so the burst lands
-            # inside the window being measured rather than beside it.
-            ready.wait(timeout=READY_TIMEOUT_S)
             # The transmitting radio is the only one here that can read the counters, so it
-            # brackets its own burst. `cca_nav_tx` includes transmit time and `p_cca` does
-            # not, so the pair separates "the medium was busy" from "we made it busy".
+            # brackets its own burst. These are six synchronous MCU round trips: taken after
+            # the rendezvous they would delay the first frame by their whole duration, and on
+            # a short dwell the tail of the burst would fall outside the receivers' window --
+            # undercounting silently, which is the failure the rendezvous exists to prevent.
             before_counters = {
                 name: survey.read_mcu_offset(dev, offs)
                 for offs, name in mcs.MIB_OFFSETS_MT7921.items()
             }
+            # Everything slow is done; now meet the receivers and transmit immediately.
+            ready.wait(timeout=READY_TIMEOUT_S)
             started = time.monotonic()
             transmit(dev, args.transmit, tx_result, args.gap)
             if tx_result.get("sent") != args.transmit:
