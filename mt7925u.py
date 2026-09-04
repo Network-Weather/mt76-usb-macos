@@ -144,8 +144,10 @@ class Mt7925uDevice(m.Mt7921uDevice):
     WFSYS_RST_DELAY_S = 0.020
     WFSYS_NEED_STATUS_SEL = False
 
-    def __init__(self, verbose: bool = False, usb_id: str | None = None):
-        super().__init__(verbose=verbose, usb_id=usb_id)
+    def __init__(
+        self, verbose: bool = False, usb_id: str | None = None, address: str | None = None
+    ):
+        super().__init__(verbose=verbose, usb_id=usb_id, address=address)
         self.nic_caps: dict[int, bytes] = {}
         self.phy_cap: dict | None = None
 

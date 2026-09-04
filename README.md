@@ -100,7 +100,10 @@ terms and the one blob you must not fetch.
 ./.venv/bin/python scripts/retune_drops.py                    # frames lost per channel hop, counts only
 ./.venv/bin/python scripts/width_probe.py 5GHz:132:138:80 6GHz:53:47:160   # which widths decode; counts only
 ./.venv/bin/python scripts/roam_watch.py --find MySSID           # BSSIDs of one SSID with k/v/r flags
-./.venv/bin/python scripts/roam_watch.py --lock 5GHz:44 --client aa:bb:cc:dd:ee:ff
+./.venv/bin/python scripts/roam_watch.py --lock 5GHz:44 --width 80 --client aa:bb:cc:dd:ee:ff
+./.venv/bin/python scripts/dual_capture.py --list                # attached adapters, by port and USB id
+./.venv/bin/python scripts/dual_capture.py \
+    --radio 0e8d:7961=5GHz:132@80 --radio 0846:9072=6GHz:53@160  # two radios, one event log
 ```
 
 `scan.py` intentionally prints observed SSIDs and BSSIDs; treat its terminal output as

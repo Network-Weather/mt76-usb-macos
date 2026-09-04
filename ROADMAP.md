@@ -112,7 +112,7 @@ appear in the result. Tests must include a short bulk write, a stale or wrong-se
 an unsolicited event, and a stalled endpoint. Hot-unplug remains explicitly untested until
 exercised on hardware.
 
-### R16. Multiple adapters
+### R16. Multiple adapters (partly done)
 
 On 2026-09-02 a client moved through five APs on three bands in ten minutes while a single
 locked radio observed none of the transitions ([docs/TESTING.md](docs/TESTING.md)).
@@ -123,6 +123,15 @@ distinguished without relying on serial numbers appearing in output.
 Done when two reference adapters capture concurrently with per-device counters, a forced roam
 is observed on both source and target channels in one run, and the single-adapter path is
 unchanged.
+
+~~Concurrent capture with per-radio counters~~ (`scripts/dual_capture.py`, 2026-09-03): both
+adapters run in one process, each locked to its own band, channel, and width, merged into one
+event log on one clock, with a client's link addresses learned on either radio matched on both.
+An adapter is picked by USB id or by the port it is attached to, so two of the same model are
+separable without a serial number ([docs/TESTING.md](docs/TESTING.md#two-adapters-capturing-at-once-2026-09-03)).
+
+Remaining: a forced roam observed on both the source and the target channel in one run. That
+needs a client driven across a boundary, so it belongs with R15 rather than with the plumbing.
 
 ### ~~R22. MT7925U port for 160 MHz and Wi-Fi 7~~ (landed 2026-09-03)
 

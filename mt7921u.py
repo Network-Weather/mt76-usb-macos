@@ -294,19 +294,64 @@ def parse_usb_id(text: str) -> tuple[int, int]:
         raise ValueError(f"usb id must look like 0e8d:7961, got {text!r}") from exc
 
 
-def find_supported_devices(usb_id: str | None = None) -> list:
-    """Attached pyusb devices whose VID:PID is supported, optionally one exact ID.
+def device_address(dev) -> str:
+    """Where an adapter is plugged in, as "bus:address".
 
-    usb_id defaults to $MT76_USB_ID so a host with two adapters can pick one without
-    changing code. Returns pyusb device objects; nothing is opened or claimed.
+    Two adapters of the same model share a USB id, so the id cannot tell them apart.
+    Bus and device address are the port the adapter is attached to: they distinguish
+    identical units without reading a serial number, which the device treats as
+    identifying information and which this project keeps out of its output. The value
+    is not stable across a replug, which is why it names a port rather than a device.
+    """
+    return f"{dev.bus}:{dev.address}"
+
+
+def find_supported_devices(usb_id: str | None = None, address: str | None = None) -> list:
+    """Attached pyusb devices whose VID:PID is supported, optionally narrowed.
+
+    usb_id defaults to $MT76_USB_ID and address to $MT76_USB_ADDR, so a host with two
+    adapters can pick one without changing code. With two adapters of the same model,
+    only address separates them. Returns pyusb device objects; nothing is opened or
+    claimed.
     """
     wanted = usb_id or os.environ.get("MT76_USB_ID") or None
+    where = address or os.environ.get("MT76_USB_ADDR") or None
     keys = {parse_usb_id(wanted)} if wanted else set(SUPPORTED_DEVICES)
     found = []
     for dev in usb.core.find(find_all=True):
-        if (dev.idVendor, dev.idProduct) in keys:
-            found.append(dev)
+        if (dev.idVendor, dev.idProduct) not in keys:
+            continue
+        if where is not None and device_address(dev) != where:
+            continue
+        found.append(dev)
     return found
+
+
+def describe_supported_devices(usb_id: str | None = None) -> list[dict]:
+    """One record per attached supported adapter: where it is, what it is.
+
+    The inventory a caller needs to drive more than one adapter, and the only place
+    that has to know how an adapter is addressed.
+    """
+    return [
+        {
+            "address": device_address(dev),
+            "usb_id": f"{dev.idVendor:04x}:{dev.idProduct:04x}",
+            "chip": SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)],
+        }
+        for dev in find_supported_devices(usb_id)
+    ]
+
+
+def _ambiguous(candidates: list) -> str:
+    """The message for an open that matched more than one adapter."""
+    ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
+    where = ", ".join(device_address(d) for d in candidates)
+    return (
+        f"{len(candidates)} supported devices attached ({ids}); "
+        f"pass usb_id or set MT76_USB_ID to pick one, or address / MT76_USB_ADDR "
+        f"for two of the same model (attached at {where})"
+    )
 
 
 # usb.h: USB_TYPE_VENDOR = 0x40, USB_DIR_IN = 0x80
@@ -407,10 +452,13 @@ class Mt7921u:
     # new width.
     MAX_WIDTH_MHZ = 80
 
-    def __init__(self, verbose: bool = False, usb_id: str | None = None):
+    def __init__(
+        self, verbose: bool = False, usb_id: str | None = None, address: str | None = None
+    ):
         self.dev = None
         self.verbose = verbose
         self.usb_id = usb_id  # "vvvv:pppp" to pick one adapter; None = any supported
+        self.address = address  # "bus:addr" to pick between two of the same model
         self._claimed = []
         self.layout: UsbLayout | None = None
         # Endpoint roles. Defaults are the reference adapter's so an object built
@@ -429,16 +477,14 @@ class Mt7921u:
 
     def open(self) -> None:
         """Find one supported device, resolve its layout, claim the Wi-Fi interface."""
-        candidates = find_supported_devices(self.usb_id)
+        candidates = find_supported_devices(self.usb_id, self.address)
         if not candidates:
             wanted = self.usb_id or os.environ.get("MT76_USB_ID") or "any supported"
-            raise UnsupportedDevice(f"device not found (looked for {wanted})")
+            where = self.address or os.environ.get("MT76_USB_ADDR")
+            at = f" at {where}" if where else ""
+            raise UnsupportedDevice(f"device not found (looked for {wanted}{at})")
         if len(candidates) > 1:
-            ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
-            raise UnsupportedDevice(
-                f"{len(candidates)} supported devices attached ({ids}); "
-                "pass usb_id or set MT76_USB_ID to pick one"
-            )
+            raise UnsupportedDevice(_ambiguous(candidates))
         dev = candidates[0]
         layout = layout_from_pyusb(dev)
         if layout.chip != self.CHIP:
@@ -713,8 +759,10 @@ class Mt7921uMcu(Mt7921u):
     RXD_SEQ_OFFSET = RXD_SEQ_OFFSET
     RXD_STATUS_OFFSET = RXD_STATUS_OFFSET
 
-    def __init__(self, verbose: bool = False, usb_id: str | None = None):
-        super().__init__(verbose=verbose, usb_id=usb_id)
+    def __init__(
+        self, verbose: bool = False, usb_id: str | None = None, address: str | None = None
+    ):
+        super().__init__(verbose=verbose, usb_id=usb_id, address=address)
         self.msg_seq = 0
         self.evt_ep4 = False  # set once dma_rx_evt_ep4 has run
         # Counters for what mcu_wait throws away while hunting for a reply on the
@@ -2062,23 +2110,27 @@ def device_class_for(chip: str):
     raise UnsupportedDevice(f"no driver class for chip {chip!r}")
 
 
-def open_device(usb_id: str | None = None, verbose: bool = False):
+def open_device(usb_id: str | None = None, verbose: bool = False, address: str | None = None):
     """Return an unopened device object of the right class for the attached adapter.
 
     Use it as a context manager exactly like Mt7921uDevice(). With several supported
-    adapters attached, usb_id (or $MT76_USB_ID) picks one.
+    adapters attached, usb_id (or $MT76_USB_ID) picks one; between two adapters of the
+    same model, only address (or $MT76_USB_ADDR, "bus:addr") can, and the returned
+    object keeps it so it reopens the same port rather than whichever it finds.
     """
-    candidates = find_supported_devices(usb_id)
+    candidates = find_supported_devices(usb_id, address)
     if not candidates:
         wanted = usb_id or os.environ.get("MT76_USB_ID") or "any supported"
-        raise UnsupportedDevice(f"device not found (looked for {wanted})")
+        where = address or os.environ.get("MT76_USB_ADDR")
+        at = f" at {where}" if where else ""
+        raise UnsupportedDevice(f"device not found (looked for {wanted}{at})")
     if len(candidates) > 1:
-        ids = ", ".join(f"{d.idVendor:04x}:{d.idProduct:04x}" for d in candidates)
-        raise UnsupportedDevice(
-            f"{len(candidates)} supported devices attached ({ids}); "
-            "pass usb_id or set MT76_USB_ID to pick one"
-        )
+        raise UnsupportedDevice(_ambiguous(candidates))
     dev = candidates[0]
     chip = SUPPORTED_DEVICES[(dev.idVendor, dev.idProduct)]
     cls = device_class_for(chip)
-    return cls(verbose=verbose, usb_id=f"{dev.idVendor:04x}:{dev.idProduct:04x}")
+    return cls(
+        verbose=verbose,
+        usb_id=f"{dev.idVendor:04x}:{dev.idProduct:04x}",
+        address=device_address(dev),
+    )

@@ -15,10 +15,13 @@ least two APs on one SSID.
 
 - [ ] **R14/R15 hypothesis check, second attempt.** The first attempt (2026-09-02) locked one
   radio to one channel and saw none of five roams of an MLO client; the network's own
-  management log did. Next: watch the client's current 5 GHz link at 80 MHz with that log as
-  the reference, and add Multi-Link element parsing so all of the client's link addresses match.
-- [ ] **roam_watch --bw 80.** 80 MHz capture works on 5 GHz (146 decoded 80 MHz frames in 10 s);
-  the watcher and survey commands still configure 20 MHz (`sniff_to_pcap.py --width` exists).
+  management log did. Both named causes are fixed: ~~Multi-Link element parsing, so every link
+  address of the client matches~~ and ~~watching at the access point's own width~~. A second
+  radio can now hold the target channel (`scripts/dual_capture.py`). What remains is the run:
+  force a roam of a known client with the controller log as the reference, one radio on the
+  source channel and one on the target.
+- ~~**roam_watch --width.** The watcher takes 20/40/80/160 MHz, resolves the center channel from
+  the control channel, and refuses a width the attached chip has no evidence for.~~
 
 ## Build
 
