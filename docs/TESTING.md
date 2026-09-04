@@ -361,7 +361,8 @@ cannot establish radiation without an independent receiver. This is that receive
 - **Injection does not radiate on 5 GHz**, matching the C driver refusing to submit above
   2.4 GHz ([NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md)).
 - Every frame goes out at 1 Mbps CCK: `_build_txwi` programs `TX_RATE_1M_CCK` whatever band the
-  radio is tuned to, so 60 frames of 32 bytes is 26,880 µs of expected airtime.
+  radio is tuned to. A 32-byte frame goes on air as 36 bytes with the hardware-appended FCS,
+  so 60 of them is 28,800 µs of expected airtime.
 
 **Before the barrier existed** the same procedure recovered 151 and 152 of 300. The sender slept
 a fixed interval instead, which cannot place a burst inside another radio's dwell when the two
