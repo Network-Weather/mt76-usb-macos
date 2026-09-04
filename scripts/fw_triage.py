@@ -135,9 +135,14 @@ def in_code(addr: int) -> bool:
 def scan_dispatch_slots(data: bytes, cids: dict[int, str]) -> dict[int, list[tuple[int, int]]]:
     """Every 4-aligned {handler, cid} pair whose handler points into code.
 
-    Asymmetric evidence, and the asymmetry matters: a hit is weak (a plausible address may
-    sit beside a small integer by chance -- CHANNEL_SWITCH, a command known to work on this
-    hardware, produces nine), while zero hits across every region is a real absence claim.
+    Asymmetric evidence, and weaker than it looks in both directions. A hit may be chance
+    (CHANNEL_SWITCH, which works on this hardware, produces nine), and a genuine slot does not
+    mean the command is implemented: RX_AIRTIME_CTRL (0x4a) has exactly one slot and the
+    firmware still refuses it outright (measured 2026-09-03; see NEGATIVE_RESULTS.md). Zero
+    hits across every region remains a real absence claim, and it held for PHY_STAT_INFO.
+
+    To find out what a firmware actually implements, ask it: scripts/mcu_stats.py recognises
+    the dispatch-level refusal reply. This scan narrows the candidates; it does not settle them.
     """
     found: dict[int, list[tuple[int, int]]] = {c: [] for c in cids}
     for off in range(0, len(data) - 8, 4):

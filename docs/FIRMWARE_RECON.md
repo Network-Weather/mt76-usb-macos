@@ -266,8 +266,9 @@ Full detail and the "not ruled out" lists are in
 
 | | predicted | measured |
 |---|---|---|
-| `PHY_STAT_INFO` (0xad) | not implemented (no dispatch slot) | **confirmed** — all 16 categories return one identical prefix |
-| `GET_MIB_INFO` (0x5a) | implemented (slot at `0xe02767c0`) | dispatches, but returns a **zeroed echo** of the request |
+| `PHY_STAT_INFO` (0xad) | not implemented (no dispatch slot) | **confirmed** — refused, all 16 categories |
+| `GET_MIB_INFO` (0x5a) | implemented (slot at `0xe02767c0`) | **confirmed dispatched**, but returns a zeroed echo |
+| `RX_AIRTIME_CTRL` (0x4a) | implemented (has a slot) | **wrong** — refused outright |
 | MIB duration counters | should read occupancy | **all zero**, on every channel |
 
 The offline dispatch-table prediction held for `PHY_STAT_INFO`. Nothing else worked, and the
@@ -279,12 +280,42 @@ before any write, so `TXDUR_EN | RXDUR_EN` are already set at bring-up, and `MT_
 duration counters stand still. A counter that is not running reads zero through the MCU
 exactly as it does through the registers, which is why `GET_MIB_INFO` returns zeros too.
 
-**The likely cause is a command nobody sends.** `mt7915_mcu_init_rx_airtime()`
-(`mt7915/mcu.c:2330`) sends `MCU_EXT_CMD_RX_AIRTIME_CTRL` (0x4a) twice at init, setting
-`airtime_en` and `mibtime_en`. `mt792x`/mt7921 never calls it. The MT7921 firmware *does*
-implement cid 0x4a — the command map found its slot — so the capability is present and simply
-unarmed. Testing that means sending a SET command, which every spike here is scoped out of;
-it needs an explicit decision rather than a quiet scope expansion.
+### The refusal reply, and what it settles
+
+Sending `MCU_EXT_CMD_RX_AIRTIME_CTRL` (0x4a) — the command `mt7915_mcu_init_rx_airtime()`
+uses to arm airtime accounting, and which no mt7921 driver sends — returned
+`4a000000 fe000000`. Sixteen bytes: the echoed ext_cid, then `0xfe`.
+
+That turned out to be the more valuable result, because it is the firmware's
+**unsupported-command reply**, and it is calibrated in both directions:
+
+| command | reply | |
+|---|---|---|
+| `THERMAL_CTRL` (0x2c) | 1128 B, temperature 32 °C | implemented |
+| `EFUSE_ACCESS` (0x01) | 32 B, `valid=1` | implemented |
+| `SET_RADAR_TH` (0x7c) — no dispatch slot | `7c000000fe000000` | refused |
+| `SET_FEATURE_CTRL` (0x38) — no dispatch slot | `38000000fe000000` | refused |
+| `PHY_STAT_INFO` (0xad) — no dispatch slot | `ad000000fe000000` | refused |
+| `RX_AIRTIME_CTRL` (0x4a) — **has** a slot | `4a000000fe000000` | **refused** |
+| `GET_MIB_INFO` (0x5a) — has a slot | 40 B zeroed echo, *not* the refusal | dispatched |
+
+Two things follow, one of which corrects an earlier claim here.
+
+**A dispatch slot does not mean a command is implemented.** `RX_AIRTIME_CTRL` has exactly one
+slot — the same evidence strength as `GET_MIB_INFO` — and is refused at dispatch, before any
+handler runs. The command map narrows candidates; only the hardware settles them.
+`scripts/mcu_stats.py` now recognises the refusal, so this is asked rather than inferred.
+
+**`GET_MIB_INFO` is genuinely dispatched**, since it alone does not produce the refusal. Its
+handler runs and returns zeros. So the counters are dead behind a live handler, and the
+airtime-enable theory above is dead with it: the command that would arm them does not exist
+on this chip.
+
+What is left for the duration counters is no longer "send the enable". Untested candidates,
+in order: an MT7921-specific `GET_MIB_INFO` request layout (offsets 0, 1 and 6 reply while 87
+does not, so *some* index space is valid and the numbering is simply not either published
+scheme); a per-BSS or per-STA context that monitor mode never creates, which the counters may
+be scoped to; or the counters genuinely not being wired on this part.
 
 ## Scope boundaries
 

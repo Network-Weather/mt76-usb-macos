@@ -22,14 +22,15 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   *before* any write, so `TXDUR_EN | RXDUR_EN` (bits 8 and 9) are already set at bring-up.
   `MT_MIB_SDR3` at `+0x698` (FCS errors) moves freely between reads, so the MIB block is
   mapped, readable, and counting -- it is specifically the duration counters that do not run.
-- **Likely cause, not yet tested:** airtime accounting is armed by an MCU command that no
-  mt7921 driver sends. `mt7915_mcu_init_rx_airtime()` (mt7915/mcu.c:2330) sends
-  `MCU_EXT_CMD_RX_AIRTIME_CTRL` (0x4a) twice to set `airtime_en` and `mibtime_en`;
-  `mt792x`/mt7921 never calls it. The MT7921 firmware does implement cid 0x4a
-  (`scripts/fw_triage.py --command-map`), so the command exists on this chip.
-- **Not ruled out:** the RX_AIRTIME_CTRL enable above; a per-BSS or per-STA context that
-  monitor mode never creates, which the duration counters may be scoped to; a different
-  register select.
+- **The airtime-enable theory was tested and is wrong.** `mt7915_mcu_init_rx_airtime()`
+  (mt7915/mcu.c:2330) arms airtime accounting with `MCU_EXT_CMD_RX_AIRTIME_CTRL` (0x4a),
+  which no mt7921 driver sends. Sending it here, in both the bitwise-clear and
+  feature-enable forms, returns `4a000000 fe000000` -- the firmware's unsupported-command
+  reply. The command is refused at dispatch despite having a slot in the image's dispatch
+  table, so the capability is absent rather than merely unarmed.
+- **Not ruled out:** a per-BSS or per-STA context that monitor mode never creates, which the
+  duration counters may be scoped to; a different register select; the counters not being
+  wired on this part at all.
 - **Code:** `scripts/mib_survey.py`, reproducible from this tree. This supersedes the earlier
   entry, which recorded the same zero readings from an unshipped probe.
 - **Consequence:** frame counts and BSS Load from beacons remain the only utilization signals
@@ -51,11 +52,15 @@ and where the code that produced it lives. Hardware, firmware, and date come fro
   byte. The five categories named upstream behave no differently from the eleven unnamed
   ones, so the request is not being read. This matches the offline prediction: cid 0xad has
   no dispatch slot in any region of the firmware image.
+- **GET_MIB_INFO is dispatched, not refused.** It is the only one of these that does not
+  return the 16-byte `{cid, 0xfe}` unsupported-command reply, so its handler genuinely runs
+  and returns zeros. The refusal signature is calibrated in both directions: `THERMAL_CTRL`
+  (1128 B, 32 C) and `EFUSE_ACCESS` (32 B, valid=1) never produce it, while `SET_RADAR_TH`
+  (0x7c) and `SET_FEATURE_CTRL` (0x38), which have no dispatch slot, produce it exactly.
 - **Not ruled out:** a request layout for GET_MIB_INFO that differs from
   `struct mt7915_mcu_mib`; an MT7921-specific offset numbering that neither published scheme
-  covers (the 0/1/6 replies show *some* offsets are in range); the same RX_AIRTIME_CTRL
-  enable above, since a counter that is not running reads zero through the MCU exactly as it
-  does through the registers.
+  covers -- offsets 0, 1 and 6 reply while 87 produces no reply at all, so some index space is
+  valid and the numbering is simply not either published scheme.
 - **Code:** `scripts/mcu_stats.py`, reproducible from this tree.
 
 ## Noise floor reads zero

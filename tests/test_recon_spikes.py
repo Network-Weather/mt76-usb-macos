@@ -452,3 +452,32 @@ def test_one_identical_prefix_over_only_the_named_categories_is_not_enough():
     # categories than upstream names before calling it a stub.
     entries = [{"answered": True, "reply_prefix": "aa"} for _ in range(5)]
     assert not mcs.judge_phy_sweep(entries)["verdict"].startswith("stub")
+
+
+def test_the_refusal_signature_is_the_one_measured_on_hardware():
+    # 16 bytes: echoed ext_cid then 0xfe. Calibrated against controls in both directions.
+    assert mcs.is_refusal(bytes.fromhex("ad000000fe00000000000000f6d7e199"), 0xAD)
+    assert mcs.is_refusal(bytes.fromhex("7c000000fe000000") + bytes(8), 0x7C)
+
+
+def test_a_refusal_for_another_command_is_not_read_as_ours():
+    assert not mcs.is_refusal(bytes.fromhex("4a000000fe000000") + bytes(8), 0xAD)
+
+
+def test_a_real_reply_is_not_mistaken_for_a_refusal():
+    # GET_MIB_INFO's 40-byte zeroed echo is dispatched, not refused; length alone separates
+    # them, and a zero status word does too.
+    assert not mcs.is_refusal(bytes(40), 0x5A)
+    assert not mcs.is_refusal(bytes(16), 0x5A)  # right length, but status 0, not 0xfe
+
+
+def test_a_sweep_that_is_refused_throughout_is_reported_as_not_implemented():
+    entries = [
+        {"answered": True, "refused": True, "reply_prefix": "ad000000fe000000"} for _ in range(16)
+    ]
+    assert mcs.judge_phy_sweep(entries)["verdict"].startswith("not implemented")
+
+
+def test_a_partly_refused_sweep_is_not_reported_as_not_implemented():
+    entries = [{"answered": True, "refused": i > 0, "reply_prefix": f"{i:016x}"} for i in range(16)]
+    assert not mcs.judge_phy_sweep(entries)["verdict"].startswith("not implemented")

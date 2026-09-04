@@ -79,6 +79,27 @@ PHY_STATE_NAMES = {
 }
 PHY_CATEGORY_DEFAULT_MAX = 15
 
+# The firmware's "I do not implement this command" reply, measured on an MT7921U 2026-09-03
+# and calibrated against controls in both directions: exactly 16 bytes, the echoed ext_cid in
+# the first word and 0xfe in the second. THERMAL_CTRL (0x2c, 1128 bytes of real data) and
+# EFUSE_ACCESS (0x01, 32 bytes, valid=1) never produce it; SET_RADAR_TH (0x7c) and
+# SET_FEATURE_CTRL (0x38), neither of which has a dispatch slot in the image, produce it
+# exactly. It is a dispatch-level rejection, returned before any handler runs.
+#
+# Note what this cost: RX_AIRTIME_CTRL (0x4a) *has* a dispatch slot and is still refused, so
+# a slot in the table is not evidence the command is implemented. Only this reply is.
+MCU_UNSUPPORTED_STATUS = 0xFE
+MCU_REFUSAL_LEN = 16
+
+
+def is_refusal(body: bytes, cid: int) -> bool:
+    """Did the firmware reject this command id outright?"""
+    if len(body) != MCU_REFUSAL_LEN:
+        return False
+    echo, status = struct.unpack_from("<II", body, 0)
+    return echo == cid and status == MCU_UNSUPPORTED_STATUS
+
+
 # A counter that never moves across a dwell is either unimplemented or measuring something
 # static; either way it is not the airtime figure we are looking for.
 MIN_DWELL_S, MAX_DWELL_S = 1.0, 30.0
@@ -131,6 +152,13 @@ def query_mib(dev, band: int, offsets: list[int], timeout: int = 3000) -> dict:
     except (m.McuError, RuntimeError) as exc:
         return {"offsets": offsets, "error": str(exc), "values": {}}
     body = dev.reply_body(rxd)
+    if is_refusal(body, MCU_EXT_CMD_GET_MIB_INFO):
+        return {
+            "offsets": offsets,
+            "refused": True,
+            "values": {},
+            "error": "firmware does not implement GET_MIB_INFO",
+        }
     values = parse_mib_reply(body, band, offsets)
     result = {"offsets": offsets, "reply_bytes": len(body), "values": values}
     missing = [o for o in offsets if o not in values]
@@ -158,6 +186,7 @@ def query_phy_category(dev, band: int, category: int, timeout: int = 3000) -> di
     # fixed non-zero byte. So the shape of the reply is recorded and the judgement about
     # what it means is made across categories, not from one.
     entry["answered"] = True
+    entry["refused"] = is_refusal(body, MCU_EXT_CMD_PHY_STAT_INFO)
     entry["reply_bytes"] = len(body)
     entry["reply_prefix"] = body[:8].hex()
     entry["reply_head"] = body[:32].hex()
@@ -175,6 +204,15 @@ def judge_phy_sweep(entries: list[dict]) -> dict:
     answered = [e for e in entries if e["answered"]]
     if not answered:
         return {"verdict": "no category answered", "answered": 0, "distinct_prefixes": 0}
+    refused = [e for e in answered if e.get("refused")]
+    if len(refused) == len(answered):
+        return {
+            "verdict": "not implemented: every category got the firmware's unsupported-command "
+            "reply, which is returned before any handler runs",
+            "answered": len(answered),
+            "refused": len(refused),
+            "distinct_prefixes": len({e["reply_prefix"] for e in answered}),
+        }
     prefixes = {e["reply_prefix"] for e in answered}
     verdict = (
         "stub: every category returned an identical prefix, so the request is not read"
