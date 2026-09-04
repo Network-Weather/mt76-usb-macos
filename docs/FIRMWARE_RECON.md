@@ -443,19 +443,37 @@ MediaTek's `mt_wifi` headers list 127 `EXT_CMD_ID` values against mt76's 52
 that list against the dispatch tables in the MT7921 image: **57 of the 127 have a slot**. The
 measurement-relevant ones, with what hardware said where it was asked:
 
-| id | command | slot | hardware |
+| id | command | slot | hardware, asked 2026-09-03/04 |
 |---|---|---|---|
-| `0xa3` | `RDD_IPI_HIST_CTRL` | `0x00961422` | **accepted** — status 0, but emits no event yet |
-| `0x5a` | `GET_MIB_INFO` | `0xe02767c0` | **working** — live counters, see above |
-| `0x56` | `WIFI_SPECTRUM` | `0x009214c8` | not tried |
-| `0x70` | `EDCCA_CTRL` | `0x00955968` | not tried |
-| `0x3a` | `RDD_ON_OFF_CTRL` | `0x0095c90e` | not tried |
-| `0x9d` | `SET_RDM_RADAR_THRES` | `0x009616d0` | not tried |
-| `0xb2` | `SET_RDM_TEST_PATTERN` | `0xe027674c` | not tried |
-| `0x30` | `GET_TX_STATISTICS` | `0x009175b4` | not tried |
-| `0xb0` | `GET_STA_TX_STAT` | `0x00951f00` | not tried |
-| `0x1c` | `GET_TX_POWER` | `0x00967a0c` | not tried |
-| `0x4a` | `RX_AIRTIME_CTRL` | `0x009241a2` | **refused** — a slot is not implementation |
+| `0x5a` | `GET_MIB_INFO` | `0xe02767c0` | **working** — live counters, this chip's own numbering |
+| `0x2c` | `THERMAL_CTRL` | — | **working** — the driver uses it |
+| `0x01` | `EFUSE_ACCESS` | `0x0091837e` | **working** — the driver uses it |
+| `0xa3` | `RDD_IPI_HIST_CTRL` | `0x00961422` | accepted; returns the documented 56-byte histogram under QUERY, all bins zero |
+| `0x9d` | `SET_RDM_RADAR_THRES` | `0x009616d0` | accepted, status 0 |
+| `0x1c` | `GET_TX_POWER` | `0x00967a0c` | answers, but not the question — see below |
+| `0x3a` | `RDD_ON_OFF_CTRL` | `0x0095c90e` | **silent** — neither answered nor refused |
+| `0x56` | `WIFI_SPECTRUM` | `0x009214c8` | **silent** |
+| `0x4a` | `RX_AIRTIME_CTRL` | `0x009241a2` | refused |
+| `0x30` | `GET_TX_STATISTICS` | `0x009175b4` | refused |
+| `0xb0` | `GET_STA_TX_STAT` | `0x00951f00` | refused |
+| `0x70` | `EDCCA_CTRL` | `0x00955968` (null handler) | refused |
+| `0xad` | `PHY_STAT_INFO` | none | refused |
+| `0x7c`, `0x38` | radar threshold, feature control | none | refused |
+
+Three states, and the third is the one worth naming. **Refused** is a dispatch-level rejection
+with a known signature. **Silent** is neither: `RDD_ON_OFF_CTRL` and `WIFI_SPECTRUM` produce no
+reply at all, repeatably, on channels where every other command answers. Both are RDD-family
+commands, and `WIFI_SPECTRUM` is an opmode of `EXT_CMD_RF_TEST` (`OPERATION_WIFI_SPECTRUM = 4`)
+rather than a standalone command, so the likely explanation is that they require the firmware to
+be switched into RF-test mode first — a much larger state change than anything attempted here,
+and one that stops normal capture.
+
+`GET_TX_POWER` deserves its own note because "answered" flattered it. It replies eight bytes and
+is never refused, but the reply does not vary with the tuned band, the tuned channel, or the
+`u1PowerCtrlFormatId` field: it returns `04 00 24 00 …` whenever the requested channel is zero
+and `04 00 23 00 …` whenever it is not, and nothing else moves it. Whatever that is, it is not
+per-channel transmit power, and it is not used. A command that replies is not a command that
+answers, which is why the probe records the reply bytes rather than a verdict.
 
 Command names beyond those measured are not transcribed into this repository; the header they
 come from is proprietary. They are recorded here as observations about what the interface

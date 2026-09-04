@@ -57,6 +57,15 @@ PROBES = (
     (0x4A, "RX_AIRTIME_CTRL", bytes(136), False),
     (0xA3, "RDD_IPI_HIST_CTRL", struct.pack("<BBBBiIII", 12, 0, 0, 0, 0, 0, 0, 0), True),
     (0x70, "EDCCA_CTRL", struct.pack("<BBBB", 0, 0, 0, 0), False),
+    (0x1C, "GET_TX_POWER", struct.pack("<BBBB4x", 0, 0, 0, 0), True),
+    (0x30, "GET_TX_STATISTICS", bytes(8), True),
+    (0xB0, "GET_STA_TX_STAT", bytes(8), True),
+    (0x9D, "SET_RDM_RADAR_THRES", bytes(8), False),
+    # Both of these are silent rather than refused. WIFI_SPECTRUM is an opmode of
+    # EXT_CMD_RF_TEST rather than a standalone command, so it likely needs the firmware
+    # switched into RF-test mode, which stops normal capture.
+    (0x3A, "RDD_ON_OFF_CTRL", struct.pack("<BBBB4x", 1, 0, 0, 0), False),
+    (0x56, "WIFI_SPECTRUM", bytes(16), False),
 )
 TIMEOUT_MS = 2500
 
