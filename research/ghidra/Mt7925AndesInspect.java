@@ -21,7 +21,7 @@ public class Mt7925AndesInspect extends GhidraScript {
         return result;
     }
 
-    private String describe(PseudoDisassembler decoder, Address pc, byte[] data) throws Exception {
+    private String describe(PseudoDisassembler decoder, Address pc, byte[] data, boolean fromTable) throws Exception {
         long value = word(data);
         boolean add = (value & 0x307f) == 0x100b;
         boolean load = (value & 0x707f) == 0x202b;
@@ -45,7 +45,7 @@ public class Mt7925AndesInspect extends GhidraScript {
         PseudoInstruction ins = decoder.disassemble(pc, data);
         if (ins == null) return "UNDECODED";
         String result = ins.toString();
-        if ((value & 0x7f) == 0x6f) {
+        if (fromTable && (value & 0x7f) == 0x6f) {
             long immediate = bits(value, 21, 10) << 1 | bits(value, 20, 1) << 11
                 | bits(value, 12, 8) << 12 | bits(value, 31, 1) << 20;
             result += " [if EXEC.IT JAL: concatenated target=0x"
@@ -81,7 +81,7 @@ public class Mt7925AndesInspect extends GhidraScript {
                 // Bit 12 is outside the ten-bit permutation. Do not silently alias it.
                 if ((half & 0x1000) != 0) { println("UNRESOLVED extended table index " + pc); break; }
                 byte[] data = Arrays.copyOfRange(table, index * 4, index * 4 + 4);
-                println(pc + " candidate.table[" + index + "] => " + describe(decoder, pc, data));
+                println(pc + " candidate.table[" + index + "] => " + describe(decoder, pc, data, true));
                 pc = pc.add(2);
                 continue;
             }
@@ -89,7 +89,7 @@ public class Mt7925AndesInspect extends GhidraScript {
             if (pc.add(count).compareTo(end) > 0) break;
             byte[] data = new byte[4];
             currentProgram.getMemory().getBytes(pc, data, 0, count);
-            String description = describe(decoder, pc, data);
+            String description = describe(decoder, pc, data, false);
             println(pc + " " + description);
             if (description.equals("UNDECODED")) break;
             pc = pc.add(count);

@@ -9,6 +9,10 @@ calibrated claims by inference. Results below extend [station testmode](STATION_
 despite the encrypted container. Repeated entry reads establish RV32 startup, and
 a bounded instruction-table read supports an experimental Andes-style expansion.
 This does not yet establish a new measurement command or a complete decoder.
+Follow-up ROM startup establishes MT7925 GP `0x02212800`, corroborated by live
+registration-table pointers; decryption occurs between the pre-start and running
+read controls. One internal dispatcher constructs `0xc00000bb`, but its wire
+command mapping is not established and has not been guessed into a probe.
 
 **Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
 Startup exposes the EX9 table, and a GP candidate recovers meaningful string
