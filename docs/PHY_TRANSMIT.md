@@ -37,6 +37,29 @@ Indices1 and24 each receive4/4 one-stream HT probes in two fresh runs;
 index0 is weak. This is a bounded transmit-path control, not calibrated antenna
 selection, a power gain or restored RF health.
 
+### Higher modulation: accepted TX requests, no good-FCS high-rate receipt yet
+
+`--suite high-mcs --transmitter mt7925 --channel 6 --per-phase 4 --tx-timing`
+uses six phases at20MHz: HT8 / HT15 / HT8, then HE0 / HE11 / HE0, all with
+two streams. HT uses BCC/GI0; all three HE phases use LDPC/GI0/LTF1 so coding
+does not change within the HE triplet. The pinned Connac3 rate fields encode
+HT15 as`0x48f` and HE11/NSS2 as`0x60b`. The
+[HE-SU configuration reference](https://www.mathworks.com/help/wlan/ref/wlanhesuconfig.html)
+identifies HE11 as1024-QAM/5/6 and excludes BCC for MCS10/11; the helper
+therefore rejects HE11 without the tested LDPC/LTF combination.
+
+Two fresh24-frame runs receive **4/0/4/4/0/4** and **4/0/4/4/0/3** exact
+good-FCS frames. All24 TX statuses per run report the requested rate,
+single attempt, zero error bits and unchanged raw power36. HT15's64-QAM
+and HE11's1024-QAM requests are accepted, but neither high-rate phase has a
+verified payload receipt. That does not establish absence of RF energy or
+lack of chipset support. Receiver filtering, decoding failures and the weak
+current link remain relevant; these tests do not calibrate RSSI or link margin.
+Both alive checks and transmitter reloads pass. No power increase, association,
+aggregation or sustained throughput test was performed.
+
+[Sanitized high-MCS controls](../research/evidence/high-mcs-2026-09-05.json).
+
 ### First40MHz control: status width works, independent reception does not
 
 The later stable channel6 HT8/HE2SS narrow controls justified one bounded width

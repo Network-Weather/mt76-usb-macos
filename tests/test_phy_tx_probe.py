@@ -59,6 +59,21 @@ def test_timing_management_changes_only_word1_bit21():
     assert {code for _, code in p.TIMING_TYPE_RATES} == {0x488}
 
 
+def test_high_mcs_uses_explicit_two_stream_codes_and_valid_he_ldpc():
+    assert p.suite_rates("high-mcs", 6) == p.HIGH_MCS_RATES
+    assert [rate for _, rate in p.HIGH_MCS_RATES] == [0x488, 0x48F, 0x488, 0x600, 0x60B, 0x600]
+    writes = []
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925, rr=lambda _: 0, wr=lambda a, v: writes.append((a, v)))
+    p.program_rate(dev, 0x60B, ltf=1, ldpc=1)
+    assert (0x820D43B8, 0x60B) in writes
+    assert (0x820D43BC, 0x2010040) in writes
+    for ltf, ldpc in ((0, 0), (1, 0), (0, 1)):
+        with pytest.raises(ValueError, match="GI/LDPC/LTF"):
+            p.program_rate(dev, 0x60B, ltf=ltf, ldpc=ldpc)
+    with pytest.raises(ValueError, match="MT7925"):
+        p.descriptor(SimpleNamespace(CHIP=m.CHIP_MT7921), b"", 0, 0x60B)
+
+
 @pytest.mark.parametrize(
     ("chip", "code", "kind"),
     [("mt7921", 0x488, 1), ("mt7925", 0x80, 1), ("mt7925", 0x488, 2), ("mt7925", 0x488, True)],

@@ -162,10 +162,21 @@ STATUS_FORMAT_RATES = (
     ("ht8_format0_after", 0x488),
 )
 STATUS_FORMATS = (0, 1, 0)
+HIGH_MCS_RATES = (
+    ("ht8_before", 0x488),
+    ("ht15_64qam", 0x48F),
+    ("ht8_after", 0x488),
+    ("he0_ldpc_before", 0x600),
+    ("he11_1024qam", 0x60B),
+    ("he0_ldpc_after", 0x600),
+)
+HIGH_MCS_OPTIONS = ((0, 0), (0, 0), (0, 0), (0, 1), (0, 1), (0, 1))
+HIGH_MCS_LTF = (0, 0, 0, 1, 1, 1)
 HE_TABLE_SPATIAL_RATES = tuple(
     (name.replace("ht0", "he0"), 0x200) for name, _ in TABLE_SPATIAL_RATES
 )
 CONNAC3_CODING_CODES.update((0x240, 0x250))
+CONNAC3_CODING_CODES.update((0x48F, 0x60B))
 ALLOWED_RATE_CODES = {
     rate
     for _, rate in RATES
@@ -175,6 +186,7 @@ ALLOWED_RATE_CODES = {
     + STBC_RATES
     + HE_CODING_RATES
     + HE_ER_RATES
+    + HIGH_MCS_RATES
 }
 # Vendor gen4m 8fddb9d7 wlanAntPathFavorSelect: 0=WF0, 1=WF1,
 # 0x18=duplicated one-stream path. Connac2 TXD DW7 bits 15:11.
@@ -207,6 +219,7 @@ def suite_rates(suite, channel):
             "he-table-spatial",
             "tx-status-format",
             "timing-type",
+            "high-mcs",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -230,6 +243,7 @@ def suite_rates(suite, channel):
         "he-table-spatial": HE_TABLE_SPATIAL_RATES,
         "tx-status-format": STATUS_FORMAT_RATES,
         "timing-type": TIMING_TYPE_RATES,
+        "high-mcs": HIGH_MCS_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -316,6 +330,7 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0, spe_idx=None):
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
     allowed = {
+        0x60B: ((0, 1, 1),),
         0x488: ((0, 0, 0), (1, 0, 0), (0, 0, 1)),
         0x600: ((0, 0, 0), (1, 1, 0), (2, 2, 0), (0, 1, 0), (0, 0, 1), (0, 1, 1)),
         0x200: ((0, 0, 0), (0, 1, 0)),
@@ -576,6 +591,7 @@ def main():
             "he-table-spatial",
             "tx-status-format",
             "timing-type",
+            "high-mcs",
         ),
         default="baseline",
     )
@@ -616,6 +632,7 @@ def main():
             "he-table-spatial",
             "tx-status-format",
             "timing-type",
+            "high-mcs",
         )
         and args.transmitter != "mt7925"
     ):
@@ -754,11 +771,13 @@ def main():
                             "ht-table": HT_TABLE_OPTIONS,
                             "he-table": HE_TABLE_OPTIONS,
                             "bandwidth": WIDTH_OPTIONS,
+                            "high-mcs": HIGH_MCS_OPTIONS,
                         }.get(args.suite)
                         gi, ldpc = options[phase] if options else (0, 0)
                         ltfs = {
                             "he-table-spatial": (1,) * 6,
                             "bandwidth": WIDTH_LTF,
+                            "high-mcs": HIGH_MCS_LTF,
                             "he-table": HE_TABLE_LTF,
                             "he-coding-ltf": HE_CODING_LTF,
                             "he-er": HE_ER_LTF,
