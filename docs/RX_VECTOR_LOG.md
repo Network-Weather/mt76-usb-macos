@@ -164,6 +164,32 @@ vector writer has no visible address comparison in its record-copy path; the
 live negative controls are stronger evidence than the existence of a match slot.
 Do not infer the behavior of other receive modes or all match rules from rule0.
 
+## Normal channel preparation is sufficient without monitor enable
+
+`--rf-clean-prepare` reloads only the receiving radio after independent normal
+controls, then applies one named, existing preparation before RF-test entry:
+
+| Preparation | Normal commands after reload | Observed log count |
+|---|---|---|
+| `tune` | CHANNEL_SWITCH plus sniffer CONFIG, no sniffer enable | 4 |
+| `channel` | CHANNEL_SWITCH only | 5 |
+| `config` | sniffer CONFIG only, no sniffer enable | 5 |
+
+Each run had4/4 exact HT controls followed by four RF stimuli, and each returned
+three older HT records with nonzero CFO/SNR/RCPI fields. All cleanup passed.
+These controls distinguish normal channel preparation from enabling promiscuous
+MAC filters or the sniffer. Either individual channel-setting command sufficed
+in this setup; the combined `tune()` is not a single wire command. The earlier
+bare clean-entry control lacked all three and produced no useful RF samples.
+This identifies a practical preparation requirement, not every internal clock
+or calibration action performed by those commands.
+
+A further **tune-only matching→mismatching→matching** run repeated the filter
+negative: log counts5/4/4 and RX-OK10/4/4, with three HT records in the mismatch
+batch despite verified flags/hardware target. Thus inherited monitor filters or
+sniffer enable do not explain the missing source isolation.
+[Sanitized preparation evidence](../research/evidence/rx-vector-preparation-2026-09-05.json).
+
 ## Avoid a dead-end control
 
 The source-defined SET109 `SET_RXV_INDEX` packs group1,group2,band in bytes0,1,2.

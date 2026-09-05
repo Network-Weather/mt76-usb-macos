@@ -109,3 +109,39 @@ def test_clean_start_requires_filter_experiment_before_usb(monkeypatch):
     with pytest.raises(SystemExit) as exc:
         p.main()
     assert exc.value.code == 2
+
+
+@pytest.mark.parametrize(
+    ("preparation", "expected"),
+    [
+        ("bare", []),
+        ("channel", ["channel"]),
+        ("config", ["config"]),
+        ("tune", ["channel", "config"]),
+        ("full", ["monitor", "enable", "channel", "config"]),
+    ],
+)
+def test_clean_preparation_isolates_only_known_commands(preparation, expected):
+    calls = []
+
+    class Device:
+        def set_monitor_mode(self):
+            calls.append("monitor")
+
+        def set_sniffer(self, enabled):
+            assert enabled is True
+            calls.append("enable")
+
+        def set_chan_info(self, **kw):
+            assert kw == {"control_ch": 36, "center_ch": 36, "bw": 0, "band": 1}
+            calls.append("channel")
+
+        def config_sniffer(self, **kw):
+            assert kw == {"control_ch": 36, "center_ch": 36, "band_name": "5GHz", "bw": 0}
+            calls.append("config")
+
+    p.prepare_after_reload(Device(), preparation)
+    assert calls == expected
+    with pytest.raises(ValueError, match="unknown clean RF preparation"):
+        p.prepare_after_reload(Device(), "unknown")
+    assert calls == expected

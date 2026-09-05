@@ -11,6 +11,7 @@ Both radios are normally reloaded on exit. Explicit transmit opt-in required.
 TX/RX counters and the stopped log before four HE stimuli (16 packets total).
 --match-ta instead tests matching/mismatching/matching synthetic transmitter
 filters with three reset-separated RF batches (16 packets including controls).
+--rf-clean-prepare isolates known normal-RX prerequisites after a receiver reload.
 """
 
 import argparse
@@ -100,6 +101,19 @@ def match_ta_state(dev, source):
     }
 
 
+def prepare_after_reload(dev, preparation):
+    """Isolate the two existing tune() commands from filter/sniffer enable."""
+    if preparation not in ("bare", "tune", "channel", "config", "full"):
+        raise ValueError("unknown clean RF preparation")
+    if preparation == "full":
+        dev.set_monitor_mode()
+        dev.set_sniffer(True)
+    if preparation in ("tune", "full", "channel"):
+        dev.set_chan_info(control_ch=36, center_ch=36, bw=m.CMD_CBW_20MHZ, band=m.CHAN_BAND["5GHz"])
+    if preparation in ("tune", "full", "config"):
+        dev.config_sniffer(control_ch=36, center_ch=36, band_name="5GHz", bw=m.SNIFFER_BW_20)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
@@ -107,11 +121,14 @@ def main():
     experiment.add_argument("--rearm-he", action="store_true")
     experiment.add_argument("--match-ta", action="store_true")
     parser.add_argument("--rf-clean-start", action="store_true")
+    parser.add_argument("--rf-clean-prepare", choices=("bare", "tune", "channel", "config", "full"))
     args = parser.parse_args()
     if not args.acknowledge_experimental_transmit:
         parser.error("explicit transmit acknowledgment required")
     if args.rf_clean_start and not args.match_ta:
         parser.error("clean-start control requires --match-ta")
+    if args.rf_clean_start and args.rf_clean_prepare:
+        parser.error("choose one clean preparation control")
     out = {
         "tool": "rxv_log_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -123,6 +140,7 @@ def main():
         "rearm_he": args.rearm_he,
         "match_ta": args.match_ta,
         "rf_clean_start": args.rf_clean_start,
+        "rf_clean_prepare": args.rf_clean_prepare,
     }
     marker = b"\xdd\x0c\x02NW\x01" + os.urandom(8)
     frames = {i: controlled_frame(i) + marker for i in range(out["maximum_submissions"])}
@@ -251,9 +269,11 @@ def main():
                 out["normal_he_control"] = burst(4, he_code)
                 if not out["normal_he_control"]["exact_synthetic_frames"]:
                     raise RuntimeError("no independent HE control; skip RF experiment")
-            if args.rf_clean_start:
+            if args.rf_clean_start or args.rf_clean_prepare:
                 # Preserve independent controls but remove inherited sniffer configuration.
                 boot(0, monitor=False)
+                preparation = args.rf_clean_prepare or "bare"
+                prepare_after_reload(rx, preparation)
             rx.mcu_cmd_word(m.MCU_CE_CMD(1), struct.pack("<B3xII", 0, 1, 0), wait=False)
             time.sleep(0.2)
             for selector, value in (

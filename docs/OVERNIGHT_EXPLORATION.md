@@ -218,6 +218,19 @@ route, not permission or need to dump unrelated memory. Checkpoint: 620 tests pa
 
 ## Histogram compact setter: corrected layout is not enough
 
+### Later static correction: legacy CE ICAP setters are absent
+
+The public `rftest.h` names CE1 SET selectors80/81/82/83/84 as ICAP
+content/mode/start/size/trigger offset, and112 as ICAP ring control. These names
+do not imply implementation on this pinned MT7961 firmware. SET dispatch at
+`0x00931b2c` takes the selector's low byte. Selectors80..84 (also85) follow
+`0x00931c36 → 0x00931c44 → 0x00931c5e → 0x00931c6e → 0x00931c76`, then the
+default EX9 jump at`0x00931c7e` directly to the return at`0x00933110`.
+Selector112 similarly defaults via`0x00931d42..0x00931d52`. Neither route
+applies capture configuration. No live writes were needed to establish this.
+This closes the proposed legacy-setter alternative for this image, not the
+separately implemented EXT04 functions11/12/17 or other firmware builds.
+
 The actual IPI dispatcher is 0x009616d0, not the same-numbered internal table
 tag previously used as a shortcut. Its SET path passes the payload start to
 `rdmSetIpiHist` at 0x00961618. That function consumes bytes 0/1 as type/value,
