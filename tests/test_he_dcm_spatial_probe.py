@@ -6,7 +6,7 @@ import pytest
 from research import he_dcm_spatial_probe as p
 
 
-@pytest.mark.parametrize("code", [0x200, 0x210, 0x240, 0x250])
+@pytest.mark.parametrize("code", [0x200, 0x210, 0x240, 0x250, 0x260, 0x270])
 def test_spatial_he_rates_have_exact_source_fields(monkeypatch, code):
     writes = []
     dev = SimpleNamespace(
@@ -38,3 +38,18 @@ def test_twenty_frame_scope_and_brackets():
     assert len(p.PHASES) * 4 == 20
     assert p.PHASES[0][1] == p.PHASES[-1][1] == 0x200
     assert [code for _, code in p.PHASES[1:-1]] == [0x210, 0x240, 0x250]
+
+
+def test_upper106_scope_and_source_bit_differentials():
+    assert len(p.UPPER106_PHASES) * 4 == 20
+    codes = [code for _, code in p.UPPER106_PHASES]
+    assert codes[::2] == [0x240] * 3
+    assert codes[1] ^ codes[0] == 1 << 5
+    assert codes[3] ^ codes[1] == 1 << 4
+
+
+@pytest.mark.parametrize("code", [0x260, 0x270])
+@pytest.mark.parametrize("spe", [None, 0, 24])
+def test_upper106_rejects_other_spatial_indices_before_io(code, spe):
+    with pytest.raises(ValueError, match="spatial1"):
+        p.phy.program_rate(SimpleNamespace(CHIP=p.m.CHIP_MT7925), code, spe_idx=spe, ltf=1)

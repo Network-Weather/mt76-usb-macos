@@ -1,0 +1,761 @@
+{
+  "scope": "Upper106 HE-ER candidate prepared, but both runs abort on full-band ER prerequisite; no candidate transmissions",
+  "runs": [
+    {
+      "date_utc": "2026-09-05T22:51:14.999581+00:00",
+      "maximum_submissions": 20,
+      "channel": 6,
+      "width_mhz": 20,
+      "table_spatial_index": 1,
+      "gi": 0,
+      "ltf": 1,
+      "ldpc": 0,
+      "suite": "upper106",
+      "phases": [
+        {
+          "submitted": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "good_receipts": {
+            "0": {
+              "phy": {
+                "mode_name": "HE-ER-SU",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20,
+                "gi": 0,
+                "ldpc": false,
+                "dcm": false,
+                "stbc": false,
+                "ru_tones": 242,
+                "rate_mbps": 8.6
+              },
+              "sample_after_receipt_not_atomic": {
+                "word": "0x94bc4659",
+                "bytes_low_to_high": [
+                  89,
+                  70,
+                  188,
+                  148
+                ],
+                "signed8_candidates": [
+                  89,
+                  70,
+                  -68,
+                  -108
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -108,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "polls": [
+            {
+              "elapsed_s": 0.0000020419247448444366,
+              "sample": {
+                "word": "0x93bc4559",
+                "bytes_low_to_high": [
+                  89,
+                  69,
+                  188,
+                  147
+                ],
+                "signed8_candidates": [
+                  89,
+                  69,
+                  -68,
+                  -109
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -109,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.05246133403852582,
+              "sample": {
+                "word": "0x9abc5e59",
+                "bytes_low_to_high": [
+                  89,
+                  94,
+                  188,
+                  154
+                ],
+                "signed8_candidates": [
+                  89,
+                  94,
+                  -68,
+                  -102
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -102,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.10300870891660452,
+              "sample": {
+                "word": "0x92bc4459",
+                "bytes_low_to_high": [
+                  89,
+                  68,
+                  188,
+                  146
+                ],
+                "signed8_candidates": [
+                  89,
+                  68,
+                  -68,
+                  -110
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -110,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.15495379199273884,
+              "sample": {
+                "word": "0x9bbc5f59",
+                "bytes_low_to_high": [
+                  89,
+                  95,
+                  188,
+                  155
+                ],
+                "signed8_candidates": [
+                  89,
+                  95,
+                  -68,
+                  -101
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -101,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.20552991703152657,
+              "sample": {
+                "word": "0x94bc4659",
+                "bytes_low_to_high": [
+                  89,
+                  70,
+                  188,
+                  148
+                ],
+                "signed8_candidates": [
+                  89,
+                  70,
+                  -68,
+                  -108
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -108,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.25765591696836054,
+              "sample": {
+                "word": "0x99bc5d59",
+                "bytes_low_to_high": [
+                  89,
+                  93,
+                  188,
+                  153
+                ],
+                "signed8_candidates": [
+                  89,
+                  93,
+                  -68,
+                  -103
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -103,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.30827870895154774,
+              "sample": {
+                "word": "0x94bc4659",
+                "bytes_low_to_high": [
+                  89,
+                  70,
+                  188,
+                  148
+                ],
+                "signed8_candidates": [
+                  89,
+                  70,
+                  -68,
+                  -108
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -108,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.3599442499689758,
+              "sample": {
+                "word": "0x9bbc5f59",
+                "bytes_low_to_high": [
+                  89,
+                  95,
+                  188,
+                  155
+                ],
+                "signed8_candidates": [
+                  89,
+                  95,
+                  -68,
+                  -101
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -101,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.41147658391855657,
+              "sample": {
+                "word": "0x93bc4559",
+                "bytes_low_to_high": [
+                  89,
+                  69,
+                  188,
+                  147
+                ],
+                "signed8_candidates": [
+                  89,
+                  69,
+                  -68,
+                  -109
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -109,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.46331683406606317,
+              "sample": {
+                "word": "0x9abc5e59",
+                "bytes_low_to_high": [
+                  89,
+                  94,
+                  188,
+                  154
+                ],
+                "signed8_candidates": [
+                  89,
+                  94,
+                  -68,
+                  -102
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -102,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.5166480839252472,
+              "sample": {
+                "word": "0x93bc4559",
+                "bytes_low_to_high": [
+                  89,
+                  69,
+                  188,
+                  147
+                ],
+                "signed8_candidates": [
+                  89,
+                  69,
+                  -68,
+                  -109
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -109,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.5694161250721663,
+              "sample": {
+                "word": "0x95bc4759",
+                "bytes_low_to_high": [
+                  89,
+                  71,
+                  188,
+                  149
+                ],
+                "signed8_candidates": [
+                  89,
+                  71,
+                  -68,
+                  -107
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -107,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            }
+          ],
+          "attempts": 462,
+          "after": {
+            "word": "0x91bc4359",
+            "bytes_low_to_high": [
+              89,
+              67,
+              188,
+              145
+            ],
+            "signed8_candidates": [
+              89,
+              67,
+              -68,
+              -111
+            ],
+            "firmware_instantaneous_fields": {
+              "inst_ib_raw_s8": -111,
+              "inst_wb_raw_s8": -68
+            }
+          },
+          "name": "er_full_before",
+          "rate_code": "0x240",
+          "indexed_table": [
+            "0x240",
+            "0x10080"
+          ]
+        }
+      ],
+      "error_type": "ValueError",
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T22:51:49.291073+00:00",
+      "maximum_submissions": 20,
+      "channel": 6,
+      "width_mhz": 20,
+      "table_spatial_index": 1,
+      "gi": 0,
+      "ltf": 1,
+      "ldpc": 0,
+      "suite": "upper106",
+      "phases": [
+        {
+          "submitted": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "good_receipts": {},
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 576,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "polls": [
+            {
+              "elapsed_s": 0.0000014158431440591812,
+              "sample": {
+                "word": "0x9abc5e59",
+                "bytes_low_to_high": [
+                  89,
+                  94,
+                  188,
+                  154
+                ],
+                "signed8_candidates": [
+                  89,
+                  94,
+                  -68,
+                  -102
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -102,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.05145995784550905,
+              "sample": {
+                "word": "0x90bc4259",
+                "bytes_low_to_high": [
+                  89,
+                  66,
+                  188,
+                  144
+                ],
+                "signed8_candidates": [
+                  89,
+                  66,
+                  -68,
+                  -112
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -112,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.10215308284386992,
+              "sample": {
+                "word": "0x9abf5e5c",
+                "bytes_low_to_high": [
+                  92,
+                  94,
+                  191,
+                  154
+                ],
+                "signed8_candidates": [
+                  92,
+                  94,
+                  -65,
+                  -102
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -102,
+                  "inst_wb_raw_s8": -65
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.1549160408321768,
+              "sample": {
+                "word": "0x92bc4459",
+                "bytes_low_to_high": [
+                  89,
+                  68,
+                  188,
+                  146
+                ],
+                "signed8_candidates": [
+                  89,
+                  68,
+                  -68,
+                  -110
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -110,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.20721054100431502,
+              "sample": {
+                "word": "0x92bc4459",
+                "bytes_low_to_high": [
+                  89,
+                  68,
+                  188,
+                  146
+                ],
+                "signed8_candidates": [
+                  89,
+                  68,
+                  -68,
+                  -110
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -110,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.25809483299963176,
+              "sample": {
+                "word": "0x93bc4559",
+                "bytes_low_to_high": [
+                  89,
+                  69,
+                  188,
+                  147
+                ],
+                "signed8_candidates": [
+                  89,
+                  69,
+                  -68,
+                  -109
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -109,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.3094086248893291,
+              "sample": {
+                "word": "0x92bc4459",
+                "bytes_low_to_high": [
+                  89,
+                  68,
+                  188,
+                  146
+                ],
+                "signed8_candidates": [
+                  89,
+                  68,
+                  -68,
+                  -110
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -110,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.36236720788292587,
+              "sample": {
+                "word": "0x95bc4759",
+                "bytes_low_to_high": [
+                  89,
+                  71,
+                  188,
+                  149
+                ],
+                "signed8_candidates": [
+                  89,
+                  71,
+                  -68,
+                  -107
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -107,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.41477662487886846,
+              "sample": {
+                "word": "0x93bc4559",
+                "bytes_low_to_high": [
+                  89,
+                  69,
+                  188,
+                  147
+                ],
+                "signed8_candidates": [
+                  89,
+                  69,
+                  -68,
+                  -109
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -109,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.4685911249835044,
+              "sample": {
+                "word": "0x93bc4559",
+                "bytes_low_to_high": [
+                  89,
+                  69,
+                  188,
+                  147
+                ],
+                "signed8_candidates": [
+                  89,
+                  69,
+                  -68,
+                  -109
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -109,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.5212198328226805,
+              "sample": {
+                "word": "0x97bc4959",
+                "bytes_low_to_high": [
+                  89,
+                  73,
+                  188,
+                  151
+                ],
+                "signed8_candidates": [
+                  89,
+                  73,
+                  -68,
+                  -105
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -105,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            },
+            {
+              "elapsed_s": 0.5728254579007626,
+              "sample": {
+                "word": "0x93bc4559",
+                "bytes_low_to_high": [
+                  89,
+                  69,
+                  188,
+                  147
+                ],
+                "signed8_candidates": [
+                  89,
+                  69,
+                  -68,
+                  -109
+                ],
+                "firmware_instantaneous_fields": {
+                  "inst_ib_raw_s8": -109,
+                  "inst_wb_raw_s8": -68
+                }
+              }
+            }
+          ],
+          "attempts": 558,
+          "after": {
+            "word": "0x95bc4759",
+            "bytes_low_to_high": [
+              89,
+              71,
+              188,
+              149
+            ],
+            "signed8_candidates": [
+              89,
+              71,
+              -68,
+              -107
+            ],
+            "firmware_instantaneous_fields": {
+              "inst_ib_raw_s8": -107,
+              "inst_wb_raw_s8": -68
+            }
+          },
+          "name": "er_full_before",
+          "rate_code": "0x240",
+          "indexed_table": [
+            "0x240",
+            "0x10080"
+          ]
+        }
+      ],
+      "error_type": "ValueError",
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    }
+  ]
+}

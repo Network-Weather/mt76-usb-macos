@@ -56,3 +56,31 @@ def test_negative_offset_preserves_all_other_descriptor_bits(monkeypatch):
 def test_collection_rejects_other_packet_counts():
     with pytest.raises(ValueError, match="four packets"):
         p.acquire(None, None, {})
+
+
+@pytest.mark.parametrize("extras", [False, True])
+@pytest.mark.parametrize("width", [0, 1])
+def test_er106_raw_width_and_selector_remain_separate(extras, width):
+    r = p.phy.legacy_rx
+    flags = r.MT_RXD1_NORMAL_GROUP_3
+    if extras:
+        flags |= r.MT_RXD1_NORMAL_GROUP_4 | r.MT_RXD1_NORMAL_GROUP_1 | r.MT_RXD1_NORMAL_GROUP_2
+    offset = 64 if extras else 24
+    raw = bytearray(offset + 8)
+    struct.pack_into("<II", raw, 0, len(raw) | (2 << 27), flags)
+    struct.pack_into("<I", raw, offset, (9 << 24) | (width << 12) | 0x30)
+    assert p.legacy_rate_bits(raw) == {
+        "rate_low7": 0x30,
+        "width_code": width,
+        "mode_code": 9,
+        "dcm_bit4": True,
+        "er106_bit5": True,
+    }
+    assert p.legacy_rate_bits(raw[:-1]) is None
+    struct.pack_into("<H", raw, 0, offset + 4)
+    assert p.legacy_rate_bits(raw) is None
+
+
+def test_absent_vector_is_unknown():
+    assert p.legacy_rate_bits(b"") is None
+    assert p.legacy_rate_bits(struct.pack("<6I", 24, 0, 0, 0, 0, 0)) is None

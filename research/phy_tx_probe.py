@@ -177,6 +177,9 @@ HE_TABLE_SPATIAL_RATES = tuple(
 )
 CONNAC3_CODING_CODES.update((0x240, 0x250))
 CONNAC3_CODING_CODES.update((0x48F, 0x60B))
+# Pinned gen4m connac3.h: HE-ER mode9, upper106-tone selector bit5,
+# optional DCM bit4. Exercised only by the bounded explicit-spatial probe.
+CONNAC3_CODING_CODES.update((0x260, 0x270))
 ALLOWED_RATE_CODES = {
     rate
     for _, rate in RATES
@@ -188,6 +191,7 @@ ALLOWED_RATE_CODES = {
     + HE_ER_RATES
     + HIGH_MCS_RATES
 }
+ALLOWED_RATE_CODES.update((0x260, 0x270))
 # Vendor gen4m 8fddb9d7 wlanAntPathFavorSelect: 0=WF0, 1=WF1,
 # 0x18=duplicated one-stream path. Connac2 TXD DW7 bits 15:11.
 # Keep DW6 selection bit 10 at the existing zero, as mt7915 test descriptors do.
@@ -319,7 +323,7 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0, spe_idx=None):
         raise ValueError("rate outside bounded experiment")
     if spe_idx is not None and (
         dev.CHIP != m.CHIP_MT7925
-        or code not in (0x80, 0x200, 0x210, 0x240, 0x250)
+        or code not in (0x80, 0x200, 0x210, 0x240, 0x250, 0x260, 0x270)
         or type(spe_idx) is not int
         or spe_idx not in (0, 1, 24)
         or gi
@@ -329,7 +333,11 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0, spe_idx=None):
         raise ValueError("table spatial experiment is MT7925 HT0/HE0/HE-ER0 SPE0/1/24 only")
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
+    if code in (0x260, 0x270) and spe_idx != 1:
+        raise ValueError("upper106-tone experiment requires explicit spatial1")
     allowed = {
+        0x260: ((0, 1, 0),),
+        0x270: ((0, 1, 0),),
         0x60B: ((0, 1, 1),),
         0x488: ((0, 0, 0), (1, 0, 0), (0, 0, 1)),
         0x600: ((0, 0, 0), (1, 1, 0), (2, 2, 0), (0, 1, 0), (0, 0, 1), (0, 1, 1)),

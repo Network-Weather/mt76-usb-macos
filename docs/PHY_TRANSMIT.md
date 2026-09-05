@@ -358,6 +358,34 @@ beyond normal bringup/tuning, power increase or unknown-field sweep occurs.
 [Sanitized indexed-table, packet and scalar observations](../research/evidence/he-dcm-explicit-spatial-2026-09-05.json)
 retain misses and weak controls; signal-register polling remains non-atomic.
 
+#### Upper106-tone candidate: prerequisites fail before candidate transmission
+
+Pinned gen4m `nic_connac3x.h` defines rate bit5 as the106-tone selector;
+`wlan_def.h` names `RATE_HE_ER_TONE_106_MCS_0` and `nic_tx.c` selects it
+for the corresponding ER mode. This is a named format selector, not an
+unknown-bit sweep. The [HE configuration reference](https://www.mathworks.com/help/wlan/ref/wlanhesuconfig.html)
+restricts upper106-tone use to20MHz ER/MCS0.
+
+`he_dcm_spatial_probe.py --upper106 --acknowledge-experimental-transmit`
+prepares five phases: full-band ER / upper106 / full-band ER / upper106-DCM /
+full-band ER. Rate codes240/260/240/270/240 retain explicit SPE1,
+GI0/LTF1/BCC and unchanged power. Indexed readback and the two-good-control
+prerequisite remain mandatory;20 submissions is an upper bound, not a target.
+
+Two fresh attempts receive only1/4 and0/4 in the first full-band ER control.
+Both abort immediately, **before programming or transmitting either candidate**.
+All eight submitted control packets have TX status; both radios reload after
+each run. The declining control result is not a negative upper106 result and
+does not establish chipset support, RF health, or a cause of the weak link.
+[Both failed prerequisites](../research/evidence/he-upper106-prerequisites-2026-09-05.json)
+are retained. No candidate readback or independent106-tone receipt is claimed.
+
+The probe additionally preserves the old receiver's raw P-RXV mode, width and
+rate-selector bits separately from derived bandwidth/RU/rate fields. Pinned
+mt76 `mt76_connac_mac_fill_rx_rate` treats width code1 plus ER106 bit5 as a
+106-tone RU, not ordinary40MHz. Existing Python/C interpretation is unchanged;
+no live candidate reception yet validates how this encoding appears here.
+
 ### 2.4GHz follow-up: usable forward direction, reverse still unverified
 
 `--suite lowband --channel 1 --per-phase 4` uses six bounded phases at20MHz:

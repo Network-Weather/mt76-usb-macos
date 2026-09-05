@@ -5,6 +5,12 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Upper106-tone ER selector has a guarded probe, not a live capability claim:**
+[Two fresh prerequisites fail](PHY_TRANSMIT.md#upper106-tone-candidate-prerequisites-fail-before-candidate-transmission)
+at1/4 and0/4 full-band ER receipts. Neither candidate rate is programmed or
+transmitted. All eight control statuses and both-radio reloads pass. Source
+bit5 and raw RX width/selector preservation are documented; no guessed fields.
+
 **Explicit spatial index1 extends verified HE-ER transmission; DCM still unreceived:**
 [Two bounded twenty-frame runs](PHY_TRANSMIT.md#explicit-spatial-index1-receives-er-frames-but-dcm-remains-unvalidated)
 receive3/4 and2/4 exact ER payloads. Indexed table readback matches every

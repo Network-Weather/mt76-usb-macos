@@ -48,6 +48,39 @@ def sample(dev):
     return fields(dev.rr(REGISTER))
 
 
+def legacy_rate_bits(raw):
+    """Scalar P-RXV encoding only, called after exact own good-FCS matching.
+
+    Preserve width code independently of its interpretation for HE-ER106.
+    No opaque vector, packet bytes or ambient identifiers leave this helper.
+    """
+    if len(raw) < 24:
+        return None
+    dw0, flags = struct.unpack_from("<II", raw)
+    size = dw0 & 65535
+    r = phy.legacy_rx
+    if not 24 <= size <= len(raw) or not flags & r.MT_RXD1_NORMAL_GROUP_3:
+        return None
+    offset = 24
+    for bit, length in (
+        (r.MT_RXD1_NORMAL_GROUP_4, 16),
+        (r.MT_RXD1_NORMAL_GROUP_1, 16),
+        (r.MT_RXD1_NORMAL_GROUP_2, 8),
+    ):
+        if flags & bit:
+            offset += length
+    if offset + 8 > size:
+        return None
+    word = struct.unpack_from("<I", raw, offset)[0]
+    return {
+        "rate_low7": word & 127,
+        "width_code": (word >> 12) & 7,
+        "mode_code": (word >> 24) & 15,
+        "dcm_bit4": bool(word & (1 << 4)),
+        "er106_bit5": bool(word & (1 << 5)),
+    }
+
+
 def prepared(dev, sequence, nonce, offset):
     if type(offset) is not int or offset not in (0, -4, -8):
         raise ValueError("only zero or negative-four/eight TX offset")
@@ -112,9 +145,12 @@ def acquire(tx, rx, packets):
                                 "ldpc",
                                 "dcm",
                                 "stbc",
+                                "ru_tones",
+                                "rate_mbps",
                             )
                         },
                         "sample_after_receipt_not_atomic": sample(rx),
+                        "legacy_prxv_encoding": legacy_rate_bits(raw),
                     }
     return {
         "submitted": submitted,
