@@ -72,6 +72,32 @@ alignment and more trustworthy activity windows. An unknown offset still
 absorbs startup skew, fixed processing latency and propagation. It must never
 be converted to meters or interpreted as an RTT measurement.
 
+## Independent clock-reference frontier
+
+The pinned driver's
+[`mt792x_get_tsf`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt792x_core.c#L243)
+provides a source-defined OMAC0/band0 TSF snapshot: OR3 into LPON_TCR0
+`0x820eb0a8`, then read UTTR0/1 at`0x820eb080/84`. This is the software-read
+mode, **not** SW_WRITE mode1; neither timestamp data register is written.
+The corresponding register fields are in
+[`mt792x_regs.h`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt792x_regs.h#L70).
+
+An initial test incorrectly required the low mode bits to self-clear. The
+diagnostic repeat shows control`0x01640003` and both timestamp words zero.
+Upstream repeatedly ORs3 and does not specify self-clearing behavior; retained
+mode3 is therefore accepted, not called a busy/error state. With that check
+corrected, six snapshots50ms apart on **each** radio all return64-bit zero.
+The control remains in read mode3. Both alive checks and normal reloads pass.
+
+This OMAC0 snapshot is **not an advancing reference clock in the current
+unassociated monitor setup**. It does not establish that the packet clocks
+are zero, that every TSF instance is unavailable, or that a TSF setter/active
+BSS is needed. No BSS activation, TSF setter or clock-enable sweep was attempted.
+`research.tsf_snapshot.snapshot` preserves the small source-defined read recipe
+and host-call brackets, with invalid-bus/mode checks. A retained read selector
+is not claimed to have been cleared by reload; no timestamp value was set.
+[Sanitized snapshot/diagnostic evidence](../research/evidence/tsf-snapshot-2026-09-05.json).
+
 ## Reproduce the offline check
 
 ### Preamble-only control strengthens the relative-latch result
