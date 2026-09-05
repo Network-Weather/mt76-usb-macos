@@ -21,8 +21,9 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 ## Priority decision, 2026-09-04
 
-The selected sprint is **R30: C acquisition parity with the Python research baseline**,
-now implemented, qualified, and merged into `main`.
+R30, C acquisition parity, is implemented, qualified, and merged into `main`.
+The selected sprint is now **R5: continuous acquisition**, with bounded single-owner
+Python/C sessions; see [the session contract](docs/CONTINUOUS_ACQUISITION.md).
 This is an instrument for network interrogation and bounded radio experiments, not
 baseline connectivity. A proper networking driver is a durable non-goal, not a
 deferred implementation project. R21 is a deferred iPad survey test spike; no iPad
@@ -93,6 +94,12 @@ not corrupt output; and queue depth, frames dropped (including frames dropped du
 USB errors, and current channel are observable. Cold boot, warm reattach, and recovery must be
 distinct transitions; a warm path must drain or classify buffered RX without accidentally
 accepting a stale MCU response.
+
+Implementation is underway on `feat/continuous-acquisition`. Short Python/C hardware runs
+pass on both reference radios; multi-hour soak is not yet qualified. The first API requires
+explicit fresh bring-up and refuses warm adoption rather than accepting uncertain state.
+It removes deliberate command-time frame discards, not physical RF retune blind intervals;
+bounded consumer queues may still overflow, with explicit counters.
 
 ### R15. Channel lock, follow mode, and the roaming event log
 

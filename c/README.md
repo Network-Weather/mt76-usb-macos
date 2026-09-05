@@ -4,6 +4,12 @@ A userspace monitor-mode driver and hardware smoke validator for the MediaTek MT
 
 ## Research parity status (2026-09-04)
 
+The additive [continuous-session API](../docs/CONTINUOUS_ACQUISITION.md) in
+`mt76_session.h` supplies a single USB-owning worker, bounded frame/event queues,
+serialized command callbacks, and explicit failure/stop state. `mt76_session_probe`
+qualifies passive capture with periodic CCA reads and retunes; it has no transmit path.
+Stop and join the session before closing the device or freeing callback memory.
+
 C acquisition parity is implemented and hardware-qualified for the measured
 instrument subset. [Dated results](../docs/TESTING.md#native-c-acquisition-parity-2026-09-04)
 include 554 offline tests, both 43-channel capture sweeps, tri-band timestamp/MIB

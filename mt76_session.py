@@ -85,6 +85,7 @@ class AcquisitionSession:
         self.error = None
         self.epoch_ns = 0
         self.generation = 0
+        self.requested_channel = None
         self.transitioning = False
         self.deadline = None
         self.worker = None
@@ -97,6 +98,7 @@ class AcquisitionSession:
         if not getattr(self.dev, "_session_ready", False) or not self.dev.evt_ep4:
             raise SessionError("explicit fresh bringup required before session start")
         self.epoch_ns = time.monotonic_ns()
+        self.requested_channel = getattr(self.dev, "_capture_channel", None)
         self.dev._session = self
         self.dev._session_ready = False
         self.state = "running"
@@ -184,6 +186,7 @@ class AcquisitionSession:
                 "error": self.error,
                 "epoch_ns": self.epoch_ns,
                 "channel_generation": self.generation,
+                "requested_channel": self.requested_channel,
                 "frame_depth": len(self.frames),
                 "event_depth": len(self.events),
                 "counts": dict(self.counts),
@@ -210,6 +213,7 @@ class AcquisitionSession:
         with self.condition:
             self.error = message
             self.state = "failed"
+            self.requested_channel = None
             self.stop_event.set()
             self.condition.notify_all()
 
@@ -294,12 +298,17 @@ class AcquisitionSession:
                     continue
                 self.check_owner()
                 self.io_timeout(self.poll_ms)
-                self.transitioning = retune
+                with self.condition:
+                    self.transitioning = retune
+                    if retune:
+                        self.requested_channel = None
                 result = operation(self.dev)
                 self.io_timeout(self.poll_ms)
-                if retune:
-                    self.generation += 1
-                self.transitioning = False
+                with self.condition:
+                    if retune:
+                        self.generation += 1
+                        self.requested_channel = getattr(self.dev, "_capture_channel", None)
+                    self.transitioning = False
                 self.deadline = None
                 self._count("commands_completed")
                 active.set_result(result)

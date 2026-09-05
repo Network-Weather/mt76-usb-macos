@@ -42,6 +42,7 @@ void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb) {
     mcu->msg_seq = 0;
     mcu->evt_ep4 = false;
     mcu->read_bulk = mt7921_bulk_in;
+    mcu->write_bulk = mt7921_bulk_out;
 }
 
 const uint8_t *mt7921_mcu_reply_body(const mt7921_mcu_t *mcu, const uint8_t *resp, uint32_t resp_len,
@@ -52,6 +53,8 @@ const uint8_t *mt7921_mcu_reply_body(const mt7921_mcu_t *mcu, const uint8_t *res
 }
 
 uint8_t mt7921_mcu_next_seq(mt7921_mcu_t *mcu) {
+    if (mcu->usb && mcu->usb->session_timeout &&
+        !mcu->usb->session_timeout(mcu->usb->session_context, 3000)) return 0;
     mcu->msg_seq = (mcu->msg_seq + 1) & 0x0F;
     if (mcu->msg_seq == 0) {
         mcu->msg_seq = (mcu->msg_seq + 1) & 0x0F;
@@ -129,6 +132,7 @@ int mt7921_mcu_send(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
                     uint32_t payload_len, bool wait, uint8_t *resp_buf,
                     uint32_t *resp_len, uint32_t timeout_ms) {
     uint8_t seq = mt7921_mcu_next_seq(mcu);
+    if (!seq) return -1;
     uint8_t ep = MT_ROLE_INBAND_CMD;
 
     uint32_t body_len = 0;
@@ -165,9 +169,12 @@ int mt7921_mcu_send(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
     memset(frame + frame_len, 0, pad);
     uint32_t send_len = frame_len + pad;
 
-    int ret = mt7921_bulk_out(mcu->usb, ep, frame, send_len, timeout_ms);
+    int ret = mcu->write_bulk(mcu->usb, ep, frame, send_len, timeout_ms);
     free(frame);
-    if (ret != 0) return -1;
+    if (ret != 0) {
+        if (mcu->usb->session_fail) mcu->usb->session_fail(mcu->usb->session_context);
+        return -1;
+    }
 
     if (!wait) return 0;
     return mt7921_mcu_wait(mcu, seq, cid, resp_buf, resp_len, timeout_ms);
@@ -185,6 +192,7 @@ int mt7921_mcu_cmd_word(mt7921_mcu_t *mcu, uint32_t cmd, const void *payload,
     uint8_t s2d = (cmd & MCU_CMD_FIELD_WA) ? MCU_S2D_H2C : MCU_S2D_H2N;
 
     uint8_t seq = mt7921_mcu_next_seq(mcu);
+    if (!seq) return -1;
     uint32_t total = MCU_TXD_LEN + payload_len;
     uint32_t frame_alloc = 4 + total + 8;
     uint8_t *frame = (uint8_t*)malloc(frame_alloc);
@@ -202,9 +210,12 @@ int mt7921_mcu_cmd_word(mt7921_mcu_t *mcu, uint32_t cmd, const void *payload,
     memset(frame + frame_len, 0, pad);
     uint32_t send_len = frame_len + pad;
 
-    int ret = mt7921_bulk_out(mcu->usb, MT_ROLE_INBAND_CMD, frame, send_len, timeout_ms);
+    int ret = mcu->write_bulk(mcu->usb, MT_ROLE_INBAND_CMD, frame, send_len, timeout_ms);
     free(frame);
-    if (ret != 0) return -1;
+    if (ret != 0) {
+        if (mcu->usb->session_fail) mcu->usb->session_fail(mcu->usb->session_context);
+        return -1;
+    }
 
     if (!wait) return 0;
     return mt7921_mcu_wait(mcu, seq, cid, resp_buf, resp_len, timeout_ms);
@@ -230,6 +241,7 @@ static int mcu_uni_common(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
                           uint32_t payload_len, bool wait, bool query, uint8_t *resp_buf,
                           uint32_t *resp_len, uint32_t timeout_ms) {
     uint8_t seq = mt7921_mcu_next_seq(mcu);
+    if (!seq) return -1;
     uint32_t total = MCU_UNI_TXD_LEN + payload_len;
     uint32_t frame_alloc = 4 + total + 8;
     uint8_t *frame = (uint8_t*)malloc(frame_alloc);
@@ -247,9 +259,12 @@ static int mcu_uni_common(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
     memset(frame + frame_len, 0, pad);
     uint32_t send_len = frame_len + pad;
 
-    int ret = mt7921_bulk_out(mcu->usb, MT_ROLE_INBAND_CMD, frame, send_len, timeout_ms);
+    int ret = mcu->write_bulk(mcu->usb, MT_ROLE_INBAND_CMD, frame, send_len, timeout_ms);
     free(frame);
-    if (ret != 0) return -1;
+    if (ret != 0) {
+        if (mcu->usb->session_fail) mcu->usb->session_fail(mcu->usb->session_context);
+        return -1;
+    }
 
     if (!wait) return 0;
     return mt7921_mcu_wait(mcu, seq, cid, resp_buf, resp_len, timeout_ms);
@@ -257,6 +272,8 @@ static int mcu_uni_common(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,
 
 int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
                     uint8_t *resp_buf, uint32_t *resp_len, uint32_t timeout_ms) {
+    if (mcu->session_wait)
+        return mcu->session_wait(mcu->session_context, seq, cid, resp_buf, resp_len, timeout_ms);
     (void)cid;
     uint8_t ep = mcu->evt_ep4 ? MT_ROLE_PKT_RX : MT_ROLE_CMD_RESP;
     uint64_t deadline = current_time_ms() + (uint64_t)timeout_ms * 4;

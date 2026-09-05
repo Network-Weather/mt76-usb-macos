@@ -7,6 +7,12 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Experimental Python/C continuous acquisition sessions: one USB owner, bounded
+  frame/event queues, frame-preserving MCU waits, serialized commands, explicit
+  failure and shutdown states, requested-channel metadata and redacted passive probes.
+  Shared routing/lifecycle replay and native thread/memory-sanitizer checks accompany
+  the implementation. Fresh bring-up is required; warm adoption and automatic recovery
+  are not supported. See [the contract](docs/CONTINUOUS_ACQUISITION.md).
 - Native C acquisition parity with the 2026-09-04 Python research: bounded hardware
   timestamp and Group-3/5 export, MT7921 EXT and MT7925 atomic UNI MIB queries,
   opt-in reversible Group-5 reporting, controlled OFDM Probe Request transmission

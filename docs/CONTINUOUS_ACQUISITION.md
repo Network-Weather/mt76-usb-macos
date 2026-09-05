@@ -60,7 +60,51 @@ These are replay tests, not hardware qualification.
 
 ## Remaining acceptance work
 
-- Native C dispatcher/session and shared replay parity.
-- Both radios: sustained capture with MIB reads, repeated retunes and explicit accounting.
+- Python and C have passed initial short hardware runs with MIB queries and retunes
+  on both reference radios. Longer-run acceptance and dated evidence follow separately.
 - Multi-hour passive soak, cancellation and clean reinitialization evidence.
 - Keep hot-unplug and warm adoption explicitly unqualified until exercised.
+
+## Native C checkpoint
+
+`c/mt76_session.h` exposes an opaque worker-owned session. `mt_session_start` consumes
+the successful bring-up marker; `mt_session_call` executes a driver callback, and
+`mt_session_read` returns copied packets rather than pointers into worker buffers.
+Pass `retune=true` for a channel-changing callback. Snapshot channel geometry is requested,
+acknowledged host state, not proof of every buffered frame's RF channel.
+
+C has one command slot (`MT_SESSION_BUSY` on concurrent submission); Python has a bounded
+command queue. Their packet routing, drop-newest policy and failure semantics are shared.
+C queue capacities are 1..4096 records; Python accepts 1..65536. Each record is at most
+16 KiB. Size queues for memory budgets rather than using the largest accepted setting.
+
+Native call retains callback/context lifetime until the worker returns, even after a
+deadline expires. This prevents use-after-return of caller-owned memory. Arbitrary blocking
+C callbacks therefore cannot have a guaranteed return deadline. After successful stop,
+drain remaining packets, then destroy the session and close the device. Serialize lifecycle
+calls and ensure all API callers have returned before destroying the session.
+
+Offline checkpoint: 594 pytest tests, native tests, ASan/UBSan and a separate native
+ThreadSanitizer replay run pass. Shared routing fixtures cover all 32 packet types,
+flag variants, descriptor boundaries, and 2,000 deterministic malformed records.
+Native replay covers overflow, stale replies, 32-command sequence wrap, timeouts,
+swallowed errors, write failure, too-small reply buffers and stop/callback races.
+
+## Passive qualification commands
+
+Both probes print redacted NDJSON and have no transmit path. The current hardware
+envelope is 5 GHz control channels 36/149 at 20 MHz, one process per reference adapter.
+Set `--hop-seconds 0` for a locked-channel run, or `--mib-seconds 0` for capture alone.
+`--seconds` accepts up to four hours. Never run two processes against the same dongle.
+
+```sh
+python scripts/session_probe.py --usb-id 0e8d:7961 --fw /path/to/firmware --seconds 60
+make -C c mt76_session_probe
+c/mt76_session_probe --usb-id 0846:9072 --fw /path/to/firmware --seconds 60
+```
+
+Quiet receive timeouts are not USB errors. Counters distinguish software overflow,
+malformed input and undecoded frames. Off-requested-channel observations are retained
+and counted, not automatically treated as decoding faults. Delivery latency includes
+consumer scheduling/command waits; it is not over-the-air latency. Heartbeats do not perform
+the final register-health check (native `register_alive_after` is null until the summary).

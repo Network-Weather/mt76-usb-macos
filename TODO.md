@@ -1,5 +1,20 @@
 # TODO: next sprint and prior backlog
 
+## Continuous acquisition sprint (R5)
+
+Current work on `feat/continuous-acquisition`; not yet merged. See
+[the session contract](docs/CONTINUOUS_ACQUISITION.md).
+
+- [x] Python single-owner worker, bounded packet/event/command queues, failure latch.
+- [x] Native C worker, copied packet queues, ownership guards, safe callback lifetime.
+- [x] Shared routing replay, overflow/sequence/cancellation tests, ASan/UBSan and TSan.
+- [x] Initial passive MIB/retune hardware checks in both languages on both reference adapters.
+- [ ] Longer capture, cancellation, clean reinitialization and durable evidence.
+- [ ] Multi-hour passive soak; keep hot-unplug and warm adoption explicitly unqualified.
+- [ ] Review and merge after evidence gates, retaining honest retune/queue-loss limits.
+
+## Completed C parity sprint record
+
 Sprint selected and implemented 2026-09-04: C acquisition parity (R30). Items come from
 [ROADMAP.md](ROADMAP.md); check off only against the stated evidence. This is the
 completion record for the work merged into `main`, not a new release.

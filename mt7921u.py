@@ -1325,6 +1325,7 @@ class Mt7921uDevice(Mt7921uMcu):
         if getattr(self, "_session", None):
             raise RuntimeError("stop acquisition before firmware reset")
         self._session_ready = False
+        self._capture_channel = None
         log("resetting USB device")
         try:
             self.dev.reset()
@@ -1905,6 +1906,9 @@ WIDTH_TO_SNIFFER_BW = {20: SNIFFER_BW_20, 40: SNIFFER_BW_20, 80: SNIFFER_BW_80, 
 def _tune(self, band_name: str, control_ch: int, center_ch: int | None = None, width_mhz: int = 20):
     """Put the sniffer on one channel: mt7921 needs CHANNEL_SWITCH then the sniffer CONFIG
     TLV; mt7925 overrides this with the TLV alone. center_ch defaults to control_ch."""
+    if getattr(self, "_session", None):
+        self._session.check_owner()
+    self._capture_channel = None
     if band_name not in CHAN_BAND:
         raise ValueError(f"band must be one of {sorted(CHAN_BAND)}, got {band_name!r}")
     if width_mhz not in WIDTH_TO_SNIFFER_BW:
@@ -1923,6 +1927,7 @@ def _tune(self, band_name: str, control_ch: int, center_ch: int | None = None, w
         band_name=band_name,
         bw=WIDTH_TO_SNIFFER_BW[width_mhz],
     )
+    self._capture_channel = (band_name, control_ch, center_ch, width_mhz)
 
 
 Mt7921uDevice.uni_option = _uni_option

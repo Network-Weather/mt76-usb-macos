@@ -59,6 +59,9 @@ typedef struct {
     /* Injectable transport for offline stale-reply/timeout tests; initialized to
      * native USB functions. Callers must retain single-reader ownership. */
     int (*read_bulk)(mt7921_usb_t *, uint8_t, void *, uint32_t *, uint32_t);
+    int (*write_bulk)(mt7921_usb_t *, uint8_t, const void *, uint32_t, uint32_t);
+    void *session_context;
+    int (*session_wait)(void *, uint8_t, uint8_t, uint8_t *, uint32_t *, uint32_t);
 } mt7921_mcu_t;
 
 void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb);

@@ -141,6 +141,23 @@ def test_sequence_wrap_serialized_concurrent_callers(dev):
     assert len(dev.dev.owners) == 1
 
 
+def test_swallowed_reply_timeout_still_invalidates_session(dev):
+    dev.dev.on_write = lambda: None
+
+    def catches_error(d):
+        try:
+            d.mcu_send(0x44, timeout=10)
+        except SessionError:
+            return None
+
+    with AcquisitionSession(dev) as session:
+        with pytest.raises(SessionError):
+            session.call(catches_error)
+        assert session.state == "failed"
+        with pytest.raises(SessionError):
+            session.call(lambda d: d.mcu_send(0x44))
+
+
 def test_owner_guards_and_retune_metadata(dev):
     def replay():
         dev.dev.rx.put(packet(marker=1))
