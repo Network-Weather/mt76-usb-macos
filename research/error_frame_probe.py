@@ -32,6 +32,7 @@ from research.normal_phy_counter_probe import CONTROL, MASK, control_value
 from research.phy_stats_probe import hardware_snapshot
 
 RFCR = 0x820E5000
+MAC_FCS = 0x820ED698
 PHASES = (
     ("ht8_control_before", 0x488, 1, 1),
     ("ht15_default", 0x48F, 1, 1),
@@ -87,11 +88,34 @@ def failed_metadata(decoded):
     }
 
 
+def mac_fcs_sample(dev):
+    """Pinned mt792x_mac_update_mib_stats read-and-accumulate field.
+
+    Two consecutive reads discriminate clearing/latching; not a delta between
+    snapshots. Exclusive ownership is required: reading may consume statistics.
+    """
+    if dev.CHIP != m.CHIP_MT7921:
+        raise ValueError("MAC FCS experiment is MT7961-only")
+    values = [dev.rr(MAC_FCS), dev.rr(MAC_FCS)]
+    if any(type(v) is not int or not 0 <= v < 0xFFFFFFFF for v in values):
+        raise ValueError("invalid MAC FCS register word")
+    return {
+        "register": hex(MAC_FCS),
+        "words_raw": [hex(v) for v in values],
+        "high16_samples": [v >> 16 for v in values],
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--enable-error-capture", action="store_true")
     parser.add_argument("--enable-counters", action="store_true")
+    parser.add_argument(
+        "--mac-fcs",
+        action="store_true",
+        help="also sample the source-defined, potentially read-clear MAC FCS field",
+    )
     args = parser.parse_args()
     if not all(
         (args.acknowledge_experimental_transmit, args.enable_error_capture, args.enable_counters)
@@ -125,7 +149,10 @@ def main():
             dev.tune("2.4GHz", 6, 6, 20)
 
         def metrics():
-            return {"counters": hardware_snapshot(rx), "latched_cn_evm": read_evm(rx)}
+            result = {"counters": hardware_snapshot(rx), "latched_cn_evm": read_evm(rx)}
+            if args.mac_fcs:
+                result["mac_fcs"] = mac_fcs_sample(rx)
+            return result
 
         try:
             for i in (0, 1):

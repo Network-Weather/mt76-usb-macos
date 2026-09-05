@@ -4,6 +4,9 @@
 shows OFDM FCS`0x83081024[31:16]` becomes1 then stays1 despite multiple delivered
 CRC-failed HT frames. Under the normal enable recipe below this is **not a
 validated accumulating error count**. Do not derive error percentages from it.
+The separate [MAC FCS field](ERROR_FRAME_CAPTURE.md#a-distinct-mac-fcs-counter-does-accumulate-and-read-clear)
+at`0x820ed698[31:16]` does pass multi-packet read-clear controls without this
+PHY enable recipe. These are different fields, not interchangeable counters.
 
 **Ten PHY counters are reachable through CE1 GET41, and their normal monitor-mode
 accumulation can now be enabled with the exact firmware control.** Controlled HT and HE

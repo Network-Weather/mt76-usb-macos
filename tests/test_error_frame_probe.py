@@ -66,3 +66,33 @@ def test_final_same_rate_restore_phase_and_twenty_eight_frame_bound():
     assert len(p.PHASES) * 4 == 28
     assert p.PHASES[-2] == ("ht15_restored", 0x48F, 1, 1)
     assert p.PHASES[0][1] == p.PHASES[-1][1] == 0x488
+
+
+def test_mac_fcs_is_two_raw_high16_samples_not_subtraction():
+    calls = []
+    values = iter((0x00040001, 0x00000001))
+
+    def read(address):
+        calls.append(address)
+        return next(values)
+
+    out = p.mac_fcs_sample(SimpleNamespace(CHIP="mt7921", rr=read))
+    assert calls == [0x820ED698, 0x820ED698]
+    assert out["high16_samples"] == [4, 0]
+
+
+@pytest.mark.parametrize("value", [None, True, -1, 0xFFFFFFFF])
+def test_mac_fcs_invalid_bus_word_rejected(value):
+    with pytest.raises(ValueError, match="MAC FCS"):
+        p.mac_fcs_sample(SimpleNamespace(CHIP="mt7921", rr=lambda _: value))
+
+
+def test_batch_plan_is_bounded_and_requires_explicit_tx(monkeypatch):
+    from research import mac_fcs_batch_probe as batch
+
+    assert batch.PLAN == ((0x488, 4), (0x48F, 2), (0x488, 4), (0x48F, 4), (0x488, 4))
+    assert sum(count for _, count in batch.PLAN) == 18
+    monkeypatch.setattr(batch.sys, "argv", ["mac_fcs_batch_probe"])
+    with pytest.raises(SystemExit) as exc:
+        batch.main()
+    assert exc.value.code == 2

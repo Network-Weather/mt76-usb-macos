@@ -72,6 +72,61 @@ dependency or another field interpretation remains to be resolved. CCK ambient
 traffic and occasional detection errors also appear; counter deltas cannot
 automatically be assigned to a particular synthetic transmission.
 
+## A distinct MAC FCS counter does accumulate and read-clear
+
+The source-defined **`0x820ed698[31:16]`** is a different field from the PHY
+register above. Pinned
+[`mt792x_mac_update_mib_stats`](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt792x_mac.c#L77)
+adds it to the software FCS count; `mt792x_regs.h` defines band0 MIB base,
+SDR3 offset`0x698` and the high16 mask. The research helper is MT7961-only:
+the MT7925 vendor register map differs and is not assumed interchangeable.
+
+Two further28-frame filter cycles add paired reads immediately around each
+window. In the first run, all20 HT15 windows return **[1,0]** after the window;
+all eight successful HT8 controls return[0,0]. In the repeat,19 HT15 windows
+return[1,0], while the remaining open-filter window returns[0,0] and also has
+no failed-frame delivery. All eight HT8 controls again return[0,0]. These
+results cover closed and open MAC filters: the MAC counts failed receptions
+even when their USB delivery is suppressed. The initial pre-trial reads contain
+3/4 errors respectively and are explicitly discarded, not assigned to probes.
+
+To distinguish accumulation from a one-bit read-clear event latch, two separate
+18-frame tests sample **only before/after batches**, with normal error-drop
+filters and **no PHY counter-enable writes**. Both begin/end with RFCR
+`0x00201002` and PHY control`0x83082004 = 0` unchanged:
+
+| Batch | First run MAC FCS pair | Repeat MAC FCS pair | Good payload receipts, each run |
+|---|---|---|---|
+| 4 × HT8 | [0,0] | [0,0] | 4 |
+| 2 × HT15 | [3,0] | [2,0] | 0 |
+| 4 × HT8 | [0,0] | [0,0] | 4 |
+| 4 × HT15 | [4,0] | [4,0] | 0 |
+| 4 × HT8 | [0,0] | [0,0] | 4 |
+
+The extra count in the first two-frame batch is **not** forced into a one-error-
+per-probe explanation: this is a channel-wide counter and includes background
+activity. Multi-count reads followed by zero, together with the single-packet
+controls and the Linux read-and-accumulate use, support a **read-clear MAC FCS
+counter available without the PHY enable recipe**. All alive/reload checks pass.
+
+This gives Network Weather an error-count surface that need not export failed
+packets. It still needs exclusive ownership, a defined sample interval and a
+qualified denominator before becoming an error percentage. Full-word reads also
+consume the opaque low16 field; it is not independently named or calibrated here.
+Do not subtract two readings as if cumulative, assume wrap/saturation behavior,
+or mix this register with the legacy MCU offset0 previously found inconsistent
+with its FCS-error label. No production survey API changed.
+
+```sh
+# Paired samples with the factorial error-delivery experiment:
+python research/error_frame_probe.py --acknowledge-experimental-transmit \
+  --enable-error-capture --enable-counters --mac-fcs
+# Independent18-frame batch control, no PHY counter/filter changes:
+python research/mac_fcs_batch_probe.py --acknowledge-experimental-transmit
+```
+
+[Sanitized MAC counter controls](../research/evidence/mac-fcs-counter-2026-09-05.json).
+
 ## Reproduce and restore
 
 ```sh

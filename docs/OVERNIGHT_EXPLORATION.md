@@ -12,6 +12,10 @@ separate the controls, retaining only anonymous diagnostics. The source-named
 PHY FCS field remains1 across multiple failed frames, so it must not be used
 as an accumulating error count under the current enable recipe. Original
 filter/counter bits and both firmware reloads are verified; defaults unchanged.
+The distinct [MAC FCS counter](ERROR_FRAME_CAPTURE.md) now passes read-clear
+single-packet and two/four-packet batch controls, including with normal error
+filters and no PHY counter-enable writes. It counts errors hidden from USB;
+background errors, shared read-clear ownership and denominator limits remain.
 
 **New GI/LDPC transmit controls:** [MT7925 fixed-rate ROM mapping](FIXED_RATE_TABLE.md)
 locates GI and LDPC bits, and the second dongle independently receives HT8 with
