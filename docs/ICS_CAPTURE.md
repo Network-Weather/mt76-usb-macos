@@ -486,3 +486,7 @@ captures, which do not timestamp generation or distinguish pre/post-ACK receipt.
 Thus stop is not established as an immediate empty-queue boundary. Start/stop
 ACKs, masked restoration and normal reload pass throughout.
 [Four sanitized matching runs](../research/evidence/rmac-ics-matching-2026-09-05.json).
+
+The [older MT7961 now has a separately verified CE93 path](LEGACY_ICS.md), with
+272-byte aggregates, different header/RCPI/clock locations, and extra shared
+control bits. The two layouts must not be interchanged.

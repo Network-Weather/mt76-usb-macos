@@ -1,0 +1,931 @@
+{
+  "runs": [
+    {
+      "date_utc": "2026-09-05T21:32:33.037841+00:00",
+      "channel": 6,
+      "request_hex": "000100000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "verified": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "before_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0
+      },
+      "off_before": {
+        "elapsed_seconds": 0.40237475000321865,
+        "attempts": 292,
+        "good_fcs_by_phy": {
+          "CCK": 22
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 22
+          }
+        ],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": []
+      },
+      "on": {
+        "elapsed_seconds": 0.40111933392472565,
+        "attempts": 306,
+        "good_fcs_by_phy": {
+          "CCK": 20
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 20
+          },
+          {
+            "endpoint": 132,
+            "type": 12,
+            "count": 20
+          }
+        ],
+        "aggregate_shapes": [
+          {
+            "endpoint": 132,
+            "type": 12,
+            "bytes": 272,
+            "frame_count": 3,
+            "count": 20
+          }
+        ],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": []
+      },
+      "on_masks": {
+        "0x820e50d0": 1,
+        "0x820e705c": 16777216,
+        "0x820e0004": 516
+      },
+      "off_after": {
+        "elapsed_seconds": 0.40023204195313156,
+        "attempts": 288,
+        "good_fcs_by_phy": {
+          "CCK": 19
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 19
+          }
+        ],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": []
+      },
+      "off_after_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0
+      },
+      "alive_after": true,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true
+      },
+      "cleanup_reload_alive": true,
+      "reload_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0
+      }
+    },
+    {
+      "date_utc": "2026-09-05T21:33:34.731116+00:00",
+      "channel": 6,
+      "request_hex": "000100000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "verified": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "before_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0
+      },
+      "off_before": {
+        "elapsed_seconds": 0.40180616616271436,
+        "attempts": 292,
+        "good_fcs_by_phy": {
+          "CCK": 22
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 22
+          }
+        ],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 22,
+          "good_complete_normal": 22,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {
+            "fixed_rxd24": 22,
+            "mac_header24": 22,
+            "timestamp4": 22,
+            "prxv8": 11
+          },
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on": {
+        "elapsed_seconds": 0.40106091694906354,
+        "attempts": 318,
+        "good_fcs_by_phy": {
+          "CCK": 20
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 20
+          },
+          {
+            "endpoint": 132,
+            "type": 12,
+            "count": 19
+          }
+        ],
+        "aggregate_shapes": [
+          {
+            "endpoint": 132,
+            "type": 12,
+            "bytes": 272,
+            "frame_count": 3,
+            "count": 19
+          }
+        ],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 20,
+          "good_complete_normal": 20,
+          "ics_retained": 19,
+          "ics_type12_valid": 19,
+          "distinct_nonzero_signatures": {
+            "fixed_rxd24": 20,
+            "mac_header24": 20,
+            "timestamp4": 20,
+            "prxv8": 11
+          },
+          "records_with_signature_match": {
+            "mac_header24": 19
+          },
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [
+            {
+              "signature": "mac_header24",
+              "offset": 120,
+              "matches": 19
+            }
+          ],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 19,
+            "vector_candidates": [
+              {
+                "source": "prxv8",
+                "source_word": 1,
+                "source_shift": 0,
+                "bits": 32,
+                "offset": 40,
+                "shift": 0,
+                "distinct_reference_values": 11
+              }
+            ],
+            "clock_candidates": [
+              {
+                "offset": 12,
+                "relative_minus_rxd_min": -1,
+                "relative_minus_rxd_max": 0
+              },
+              {
+                "offset": 92,
+                "relative_minus_rxd_min": -1,
+                "relative_minus_rxd_max": 0
+              },
+              {
+                "offset": 164,
+                "relative_minus_rxd_min": -1,
+                "relative_minus_rxd_max": 0
+              }
+            ],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on_masks": {
+        "0x820e50d0": 1,
+        "0x820e705c": 16777216,
+        "0x820e0004": 516
+      },
+      "off_after": {
+        "elapsed_seconds": 0.4010502090677619,
+        "attempts": 292,
+        "good_fcs_by_phy": {
+          "CCK": 20
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 20
+          }
+        ],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 20,
+          "good_complete_normal": 20,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {
+            "fixed_rxd24": 20,
+            "mac_header24": 20,
+            "timestamp4": 20,
+            "prxv8": 10
+          },
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "off_after_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0
+      },
+      "alive_after": true,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true
+      },
+      "cleanup_reload_alive": true,
+      "reload_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0
+      }
+    },
+    {
+      "date_utc": "2026-09-05T21:34:27.233118+00:00",
+      "channel": 6,
+      "request_hex": "000100000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "verified": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "before_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 0
+      },
+      "group5_requested": true,
+      "off_before": {
+        "elapsed_seconds": 0.4006596670951694,
+        "attempts": 278,
+        "good_fcs_by_phy": {
+          "CCK": 1
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 1
+          }
+        ],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 1,
+          "good_complete_normal": 1,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {
+            "fixed_rxd24": 1,
+            "mac_header24": 1,
+            "timestamp4": 1,
+            "prxv8": 1,
+            "crxv72": 1
+          },
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on": {
+        "elapsed_seconds": 0.40016274992376566,
+        "attempts": 296,
+        "good_fcs_by_phy": {},
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 12,
+            "count": 32
+          }
+        ],
+        "aggregate_shapes": [
+          {
+            "endpoint": 132,
+            "type": 12,
+            "bytes": 272,
+            "frame_count": 3,
+            "count": 32
+          }
+        ],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 0,
+          "good_complete_normal": 0,
+          "ics_retained": 32,
+          "ics_type12_valid": 32,
+          "distinct_nonzero_signatures": {},
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on_masks": {
+        "0x820e50d0": 1,
+        "0x820e705c": 16777216,
+        "0x820e0004": 516,
+        "0x820e7000": 8388608
+      },
+      "off_after": {
+        "elapsed_seconds": 0.4002341669984162,
+        "attempts": 288,
+        "good_fcs_by_phy": {},
+        "leading_packet_types": [],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 0,
+          "good_complete_normal": 0,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {},
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "off_after_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 8388608
+      },
+      "alive_after": true,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": true,
+      "reload_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 0
+      }
+    },
+    {
+      "date_utc": "2026-09-05T21:34:50.406567+00:00",
+      "channel": 36,
+      "request_hex": "000100000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "verified": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "before_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 0
+      },
+      "group5_requested": true,
+      "off_before": {
+        "elapsed_seconds": 0.4006479170639068,
+        "attempts": 262,
+        "good_fcs_by_phy": {},
+        "leading_packet_types": [],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 0,
+          "good_complete_normal": 0,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {},
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on": {
+        "elapsed_seconds": 0.4018346250522882,
+        "attempts": 246,
+        "good_fcs_by_phy": {},
+        "leading_packet_types": [],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 0,
+          "good_complete_normal": 0,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {},
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on_masks": {
+        "0x820e50d0": 1,
+        "0x820e705c": 16777216,
+        "0x820e0004": 516,
+        "0x820e7000": 8388608
+      },
+      "off_after": {
+        "elapsed_seconds": 0.40300704212859273,
+        "attempts": 250,
+        "good_fcs_by_phy": {},
+        "leading_packet_types": [],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 0,
+          "good_complete_normal": 0,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {},
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "off_after_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 8388608
+      },
+      "alive_after": true,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": true,
+      "reload_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 0
+      }
+    },
+    {
+      "date_utc": "2026-09-05T21:35:20.973863+00:00",
+      "channel": 6,
+      "request_hex": "000100000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "verified": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "before_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 0
+      },
+      "group5_requested": false,
+      "off_before": {
+        "elapsed_seconds": 0.40059075015597045,
+        "attempts": 264,
+        "good_fcs_by_phy": {
+          "CCK": 21
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 21
+          }
+        ],
+        "aggregate_shapes": [],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 21,
+          "good_complete_normal": 21,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "distinct_nonzero_signatures": {
+            "fixed_rxd24": 21,
+            "mac_header24": 21,
+            "timestamp4": 21,
+            "prxv8": 11
+          },
+          "records_with_signature_match": {},
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 0,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on": {
+        "elapsed_seconds": 0.40151166589930654,
+        "attempts": 292,
+        "good_fcs_by_phy": {
+          "CCK": 18
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 18
+          },
+          {
+            "endpoint": 132,
+            "type": 12,
+            "count": 18
+          }
+        ],
+        "aggregate_shapes": [
+          {
+            "endpoint": 132,
+            "type": 12,
+            "bytes": 272,
+            "frame_count": 3,
+            "count": 18
+          }
+        ],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 18,
+          "good_complete_normal": 18,
+          "ics_retained": 18,
+          "ics_type12_valid": 18,
+          "distinct_nonzero_signatures": {
+            "fixed_rxd24": 18,
+            "mac_header24": 18,
+            "timestamp4": 18,
+            "prxv8": 10
+          },
+          "records_with_signature_match": {
+            "mac_header24": 18
+          },
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [
+            {
+              "signature": "mac_header24",
+              "offset": 120,
+              "matches": 18
+            }
+          ],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 18,
+            "vector_candidates": [
+              {
+                "source": "prxv8",
+                "source_word": 1,
+                "source_shift": 0,
+                "bits": 32,
+                "offset": 40,
+                "shift": 0,
+                "distinct_reference_values": 10
+              }
+            ],
+            "clock_candidates": [
+              {
+                "offset": 12,
+                "relative_minus_rxd_min": 0,
+                "relative_minus_rxd_max": 1
+              },
+              {
+                "offset": 92,
+                "relative_minus_rxd_min": 0,
+                "relative_minus_rxd_max": 1
+              },
+              {
+                "offset": 164,
+                "relative_minus_rxd_min": 0,
+                "relative_minus_rxd_max": 1
+              }
+            ],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "on_masks": {
+        "0x820e50d0": 1,
+        "0x820e705c": 16777216,
+        "0x820e0004": 516,
+        "0x820e7000": 0
+      },
+      "off_after": {
+        "elapsed_seconds": 0.40066000004298985,
+        "attempts": 262,
+        "good_fcs_by_phy": {
+          "CCK": 19
+        },
+        "leading_packet_types": [
+          {
+            "endpoint": 132,
+            "type": 2,
+            "count": 19
+          },
+          {
+            "endpoint": 132,
+            "type": 12,
+            "count": 1
+          }
+        ],
+        "aggregate_shapes": [
+          {
+            "endpoint": 132,
+            "type": 12,
+            "bytes": 272,
+            "frame_count": 3,
+            "count": 1
+          }
+        ],
+        "invalid_aggregate_lengths": 0,
+        "matched_events": [],
+        "in_memory_matching": {
+          "normal_retained": 19,
+          "good_complete_normal": 19,
+          "ics_retained": 1,
+          "ics_type12_valid": 1,
+          "distinct_nonzero_signatures": {
+            "fixed_rxd24": 19,
+            "mac_header24": 19,
+            "timestamp4": 19,
+            "prxv8": 11
+          },
+          "records_with_signature_match": {
+            "mac_header24": 1
+          },
+          "unique_timestamp_plus_second_signature": {},
+          "offset_match_counts": [
+            {
+              "signature": "mac_header24",
+              "offset": 120,
+              "matches": 1
+            }
+          ],
+          "header_paired_field_hypotheses": {
+            "unique_header_pairs": 1,
+            "vector_candidates": [],
+            "clock_candidates": [],
+            "crxv_at24_word_agreement": []
+          },
+          "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+        }
+      },
+      "off_after_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 0
+      },
+      "alive_after": true,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": true,
+      "reload_masks": {
+        "0x820e50d0": 0,
+        "0x820e705c": 0,
+        "0x820e0004": 0,
+        "0x820e7000": 0
+      }
+    }
+  ],
+  "limitations": [
+    "Source-defined CE93 action0/1 condition0=1 band0 only",
+    "Passive bounded off/on/off; no TX or raw traffic export",
+    "No matched legacy command events; register transitions prove execution",
+    "Group5-enabled controls lack paired ordinary RX; do not generalize to a working combined mode",
+    "No calibrated signal/timing or full-vector decoder claim"
+  ]
+}

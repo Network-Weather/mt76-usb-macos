@@ -4,6 +4,7 @@
 import collections
 import struct
 
+import rxd as legacy_rx
 import rxd_connac3 as rx
 
 LIMIT = 128
@@ -36,7 +37,7 @@ def paired_fields(pairs):
                 }
             )
     sources = {}
-    for name in ("prxv16", "crxv96"):
+    for name in ("prxv16", "crxv96", "prxv8", "crxv72"):
         if all(name in sig for sig, _ in pairs):
             for word in range(len(pairs[0][0][name]) // 4):
                 sources[(name, word, 32, 0)] = [
@@ -46,6 +47,11 @@ def paired_fields(pairs):
         for chain in (0, 1):
             sources[("prxv_rcpi", 3, 8, 8 * chain)] = [
                 sig["prxv16"][12 + chain] for sig, _ in pairs
+            ]
+    if all("crxv72" in sig for sig, _ in pairs):
+        for chain in (0, 1):
+            sources[("legacy_crxv_rcpi", 6, 8, 8 * chain)] = [
+                sig["crxv72"][24 + chain] for sig, _ in pairs
             ]
     for (name, word, bits, source_shift), expected in sources.items():
         # Variation is required: a zero-filled word is not a validated copy.
@@ -97,7 +103,7 @@ def signatures(raw):
     length = struct.unpack_from("<H", raw)[0]
     if not rx.RXD_FIXED_LEN <= length <= len(raw):
         return {}
-    raw = raw[:length]
+    raw = bytes(raw[:length])
     decoded = rx.decode(raw)
     if not decoded or decoded.get("fcs_err") or not decoded.get("frame"):
         return {}
@@ -128,7 +134,41 @@ def signatures(raw):
     return result
 
 
-def reduce_matches(normal, aggregates):
+def legacy_signatures(raw):
+    """Connac2-specific group lengths; no connac3 layout assumptions."""
+    if len(raw) < 24:
+        return {}
+    length = struct.unpack_from("<H", raw)[0]
+    if not 24 <= length <= len(raw):
+        return {}
+    raw = bytes(raw[:length])
+    decoded = legacy_rx.decode(raw)
+    if not decoded or decoded.get("fcs_err") or not decoded.get("frame"):
+        return {}
+    result = {"fixed_rxd24": raw[:24]}
+    if len(decoded["frame"]) >= 24:
+        result["mac_header24"] = decoded["frame"][:24]
+    flags = (struct.unpack_from("<I", raw, 4)[0] >> 11) & 31
+    off = 24 + (16 if flags & 8 else 0) + (16 if flags & 1 else 0)
+    if flags & 2:
+        if off + 8 > length:
+            return {}
+        if any(raw[off : off + 4]):
+            result["timestamp4"] = raw[off : off + 4]
+        off += 8
+    if flags & 4:
+        if off + 8 > length:
+            return {}
+        result["prxv8"] = raw[off : off + 8]
+        off += 8
+        if flags & 16:
+            if off + 72 > length:
+                return {}
+            result["crxv72"] = raw[off : off + 72]
+    return result
+
+
+def reduce_matches(normal, aggregates, legacy=False):
     """Only aggregate counts and byte offsets escape this local comparison.
 
     Repeated RXD signatures are not treated as unique identities. Even a unique
@@ -136,7 +176,8 @@ def reduce_matches(normal, aggregates):
     """
     if len(normal) > LIMIT or len(aggregates) > LIMIT:
         raise ValueError("bounded local capture required")
-    rows = [s for raw in normal if (s := signatures(raw))]
+    extract = legacy_signatures if legacy else signatures
+    rows = [s for raw in normal if (s := extract(raw))]
     lookup = collections.defaultdict(lambda: collections.defaultdict(set))
     for index, row in enumerate(rows):
         for kind, value in row.items():
@@ -166,7 +207,15 @@ def reduce_matches(normal, aggregates):
                     offset = raw.find(target, offset + 1)
             if matched[kind]:
                 any_matches[kind] += 1
-        for second in ("mac_header24", "prxv16", "crxv96", "fixed_rxd32"):
+        for second in (
+            "mac_header24",
+            "prxv16",
+            "crxv96",
+            "fixed_rxd32",
+            "prxv8",
+            "crxv72",
+            "fixed_rxd24",
+        ):
             common = matched["timestamp4"] & matched[second]
             if len(common) == 1:
                 agreements[second] += 1

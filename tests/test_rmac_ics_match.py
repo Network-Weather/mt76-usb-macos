@@ -88,3 +88,19 @@ def test_paired_fields_require_varied_references_not_constant_words():
         }
     ]
     assert not p.paired_fields(pairs[:7])["vector_candidates"]
+
+
+def test_legacy_signatures_respect_two_word_prxv_and_eighteen_word_crxv():
+    raw = bytearray(136)
+    struct.pack_into("<II", raw, 0, (2 << 27) | len(raw), (2 | 4 | 16) << 11)
+    struct.pack_into("<I", raw, 24, 123456)
+    raw[32:40] = bytes(range(1, 9))
+    raw[40:112] = bytes(range(1, 73))
+    raw[112:] = b"synthetic-private-header"
+    result = p.legacy_signatures(raw)
+    assert len(result["prxv8"]) == 8
+    assert len(result["crxv72"]) == 72
+    assert result["mac_header24"] == b"synthetic-private-header"
+    out = p.reduce_matches([raw], [aggregate(raw[112:])], legacy=True)
+    assert out["records_with_signature_match"] == {"mac_header24": 1}
+    assert p.legacy_signatures(raw[:135]) == {}

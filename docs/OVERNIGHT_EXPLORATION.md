@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Legacy CE93 opens RMAC diagnostics on MT7961 too:**
+[Pinned handler and live controls](LEGACY_ICS.md) produce272-byte/count3 records
+alongside normal CCK RX. Two runs give37 unique-header pairs: header120, RCPI40,
+clocks12/92/164; all differ from the newer layout. Shared cleanup also needs
+`820e0004` bits9/2. Group5-enabled passive controls lack paired ordinary RX;
+the default-setting repeat recovers. Five runs pass masks and normal reload.
+
 **RMAC ICS now has an in-memory bridge to ordinary receive metadata:**
 [Four passive controls](ICS_CAPTURE.md#receive-records-can-be-paired-without-publishing-traffic)
 locate24-byte header copies at144 and yield sixty unique-header pairs in three
