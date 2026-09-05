@@ -444,6 +444,11 @@ the stronger counter comparison with a separate tool.
 
 ## MT7925 UNI MIB characterization: 2026-09-04
 
+Historical results below retain their original provisional labels. The
+2026-09-05 [source/ROM trace](SUBCHANNEL_MEASUREMENTS.md) supersedes the naming:
+offset17 is primary CCA,18 secondary CCA,19 CCA+NAV+TX. Exact duration units remain
+qualified; the old near-microsecond comparisons were not clock calibration.
+
 Both reference adapters attached: MT7925U Netgear A9000 (`0846:9072`) as the receiver and,
 where stated, MT7921U (`0e8d:7961`) as the independent counter reference or bounded
 transmitter. Pinned firmware, macOS 26.6, Python 3.14.7. The passive matrix covered 2.4, 5 and

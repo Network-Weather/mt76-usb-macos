@@ -183,7 +183,8 @@ follow-ups fall out of it:
 ### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 
 R11 is now answered through MCU queries rather than the dead register path: MT7921 EXT offset 11
-and MT7925 UNI offset 19 provide primary CCA time. R12 remains open: the noise-floor helper reads
+and MT7925 UNI offset17 provide source-named primary CCA time; offset19 is CCA+NAV+TX
+(2026-09-05 source/ROM correction). R12 remains open: the noise-floor helper reads
 zero and the IPI sampler remains idle. The reproducible probes and negative paths are in
 [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md) and [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 

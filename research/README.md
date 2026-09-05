@@ -63,7 +63,7 @@ whether a wider receive configuration observes independent narrower channels.
 | [`uni_mib_probe.py`](uni_mib_probe.py) | Does the MT7925 keep the same counters behind UNI? | **partly** — established transport and the accepted/running offset set; follow-up tools identify the useful subset |
 | [`cross_measure.py`](cross_measure.py) | Do two radios agree, and do injected frames reach the air? | **answered** — they agree; this CCK-only path radiates on 2.4 GHz; see `dual_radio_probe.py` for 5 GHz OFDM |
 | [`mib_offset_sweep.py`](mib_offset_sweep.py) | Which EXT MIB counter offsets does this chip accept? | **answered** — MT7921 numbering identified; MT7925 uses the separate UNI probe |
-| [`mt7925_mib_characterize.py`](mt7925_mib_characterize.py) | Which MT7925 UNI counters track frames, receive duration, CCA and ED? | **answered in part** — offsets 2/11/12/13/19/20 identified behaviorally; 17 remains provisional |
+| [`mt7925_mib_characterize.py`](mt7925_mib_characterize.py) | Which MT7925 UNI counters track frames, receive duration, CCA and ED? | **answered in part** — source/ROM follow-up corrects17 to primary CCA,19 to CCA+NAV+TX; units and configured sources remain qualified |
 | [`mt7925_mib_crosscheck.py`](mt7925_mib_crosscheck.py) | Does the MT7925 CCA candidate agree with the identified MT7921 counter? | **answered** — offset 19 agrees closely on quiet 6 GHz; receiver differences dominate busy channels |
 | [`mt7925_mib_perturb.py`](mt7925_mib_perturb.py) | Does valid Wi-Fi traffic separate the MT7925 busy and ED candidates? | **answered in part** — valid Wi-Fi raises offset 20, disproving a non-Wi-Fi-only interpretation |
 

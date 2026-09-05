@@ -12,15 +12,25 @@ measurements now support a working, though partly provisional, counter map:
 | ---: | --- | --- | --- |
 | 0 | RX FCS/error count | High, firmware map + related-chip source | ROM resolves to full-width `0x820ed7f0`; passive ownership controls below |
 | 2 | delivered RX MPDU count | High | Matched decoded frames within 0-3 frames in every atomic-sampled dwell |
-| 7 | saturated/read-side artifact | High | Advanced by exactly 65,535 on every 3-6 second dwell, independent of traffic and width |
+| 7 | 16-bit idle-slot counter | High for field/cadence | Saturates at65,535 on long dwells; short-cadence samples now vary |
 | 11 | PHY receive attempts / MDRDY count | High | Always at least the delivered MPDU count and grows when the PHY detects frames it does not deliver |
 | 12 | CCK MDRDY duration, microseconds | High | Active only on 2.4 GHz and, with offset 13, closely tracks reconstructed receive airtime |
 | 13 | OFDM/HT/VHT/HE/EHT MDRDY duration, microseconds | High | Tracks reconstructed receive airtime on 5 and 6 GHz, where CCK cannot occur |
-| 17 | broader busy-time counter, possibly CCA+NAV(+TX) | Medium | Closely tracks offset 19 and normally exceeds decoded receive duration; direct reference comparison is compatible but not conclusive |
-| 18 | width-dependent/unknown duration | Low | Tracks wall time at 20 MHz but becomes a variable, usually small duration at 40/80/160 MHz; it is not a general clock or usable occupancy value |
-| 19 | primary CCA busy duration, microseconds | Medium-high | Exceeds decoded receive duration and closely tracked an independent MT7921 `P_CCA_TIME` reference on repeated 6 GHz samples |
+| 17 | primary CCA duration, source-named | High for mapping; unit/source qualification retained | UNI enum names`P_CCA_TIME`; ROM maps32-bit`0x820edb6c` |
+| 18 | secondary CCA duration, source-named | High for mapping; width-gated | UNI enum names`S_CCA_TIME`; near wall time at20MHz is not valid secondary occupancy |
+| 19 | CCA+NAV+TX duration, source-named | High for mapping; unit/source qualification retained | ROM maps24-bit`0x820ed024`, matching named vendor register |
 | 20 | primary energy-detect duration, microseconds | High | Nearly equals the busy counters on 2.4 GHz, is tiny on ordinary 5 GHz traffic, and rises under controlled valid Wi-Fi load; it is not non-Wi-Fi time |
-| 32 | unknown event count | Low | Intermittent, most visible during wide 5 GHz capture |
+| 32 | RX out-of-range count, source-named | Mapping known; physical trigger unqualified | ROM maps32-bit`0x820ed9b4`; do not treat as distance |
+
+**Naming correction, 2026-09-05:** the newly located [pinned UNI counter enum](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic_uni_cmd_event.h#L2649)
+explicitly names17/18/19 as primary CCA / secondary CCA / CCA+NAV+TX.
+The earlier behavioral assignment of19 to primary CCA and17 to a broader
+counter was tentative and is superseded. The old raw observations remain valid.
+The [firmware mapping and new NAV/subchannel measurements](SUBCHANNEL_MEASUREMENTS.md)
+also qualify counter widths, idle saturation and inactive-width artifacts.
+Earlier percentages below used one microsecond per tick as a working model;
+the related detailed header specifies1.024µs for some duration counters, so
+those percentages are not precise calibrated units.
 
 ## Firmware-resolved FCS/MPDU counters and read-clear ownership
 
@@ -102,9 +112,9 @@ contains the narrow mappings, ROM hashes and anonymous counts, not ROM bytes.
 
 ## Earlier behavioral interpretation
 
-The names for 12, 13, 17, 19, and 20 are behavioral identifications, not a
-published MT7925 enum.  Their relationships match MediaTek's documented MT7915
-MIB instruments:
+The original names for12/13/17/19/20 were behavioral identifications. The UNI
+enum now supplies explicit names and corrects17/19 as noted above. The original
+comparison with MediaTek's MT7915 instruments was:
 
 ```text
 CCK_MDRDY_TIME + OFDM_MDRDY_TIME  ~= decodable PHY receive duration
@@ -113,10 +123,10 @@ CCA_NAV_TX_TIME and P_CCA_TIME     are closely related busy-time counters
 P_ED_TIME                          overlaps P_CCA_TIME; it is not additive
 ```
 
-Offset 19 is now the best-supported `P_CCA_TIME` identification. Offset 17 is a
-closely related, usually broader busy-time counter, but passive data does not
-prove that it is `CCA_NAV_TX_TIME`: offset 17 is larger on channel 36, while
-offset 19 is slightly larger on channel 149. Offset 20 is a valuable view of
+The earlier data could not distinguish primary CCA from CCA+NAV+TX: offset17
+was larger on channel36, while19 was slightly larger on channel149. Counter
+units and configured sources must also be considered; relative size alone did
+not justify assigning these names. Offset20 is a valuable view of
 energy detection, but it must not be labeled "non-Wi-Fi time": energy-detect
 can overlap valid Wi-Fi and its threshold is not calibrated.
 
@@ -159,8 +169,8 @@ characterization's method:
   primary-channel scope.
 - Its controlled MT7921 burst did not distinguish `P_CCA_TIME` from
   `CCA_NAV_TX_TIME`; ambient NAV changed more than the injected TX contribution.
-  That negative result directly supports retaining only the behavioral name
-  "broader busy time" for MT7925 offset 17.
+  That negative result justified provisional names at the time. The later UNI
+  enum and ROM map supersede the tentative17/19 assignments.
 
 The earlier [`uni_mib_probe.py`](../research/uni_mib_probe.py) result records the
 initial offset sweep and intentionally leaves the MT7925 counters unidentified.
@@ -267,8 +277,9 @@ MT7925 offset 19 closely followed the MT7921U primary CCA counter:
 | Repeat 1 | 1.766% | 1.679% | 0.087 pp |
 | Repeat 2 | 0.890% | 0.752% | 0.138 pp |
 
-This rules out the hypothesis that offset 19 merely has an arbitrary scale and
-is the strongest current evidence that it is MT7925 primary CCA time.
+This supports a near-microsecond scale and correlation with primary activity,
+but did not distinguish primary CCA from CCA+NAV+TX. The later source/ROM trace
+identifies offset19 as the latter; it does not establish exact tick units.
 
 Absolute readings diverged on busier 2.4 and 5 GHz channels. On channel 6,
 MT7925 offset 19 read 40.5% while MT7921 primary CCA read 18.1%. This is not
@@ -336,7 +347,7 @@ The center channel was then held at 42 while the primary rotated through all
 four 20 MHz channels in the same 80 MHz block. This changes the primary without
 changing the spectrum covered by the wide receiver:
 
-| Primary / center / width | Decoded airtime | Offset 17 | Offset 19 (`P_CCA`) | Offset 20 (`P_ED`) |
+| Primary / center / width | Decoded airtime | Offset 17 | Offset 19 (CCA+NAV+TX) | Offset 20 (`P_ED`) |
 | --- | ---: | ---: | ---: | ---: |
 | 36 / 42 / 80 | 1.66% | 2.98% | 2.69% | 0.03% |
 | 40 / 42 / 80 | 0.04% | 0.31% | 0.19% | 0.02% |
@@ -356,9 +367,10 @@ For a downstream survey instrument, the useful measurement model is now:
 1. **Delivered Wi-Fi:** offset 2 plus decoded per-frame PHY metadata.
 2. **Detected but not delivered:** offset 11 minus offset 2.
 3. **Decoded PHY duration:** offsets 12 and 13.
-4. **Primary-channel occupancy:** offset 19, retaining offset 17 beside it as an
-   experimental broader-busy counter.
-5. **NAV extension:** not derived yet; subtracting 17 and 19 would be premature.
+4. **Primary-channel activity:** source-named primary CCA offset17 beside
+   CCA+NAV+TX offset19; report units/configuration qualifications explicitly.
+5. **NAV:** directly query source-named offset52; subtracting17 and19 is not a
+   validated substitute. See the new subchannel/NAV evidence.
 6. **Energy detection:** offset 20, reported separately rather than
    called non-Wi-Fi.
 

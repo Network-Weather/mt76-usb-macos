@@ -161,7 +161,7 @@ published in `docs/TESTING.md` are wrong until step 4 replaces them.
 - [ ] **R1 remainder.** Requested-versus-actual channel per step and a `not_tested` status in
   `scripts/hardware_smoke.py`.
 - [x] **R11 CCA/MIB.** MCU paths now expose primary CCA on both chips: identified MT7921 EXT
-  offset 11 and behaviorally identified MT7925 UNI offset 19, with reproducible probes and dated
+  offset11 and source/ROM-identified MT7925 UNI offset17 (offset19 is CCA+NAV+TX), with reproducible probes and dated
   evidence.
 - [ ] **R12 noise floor.** The available paths remain zero or idle; continue the documented IPI
   and PHY investigation without presenting RSSI as SNR.

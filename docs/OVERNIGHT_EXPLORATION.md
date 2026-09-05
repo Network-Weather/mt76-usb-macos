@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**NAV, per-subchannel ED and idle-slot measurements:** [source-selected UNI queries](SUBCHANNEL_MEASUREMENTS.md)
+expose live NAV time and multiple ED values at80/160MHz. Source/ROM mapping
+corrects the earlier tentative names:17 primary CCA,18 secondary CCA,19 CCA+NAV+TX.
+Width-invalid secondary counters resemble100% busy and must be excluded;
+eight ED indices are not yet verified absolute channel labels. The16-bit idle
+counter works at short cadence and saturates on long dwells, explaining its
+old constant65535 result. No TX, direct counter reads or production-default changes.
+
 **MT7925 MIB addresses independently resolved:** [the UNI22-to-ROM trace](MT7925_MIB.md)
 maps offset0 to full32-bit `0x820ed7f0` and offset2 to`0x820ed9a8`, matching
 related MT7992 FCS/MPDU names. Alternating passive reader order proves that raw

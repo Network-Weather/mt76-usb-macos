@@ -73,7 +73,7 @@ Four flat modules, no package:
   `rxd.py` below the descriptor. Callers get the right one from `mt7921u.decoder_for(dev)`.
 - `research/mt7925_mib_characterize.py` atomically reads connac3 UNI MIB counters around an
   aggregation-aware dwell. Its companions cross-check against the MT7921 and apply a separately
-  gated Wi-Fi perturbation. Offset 19 is the primary-CCA candidate; offset 20 is ED-active and
+  gated Wi-Fi perturbation. The source/ROM follow-up names17 primary CCA and19 CCA+NAV+TX;20 is ED-active and
   must not be called non-Wi-Fi time. See [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 
 Capture pipeline, in the order the examples call it:

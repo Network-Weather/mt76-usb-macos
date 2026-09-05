@@ -467,8 +467,8 @@ behavioral map:
 | 11 | PHY receive attempts / MDRDY count | high |
 | 12 | CCK receive duration, microseconds | high |
 | 13 | OFDM-family receive duration, microseconds | high |
-| 17 | broader busy time; exact CCA/NAV/TX composition unsettled | medium |
-| **19** | **primary-channel CCA busy time, microseconds** | **medium-high** |
+| 17 | primary CCA, source/ROM-named on2026-09-05 | high for mapping, unit/source qualification retained |
+| **19** | **CCA+NAV+TX, source/ROM-named on2026-09-05** | **high for mapping, unit/source qualification retained** |
 | 20 | primary ED-active time; overlaps valid Wi-Fi | high |
 
 On three quiet 6 GHz comparisons, offset 19 was within 0.019-0.138 percentage points of the
@@ -476,6 +476,10 @@ MT7921's identified `P_CCA_TIME`. Rotating the primary through 36/40/44/48 while
 80 MHz block fixed moved offsets 17/19/20 with the primary, so none is a whole-block measure.
 Offset 18 matches wall time only at 20 MHz and is not a generic clock. The complete dated
 evidence, negative interpretations and runnable tools are in [MT7925_MIB.md](MT7925_MIB.md).
+The original17/19 behavioral names are superseded by the explicit UNI enum and
+firmware map. [Subchannel/NAV measurements](SUBCHANNEL_MEASUREMENTS.md) now add
+separate NAV time, per-lane ED and width-gated secondary CCA; inactive-width
+fields can resemble wall time and must not be interpreted as100% occupancy.
 
 ## Capability map
 
