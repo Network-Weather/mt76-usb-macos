@@ -23,6 +23,9 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 The selected sprint is **R30: C acquisition parity with the Python research baseline**,
 now implemented, qualified, and merged into `main`.
+The next selected work is firmware/chip measurement and bounded transmit discovery.
+Continuous-acquisition work is preserved on its pushed feature branch; a longer soak
+is deferred, not a prerequisite for exploration. See [new PHY experiments](docs/PHY_TRANSMIT.md).
 This is an instrument for network interrogation and bounded radio experiments, not
 baseline connectivity. A proper networking driver is a durable non-goal, not a
 deferred implementation project. R21 is a deferred iPad survey test spike; no iPad
