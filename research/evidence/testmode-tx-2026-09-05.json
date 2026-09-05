@@ -1,0 +1,478 @@
+{
+  "experiment": "MT7961 finite factory packet-generator control; over-air delivery not established",
+  "firmware_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+  "preflight": {
+    "experiment": "MT7961 bounded packet-generator setting preflight; NO TX START",
+    "date_utc": "2026-09-05T10:13:50.477513+00:00",
+    "settings": [
+      [
+        1,
+        0
+      ],
+      [
+        104,
+        0
+      ],
+      [
+        18,
+        5180000
+      ],
+      [
+        15,
+        0
+      ],
+      [
+        71,
+        0
+      ],
+      [
+        72,
+        0
+      ],
+      [
+        73,
+        0
+      ],
+      [
+        113,
+        3
+      ],
+      [
+        114,
+        1
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        6,
+        64
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        8,
+        2000
+      ]
+    ],
+    "version_barriers": [
+      {
+        "setting_selector": 1,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 6,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 104,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 8,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 18,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 10,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 15,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 12,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 71,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 14,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 72,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 1,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 73,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 3,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 113,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 5,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 114,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 7,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 2,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 9,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 3,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 11,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 4,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 13,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 6,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 15,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 7,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 2,
+        "value_u32": 16777218
+      },
+      {
+        "setting_selector": 8,
+        "barrier_query_selector": 0,
+        "eid": 9,
+        "sequence": 4,
+        "value_u32": 16777218
+      }
+    ],
+    "queries": {
+      "2": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 2,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 5
+      },
+      "3": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 3,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 6
+      },
+      "4": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 4,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 7
+      },
+      "6": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 6,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 8
+      },
+      "7": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 7,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 9
+      },
+      "8": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 8,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 10
+      },
+      "15": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 15,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 11
+      },
+      "18": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 18,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 12
+      },
+      "113": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 113,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 13
+      },
+      "114": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 114,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 14
+      },
+      "32": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 32,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 15
+      },
+      "33": {
+        "reply_bytes": 16,
+        "nonzero_bytes": 5,
+        "echoed_selector": 33,
+        "value_u32": 0,
+        "eid": 9,
+        "sequence": 1
+      }
+    },
+    "alive_after": true,
+    "cleanup_reload_alive": true,
+    "error_type": null
+  },
+  "runs": [
+    {
+      "tool": "testmode_tx_probe",
+      "date_utc": "2026-09-05T10:16:13.987118+00:00",
+      "requested_packet_count": 4,
+      "requested_packet_length": 64,
+      "power_code": 0,
+      "channel": 36,
+      "width_mhz": 20,
+      "host_stop_target_s": 0.06,
+      "setting_selectors": [
+        1,
+        104,
+        18,
+        15,
+        71,
+        72,
+        73,
+        113,
+        114,
+        4,
+        3,
+        2,
+        6,
+        11,
+        13,
+        101,
+        102,
+        103,
+        68,
+        262212,
+        69,
+        262213,
+        8,
+        7
+      ],
+      "cleanup": [
+        {
+          "normal_reload_alive": true
+        },
+        {
+          "normal_reload_alive": true
+        }
+      ],
+      "version_before": 16777218,
+      "counters_before": {
+        "32": 0,
+        "33": 0
+      },
+      "tx_start_submitted": true,
+      "host_start_stop_elapsed_s": 0.0691,
+      "observer": {
+        "counts": {
+          "transfers": 141
+        },
+        "unique_sequence_controls": 0,
+        "matching_phy_classes": [],
+        "transfer_limit_reached": false
+      },
+      "counters_after_stop": {
+        "32": 4,
+        "33": 4
+      },
+      "counters_after_stopped_dwell": {
+        "32": 4,
+        "33": 4
+      },
+      "alive_after": [
+        true,
+        true
+      ]
+    },
+    {
+      "tool": "testmode_tx_probe",
+      "date_utc": "2026-09-05T10:17:36.390105+00:00",
+      "requested_packet_count": 4,
+      "requested_packet_length": 64,
+      "power_code": 0,
+      "channel": 36,
+      "width_mhz": 20,
+      "host_stop_target_s": 0.06,
+      "setting_selectors": [
+        1,
+        104,
+        18,
+        15,
+        71,
+        72,
+        73,
+        113,
+        114,
+        4,
+        3,
+        2,
+        6,
+        11,
+        13,
+        101,
+        102,
+        103,
+        68,
+        262212,
+        69,
+        262213,
+        8,
+        7
+      ],
+      "cleanup": [
+        {
+          "normal_reload_alive": true
+        },
+        {
+          "normal_reload_alive": true
+        }
+      ],
+      "version_before": 16777218,
+      "counters_before": {
+        "32": 0,
+        "33": 0
+      },
+      "tx_start_submitted": true,
+      "host_start_stop_elapsed_s": 0.0665,
+      "observer": {
+        "counts": {
+          "transfers": 193
+        },
+        "unique_sequence_controls": 0,
+        "matching_phy_classes": [],
+        "all_good_fcs_frame_classes": [
+          {
+            "shape": {
+              "bw_mhz": 20,
+              "fc_type_subtype": 128,
+              "nss": 1,
+              "phy_mode_raw": 1
+            },
+            "count": 115
+          },
+          {
+            "shape": {
+              "bw_mhz": 20,
+              "fc_type_subtype": 148,
+              "nss": 1,
+              "phy_mode_raw": 1
+            },
+            "count": 4
+          },
+          {
+            "shape": {
+              "bw_mhz": 20,
+              "fc_type_subtype": 196,
+              "nss": 1,
+              "phy_mode_raw": 1
+            },
+            "count": 6
+          },
+          {
+            "shape": {
+              "bw_mhz": 20,
+              "fc_type_subtype": 212,
+              "nss": 1,
+              "phy_mode_raw": 1
+            },
+            "count": 10
+          },
+          {
+            "shape": {
+              "bw_mhz": 20,
+              "fc_type_subtype": 8,
+              "nss": 1,
+              "phy_mode_raw": 1
+            },
+            "count": 55
+          },
+          {
+            "shape": {
+              "bw_mhz": 20,
+              "fc_type_subtype": 180,
+              "nss": 1,
+              "phy_mode_raw": 1
+            },
+            "count": 3
+          }
+        ],
+        "transfer_limit_reached": false
+      },
+      "counters_after_stop": {
+        "32": 4,
+        "33": 4
+      },
+      "counters_after_stopped_dwell": {
+        "32": 4,
+        "33": 4
+      },
+      "alive_after": [
+        true,
+        true
+      ]
+    }
+  ]
+}

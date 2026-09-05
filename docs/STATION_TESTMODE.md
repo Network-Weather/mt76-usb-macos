@@ -202,3 +202,42 @@ The read files carry BSD-2-Clause headers. Used for protocol facts; no vendor
 implementation or header copied into this repository. Request builders and
 bounded experiments are independent. This is a different source from the
 proprietary AP-driver reference described in RELATED_WORK.
+
+## Finite factory packet-generator control, 2026-09-05
+
+The station RF-test packet generator is reachable independently of normal USB
+injection. Two fresh-boot controls requested four64-byte OFDM6 no-ACK data packets
+at channel36/20MHz, power code0, inter-packet interval2000us. A host STOP was sent
+after a target60ms (measured69.1/66.5ms including submission); normal firmware was
+then reloaded on both dongles. This is neither tone nor continuous-carrier mode.
+
+Both runs returned TXED selector32 and TXOK selector33 counts **0 → 4 → 4**,
+where the last measurement follows STOP and a stopped dwell. Version-query
+barriers remained0x01000002. Both radios passed alive/reload checks.
+However, the independent MT7925 observer received **no frame matching the fresh
+synthetic transmitter address**. The second run also found no candidate fixed
+payload marker, despite normal ambient reception. This establishes finite
+generator/counter control, **not over-air delivery** or recovered MT7961 RF quality.
+Power code0 is not promoted to a calibrated radiated-power measurement.
+
+`research/testmode_tx_probe.py --acknowledge-experimental-transmit` reproduces the
+single bounded burst. Its source-derived settings include count7=4 (never zero,
+which means unlimited), length6=64, rate3=4, preamble4=0, power2=0, no-ACK11=1,
+retry13=0, TX path113=3 and NSS114=1. Preamble/rate precede power, matching the
+vendor's ordering. Address commands68/69 use two fragments with BIT18 on the
+second; only a generated locally administered source and broadcast destination
+are used. Frame-header101, sequence102 and payload103 configure synthetic data.
+No calibration bypass, EEPROM/efuse write, association or external-node address
+spoofing is performed. The host STOP is an additional bound, not precision timing.
+
+The settings-only preflight showed why GET must not be treated as confirmation:
+matched EID9 queries for configuration selectors2/3/4/6/7/8/15/18/113/114 all
+returned value0, including nonzero requested settings. The working monitor/channel
+preparation is retained before RF-test entry. Version-query barriers between
+SETs keep pending messages below the four-bit sequence-reuse interval; they are
+responsiveness checks, **not per-setting success acknowledgments**. Tail words
+beyond the source-defined scalar pair are discarded from published evidence.
+
+[Sanitized packet-generator evidence](../research/evidence/testmode-tx-2026-09-05.json).
+Protocol facts come from the same pinned BSD-2-Clause `rftest.h`, QA hooks and
+`operation_gen4m.c` linked above; no vendor implementation is copied.
