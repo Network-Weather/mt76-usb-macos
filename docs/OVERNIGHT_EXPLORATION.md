@@ -5,6 +5,12 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**New GI/LDPC transmit controls:** [MT7925 fixed-rate ROM mapping](FIXED_RATE_TABLE.md)
+locates GI and LDPC bits, and the second dongle independently receives HT8 with
+short GI and with LDPC coding. A corrected UNI40 request also works, but exposes
+post-write validation and an apparently uninitialized configuration byte; the
+on-air probes retain our deterministic direct-table path.
+
 **New STBC transmit format:** [MT7925 HT0/STBC](PHY_TRANSMIT.md) is independently
 received as NSS1/NSTS2/STBC=true, four exact frames and then one on a fresh repeat.
 HT controls bracket both trials; the degraded/variable link prevents a gain claim.

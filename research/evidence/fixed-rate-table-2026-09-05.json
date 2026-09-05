@@ -1,0 +1,66 @@
+{
+  "scope": "Pinned MT7925 UNI40 pointer trace and volatile slot25 command, no host transmissions; no ROM bytes",
+  "pointer_check": {
+    "tool": "mt7925_fixed_rate_rom_read_only",
+    "slot": "0x828cd8",
+    "target": "0x83c0ac",
+    "base": "0x83c0ac",
+    "bytes": 512,
+    "gate_address": "0x222e1b0",
+    "gate_value": "0x1",
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "command_control": {
+    "tool": "mt7925_fixed_rate_slot25_no_tx",
+    "date_utc": "2026-09-05T15:53:28.482111+00:00",
+    "rows": [
+      {
+        "gi": 0,
+        "ltf": 0,
+        "ldpc": 0,
+        "status": 0,
+        "registers": {
+          "0x820d43b0": "0x49",
+          "0x820d43b8": "0x4b",
+          "0x820d43bc": "0x49"
+        },
+        "cache_address": "0x22601b6",
+        "cache_configuration_hex": "4b00090100000000000005010000"
+      },
+      {
+        "gi": 1,
+        "ltf": 1,
+        "ldpc": 1,
+        "status": 0,
+        "registers": {
+          "0x820d43b0": "0x2011049",
+          "0x820d43b8": "0x4b",
+          "0x820d43bc": "0x2011049"
+        },
+        "cache_address": "0x22601b6",
+        "cache_configuration_hex": "4b00090100010101000005010000"
+      },
+      {
+        "gi": 0,
+        "ltf": 0,
+        "ldpc": 0,
+        "status": 0,
+        "registers": {
+          "0x820d43b0": "0x49",
+          "0x820d43b8": "0x4b",
+          "0x820d43bc": "0x49"
+        },
+        "cache_address": "0x22601b6",
+        "cache_configuration_hex": "4b00090100000000000005010000"
+      }
+    ],
+    "before_registers": {
+      "0x820d43b0": "0x100",
+      "0x820d43b8": "0x100",
+      "0x820d43bc": "0xc00"
+    },
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  }
+}

@@ -199,6 +199,39 @@ def test_timing_padding_is_exact_valid_private_ie():
     assert value[1] == len(value) - 2
 
 
+def test_ht_table_controls_are_single_field_changes_with_three_baselines():
+    assert p.suite_rates("ht-table", 6) == p.HT_TABLE_RATES
+    assert len(p.HT_TABLE_RATES) * 10 <= 60
+    assert {rate for _, rate in p.HT_TABLE_RATES} == {0x488}
+    assert p.HT_TABLE_OPTIONS == ((0, 0), (1, 0), (0, 0), (0, 1), (0, 0))
+    with pytest.raises(ValueError, match="lowband"):
+        p.suite_rates("ht-table", 36)
+
+
+@pytest.mark.parametrize(("gi", "ldpc", "word"), [(0, 0, 64), (1, 0, 0x1040), (0, 1, 0x2000040)])
+def test_ht_table_rom_derived_fields(gi, ldpc, word):
+    writes = []
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925, wr=lambda a, v: writes.append((a, v)), rr=lambda _: 0)
+    p.program_rate(dev, 0x488, gi=gi, ldpc=ldpc)
+    assert writes == [(p.c3.ITDR0, 0x488), (p.c3.ITDR1, word), (p.c3.ITCR, 0x80010012)]
+
+
+@pytest.mark.parametrize(
+    ("chip", "code", "gi", "ldpc"),
+    [
+        (m.CHIP_MT7921, 0x488, 1, 0),
+        (m.CHIP_MT7925, 0x600, 0, 1),
+        (m.CHIP_MT7925, 0x488, 1, 1),
+        (m.CHIP_MT7925, 0x488, 2, 0),
+        (m.CHIP_MT7925, 0x488, True, 0),
+        (m.CHIP_MT7925, 0x488, 0, -1),
+    ],
+)
+def test_ht_table_rejects_unbounded_options_before_io(chip, code, gi, ldpc):
+    with pytest.raises(ValueError, match="GI/LDPC"):
+        p.program_rate(SimpleNamespace(CHIP=chip), code, gi=gi, ldpc=ldpc)
+
+
 @pytest.mark.parametrize("length", [True, -1, 127, 129, 256])
 def test_timing_padding_is_bounded(length):
     with pytest.raises(ValueError, match="padding"):

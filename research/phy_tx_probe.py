@@ -5,7 +5,7 @@
 """Try bounded HT/VHT/HE fixed-rate TX, with independent receiver evidence.
 
 At most 60 synthetic no-ACK probes, 50 ms spacing, bounded channels at 20 MHz.
-Lowband/CCK suites use channels1/6/11 and exclude VHT; others use36/149.
+Lowband/coding/timing suites use channels1/6/11 and exclude VHT; others use36/149.
 Known OFDM controls bracket the candidate rates. No association or ambient frame
 output. Full firmware reload in finally removes all experimental transmitter state.
 Requires explicit TX acknowledgment. This is research, not a production API.
@@ -100,6 +100,13 @@ HE_CODING_RATES = (
 )
 CONNAC3_CODING_CODES = {0x4480, 0x210, 0x4600}
 TIMING_BURST_RATES = (("cck1_paced_before", 0), ("cck1_burst", 0), ("cck1_paced_after", 0))
+# Pinned MT7925 ROM83c0ac maps config GI to ITDR1 bits13:12 and LDPC to25.
+# Keep LTF, spatial selection and all unknown low bits at existing baseline.
+# Independent RX, not the field names alone, determines the actual PHY format.
+HT_TABLE_RATES = tuple(
+    (name, 0x488) for name in ("ht8_before", "ht8_gi1", "ht8_middle", "ht8_ldpc", "ht8_after")
+)
+HT_TABLE_OPTIONS = ((0, 0), (1, 0), (0, 0), (0, 1), (0, 0))
 ALLOWED_RATE_CODES = {
     rate
     for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES + HE_CODING_RATES
@@ -117,7 +124,7 @@ def suite_rates(suite, channel):
     if type(channel) is not int or channel not in (1, 6, 11, 36, 149):
         raise ValueError("only bounded non-DFS test channels")
     if (channel <= 11) != (
-        suite in ("lowband", "cck", "preamble", "stbc", "he-coding", "timing-burst")
+        suite in ("lowband", "cck", "preamble", "stbc", "he-coding", "timing-burst", "ht-table")
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
     suites = {
@@ -130,6 +137,7 @@ def suite_rates(suite, channel):
         "stbc": STBC_RATES,
         "he-coding": HE_CODING_RATES,
         "timing-burst": TIMING_BURST_RATES,
+        "ht-table": HT_TABLE_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -162,16 +170,20 @@ def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
     return bytes(data)
 
 
-def program_rate(dev, code):
+def program_rate(dev, code, *, gi=0, ldpc=0):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
+    if type(gi) is not int or type(ldpc) is not int or (gi, ldpc) not in ((0, 0), (1, 0), (0, 1)):
+        raise ValueError("bounded table GI/LDPC controls only")
+    if (gi or ldpc) and (dev.CHIP != m.CHIP_MT7925 or code != 0x488):
+        raise ValueError("table GI/LDPC experiment is MT7925 HT8-only")
     if dev.CHIP != m.CHIP_MT7925:
         return
     # mt7925/mac.c mt7925_mac_set_fixed_rate_table at c5a3bd91.
     dev.wr(c3.ITDR0, code)
-    dev.wr(c3.ITDR1, 1 << 6)
+    dev.wr(c3.ITDR1, (1 << 6) | (gi << 12) | (ldpc << 25))
     dev.wr(c3.ITCR, (1 << 31) | (1 << 16) | c3.RATE_TABLE_INDEX)
     for _ in range(100):
         if not dev.rr(c3.ITCR) & (1 << 31):
@@ -304,6 +316,7 @@ def main():
             "stbc",
             "he-coding",
             "timing-burst",
+            "ht-table",
         ),
         default="baseline",
     )
@@ -320,7 +333,7 @@ def main():
         p.error("timing-burst requires explicit --tx-timing")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
-    if args.suite in ("stbc", "he-coding") and args.transmitter != "mt7925":
+    if args.suite in ("stbc", "he-coding", "ht-table") and args.transmitter != "mt7925":
         p.error("coding suites currently support only the Connac3 transmitter")
     try:
         rates = suite_rates(args.suite, args.channel)
@@ -339,6 +352,7 @@ def main():
         "tx_timing": args.tx_timing,
         "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
+        "table_gi_ldpc": HT_TABLE_OPTIONS if args.suite == "ht-table" else None,
         "submitted": 0,
         "firmware_sha256": {},
     }
@@ -393,7 +407,8 @@ def main():
                     time.sleep(0.3)
                     submission_origin = time.monotonic()
                     for phase, (_, code) in enumerate(rates):
-                        program_rate(tx, code)
+                        gi, ldpc = HT_TABLE_OPTIONS[phase] if args.suite == "ht-table" else (0, 0)
+                        program_rate(tx, code, gi=gi, ldpc=ldpc)
                         for seq in range(phase * args.per_phase, (phase + 1) * args.per_phase):
                             if any(job.done() for job in jobs):
                                 raise RuntimeError("capture stopped before transmit completed")
