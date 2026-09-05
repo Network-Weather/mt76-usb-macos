@@ -29,7 +29,13 @@ test_rxd: $(TEST_OBJS)
 test: test_rxd
 	./test_rxd
 
-clean:
-	rm -f *.o *.d mt7921_smoke mt76_radio_probe test_rxd
+sanitize:
+	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer -I. \
+		test_radio.c ../tests/c_parity_bridge.c mt7921_radio.c mt7921_rxd.c mt7921_rxd_connac3.c \
+		mt7921_mcu.c mt7921_dev.c mt7921_usb.c mt7921_chip.c $(FRAMEWORKS) -o test_radio_sanitize
+	./test_radio_sanitize
 
-.PHONY: all test clean
+clean:
+	rm -f *.o *.d mt7921_smoke mt76_radio_probe test_rxd test_radio_sanitize
+
+.PHONY: all test sanitize clean

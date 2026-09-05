@@ -339,3 +339,87 @@ def test_rate_table_write_and_faults(native, rate, mode):
         assert list(words[:6]) == dev.writes
     if mode == 5:
         assert tuple(words[6:]) == (3, 100, 100)
+
+
+@pytest.fixture(scope="module")
+def native_probe(tmp_path_factory):
+    out = tmp_path_factory.mktemp("c-probe") / "probe"
+    sources = [
+        "mt76_radio_probe.c",
+        "mt7921_radio.c",
+        "mt7921_dev.c",
+        "mt7921_mcu.c",
+        "mt7921_usb.c",
+        "mt7921_chip.c",
+        "mt7921_rxd.c",
+        "mt7921_rxd_connac3.c",
+    ]
+    subprocess.run(  # noqa: S603 -- fixed compiler and local source files
+        [
+            "/usr/bin/clang",
+            "-std=c11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            *(str(ROOT / "c" / name) for name in sources),
+            "-framework",
+            "IOKit",
+            "-framework",
+            "CoreFoundation",
+            "-o",
+            str(out),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    return out
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--transmit", "1"],
+        ["--transmit", "61", "--acknowledge-experimental-transmit"],
+        ["--transmit", "1", "--rate", "cck1", "--acknowledge-experimental-transmit"],
+        ["--transmit", "1", "--power-code", "-1", "--acknowledge-experimental-transmit"],
+        ["--transmit", "1", "--power-code", "1", "--acknowledge-experimental-transmit"],
+        ["--transmit", "20", "--seconds", "1", "--acknowledge-experimental-transmit"],
+        [
+            "--transmit",
+            "1",
+            "--band",
+            "6GHz",
+            "--channel",
+            "37",
+            "--acknowledge-experimental-transmit",
+        ],
+        ["--g5-cycle"],
+        ["--seconds", "NaN"],
+        ["--seconds", "0"],
+        ["--channel", "37"],
+        ["--channel", "36junk"],
+        ["--power-code", "-8"],
+        ["--unknown"],
+    ],
+)
+def test_cli_rejects_before_usb(native_probe, extra):
+    result = subprocess.run(  # noqa: S603 -- compiled local test executable, no shell
+        [str(native_probe), "--usb-id", "0846:9072", "--fw", "/nonexistent-test-firmware", *extra],
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 2
+    assert "Missing/unpinned" not in result.stderr
+    assert not result.stdout
+
+
+def test_passive_cli_needs_firmware_not_tx_ack(native_probe):
+    result = subprocess.run(  # noqa: S603 -- compiled local test executable, no shell
+        [str(native_probe), "--usb-id", "0846:9072", "--fw", "/nonexistent-test-firmware"],
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 1
+    assert "Missing/unpinned" in result.stderr

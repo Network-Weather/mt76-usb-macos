@@ -29,4 +29,6 @@ c/*.d
 c/mt7921_smoke
 c/mt76_radio_probe
 c/test_rxd
+c/test_radio_sanitize
+*.dSYM/
 .venv

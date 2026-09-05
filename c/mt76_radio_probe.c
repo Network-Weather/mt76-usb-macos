@@ -106,7 +106,7 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
             }
             continue;
         }
-        mt7921_rxd_frame_t f;
+        mt7921_rxd_frame_t f = {0};
         ret = mt7921_rxd_decoder_for_chip(dev->usb.chip)(raw, len, &f);
         if (ret) {
             if (len >= 24 && (f.pkt_type == PKT_TYPE_NORMAL || f.pkt_type == PKT_TYPE_NORMAL_MCU))
