@@ -1,0 +1,186 @@
+{
+  "tool": "mt7925_pfmu_gate_controls",
+  "code_windows": [
+    {
+      "address": "0xe007b588",
+      "bytes": 512,
+      "sha256": "172d52247968706e72cb605cfe25280d1287be7e0d4a8259ab51a1388440cc68"
+    },
+    {
+      "address": "0xe0057ea4",
+      "bytes": 2048,
+      "sha256": "8064e24f3e512ce7794aa564b2c1a2fadf5cbc64322d3488c04d492a682bb796"
+    }
+  ],
+  "caveat": "Point snapshots, not transient tracing; release masks are not arbitrary-state restoration",
+  "runs": [
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:38:06.900522+00:00",
+      "tag": 5,
+      "profile": 0,
+      "bfer": 0,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 72,
+      "registers": true,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 68,
+          "tlv_tag": 5,
+          "tlv_bytes": 64,
+          "recognized_profile_reply": true,
+          "payload_bytes": 56,
+          "payload_nonzero_bytes": 1,
+          "payload_distinct_bytes": 2,
+          "payload_sha256": "2421ef3ffcf280fa51fb9234fb94423b1d1eabbdde08380971ead80426235b77",
+          "bfer_raw": 0,
+          "candidate_profile_fields": {
+            "profile_id_raw": 0,
+            "explicit_bf_raw": 1,
+            "bandwidth_code_raw": 0,
+            "mode_code_raw": 0,
+            "mu_raw": 0,
+            "nrow_raw": 0,
+            "ncol_raw": 0,
+            "invalid_profile_bit": false,
+            "snr_sts_bytes_raw": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "transfers": 1,
+      "gate_before": {
+        "0x830a3068": "0x0",
+        "0x830a306c": "0x0",
+        "0x830a3070": "0x0",
+        "0x830a3074": "0x0",
+        "0x830a3080": "0x0",
+        "0x830a3084": "0x0",
+        "0x831a3068": "0x0",
+        "0x831a306c": "0x0",
+        "0x831a3070": "0x0",
+        "0x831a3074": "0x0",
+        "0x831a3080": "0x0",
+        "0x831a3084": "0x0"
+      },
+      "request_sequence": 13,
+      "gate_after_query": {
+        "0x830a3068": "0x0",
+        "0x830a306c": "0x0",
+        "0x830a3070": "0x0",
+        "0x830a3074": "0x0",
+        "0x830a3080": "0x0",
+        "0x830a3084": "0x0",
+        "0x831a3068": "0x0",
+        "0x831a306c": "0x0",
+        "0x831a3070": "0x0",
+        "0x831a3074": "0x0",
+        "0x831a3080": "0x0",
+        "0x831a3084": "0x0"
+      },
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "gate_after_cleanup": {
+        "0x830a3068": "0x0",
+        "0x830a306c": "0x0",
+        "0x830a3070": "0x0",
+        "0x830a3074": "0x0",
+        "0x830a3080": "0x0",
+        "0x830a3084": "0x0",
+        "0x831a3068": "0x0",
+        "0x831a306c": "0x0",
+        "0x831a3070": "0x0",
+        "0x831a3074": "0x0",
+        "0x831a3080": "0x0",
+        "0x831a3084": "0x0"
+      }
+    },
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:38:11.737936+00:00",
+      "tag": 7,
+      "profile": 0,
+      "bfer": 0,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 16,
+      "registers": true,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 280,
+          "tlv_tag": 7,
+          "tlv_bytes": 276,
+          "recognized_profile_reply": true,
+          "payload_bytes": 268,
+          "payload_nonzero_bytes": 28,
+          "payload_distinct_bytes": 19,
+          "payload_sha256": "1863558a3c438b04e0fd90acaede5dbfe6705ca42aba175a8ea14a485e7cce05",
+          "subcarrier_raw": 0
+        }
+      ],
+      "transfers": 1,
+      "gate_before": {
+        "0x830a3068": "0x0",
+        "0x830a306c": "0x0",
+        "0x830a3070": "0x0",
+        "0x830a3074": "0x0",
+        "0x830a3080": "0x0",
+        "0x830a3084": "0x0",
+        "0x831a3068": "0x0",
+        "0x831a306c": "0x0",
+        "0x831a3070": "0x0",
+        "0x831a3074": "0x0",
+        "0x831a3080": "0x0",
+        "0x831a3084": "0x0"
+      },
+      "request_sequence": 13,
+      "gate_after_query": {
+        "0x830a3068": "0x0",
+        "0x830a306c": "0x0",
+        "0x830a3070": "0x0",
+        "0x830a3074": "0x0",
+        "0x830a3080": "0x0",
+        "0x830a3084": "0x0",
+        "0x831a3068": "0x0",
+        "0x831a306c": "0x0",
+        "0x831a3070": "0x0",
+        "0x831a3074": "0x0",
+        "0x831a3080": "0x0",
+        "0x831a3084": "0x0"
+      },
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "gate_after_cleanup": {
+        "0x830a3068": "0x0",
+        "0x830a306c": "0x0",
+        "0x830a3070": "0x0",
+        "0x830a3074": "0x0",
+        "0x830a3080": "0x0",
+        "0x830a3084": "0x0",
+        "0x831a3068": "0x0",
+        "0x831a306c": "0x0",
+        "0x831a3070": "0x0",
+        "0x831a3074": "0x0",
+        "0x831a3080": "0x0",
+        "0x831a3084": "0x0"
+      }
+    }
+  ]
+}

@@ -27,6 +27,16 @@ import usb.core
 import mt7921u as m
 
 EXPECTED_TLV_SIZE = {5: 64, 7: 276}
+PFMU_GATE_OFFSETS = (0x68, 0x6C, 0x70, 0x74, 0x80, 0x84)
+
+
+def gate_snapshot(dev):
+    """Fixed controls read/written by firmware e0058500; no register writes here."""
+    return {
+        hex(base + offset): hex(dev.rr(base + offset))
+        for base in (0x830A3000, 0x831A3000)
+        for offset in PFMU_GATE_OFFSETS
+    }
 
 
 def candidate_tag_fields(payload):
@@ -109,6 +119,7 @@ def main():
     parser.add_argument("--tag", type=int, choices=(5, 7), default=5)
     parser.add_argument("--profile", type=int, choices=(0, 1), default=0)
     parser.add_argument("--bfer", type=int, choices=(0, 1), default=0)
+    parser.add_argument("--registers", action="store_true", help="snapshot fixed PFMU controls")
     args = parser.parse_args()
     payload = read_request(args.tag, args.profile, args.bfer)
     out = {
@@ -121,6 +132,7 @@ def main():
         "subcarrier": 0,
         "uni_option": 6,
         "request_bytes": len(payload),
+        "registers": args.registers,
         "events": [],
         "transfers": 0,
     }
@@ -129,6 +141,8 @@ def main():
         original_option = dev.uni_option
         try:
             dev.bringup(*images, log=lambda *_: None)
+            if args.registers:
+                out["gate_before"] = gate_snapshot(dev)
             dev.uni_option = lambda cid, query=False: (
                 6 if cid == 0x33 else original_option(cid, query)
             )
@@ -145,6 +159,8 @@ def main():
                 event = event_summary(raw, seq, args.tag)
                 if event is not None:
                     out["events"].append(event)
+            if args.registers:
+                out["gate_after_query"] = gate_snapshot(dev)
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
@@ -152,6 +168,8 @@ def main():
             dev.uni_option = original_option
             dev.bringup(*images, log=lambda *_: None)
             out["cleanup_reload_alive"] = dev.alive()
+            if args.registers:
+                out["gate_after_cleanup"] = gate_snapshot(dev)
     print(json.dumps(out, indent=2))
     return int("error_type" in out or not out["cleanup_reload_alive"])
 

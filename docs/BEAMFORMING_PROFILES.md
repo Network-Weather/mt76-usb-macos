@@ -86,10 +86,36 @@ coefficients into profile memory.
 
 ## References and validation
 
+### Reads temporarily change hardware controls
+
+Loaded-code tracing follows tag reads through `0xe007b58a`, data reads through
+`0xe007b646`, and both through control helper `0xe0058500` before and after
+the transfer. This helper modifies offsets `0x68/6c/70/74/80/84` in the
+`0x830a3000` / `0x831a3000` register banks. Its release path applies masks,
+**not restoration of the pre-call values**:
+
+- `+0x68/6c`: acquisition sets bits 31:10; release preserves only bits 9:0.
+- `+0x70/74/80/84`: acquisition preserves mask `0x00021fff` and sets
+  `0x0001e000`; release preserves mask `0x00021fff`.
+
+The exact hardware meaning of these controls is not established. Transfer-error
+branches can bypass the release call in the traced wrappers; no such failure
+was observed. This is a reason to retain bounded probes and normal reloads,
+not to treat periodic profile queries as universally side-effect-free.
+
+Two additional fresh-boot runs, one per read tag, used `--registers` to read all
+twelve addresses before the query, after the query, and after cleanup. All were
+zero at all three observation points; replies and alive/reload checks passed.
+These snapshots do not observe transient acquisition writes or exclude changes
+outside the traced controls. The host performs no writes to these registers.
+[Sanitized control evidence](../research/evidence/beamforming-gates-2026-09-05.json)
+includes these snapshots and hashes/addresses of the locally inspected code,
+not firmware bytes or profile coefficients.
+
 Protocol facts (not copied implementation) from Motorola gen4m commit
 [`8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/tree/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec):
 `include/nic_uni_cmd_event.h` BF enums/layouts, `nic/nic_uni_cmd_event.c` conversion
 and event handling, `common/wlan_oid.c` SET/no-ACK choice, and `include/wlan_oid.h`
-PFMU tag unions. Firmware hash is pinned in the loaded-code document. Twenty
+PFMU tag unions. Firmware hash is pinned in the loaded-code document. Twenty-one
 offline tests cover request bounds, exact size/sequence filters, ambient-frame
 rejection, metadata bits, and exclusion of write/sounding tags.

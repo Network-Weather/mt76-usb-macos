@@ -6,6 +6,26 @@ import pytest
 from research import beamforming_read_probe as p
 
 
+def test_gate_snapshot_reads_only_fixed_source_derived_controls():
+    class Device:
+        def __init__(self):
+            self.addresses = []
+
+        def rr(self, address):
+            self.addresses.append(address)
+            return 0
+
+    dev = Device()
+    result = p.gate_snapshot(dev)
+    assert dev.addresses == [
+        base + offset
+        for base in (0x830A3000, 0x831A3000)
+        for offset in (0x68, 0x6C, 0x70, 0x74, 0x80, 0x84)
+    ]
+    assert len(result) == 12
+    assert set(result.values()) == {"0x0"}
+
+
 def event(tag=5, seq=0, payload=None):
     size = p.EXPECTED_TLV_SIZE[tag]
     body = bytearray(size + 4)
