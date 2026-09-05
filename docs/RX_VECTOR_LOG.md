@@ -114,6 +114,56 @@ cache or successful counter reset as proof of a fresh measurement. The changing
 HT→HE records establish reusable finite batches, not continuous streaming,
 exact synthetic-frame attribution, or calibrated frequency units.
 
+## Transmitter matching does not isolate this log
+
+`--match-ta` compares matching→mismatching→matching synthetic transmitter
+addresses in three reset-separated four-frame HT batches, after four exact
+normal controls (16 submissions maximum). The mismatching target differs in
+one bit of the final byte; the transmitted address stays unchanged. No ambient
+address is selected or published. `--rf-clean-start` additionally reloads the
+receiver after the controls, without normal monitor/sniffer/tune preparation.
+
+Firmware provenance:
+
+- SET68 stores the six-byte receiver address at config+`0x3e`; SET69 stores the
+  transmitter address at+`0x44`. `0x00932628..0x0093265c` takes four bytes when
+  selector high16=0 and two bytes when high16=4 (selector bit18), then applies
+  configuration after the second fragment.
+- SET70 accepts rule0..3 at `0x009326e2`, stores config+`0x38`, and calls
+  `0x009302f0` for both addresses. With rule0, a zero address disables that
+  side; nonzero TA sets flag+`0x3c`, while receiver flag is+`0x3d`.
+- TA programming reaches `0x0094beba` → ROM slot`0x0082287c`, verified to hold
+  `0x0082776a`. That routine packs low32/high16 address bits, adds enable bit16
+  to the upper word, and writes the selected address slot. The band0/slot0
+  pair is`0x820e5208/0x820e520c`. No host write to those registers was needed.
+- The bounded state check reads the band0 configuration pointer from
+  `GP+0x1417c = 0x0201717c`, validates its RAM range/alignment, and exports
+  only rule/flags and equality to our synthetic target. No pointer or address
+  bytes are exported. A separate no-transmit check showed those flags and
+  the enabled matching hardware address survive RX start and STOP.
+
+Two fresh-boot A/B/A runs received4/4 normal controls. Log counts were5/4/4
+and4/5/4. **The mismatch still retained three HT records in both runs.**
+RX-OK counts were6/4/4 and4/6/4, so they did not isolate the target either.
+In the second run, every phase confirmed transmitter flag on, receiver flag
+off, rule0, hardware enable on, and hardware equality to the requested target,
+including the intentionally wrong target. This is not a failed-setting inference.
+RX-error counts were0/0/0 and0/5/0; ambient/error mixing prevents assigning
+those errors to our four stimuli.
+
+The clean-entry control also received4/4 normal controls, then reloaded the
+receiver without the normal preparation. All three RF batches returned count0,
+RX-OK0/RX-error0 and a zero cached vector, despite verified match configuration.
+**That all-zero control does not establish successful filtering:** the matching
+positive control failed too. It identifies an RF initialization dependency still
+to separate. Both-radio cleanup passed in all runs.
+[Sanitized evidence](../research/evidence/rx-vector-match-2026-09-05.json).
+
+Consequently, this path is not a source-attributed CFO interface. The firmware
+vector writer has no visible address comparison in its record-copy path; the
+live negative controls are stronger evidence than the existence of a match slot.
+Do not infer the behavior of other receive modes or all match rules from rule0.
+
 ## Avoid a dead-end control
 
 The source-defined SET109 `SET_RXV_INDEX` packs group1,group2,band in bytes0,1,2.

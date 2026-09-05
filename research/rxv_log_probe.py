@@ -9,6 +9,8 @@ Pinned firmware writer stride176 and getter bound exclude the newest record.
 Both radios are normally reloaded on exit. Explicit transmit opt-in required.
 --rearm-he adds four independently observed HE controls, then resets volatile
 TX/RX counters and the stopped log before four HE stimuli (16 packets total).
+--match-ta instead tests matching/mismatching/matching synthetic transmitter
+filters with three reset-separated RF batches (16 packets including controls).
 """
 
 import argparse
@@ -60,22 +62,67 @@ def reset_log_request():
     return struct.pack("<B3xII", 1, 91, 0)
 
 
+def match_ta_requests(source):
+    """SET68/69 address fragments then SET70 rule0; synthetic local TA only."""
+    if not isinstance(source, bytes) or len(source) != 6 or source[0] != 2:
+        raise ValueError("synthetic locally administered transmitter required")
+    return tuple(
+        struct.pack("<B3xII", 1, selector, value)
+        for selector, value in (
+            (68, 0),
+            (68 | (1 << 18), 0),
+            (69, int.from_bytes(source[:4], "little")),
+            (69 | (1 << 18), int.from_bytes(source[4:], "little")),
+            (70, 0),
+        )
+    )
+
+
+def match_ta_state(dev, source):
+    """Only rule/enable flags and equality to our synthetic TA; never addresses."""
+    match_ta_requests(source)  # Validate before device access.
+    if dev.CHIP != m.CHIP_MT7921:
+        raise ValueError("pinned MT7961 match state only")
+    # SET helper 0x9302f0 uses GP+0x1417c band0 config pointer.
+    pointer = dev.rr(0x0201717C)
+    if not 0x02000000 <= pointer <= 0x0207FFC0 or pointer & 3:
+        raise ValueError("unexpected configuration pointer")
+    rule = dev.rr(pointer + 0x38)
+    flags = dev.rr(pointer + 0x3C) & 0xFFFF
+    # ROM callback 0x82776a writes slot0 low32/high16 plus enable bit16.
+    low, high = dev.rr(0x820E5208), dev.rr(0x820E520C)
+    return {
+        "rule": rule,
+        "transmitter_filter_flag": bool(flags & 255),
+        "receiver_filter_flag": bool(flags >> 8),
+        "hardware_enable_bit": bool(high & (1 << 16)),
+        "hardware_matches_synthetic_target": struct.pack("<IH", low, high & 65535) == source,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
-    parser.add_argument("--rearm-he", action="store_true")
+    experiment = parser.add_mutually_exclusive_group()
+    experiment.add_argument("--rearm-he", action="store_true")
+    experiment.add_argument("--match-ta", action="store_true")
+    parser.add_argument("--rf-clean-start", action="store_true")
     args = parser.parse_args()
     if not args.acknowledge_experimental_transmit:
         parser.error("explicit transmit acknowledgment required")
+    if args.rf_clean_start and not args.match_ta:
+        parser.error("clean-start control requires --match-ta")
     out = {
         "tool": "rxv_log_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "maximum_submissions": 16 if args.rearm_he else 8,
+        "maximum_submissions": 16 if args.rearm_he or args.match_ta else 8,
         "rate": "HT MCS8 two-stream",
         "channel": 36,
         "width_mhz": 20,
         "submitted": 0,
         "rearm_he": args.rearm_he,
+        "match_ta": args.match_ta,
+        "rf_clean_start": args.rf_clean_start,
     }
     marker = b"\xdd\x0c\x02NW\x01" + os.urandom(8)
     frames = {i: controlled_frame(i) + marker for i in range(out["maximum_submissions"])}
@@ -86,13 +133,14 @@ def main():
         images = [m.load_firmware(d.CHIP, m.firmware_dir()) for d in radios]
         rx, tx = radios
 
-        def boot(i):
+        def boot(i, monitor=True):
             d = radios[i]
             with contextlib.redirect_stdout(sys.stderr):
                 d.bringup(*images[i], log=lambda *_: None)
-            d.set_monitor_mode()
-            d.set_sniffer(True)
-            d.tune("5GHz", 36, 36, 20)
+            if monitor:
+                d.set_monitor_mode()
+                d.set_sniffer(True)
+                d.tune("5GHz", 36, 36, 20)
 
         def read_log_count():
             raw = rx.mcu_cmd_word(m.MCU_CE_CMD(1), struct.pack("<B3xII", 2, 36, 40), timeout=1000)
@@ -100,6 +148,23 @@ def main():
             if len(body) < 8 or struct.unpack_from("<I", body)[0] != 36:
                 raise RuntimeError("missing matched count")
             return struct.unpack_from("<I", body, 4)[0]
+
+        def packet_counts():
+            values = {}
+            for selector, name in ((34, "rx_ok"), (35, "rx_error")):
+                raw = rx.mcu_cmd_word(
+                    m.MCU_CE_CMD(1), struct.pack("<B3xII", 2, selector, 0), timeout=1000
+                )
+                body = rx.reply_body(raw)
+                if len(body) < 8 or struct.unpack_from("<I", body)[0] != selector:
+                    raise RuntimeError("missing matched packet counter")
+                values[name] = struct.unpack_from("<I", body, 4)[0]
+            return values
+
+        def set_match(source):
+            for request in match_ta_requests(source):
+                rx.mcu_cmd_word(m.MCU_CE_CMD(1), request, wait=False)
+                time.sleep(0.1)
 
         def read_log_fields(count):
             if not 2 <= count <= 5:
@@ -186,6 +251,9 @@ def main():
                 out["normal_he_control"] = burst(4, he_code)
                 if not out["normal_he_control"]["exact_synthetic_frames"]:
                     raise RuntimeError("no independent HE control; skip RF experiment")
+            if args.rf_clean_start:
+                # Preserve independent controls but remove inherited sniffer configuration.
+                boot(0, monitor=False)
             rx.mcu_cmd_word(m.MCU_CE_CMD(1), struct.pack("<B3xII", 0, 1, 0), wait=False)
             time.sleep(0.2)
             for selector, value in (
@@ -194,11 +262,16 @@ def main():
                 (106, 3 << 16),
                 (18, 5180000),
                 (15, 0),
-                (1, 2),
             ):
                 rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(selector, value), wait=False)
                 time.sleep(0.1)
+            if args.match_ta:
+                set_match(frames[0][10:16])
+            rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 2), wait=False)
+            time.sleep(0.1)
             out["before"] = {"count": read_log_count(), "cached": snapshot(rx)}
+            if args.match_ta:
+                out["first_match_state"] = match_ta_state(rx, frames[0][10:16])
             out["rf_stimulus"] = burst(8 if args.rearm_he else 4)
             out["after"] = {
                 "count": read_log_count(),
@@ -209,6 +282,28 @@ def main():
             time.sleep(0.2)
             out["stopped"] = {"count": read_log_count(), "cached": snapshot(rx)}
             out["log_readout"] = read_log_fields(out["stopped"]["count"])
+            if args.match_ta:
+                out["first_match_packet_counts"] = packet_counts()
+                out["match_followups"] = []
+                source = frames[0][10:16]
+                mismatch = source[:5] + bytes([source[5] ^ 1])
+                for phase, target, start in (("mismatch", mismatch, 8), ("rematch", source, 12)):
+                    set_match(target)
+                    rx.mcu_cmd_word(m.MCU_CE_CMD(1), reset_log_request(), wait=False)
+                    time.sleep(0.1)
+                    row = {"phase": phase, "reset_count": read_log_count()}
+                    out["match_followups"].append(row)
+                    if row["reset_count"] != 0:
+                        raise RuntimeError("log did not reset before filter batch")
+                    rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 2), wait=False)
+                    time.sleep(0.1)
+                    row["match_state"] = match_ta_state(rx, target)
+                    row["stimulus"] = burst(start)
+                    rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 0), wait=False)
+                    time.sleep(0.2)
+                    row["count"] = read_log_count()
+                    row["packet_counts"] = packet_counts()
+                    row["log"] = read_log_fields(row["count"])
             if args.rearm_he:
                 # Source operation_gen4m.c:mt_op_reset_txrx_counter; firmware
                 # 0x9327a0/0x9327a4 explicitly zero log count and last-start offset.
