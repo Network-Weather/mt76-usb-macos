@@ -122,6 +122,28 @@ the candidate 66-word prefix and control observations. The tool retains both
 layout hypotheses; the candidate interpretation does not silently replace the
 reference format. Validation checkpoint: 618 Python tests passed.
 
+## Individual RX masks identify signal-word byte positions
+
+The existing paired-radio receiver probe was repeated with masks 1 and 2. Each
+run submitted 12 monitor controls and 36 synthetic no-ACK probes at 50 ms spacing;
+monitor controls decoded 11/12 and 12/12 respectively. RX counters changed with
+either single-chain mask and froze after stop. Both radios reloaded/alive afterward.
+
+| RX mask | Selector 46 byte 0, signed | Selector 46 byte 1, signed | Selector 50 |
+|---|---|---|---|
+| 1 | changes: -94,-93,-92 | constant -109 | changes |
+| 2 | constant -109 | changes: -95,-96,-89 | fixed 0x80804040 |
+
+This supports selector 46's low two bytes being chain-0 and chain-1 signal
+readouts, respectively, with -109 a disabled-chain value in these runs. It does
+not calibrate their RF units or prove -109 is a universal sentinel. Selector 50
+does **not** behave like a whole-radio signal readout: it remains at the same word
+with only chain 1 active. Treat it as chain-dependent until firmware decoding
+establishes more. The aggregate signal does not show a reliable 0/-16/0 probe
+attenuation pattern; ambient traffic still dominates last-sample observations.
+
+[Sanitized chain-isolation evidence](../research/evidence/testmode-rx-chains-2026-09-05.json).
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 
