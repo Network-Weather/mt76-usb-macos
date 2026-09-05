@@ -67,6 +67,26 @@ It is not treated as a standalone sensor query. The most useful remaining lead
 is the MT7925's ToA-engine producer/control path, with explicit stream freshness
 and clock/units validation required before any topology or distance claim.
 
+### Additional public-source pointers, not activated interfaces
+
+The same pinned tree's `include/nic/nic_rx.h` retains20-byte TMRI/TMRR report
+structures with32-bit ToA/ToD, validity/status bits, and (for TMRR) a transmitter
+address. Their legacy packet header does not match a normal Connac3 RXD, so they
+are not applied to arbitrary USB records. No such report has been validated.
+
+`nic_connac3x_tx.h` names management type1 as timing measurement in TXD DW1
+bits24:21. However the inspected `nic/nic_txd_v3.c` management constructor
+(lines436–442) selects the normal type; an enum alone is not a demonstrated
+timing-engine enable recipe. No timing-type descriptor was transmitted.
+
+The compile-conditional802.11v path in `mgmt/wnm.c` requires an in-use station
+record and trigger, builds a directed action frame and follows up after TX-done.
+Its `wnmReportTimingMeas` uses a conversion named`MICRO_TO_10NANO`; numerical
+unit conversion is not evidence of10ns hardware resolution. The corresponding
+`nic/nic_tx.c` block uses older reserved-field names. This remains source lineage,
+not a verified API for the pinned station firmware or a distance measurement.
+No peer action, calibration command or new register write was sent for this audit.
+
 ## Evidence and source provenance
 
 [Sanitized query/location evidence](../research/evidence/timing-capabilities-2026-09-05.json).
@@ -79,3 +99,6 @@ Firmware is pinned in [NOTICE](../NOTICE.md). Vendor source at commit
 - [UNI RTT layouts](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic_uni_cmd_event.h).
 - [LOCATION and TMR enums](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic_cmd_event.h).
 - [RF-test setters](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/rftest.h).
+- [Legacy timing report layouts](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic/nic_rx.h).
+- [Connac3 descriptor constructor](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/nic/nic_txd_v3.c).
+- [802.11v timing workflow](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/mgmt/wnm.c).
