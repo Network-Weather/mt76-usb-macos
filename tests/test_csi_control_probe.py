@@ -157,8 +157,16 @@ def test_second_passive_primary_is_bounded():
     with pytest.raises(ValueError, match="primary149"):
         p.receive_center(160, 149)
     for invalid in (True, 0, 37, 165, "36"):
-        with pytest.raises(ValueError, match="primary36/149"):
+        with pytest.raises(ValueError, match="primary1/6/11/36/149"):
             p.receive_center(20, invalid)
+
+
+@pytest.mark.parametrize("primary", [1, 6, 11])
+def test_24ghz_csi_geometry_is_receive_20mhz_only(primary):
+    assert p.receive_center(20, primary) == primary
+    for width in (80, 160):
+        with pytest.raises(ValueError, match=r"2\.4GHz only"):
+            p.receive_center(width, primary)
 
 
 def test_normal_frame_shape_contains_only_type_and_phy():

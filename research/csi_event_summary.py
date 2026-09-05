@@ -57,13 +57,35 @@ def parse_tlvs(body):
     return fields
 
 
+def iq_layout(fields):
+    """Separate the pinned CCK count13/storage64 format from ordinary dimensions.
+
+    Firmware e009e3bc/e009e444 fixes 128-byte arrays but reports count13.
+    Its e009e0fa branch expands signed14-bit I/Q. Count13 is not a justified
+    reason to silently discard the other51 stored pairs or label them subcarriers.
+    """
+    count = struct.unpack("<I", fields[5])[0]
+
+    def scalar(tag):
+        return struct.unpack("<I", fields[tag])[0]
+
+    if scalar(0) == 22 and scalar(1) == 6 and scalar(12) & 65535 == 0:
+        if count != 13 or scalar(8) != 0 or any(len(fields.get(t, b"")) != 128 for t in (6, 7)):
+            raise ValueError("CSI pinned CCK dimensions")
+        samples = struct.unpack("<128h", fields[6] + fields[7])
+        if any(not -8192 <= value <= 8191 for value in samples):
+            raise ValueError("CSI pinned CCK signed14 storage")
+        return "pinned_cck_count13_storage64"
+    if not 1 <= count <= 1024 or any(len(fields.get(t, b"")) != 2 * count for t in (6, 7)):
+        raise ValueError("CSI I/Q dimensions")
+    return "count_matches_storage"
+
+
 def validate_fields(fields):
     for tag in (0, 1, 2, 3, 4, 5, 8, 9, 12, 18, 20, 21):
         if len(fields.get(tag, b"")) != 4:
             raise ValueError(f"CSI required scalar tag {tag}")
-    count = struct.unpack("<I", fields[5])[0]
-    if not 1 <= count <= 1024 or any(len(fields.get(t, b"")) != 2 * count for t in (6, 7)):
-        raise ValueError("CSI I/Q dimensions")
+    iq_layout(fields)
     if len(fields.get(10, b"")) != 8:
         raise ValueError("CSI transmitter field size")
 
@@ -83,8 +105,11 @@ class CsiSummary:
         self.errors = collections.Counter()
         self.shapes = collections.Counter()
         self.padding = collections.Counter()
+        self.layouts = collections.Counter()
         self.metadata = collections.defaultdict(collections.Counter)
         self.fingerprints = set()
+        self.rx_fingerprints = collections.defaultdict(set)
+        self.rx_events = collections.Counter()
         self.iq_nonzero = 0
         self.iq_values = 0
         self.iq_min = None
@@ -101,6 +126,7 @@ class CsiSummary:
             self.errors[str(exc)] += 1
             return
         self.events += 1
+        self.layouts[iq_layout(fields)] += 1
         words = {
             tag: struct.unpack("<I", fields[tag])[0]
             for tag in (0, 1, 2, 3, 4, 5, 8, 9, 12, 18, 20, 21)
@@ -112,6 +138,7 @@ class CsiSummary:
             "snr_raw_byte": words[3] & 255,
             "band_raw": words[4],
             "data_count": words[5],
+            "iq_stored_pairs": len(fields[6]) // 2,
             "dbw_raw": words[8],
             "channel_index_raw": words[9],
             "rx_mode_raw": words[12] & 65535,
@@ -128,7 +155,11 @@ class CsiSummary:
             self.metadata[name][value] += 1
         iq = fields[6] + fields[7]
         # Digest is transient: only cardinality is ever exported.
-        self.fingerprints.add(hashlib.sha256(iq).digest())
+        fingerprint = hashlib.sha256(iq).digest()
+        self.fingerprints.add(fingerprint)
+        rx_index = words[18] & 65535
+        self.rx_fingerprints[rx_index].add(fingerprint)
+        self.rx_events[rx_index] += 1
         samples = struct.unpack(f"<{len(iq) // 2}h", iq)
         self.iq_values += len(samples)
         self.iq_nonzero += sum(value != 0 for value in samples)
@@ -140,6 +171,15 @@ class CsiSummary:
         return {
             "valid_events": self.events,
             "invalid_events": self.invalid,
+            "iq_layout_counts": dict(self.layouts),
+            "iq_distinct_by_rx_index": [
+                {
+                    "rx_index": index,
+                    "events": self.rx_events[index],
+                    "distinct_payloads": len(values),
+                }
+                for index, values in sorted(self.rx_fingerprints.items())
+            ],
             "validation_errors": dict(self.errors),
             "zero_tail_bytes_counts": [
                 {"bytes": size, "count": count} for size, count in sorted(self.padding.items())

@@ -313,6 +313,45 @@ a validated standalone normal-mode SNR register API. Never convert those idle
 fields to a fabricated tag3 value16 and claim a measurement.
 [Normal-field control](../research/evidence/csi-signal-normal-control-2026-09-05.json).
 
+### 2.4GHz CCK reports: recognized format, unchanged I/Q
+
+The passive probe now permits channels1/6/11 at20MHz only. Channel1 initially
+returned52 CSI-shaped events rejected for I/Q dimensions, despite48 good-FCS
+CCK beacons in the START window. This was neither silence nor a working
+ordinary64-subcarrier CSI result.
+
+The firmware has an explicit special case: state+`0x10c` equal6 sets I/Q TLV
+storage lengths to128 bytes each (`0xe009e3bc..c2`), while`0xe009e444` sets the
+reported count to13. Converter`0xe009e0f6` branches on count13 at`0xe009e0fa`;
+it extracts/sign-extends14-bit I and Q fields (source bits13:0 and27:14) in a
+fixed256-value loop per component, then the event copies only128 bytes per
+component. This does **not** justify calling the first13 entries valid taps,
+discarding the rest, or treating64 stored pairs as64 OFDM subcarriers.
+
+The parser recognizes only the narrow observed variant: report version22,
+CBW raw6, receive mode0/CCK, DBW0, count13, two128-byte arrays, and signed14-bit
+storage values. It labels this `pinned_cck_count13_storage64`, retaining both
+declared count13 and actual storage64 in aggregate output. Other dimension
+mismatches remain errors. CBW6 here is a special code, not6MHz bandwidth.
+
+| Fresh passive START window | Structured reports | I/Q diversity | Signal/identity control |
+|---|---:|---|---|
+| Channel1, 11:57:30 UTC | 46 CCK | Only2 distinct arrays total | All from heard beacon transmitters |
+| Channel6, 11:57:37 UTC | 52 CCK | Only2 distinct arrays total | All from heard beacon transmitters |
+| Channel11, 11:58:15 UTC | 92 CCK | RX0:1/46 distinct; RX1:1/46 | All from heard beacon transmitters |
+| Channel36 OFDM control, 11:58:23 UTC | 116 OFDM | RX0:58/58; RX1:58/58 | Known working route after reload |
+
+CCK metadata/RSSI/transmitters changed while the arrays did not. CCK SNR was
+always zero and no offset-removed SNR was produced. Nonzero coefficients and
+well-formed messages therefore **do not establish live CCK channel estimates**.
+The OFDM control demonstrates the per-index diversity check works and that
+normal reload preserved the previously working measurement route. All runs
+passed reload/alive checks; no invalid reports remained after narrow shape
+recognition. `valid_events` means structurally valid, not calibrated/fresh RF data.
+
+[CCK and OFDM control evidence](../research/evidence/csi-cck-shape-2026-09-05.json).
+Raw arrays, transmitter identities, pair keys and fingerprints are not published.
+
 ## Passive source coincidence and a receiver-pair key
 
 `--correlate` compares identifiers only transiently within each bounded receive

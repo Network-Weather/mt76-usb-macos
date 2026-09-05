@@ -58,6 +58,63 @@ def test_summary_only_decodes_pinned_nonzero_snr():
     ]
 
 
+def cck_body(override=None):
+    fields = {
+        0: struct.pack("<I", 22),
+        1: struct.pack("<I", 6),
+        5: struct.pack("<I", 13),
+        6: struct.pack("<64h", *([-8192, 8191] * 32)),
+        7: struct.pack("<64h", *([17] * 64)),
+    }
+    fields.update(override or {})
+    return body(override=fields)
+
+
+def test_cck_count13_is_not_silently_treated_as_13_stored_pairs():
+    summary = CsiSummary()
+    summary.add(cck_body())
+    result = summary.export()
+    assert result["valid_events"] == 1
+    assert result["iq_layout_counts"] == {"pinned_cck_count13_storage64": 1}
+    assert result["metadata_counts"]["data_count"] == [{"value": 13, "count": 1}]
+    assert result["metadata_counts"]["iq_stored_pairs"] == [{"value": 64, "count": 1}]
+    assert result["iq_int16_values"] == 128
+    assert "snr_pinned_encoding_minus16" not in result["metadata_counts"]
+    assert result["iq_distinct_by_rx_index"] == [
+        {"rx_index": 0, "events": 1, "distinct_payloads": 1}
+    ]
+
+
+def test_cck_repeated_iq_is_reported_per_index_without_exporting_digests():
+    summary = CsiSummary()
+    for _ in range(3):
+        for rx in (0, 1):
+            summary.add(cck_body({18: struct.pack("<I", rx)}))
+    result = summary.export()
+    assert result["iq_distinct_by_rx_index"] == [
+        {"rx_index": 0, "events": 3, "distinct_payloads": 1},
+        {"rx_index": 1, "events": 3, "distinct_payloads": 1},
+    ]
+    assert "fingerprint" not in str(result)
+
+
+@pytest.mark.parametrize(
+    "override",
+    [
+        {0: struct.pack("<I", 21)},
+        {1: bytes(4)},
+        {5: struct.pack("<I", 12)},
+        {6: bytes(26)},
+        {8: struct.pack("<I", 1)},
+        {12: struct.pack("<I", 1)},
+        {7: struct.pack("<64h", *([8192] * 64))},
+    ],
+)
+def test_special_cck_shape_is_not_a_general_dimension_escape(override):
+    with pytest.raises(ValueError, match="CSI"):
+        parse_fields(cck_body(override))
+
+
 @pytest.mark.parametrize(
     "override",
     [{5: struct.pack("<I", 0)}, {5: struct.pack("<I", 1025)}, {6: b"x"}, {10: b"123456"}, {0: b""}],

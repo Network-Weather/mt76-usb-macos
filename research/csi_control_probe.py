@@ -5,7 +5,7 @@
 Vendor gen4m 8fddb9d7: gl_csi.h, nic_uni_cmd_event.h/c, wlan_oid.c.
 MT7961 CE 0x4c has a 48-byte control; MT7925 UNI 0x4a has 8-byte
 stop/start TLVs. UNI SET/no-ACK follows wlanoidSetCSIControl. Normal monitor
-channel36/149 at bounded receive widths, three to five <=1-second/512-transfer windows,
+channel1/6/11/36/149 at bounded receive widths, three to five <=1-second/512-transfer windows,
 finally STOP + reload. --ack requests diagnostic acknowledgments separately
 from the vendor's no-ACK envelope.
 This tests command/event availability, not validity or calibration of CSI.
@@ -149,11 +149,15 @@ def frame_selector_request(band, selector):
 
 
 def receive_center(width, primary=36):
-    """Two previously tested passive primaries; no arbitrary geometry or TX."""
+    """Bounded passive primaries; 2.4GHz is 20MHz only, no arbitrary geometry or TX."""
     if type(width) is not int or width not in (20, 80, 160):
         raise ValueError("only 20/80/160 MHz receive widths")
-    if type(primary) is not int or primary not in (36, 149):
-        raise ValueError("only primary36/149")
+    if type(primary) is not int or primary not in (1, 6, 11, 36, 149):
+        raise ValueError("only primary1/6/11/36/149")
+    if primary <= 11:
+        if width != 20:
+            raise ValueError("2.4GHz only supports 20MHz in this probe")
+        return primary
     if primary == 149:
         if width == 160:
             raise ValueError("primary149 only supports 20/80 in this probe")
@@ -226,7 +230,7 @@ def main():
     parser.add_argument("--chains", type=int, choices=(1, 2))
     parser.add_argument("--chain-order", choices=("before", "after"), default="before")
     parser.add_argument("--width", type=int, choices=(20, 80, 160), default=20)
-    parser.add_argument("--primary", type=int, choices=(36, 149), default=36)
+    parser.add_argument("--primary", type=int, choices=(1, 6, 11, 36, 149), default=36)
     parser.add_argument(
         "--state", action="store_true", help="read fixed firmware CSI configuration"
     )
@@ -341,7 +345,7 @@ def main():
             dev.bringup(*images, log=lambda *_: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            dev.tune("5GHz", args.primary, center, args.width)
+            dev.tune("2.4GHz" if args.primary <= 11 else "5GHz", args.primary, center, args.width)
             if args.state:
                 out["control_before"] = control_snapshot(dev)
             if args.hardware:
