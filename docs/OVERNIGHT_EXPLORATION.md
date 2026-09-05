@@ -5,6 +5,17 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**New raw in-band/wideband signal surfaces work in normal mode:**
+[Firmware provenance and live controls](INBAND_WIDEBAND_SIGNAL.md) resolve
+GET50 to830003e0 and decode its signed upper bytes. Two RF/stopped cross-checks
+match32/32 FAGC formulas and48/48 stopped scalar comparisons. Normal CCK/HT/HE
+LTF1 Group5+ICS runs receive48/48 good packets with24/24 populated, paired FAGC
+records. HE LTF0 fails good-FCS reception and is retained. Live register
+polling is not atomic with packets. A further16/16 HT trial extracts the fields
+directly from ordinary Group5, including8/8 ICS-off packets; ICS is not required.
+Units/antenna mapping and interference
+classification are not calibrated. All cleanup passes; no production API change.
+
 **Remaining RF-init controls narrowed; PHY counters do not fill P-RXV2:**
 [Exact field maps and accessor correction](LEGACY_ICS.md#remaining-rf-init-fields-and-phy-counter-control)
 show GP+10820 is a writer, not a getter. Several RF-init values already match

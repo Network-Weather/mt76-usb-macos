@@ -1,5 +1,8 @@
 # MT7961 PHY diagnostic CN/EVM fields
 
+For the newly resolved normal-mode in-band/wideband register and frame-associated
+FAGC fields, see [in-band / wideband signal provenance](INBAND_WIDEBAND_SIGNAL.md).
+
 The firmware's diagnostic output exposes a **nine-bit CN field and two EVM
 bytes** from one PHY register. This is a new raw observation surface, not yet
 calibrated channel quality, per-packet EVM, or a validated condition-number scale.

@@ -21,11 +21,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from research import legacy_ics_probe as legacy
+from research import legacy_signal_fields as signal_fields
 from research import normal_phy_counter_probe as counters
 from research import phy_tx_probe as phy
 from research import rmac_ics_match as matching
 from research.noise_self_tx_probe import packet
 from research.txpower_register_probe import check_image, m
+
+PHY_SETTINGS = {
+    "ht8": {"code": 0x488, "ltf": 0},
+    "he2ss0": {"code": 0x600, "ltf": 0},
+    "he2ss0-ltf1": {"code": 0x600, "ltf": 1},
+    "cck1": {"code": 0, "ltf": 0},
+}
 
 
 def own_ics_observation(raw, packets):
@@ -44,6 +52,7 @@ def own_ics_observation(raw, packets):
     common = struct.unpack_from("<I", raw, 16)[0]
     rcpi = struct.unpack_from("<I", raw, 40)[0]
     p20, p21 = struct.unpack_from("<II", raw, 104)
+    c7, c8 = struct.unpack_from("<II", raw, 44)
     cfo = (p20 >> 19) | ((p21 & 127) << 13)
     if cfo & (1 << 19):
         cfo -= 1 << 20
@@ -55,6 +64,7 @@ def own_ics_observation(raw, packets):
             "bandwidth_code": (common >> 8) & 7,
         },
         "rcpi_bytes_at40": [rcpi & 255, (rcpi >> 8) & 255],
+        "firmware_fagc_fields": signal_fields.fagc_band0(c7, c8),
         "source_prxv2_at104_hypothesis": {"cfo_signed20": cfo, "snr_bits": (p20 >> 13) & 63},
     }
 
@@ -64,6 +74,7 @@ def acquire(tx, rx, packets):
         raise ValueError("four or eight prepared frames only")
     pending = list(packets.items())
     submitted, good, statuses = [], {}, []
+    normal_fagc = {}
     normal, aggregates = [], []  # Own normal records; opaque ICS stays local only.
     counts = collections.Counter()
     decoder = m.decoder_for(rx)
@@ -107,6 +118,11 @@ def acquire(tx, rx, packets):
                     }
                     if len(normal) < matching.LIMIT:
                         normal.append(bytes(raw))
+                    c1 = matching.legacy_signatures(raw).get("crxv72")
+                    if c1 is not None:
+                        normal_fagc[index] = signal_fields.fagc_band0(
+                            *struct.unpack_from("<II", c1, 28)
+                        )
             shape = legacy.aggregate_shape(raw)
             if shape and len(aggregates) < matching.LIMIT:
                 aggregates.append(bytes(raw[: shape["bytes"]]))
@@ -115,6 +131,7 @@ def acquire(tx, rx, packets):
         "attempts": attempts,
         "submitted_sequences": submitted,
         "exact_good_phy": good,
+        "ordinary_group5_fagc_fields": normal_fagc,
         "tx_status": statuses,
         "receiver_packet_types": dict(counts),
         "in_memory_matching": matching.reduce_matches(normal, aggregates, legacy=True),
@@ -132,6 +149,7 @@ def main():
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--enable-group5", action="store_true")
     parser.add_argument("--enable-phy-counters", action="store_true")
+    parser.add_argument("--phy", choices=tuple(PHY_SETTINGS), default="ht8")
     args = parser.parse_args()
     if not (args.activate_legacy_rmac_ics and args.acknowledge_experimental_transmit):
         parser.error("explicit ICS and transmit acknowledgments required")
@@ -141,6 +159,8 @@ def main():
         "channel": 6,
         "group5_requested": args.enable_group5,
         "phy_counters_requested": args.enable_phy_counters,
+        "requested_phy": args.phy,
+        "requested_phy_settings": PHY_SETTINGS[args.phy],
         "phases": [],
     }
     originals, attempted = {}, False
@@ -191,7 +211,7 @@ def main():
             if args.enable_group5:
                 attempted = True
                 rx.wr(legacy.DMA_DCR0, legacy.valid_word(rx.rr(legacy.DMA_DCR0)) | legacy.G5_ENABLE)
-            phy.program_rate(tx, 0x488)
+            phy.program_rate(tx, **PHY_SETTINGS[args.phy])
             nonce = os.urandom(8)
             for first, last, enabled in ((0, 4, False), (4, 12, True), (12, 16, False)):
                 if first:
