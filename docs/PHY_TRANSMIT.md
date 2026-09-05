@@ -145,6 +145,44 @@ reloads are verified. [Sanitized evidence](../research/evidence/width-error-cont
 contains bounded status, counter and anonymous PHY observations, not failed
 frame bytes or ambient identifiers. Production defaults remain unchanged.
 
+#### Secondary-channel detections follow the TX bandwidth setting
+
+The zero-PD result above is specific to the receiver configured at40MHz.
+Two fresh `--suite frequency` runs retain TX primary6/center8/40MHz and put
+RX at20MHz on primary6, center8, secondary10, then primary6 again, bracketed
+by HT8/20MHz controls. All four secondary-channel HT40 windows in each run
+increment OFDM PD and MDRDY by1, yet the return-primary HT40 windows increment
+neither. Narrow before/after controls each deliver4/4 exact good frames.
+Initial-primary and center detections vary; retune history remains a confounder.
+
+`--suite secondary` removes that confounder from the width comparison: hold
+RX at channel10/20MHz through four consecutive HT8 phases, with requested TX
+widths20/40/20/40. Only the TX descriptor bandwidth changes between these
+phases; the fixed-rate table is reprogrammed with identical contents. Primary6
+HT20 controls bracket the sequence. Each phase has four no-ACK synthetic frames.
+
+| Fixed-secondary trial | OFDM PD increments in middle four phases | Exact good primary controls |
+| --- | --- | --- |
+| Initial | 0/4/0/4 | 4/4 before and after |
+| Published reproducer | 0/5/0/4 | 4/4 before and after |
+
+Every one of the16 wide windows across both trials has an OFDM detection;
+all16 narrow secondary windows have none. MDRDY increments in8/8 wide
+windows initially and7/8 in the repeat (15/16 combined); the missing window has
+an OFDM SIG error. The repeat also retains one extra PD and unrelated CCK
+activity. No wide exact payload or failed-frame metadata arrives in either
+fixed-secondary run. All24 TX statuses per run report count1/no errors and
+the requested bandwidth; both filter/counter restoration and normal reloads pass.
+
+This supports a width-dependent RF effect independently detected by the other
+radio, **not** validated40MHz packet transmission, calibrated occupied bandwidth,
+or authenticated ownership of individual PHY counter increments. The receiver
+at40MHz and its tuning history now deserve specific attention. Linux's sniffer
+encoding intentionally uses bandwidth0 for both20 and40MHz, with secondary
+channel offset distinguishing40; changing it to the80MHz enum is not a fix.
+[Pinned sniffer encoding](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7921/mcu.c#L1181).
+[Sanitized four-run evidence](../research/evidence/width-frequency-controls-2026-09-05.json).
+
 ### HE extended-range SU is received, but not yet a robust link
 
 `--suite he-er --transmitter mt7925 --channel 6 --per-phase 4` uses five

@@ -42,3 +42,17 @@ def test_failed_metadata_never_authenticates_or_exports_payload():
     assert not meta["own_frame_identity_verified"]
     assert "private-frame" not in repr(meta)
     assert "frame" not in meta
+
+
+def test_frequency_control_is_bounded_and_bracketed():
+    assert len(p.FREQUENCY_PLAN) == len(p.RX_CHANNELS) == 6
+    assert p.RX_CHANNELS == (6, 6, 8, 10, 6, 6)
+    assert [width for _, _, width in p.FREQUENCY_PLAN] == [20, 40, 40, 40, 40, 20]
+    assert {rate for _, rate, _ in p.FREQUENCY_PLAN} == {0x488}
+
+
+def test_secondary_control_holds_receiver_fixed_across_width_alternation():
+    assert len(p.SECONDARY_PLAN) == len(p.SECONDARY_CHANNELS) == 6
+    assert p.SECONDARY_CHANNELS == (6, 10, 10, 10, 10, 6)
+    assert [width for _, _, width in p.SECONDARY_PLAN] == [20, 20, 40, 20, 40, 20]
+    assert {rate for _, rate, _ in p.SECONDARY_PLAN} == {0x488}

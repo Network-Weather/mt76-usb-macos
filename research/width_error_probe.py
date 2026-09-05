@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 """Bounded 20/40MHz TX with anonymous failed-frame metadata and PHY controls.
 
-28 synthetic no-ACK frames. Known volatile counter/filter bits only; restore
+At most28 synthetic no-ACK frames. Known volatile counter/filter bits only; restore
 original bits and reload both radios. No power, calibration or NVM changes.
 """
 
@@ -36,6 +36,24 @@ PLAN = (
     ("he40", 0x600, 40),
     ("he20_after", 0x600, 20),
 )
+FREQUENCY_PLAN = (
+    ("ht20_primary_before", 0x488, 20),
+    ("ht40_primary", 0x488, 40),
+    ("ht40_center", 0x488, 40),
+    ("ht40_secondary", 0x488, 40),
+    ("ht40_primary_repeat", 0x488, 40),
+    ("ht20_primary_after", 0x488, 20),
+)
+RX_CHANNELS = (6, 6, 8, 10, 6, 6)
+SECONDARY_PLAN = (
+    ("ht20_primary_before", 0x488, 20),
+    ("ht20_secondary_before", 0x488, 20),
+    ("ht40_secondary", 0x488, 40),
+    ("ht20_secondary_after", 0x488, 20),
+    ("ht40_secondary_repeat", 0x488, 40),
+    ("ht20_primary_after", 0x488, 20),
+)
+SECONDARY_CHANNELS = (6, 10, 10, 10, 10, 6)
 
 
 def main():
@@ -43,6 +61,7 @@ def main():
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--enable-error-capture", action="store_true")
     parser.add_argument("--enable-counters", action="store_true")
+    parser.add_argument("--suite", choices=("width", "frequency", "secondary"), default="width")
     args = parser.parse_args()
     if not all(
         (args.acknowledge_experimental_transmit, args.enable_error_capture, args.enable_counters)
@@ -50,7 +69,9 @@ def main():
         parser.error("explicit TX, error-capture and counter-write opt-ins required")
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "scope": "28 bounded no-ACK MT7925 probes at primary6/center8/40MHz; MT7961 FCS filter open and known PHY counter enable; no power changes",
+        "scope": "bounded no-ACK MT7925 probes with TX configured primary6/center8/40MHz; MT7961 FCS filter open and known PHY counter enable; no power changes",
+        "suite": args.suite,
+        "maximum_submissions": 28 if args.suite == "width" else 24,
         "submitted": 0,
         "phases": [],
     }
@@ -91,10 +112,29 @@ def main():
             if out["enabled_counter_bits"] != 0xA00:
                 raise ValueError("PHY counter enable readback failed")
             decode = m.decoder_for(rx)
-            for phase, (name, code, width) in enumerate(PLAN):
+            plan = {"width": PLAN, "frequency": FREQUENCY_PLAN, "secondary": SECONDARY_PLAN}[
+                args.suite
+            ]
+            previous_rx_channel = None
+            for phase, (name, code, width) in enumerate(plan):
+                channels = SECONDARY_CHANNELS if args.suite == "secondary" else RX_CHANNELS
+                rx_channel = channels[phase] if args.suite != "width" else 6
+                retune = args.suite == "frequency" or (
+                    args.suite == "secondary" and rx_channel != previous_rx_channel
+                )
+                if retune:
+                    rx.tune("2.4GHz", rx_channel, rx_channel, 20)
+                    rx.set_rxfilter(0, m.MT7921_FIF_BIT_CLR, 2)
+                    time.sleep(0.05)
+                    if rfcr_word(rx) & 2 or rx.rr(CONTROL) & MASK != 0xA00:
+                        raise ValueError("receiver control changed on retune")
+                previous_rx_channel = rx_channel
                 he = code == 0x600
                 p.program_rate(tx, code, ltf=int(he), ldpc=int(he))
                 current = {
+                    "rx_channel": rx_channel,
+                    "rx_width_mhz": 40 if args.suite == "width" else 20,
+                    "receiver_retuned": retune,
                     "name": name,
                     "rate_code": code,
                     "tx_width_mhz": width,

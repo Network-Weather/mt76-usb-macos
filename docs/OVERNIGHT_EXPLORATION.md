@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Wide TX has an independent secondary-channel RF signature:**
+[fixed-secondary width reversals](PHY_TRANSMIT.md#secondary-channel-detections-follow-the-tx-bandwidth-setting)
+produce OFDM detections in16/16 wide windows and0/16 narrow windows, with the
+receiver held on channel10/20MHz. Exact primary-channel controls are4/4 before
+and after both runs. No wide payload is decoded; a40MHz-configured receiver's
+earlier zero-PD result is not global absence of RF emission. All controls restored.
+
 **Read-only thermal telemetry:** [MT7925 UNI35 analog-die queries](THERMAL_TELEMETRY.md)
 return45/45°C around raw ADC68, then45/47°C with the strict reproducer. The
 existing MT7961 path returns32°C. Digital-die sensor0 gives no result, including
