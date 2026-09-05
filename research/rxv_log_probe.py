@@ -7,6 +7,8 @@ least one before four RF RX stimuli. STOP precedes reading four PHY words from a
 three records. No full vectors, frame identities, payloads or hashes are emitted.
 Pinned firmware writer stride176 and getter bound exclude the newest record.
 Both radios are normally reloaded on exit. Explicit transmit opt-in required.
+--rearm-he adds four independently observed HE controls, then resets volatile
+TX/RX counters and the stopped log before four HE stimuli (16 packets total).
 """
 
 import argparse
@@ -53,24 +55,32 @@ def log_fields(word0, word6, word20, word21):
     }
 
 
+def reset_log_request():
+    """SET91=0: traced volatile TX/RX counters plus log count/offset, not NVM."""
+    return struct.pack("<B3xII", 1, 91, 0)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
+    parser.add_argument("--rearm-he", action="store_true")
     args = parser.parse_args()
     if not args.acknowledge_experimental_transmit:
         parser.error("explicit transmit acknowledgment required")
     out = {
         "tool": "rxv_log_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "maximum_submissions": 8,
+        "maximum_submissions": 16 if args.rearm_he else 8,
         "rate": "HT MCS8 two-stream",
         "channel": 36,
         "width_mhz": 20,
         "submitted": 0,
+        "rearm_he": args.rearm_he,
     }
     marker = b"\xdd\x0c\x02NW\x01" + os.urandom(8)
-    frames = {i: controlled_frame(i) + marker for i in range(8)}
+    frames = {i: controlled_frame(i) + marker for i in range(out["maximum_submissions"])}
     code = (1 << 10) | (2 << 6) | 8
+    he_code = (1 << 10) | (8 << 6)
     with contextlib.ExitStack() as stack:
         radios = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
         images = [m.load_firmware(d.CHIP, m.firmware_dir()) for d in radios]
@@ -149,7 +159,8 @@ def main():
                 "transfer_limit_reached": counts["transfers"] == 1024,
             }
 
-        def burst(start):
+        def burst(start, rate=code):
+            program_rate(tx, rate)
             ready = threading.Event()
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
                 job = pool.submit(collect, ready, start)
@@ -157,7 +168,7 @@ def main():
                     raise RuntimeError("observer not ready")
                 for seq in range(start, start + 4):
                     frame = frames[seq]
-                    body = descriptor(tx, frame, seq, code) + frame
+                    body = descriptor(tx, frame, seq, rate) + frame
                     wire = struct.pack("<I", len(body)) + body
                     wire += bytes((-len(wire)) % 4 + 4)
                     tx.bulk_out(tx.ep_out_ac_be, wire, 1000)
@@ -168,10 +179,13 @@ def main():
         try:
             for i in range(2):
                 boot(i)
-            program_rate(tx, code)
             out["normal_control"] = burst(0)
             if not out["normal_control"]["exact_synthetic_frames"]:
                 raise RuntimeError("no independent control receipt; skip RF stimulus")
+            if args.rearm_he:
+                out["normal_he_control"] = burst(4, he_code)
+                if not out["normal_he_control"]["exact_synthetic_frames"]:
+                    raise RuntimeError("no independent HE control; skip RF experiment")
             rx.mcu_cmd_word(m.MCU_CE_CMD(1), struct.pack("<B3xII", 0, 1, 0), wait=False)
             time.sleep(0.2)
             for selector, value in (
@@ -185,7 +199,7 @@ def main():
                 rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(selector, value), wait=False)
                 time.sleep(0.1)
             out["before"] = {"count": read_log_count(), "cached": snapshot(rx)}
-            out["rf_stimulus"] = burst(4)
+            out["rf_stimulus"] = burst(8 if args.rearm_he else 4)
             out["after"] = {
                 "count": read_log_count(),
                 "cached": snapshot(rx),
@@ -195,6 +209,22 @@ def main():
             time.sleep(0.2)
             out["stopped"] = {"count": read_log_count(), "cached": snapshot(rx)}
             out["log_readout"] = read_log_fields(out["stopped"]["count"])
+            if args.rearm_he:
+                # Source operation_gen4m.c:mt_op_reset_txrx_counter; firmware
+                # 0x9327a0/0x9327a4 explicitly zero log count and last-start offset.
+                rx.mcu_cmd_word(m.MCU_CE_CMD(1), reset_log_request(), wait=False)
+                time.sleep(0.1)
+                out["after_counter_reset"] = {"count": read_log_count(), "cached": snapshot(rx)}
+                if out["after_counter_reset"]["count"] != 0:
+                    raise RuntimeError("stopped log reset did not clear count")
+                rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 2), wait=False)
+                time.sleep(0.1)
+                out["rearmed_he_stimulus"] = burst(12, he_code)
+                rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 0), wait=False)
+                time.sleep(0.2)
+                count = read_log_count()
+                out["rearmed_stopped"] = {"count": count, "cached": snapshot(rx)}
+                out["rearmed_log_readout"] = read_log_fields(count)
             out["alive_after"] = [d.alive() for d in radios]
         except Exception as exc:
             out["error_type"] = type(exc).__name__

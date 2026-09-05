@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
+import struct
 import sys
 
 import pytest
@@ -42,3 +43,7 @@ def test_missing_tx_ack_fails_before_usb(monkeypatch):
     with pytest.raises(SystemExit) as exc:
         p.main()
     assert exc.value.code == 2
+
+
+def test_reset_is_exact_source_defined_volatile_counter_command():
+    assert p.reset_log_request() == struct.pack("<B3xII", 1, 91, 0)

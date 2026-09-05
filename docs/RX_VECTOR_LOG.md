@@ -86,6 +86,34 @@ received traffic/nonzero cache in those controls. The controlled stimulus made
 the log observable. This is not proof that stimulus is a formal prerequisite;
 the passive windows simply provided no useful samples.
 
+## Rearming the log and receiving HE
+
+`--rearm-he` extends the bounded experiment to16 total synthetic frames: four
+normal HT controls, four normal HE-SU/MCS0/two-stream controls, then four HT and
+four HE RF-test stimuli in separate batches. Both control formats must have
+independent exact-frame receipt before the RF-test experiment proceeds.
+
+The public counter reset SET91=0, `<B3xII>(1, 91, 0)`, dispatches through
+`0x00932780`. Besides resetting TX/RX counters, firmware stores zero to the
+per-band log count at `0x009327a0` and last-record offset at `0x009327a4`.
+This is a volatile counter reset, not a log-only operation or an NVM write.
+The tool stops RX, reads the first batch, resets, requires count zero, then
+restarts RX for the second batch. It never reads old records after the reset.
+
+The first live validation received **4/4 HT and4/4 HE normal controls**. Its
+first log reached5 and returned three HT records. Reset changed count5→0;
+the second batch reached4 and returned three **HE mode8** records, with raw
+CFO -4167/-4493/-4471, integer CFO -4949/-5336/-5310, SNR bits28/27/28 and
+RCPI bytes28/29 each. Both radios reloaded and passed alive checks.
+[Sanitized evidence](../research/evidence/rx-vector-log-rearm-2026-09-05.json).
+
+**Reset does not invalidate or clear the latest-vector cache.** Immediately
+after reset its old integer CFO -28025 and SNR bits27 remained, despite count0.
+New HE reception subsequently replaced it. Consumers must not treat a nonzero
+cache or successful counter reset as proof of a fresh measurement. The changing
+HT→HE records establish reusable finite batches, not continuous streaming,
+exact synthetic-frame attribution, or calibrated frequency units.
+
 ## Avoid a dead-end control
 
 The source-defined SET109 `SET_RXV_INDEX` packs group1,group2,band in bytes0,1,2.
