@@ -1,0 +1,1216 @@
+{
+  "dispatcher_pointer_observation": {
+    "date_utc": "2026-09-05T19:13:00.577169+00:00",
+    "address": "0x221c04c",
+    "cid": 54,
+    "handler": "0xe0053786",
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "scope": "Four passive fresh-boot runs: channel6 initial, channel6 repeat, channel36, channel6 return. First prototype predates the channel field and used fixed channel6. No TX, UNI36 activation or band1 writes.",
+  "runs": [
+    {
+      "date_utc": "2026-09-05T19:28:18.509722+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "bank_addresses": {
+        "ordinary_getter": "0x83088600",
+        "timer_getter": "0x83001000"
+      },
+      "rows": [
+        {
+          "duration_requested": 0.25,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 0.25910070817917585,
+          "stopped": {
+            "ordinary_getter": [
+              144,
+              0,
+              4,
+              20,
+              4,
+              0,
+              32,
+              25502,
+              1532,
+              1,
+              18
+            ],
+            "timer_getter": [
+              11,
+              1,
+              4,
+              22,
+              3,
+              0,
+              38,
+              25606,
+              1550,
+              2,
+              20
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              144,
+              0,
+              4,
+              20,
+              4,
+              0,
+              32,
+              25502,
+              1532,
+              1,
+              18
+            ],
+            "timer_getter": [
+              11,
+              1,
+              4,
+              22,
+              3,
+              0,
+              38,
+              25606,
+              1550,
+              2,
+              20
+            ]
+          }
+        },
+        {
+          "duration_requested": 1,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 1.01252599991858,
+          "stopped": {
+            "ordinary_getter": [
+              675,
+              0,
+              9,
+              71,
+              6,
+              3,
+              77,
+              98946,
+              5940,
+              7,
+              120
+            ],
+            "timer_getter": [
+              46,
+              2,
+              15,
+              81,
+              5,
+              4,
+              104,
+              99513,
+              5948,
+              7,
+              129
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              675,
+              0,
+              9,
+              71,
+              6,
+              3,
+              77,
+              98946,
+              5940,
+              7,
+              120
+            ],
+            "timer_getter": [
+              46,
+              2,
+              15,
+              81,
+              5,
+              4,
+              104,
+              99513,
+              5948,
+              7,
+              129
+            ]
+          }
+        }
+      ],
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0
+      },
+      "baseline_before": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "baseline_after": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T19:28:43.378025+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "bank_addresses": {
+        "ordinary_getter": "0x83088600",
+        "timer_getter": "0x83001000"
+      },
+      "channel": 6,
+      "rows": [
+        {
+          "duration_requested": 0.25,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 0.26135983294807374,
+          "stopped": {
+            "ordinary_getter": [
+              178,
+              0,
+              5,
+              21,
+              8,
+              1,
+              10,
+              26617,
+              1211,
+              2,
+              0
+            ],
+            "timer_getter": [
+              8,
+              0,
+              6,
+              26,
+              7,
+              1,
+              15,
+              26780,
+              1207,
+              2,
+              1
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              178,
+              0,
+              5,
+              21,
+              8,
+              1,
+              10,
+              26617,
+              1211,
+              2,
+              0
+            ],
+            "timer_getter": [
+              8,
+              0,
+              6,
+              26,
+              7,
+              1,
+              15,
+              26780,
+              1207,
+              2,
+              1
+            ]
+          }
+        },
+        {
+          "duration_requested": 1,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 1.011129500111565,
+          "stopped": {
+            "ordinary_getter": [
+              606,
+              4,
+              20,
+              66,
+              9,
+              2,
+              75,
+              101615,
+              4907,
+              5,
+              78
+            ],
+            "timer_getter": [
+              34,
+              7,
+              21,
+              76,
+              12,
+              2,
+              90,
+              102119,
+              4923,
+              7,
+              96
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              606,
+              4,
+              20,
+              66,
+              9,
+              2,
+              75,
+              101615,
+              4907,
+              5,
+              78
+            ],
+            "timer_getter": [
+              34,
+              7,
+              21,
+              76,
+              12,
+              2,
+              90,
+              102119,
+              4923,
+              7,
+              96
+            ]
+          }
+        }
+      ],
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0
+      },
+      "baseline_before": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "baseline_after": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T19:28:49.333886+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "bank_addresses": {
+        "ordinary_getter": "0x83088600",
+        "timer_getter": "0x83001000"
+      },
+      "channel": 36,
+      "rows": [
+        {
+          "duration_requested": 0.25,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 0.2651401669718325,
+          "stopped": {
+            "ordinary_getter": [
+              31839,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              31841,
+              14,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              31839,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              31841,
+              14,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "duration_requested": 1,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 1.0146222920157015,
+          "stopped": {
+            "ordinary_getter": [
+              121509,
+              429,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              121502,
+              434,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              121509,
+              429,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              121502,
+              434,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0
+      },
+      "baseline_before": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "baseline_after": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T19:29:21.681424+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "bank_addresses": {
+        "ordinary_getter": "0x83088600",
+        "timer_getter": "0x83001000"
+      },
+      "channel": 6,
+      "rows": [
+        {
+          "duration_requested": 0.25,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 0.25590808293782175,
+          "stopped": {
+            "ordinary_getter": [
+              171,
+              1,
+              6,
+              25,
+              3,
+              0,
+              24,
+              24271,
+              2204,
+              0,
+              0
+            ],
+            "timer_getter": [
+              16,
+              1,
+              7,
+              30,
+              4,
+              0,
+              19,
+              24400,
+              2219,
+              1,
+              8
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              171,
+              1,
+              6,
+              25,
+              3,
+              0,
+              24,
+              24271,
+              2204,
+              0,
+              0
+            ],
+            "timer_getter": [
+              16,
+              1,
+              7,
+              30,
+              4,
+              0,
+              19,
+              24400,
+              2219,
+              1,
+              8
+            ]
+          }
+        },
+        {
+          "duration_requested": 1,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "host_enable_stop_seconds": 1.00806491705589,
+          "stopped": {
+            "ordinary_getter": [
+              766,
+              4,
+              16,
+              58,
+              14,
+              3,
+              195,
+              97848,
+              6346,
+              0,
+              81
+            ],
+            "timer_getter": [
+              32,
+              5,
+              19,
+              84,
+              14,
+              2,
+              132,
+              98529,
+              6353,
+              2,
+              159
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              766,
+              4,
+              16,
+              58,
+              14,
+              3,
+              195,
+              97848,
+              6346,
+              0,
+              81
+            ],
+            "timer_getter": [
+              32,
+              5,
+              19,
+              84,
+              14,
+              2,
+              132,
+              98529,
+              6353,
+              2,
+              159
+            ]
+          }
+        }
+      ],
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "threshold_labels_raw": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0
+      },
+      "baseline_before": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "baseline_after": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true
+      },
+      "cleanup_reload_alive": true
+    }
+  ]
+}

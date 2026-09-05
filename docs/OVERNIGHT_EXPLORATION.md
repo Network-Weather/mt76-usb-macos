@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**MT7925 has a working multi-bin PHY histogram:**
+[firmware-traced controls](MT7925_NOISE_HISTOGRAM.md) establish reset, timed
+accumulation and stopped stability in two band0 register views. Four fresh boots
+show channel6 concentrated in bins7–8, channel36 in bin0, then a return to the
+channel6 distribution. Both views have identical totals but differing bins in
+all eight windows. No calibrated noise floor or chain labels claimed. No TX or
+UNI36 activation; only two traced volatile masks, all restorations/reloads pass.
+
 **Per-rate power reports work, but MT7925 inactive-width rows retain history:**
 [both source-defined report interfaces](TXPOWER_TABLE_STATE.md) answer26
 controlled queries. Reversed order shows HT40 retaining26 from5GHz when current
