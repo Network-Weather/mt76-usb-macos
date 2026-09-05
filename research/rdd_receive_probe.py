@@ -20,6 +20,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import mt7921u as m
+from research.mt7925_rdd_fields import snapshot
 from research.rdd_stop_probe import collect, stop
 
 
@@ -53,6 +54,9 @@ def main():
     parser.add_argument(
         "--state", action="store_true", help="read traced enable/prerequisite bytes"
     )
+    parser.add_argument(
+        "--registers", action="store_true", help="read five ROM-mapped RDD registers"
+    )
     args = parser.parse_args()
     if not args.enable_passive_detector:
         parser.error("explicit receiver-only detector opt-in required")
@@ -78,15 +82,23 @@ def main():
             boot()
             if args.state:
                 out["state_before"] = state(dev)
+            if args.registers:
+                out["hardware_before"] = snapshot(dev)
             initial = stop(dev)
             out["initial_stop"] = initial
             if args.state:
                 out["state_after_initial_stop"] = state(dev)
+            if args.registers:
+                out["hardware_after_initial_stop"] = snapshot(dev)
             out["rows"].append(start(dev, initial))
             if args.state:
                 out["state_after_start"] = state(dev)
+            if args.registers:
+                out["hardware_after_start"] = snapshot(dev)
             for _ in range(2):
                 out["rows"].append(collect(dev))
+                if args.registers:
+                    out["rows"][-1]["hardware_after"] = snapshot(dev)
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
@@ -95,6 +107,8 @@ def main():
                 out["final_stop"] = stop(dev)
                 if args.state:
                     out["state_after_final_stop"] = state(dev)
+                if args.registers:
+                    out["hardware_after_final_stop"] = snapshot(dev)
             except Exception as exc:
                 out["stop_error_type"] = type(exc).__name__
             try:
@@ -102,6 +116,8 @@ def main():
                 out["cleanup_reload_alive"] = dev.alive()
                 if args.state:
                     out["state_after_reload"] = state(dev)
+                if args.registers:
+                    out["hardware_after_reload"] = snapshot(dev)
             except Exception as exc:
                 out["cleanup_error_type"] = type(exc).__name__
     print(json.dumps(out, indent=2))

@@ -187,9 +187,44 @@ interference source is inferred from an idle producer.
 
 ## What would turn this into a measurement?
 
-Complete the newer chip's hardware map, and trace the pulse-production and
+Trace the pulse-production and
 reporting prerequisites now that ordinary HT coexistence is demonstrated. No random register
 sweep, threshold guessing or emulated radar is needed. Ordinary traffic and
 successful command ACKs are not a positive control
 for radar sensitivity. Even real pulse reports would need separate validation
 before being labeled radar, non-Wi-Fi interference, or a calibrated power source.
+
+## MT7925 hardware arming independently verified
+
+The MT7925 callbacks independently resolve through ROM mapper`0x00834812`:
+domain2a uses table`0x0084e7c4`/base`0x83080000`, and domain2d uses
+table`0x0084e6e4`/base`0x830a0000`. Their field tables are at five exact pointers
+in`0x00855894..0x008558f8`; an initial narrower pointer guard correctly stopped
+before any MMIO snapshot and was replaced with this exact allowlist.
+
+| Purpose | MT7925 field | Register | ROM callback |
+|---|---|---|---|
+| Mode0/5 | `0x2a0020` | `0x83082004` bits8:6 | `0x00834abc` |
+| Capture enable | `0x2d0000` | `0x830a5000` bit0 | RAM`0xe00b1e92` |
+| Ring begin | `0x2d0080` | `0x830a500c` | `0x00834a6a` |
+| Ring end | `0x2d00e0` | `0x830a5010` | `0x00834cc0` |
+| Producer | `0x2d01a0` | `0x830a5014` | `0x00834df0` |
+
+These addresses happen to match MT7961, but its field IDs and metadata pointers
+do not. The begin callback initially installs begin+511; the end callback then
+sets begin+512. No cross-chip address inference or direct register write is used.
+
+`rdd_receive_probe.py --enable-passive-detector --state --registers` on channel36
+now proves mode0→5→0 and a firmware-installed512-byte ring at
+`0x00416000..0x00416200`. Producer remains`0x00416000` at all three armed
+snapshots. Those windows receive55,58,56 good-FCS OFDM frames, all on endpoint84;
+there are no candidate pulse events or transfer ceilings. STOP/START/STOP all
+return matched status0. STOP clears detector mode but retains capture bit0 and
+ring configuration; full reload restores all five registers to baseline and
+the radio remains alive.
+
+Thus **both radios really configure the detector hardware**, not merely ACK a
+command or set a host flag. Neither has demonstrated pulse production, pulse
+sensitivity, or a usable interference classifier. No raw ring contents or
+ambient identifiers are retained.
+[MT7925 map and hardware evidence](../research/evidence/mt7925-radar-hardware-2026-09-05.json).
