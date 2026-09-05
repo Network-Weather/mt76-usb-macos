@@ -94,6 +94,12 @@ from them is re-derived from the images or the adapter first. See
 
 ### MediaTek `mt_wifi` driver headers
 
+For a separate **station-driver** reference, Motorola publishes MediaTek gen4m
+sources with BSD-2-Clause headers. Pinned revision, individual source links,
+protocol distinctions, and measured testmode results are recorded in
+[STATION_TESTMODE.md](docs/STATION_TESTMODE.md#primary-protocol-reference).
+Those station CE/UNI interfaces must not be conflated with the AP EXT interface below.
+
 MediaTek's own AP driver for the connac family, vendored into several open router-firmware
 trees. The copy read here is `hanwckf/rt-n56u` at
 `trunk/proprietary/rt_wifi/rtpci/7.3.0.1/mt7915/include/mcu/mt_cmd.h`; the same file appears

@@ -27,6 +27,8 @@ whether a wider receive configuration observes independent narrower channels.
 
 | script | question | state |
 |---|---|---|
+| [`station_testmode_probe.py`](station_testmode_probe.py) | Are station-specific test queries reachable? | **yes on MT7961 after idle RF-test mode entry**; [details and limits](../docs/STATION_TESTMODE.md) |
+| [`testmode_receiver_probe.py`](testmode_receiver_probe.py) | Do test-mode receive scalars track controlled traffic? | **not yet** — counters stayed zero and signal words stayed fixed through the tested RX setup and 36 probes |
 | [`phy_tx_probe.py`](phy_tx_probe.py) | Can either chip transmit HT/VHT/HE with the existing injection path? | **new measured capabilities** — HT/VHT both directions, HE-SU from MT7961; [evidence](../docs/PHY_TRANSMIT.md) |
 | [`rx_stat_query.py`](rx_stat_query.py) | Does the station firmware accept the AP-driver EXT 0xa4 receive-stat queries? | **negative on MT7961** — all five tested categories refused; station testmode is a separate lead |
 | [`channel_geometry_probe.py`](channel_geometry_probe.py) | Does 80 MHz capture observe independent 20 MHz traffic on other primaries? | **partly answered** — both radios receive primary-matched probes but not the tested other-primary probes in the same span |

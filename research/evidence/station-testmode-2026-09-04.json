@@ -1,0 +1,287 @@
+{
+  "runs": [
+    {
+      "tool": "station_testmode_probe",
+      "chip": "mt7961",
+      "test_mode": false,
+      "date_utc": "2026-09-05T04:44:31.777105+00:00",
+      "rows": [
+        {
+          "selector": 0,
+          "state": "no_matching_reply",
+          "error_type": "McuError",
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 34,
+          "state": "no_matching_reply",
+          "error_type": "McuError",
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 35,
+          "state": "no_matching_reply",
+          "error_type": "McuError",
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 41,
+          "state": "no_matching_reply",
+          "error_type": "McuError",
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 43,
+          "state": "no_matching_reply",
+          "error_type": "McuError",
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 46,
+          "state": "no_matching_reply",
+          "error_type": "McuError",
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 50,
+          "state": "no_matching_reply",
+          "error_type": "McuError",
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "station_testmode_probe",
+      "chip": "mt7961",
+      "test_mode": true,
+      "date_utc": "2026-09-05T04:46:03.744064+00:00",
+      "rows": [
+        {
+          "selector": 0,
+          "state": "matched_reply",
+          "reply_bytes": 16,
+          "nonzero_bytes": 3,
+          "echoed_selector": 0,
+          "value_u32": 16777218,
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 46,
+          "state": "matched_reply",
+          "reply_bytes": 16,
+          "nonzero_bytes": 3,
+          "echoed_selector": 46,
+          "value_u32": 146,
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 50,
+          "state": "matched_reply",
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 50,
+          "value_u32": 2646167382,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "station_testmode_probe",
+      "chip": "mt7961",
+      "test_mode": true,
+      "date_utc": "2026-09-05T04:46:50.785022+00:00",
+      "rows": [
+        {
+          "selector": 34,
+          "state": "matched_reply",
+          "reply_bytes": 16,
+          "nonzero_bytes": 2,
+          "echoed_selector": 34,
+          "value_u32": 0,
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 35,
+          "state": "matched_reply",
+          "reply_bytes": 16,
+          "nonzero_bytes": 2,
+          "echoed_selector": 35,
+          "value_u32": 0,
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 41,
+          "state": "matched_reply",
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 41,
+          "value_u32": 0,
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 43,
+          "state": "matched_reply",
+          "reply_bytes": 16,
+          "nonzero_bytes": 4,
+          "echoed_selector": 43,
+          "value_u32": 2097211,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "station_testmode_probe",
+      "chip": "mt7925",
+      "test_mode": false,
+      "date_utc": "2026-09-05T04:44:20.113544+00:00",
+      "rows": [
+        {
+          "selector": 8,
+          "state": "matched_reply",
+          "reply_bytes": 32,
+          "nonzero_bytes": 15,
+          "tag": 187,
+          "tlv_bytes": 49152,
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 9,
+          "state": "matched_reply",
+          "reply_bytes": 32,
+          "nonzero_bytes": 15,
+          "tag": 187,
+          "tlv_bytes": 49152,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "station_testmode_probe",
+      "chip": "mt7925",
+      "test_mode": true,
+      "date_utc": "2026-09-05T04:44:49.484795+00:00",
+      "rows": [
+        {
+          "selector": 8,
+          "state": "matched_reply",
+          "reply_bytes": 32,
+          "nonzero_bytes": 14,
+          "tag": 187,
+          "tlv_bytes": 49152,
+          "cleanup_reload_alive": true
+        },
+        {
+          "selector": 9,
+          "state": "matched_reply",
+          "reply_bytes": 32,
+          "nonzero_bytes": 15,
+          "tag": 187,
+          "tlv_bytes": 49152,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "station_testmode_probe",
+      "chip": "mt7925",
+      "test_mode": false,
+      "date_utc": "2026-09-05T04:46:07.682395+00:00",
+      "rows": [
+        {
+          "selector": 9,
+          "state": "matched_reply",
+          "reply_bytes": 32,
+          "nonzero_bytes": 15,
+          "command_result_cid": 50,
+          "status_u32": 3221225659,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "testmode_receiver_probe",
+      "date_utc": "2026-09-05T04:48:34.837503+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 36,
+      "phases": [
+        {
+          "name": "quiet_before",
+          "power_code": null,
+          "elapsed_s": 0.6024,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_0",
+          "power_code": 0,
+          "elapsed_s": 0.6402,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_minus16",
+          "power_code": -16,
+          "elapsed_s": 0.6365,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_0_return",
+          "power_code": 0,
+          "elapsed_s": 0.629,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "quiet_after",
+          "power_code": null,
+          "elapsed_s": 0.6049,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        }
+      ],
+      "initial": {
+        "34": 0,
+        "35": 0,
+        "46": 146,
+        "50": 2155888704
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "chip": "mt7921",
+          "alive": true
+        },
+        {
+          "chip": "mt7925",
+          "alive": true
+        }
+      ]
+    }
+  ],
+  "note": "Early MT7925 tag/tlv_bytes fields describe an invalid prefix interpretation, not a valid TLV; later tag-9 repeat decodes the command-result status."
+}

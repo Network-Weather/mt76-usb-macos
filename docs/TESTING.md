@@ -6,6 +6,25 @@ hardware result, and a packet seen once is not presented as a reliability guaran
 
 ## Offline test suite
 
+### PHY transmit and station testmode exploration, 2026-09-04
+
+[PHY transmit experiments](PHY_TRANSMIT.md) independently confirmed HT MCS 0/7
+and VHT MCS 0 from both dongles, plus HE-SU MCS 0 from MT7961, on channel 36,
+20 MHz. Acceptance required exact synthetic frame bytes, valid FCS and expected
+receiver PHY metadata. MT7925 HE produced no independent decode in either tested
+descriptor variant. All runs passed firmware reload/alive cleanup.
+
+[Station testmode exploration](STATION_TESTMODE.md) unlocked seven MT7961 CE query
+selectors after idle RF-test mode entry. The follow-up RX setup and bounded traffic
+test did not establish live sampling: counters stayed zero and signal words fixed.
+MT7925 UNI receive-stat requests did not yield a valid statistics event. Both reports
+give exact commands, primary protocol references, device/firmware context, sanitized
+evidence and remaining limits. No shipped defaults or native C API changed.
+
+Validation for this research branch: **599 offline Python tests passed**, targeted
+ruff lint/format checks passed, local documentation/JSON checks passed, and
+`git diff --check` passed. This is not a repeat of full C sanitizer or release gates.
+
 ### Radio-observability research, 2026-09-04
 
 The [radio observability report](RADIO_OBSERVABILITY.md) records new research-only
