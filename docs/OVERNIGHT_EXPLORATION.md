@@ -5,6 +5,11 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Spatial-reuse queries:** [UNI25 capability/indicator replies](SPATIAL_REUSE.md)
+work on MT7925 through unsolicited sequence-zero events. Two fresh-band controls
+return stable configuration flags, but all eight counters remain zero despite
+normal reception. This adds a query surface, not yet OBSS activity inference.
+
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and
 a bounded instruction-table read supports an experimental Andes-style expansion.
