@@ -22,12 +22,19 @@ received frame. Units and physical interpretation remain unvalidated.
 
 **Station radar detector:** [MT7925 UNI19 STOP/START/STOP](RADAR_DETECTOR.md)
 returns success after correcting quiet-endpoint receive throttling. Three short
-post-START windows yield no pulse reports; hardware activation remains unproven.
+post-START windows yield no pulse reports. Independent ROM mapping now confirms
+MT7925 mode0→5→0 and a512-byte ring at00416000, with169 normal OFDM frames
+received during arming; its producer remains idle and reload restores all reads.
 MT7961 CE8F stays silent on USB, but a later traced RAM-state read follows
 STOP/START/STOP as0/0x101/0x100 and reload restores0, proving handler execution.
 Its on-chip capture buffer is allocated. Follow-up ROM-derived reads now confirm
 hardware detector mode0→5→0 and a512-byte capture ring installed. The producer
 does not advance in the quiet trial; no usable pulse measurement is claimed.
+
+**Timing/ranging frontier:** [RTT capability queries](TIMING_MEASUREMENTS.md)
+are explicitly refused on both builds. MT7925 nevertheless advertises a ToA
+engine in its LOCATION capability, unlike MT7961. This is a static capability
+lead, not an exposed timestamp stream or a working ranging implementation.
 
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and

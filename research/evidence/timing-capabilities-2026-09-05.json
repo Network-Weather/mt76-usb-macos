@@ -1,0 +1,124 @@
+{
+  "scope": "Only own-device capability scalars and event metadata; no ranging requests, identities or samples",
+  "rtt_queries": [
+    {
+      "tool": "rtt_capability_probe",
+      "chip": "mt7961",
+      "channel": 36,
+      "date_utc": "2026-09-05T15:25:58.350814+00:00",
+      "rows": [
+        {
+          "events": [
+            {
+              "eid": 253,
+              "sequence_matches": true,
+              "sequence_zero": false,
+              "body_bytes": 0,
+              "command_not_found_event": true
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {
+            "84": 1
+          },
+          "transfers": 1,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.001342250034213
+        },
+        {
+          "events": [
+            {
+              "eid": 253,
+              "sequence_matches": true,
+              "sequence_zero": false,
+              "body_bytes": 0,
+              "command_not_found_event": true
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {
+            "84": 1
+          },
+          "transfers": 1,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0006949161179364
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "rtt_capability_probe",
+      "chip": "mt7925",
+      "channel": 36,
+      "date_utc": "2026-09-05T15:26:06.000869+00:00",
+      "rows": [
+        {
+          "events": [
+            {
+              "eid": 1,
+              "sequence_matches": true,
+              "sequence_zero": false,
+              "body_bytes": 8,
+              "command_result_status": 3221225659
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 56
+          },
+          "endpoint_transfers": {
+            "84": 57
+          },
+          "transfers": 57,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.000633249990642
+        },
+        {
+          "events": [
+            {
+              "eid": 1,
+              "sequence_matches": true,
+              "sequence_zero": false,
+              "body_bytes": 8,
+              "command_result_status": 3221225659
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 60
+          },
+          "endpoint_transfers": {
+            "84": 61
+          },
+          "transfers": 61,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0003813749644905
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ],
+  "location_query": {
+    "tool": "location_capability_only",
+    "radios": [
+      {
+        "chip": "mt7921",
+        "location_tag_present": true,
+        "location_bytes": 4,
+        "toa_engine_advertised_raw": 0,
+        "reserved_all_zero": true,
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      },
+      {
+        "chip": "mt7925",
+        "location_tag_present": true,
+        "location_bytes": 4,
+        "toa_engine_advertised_raw": 1,
+        "reserved_all_zero": true,
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      }
+    ]
+  }
+}
