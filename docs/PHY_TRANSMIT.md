@@ -38,7 +38,7 @@ OFDM6, HT0/1SS, HT8/2SS, HE0/1SS, HE0/2SS, OFDM6. It excludes VHT and all
 wider bandwidths; the existing60-packet ceiling,50ms spacing, no-ACK policy,
 fresh private nonce and independent whole-frame/FCS/PHY checks remain. Only
 channels1/6/11 accept this suite and the later CCK/preamble, STBC, HE-coding,
-HT-table and timing-burst suites; baseline/streams/spatial require36/149.
+HT/HE-table and timing-burst suites; baseline/streams/spatial require36/149.
 
 Two fresh MT7925-transmitter runs at12:00:43 and12:01:34 UTC on2026-09-05
 each submitted24 frames. The MT7961 receiver independently reported:
@@ -166,6 +166,9 @@ establish that UNI40 works, but has an odd-index gate, a validation check after
 the hardware write, and an apparently uninitialized low-nibble field. The same
 trace unlocks independently received short-GI and LDPC HT transmission through
 the existing deterministic direct-table route.
+Subsequent HE tests independently receive GI1/GI2 when paired with the
+corresponding LTF codes, and receive HE LDPC. The receiver does not export
+full-group5 LTF metadata, so actual LTF duration is not independently claimed.
 
 [Sanitized evidence](../research/evidence/spatial-path-controls-2026-09-05.json)
 contains all three trials. No power increase, calibration writes, association,

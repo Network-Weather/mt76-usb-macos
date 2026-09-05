@@ -99,3 +99,43 @@ coding-gain measurements. Raw RSSI is roughly−99..−100.5 and uncalibrated.
 Both radios remain alive; the probe reloads the transmitter, not both radios.
 
 [Sanitized on-air evidence](../research/evidence/ht-table-transmit-2026-09-05.json).
+
+## HE guard intervals require the corresponding training-field setting
+
+An initial20-frame HE2SS control left LTF0 and varied only GI0/1/2 or LDPC.
+Receipts were4/0/0/4/4: baseline and LDPC worked, GI-only variants did not.
+Those negatives are **not absence of a working GI field**. HE-SU signals the
+guard interval together with the training-field format. Keysight's
+[HE-SU waveform configuration](https://helpfiles.keysight.com/csg/m9484/Content/WLAN/802_11ax%20Carrier%20Settings%20SU%20Ext%20SU%20NDP.htm)
+lists2x-LTF/1.6µs and4x-LTF/3.2µs as paired settings. Upstream
+[mt7915's explicit rate interface](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7915/debugfs.c)
+names the corresponding LTF codes1/2. The current probe rejects the original
+unqualified GI1/2-with-LTF0 combinations rather than repeating them.
+
+`--suite he-table` uses six phases, all HE-SU MCS0/NSS2 at20MHz:
+
+| Phase | GI/LTF/LDPC codes | ITDR1 | First exact receipts |
+|---|---|---|---|
+| Baseline before | 0/0/0 | 0x40 | 4/4 |
+| Paired1.6µs candidate | 1/1/0 | 0x11040 | **4/4** |
+| Paired3.2µs candidate | 2/2/0 | 0x22040 | **3/4** |
+| LTF-only candidate | 0/1/0 | 0x10040 | 4/4 |
+| LDPC | 0/0/1 | 0x02000040 | **3/4** |
+| Baseline after | 0/0/0 | 0x40 | 4/4 |
+
+Independent MT7961 PHY metadata reports GI1 and GI2 in their respective
+phases, with calculated rates16.2 and14.6Mbps; baseline is GI0/17.2Mbps.
+The LDPC phase independently sets LDPC=true with GI0. Thus **HE GI1/GI2 and
+LDPC transmit formats work**, with exact frame/FCS validation rather than
+successful TX-status inference. No GI range advantage or coding gain is claimed.
+A fresh-nonce paired repeat receives4/3/4/4/4/3 in the same six phases, with
+the same independent GI and LDPC distinctions and all cleanup checks passing.
+
+The optional research-only LTF extractor follows mt7921 group5 positioning and
+`mt76_connac2_mac_decode_he_radiotap`'s word2 bits18:17. Full-group5 LTF metadata
+is unavailable here, so`he_ltf_size_raw` is **null**, not0: the actual LTF is not independently
+decoded here. The requested pair and observed GI must not be confused with a
+verified LTF duration. No production RX decoder changed. Both radios remain
+alive and transmitter reload passes; raw RSSI remains uncalibrated.
+
+[Sanitized HE table evidence](../research/evidence/he-table-transmit-2026-09-05.json).

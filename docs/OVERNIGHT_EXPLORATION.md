@@ -10,6 +10,9 @@ locates GI and LDPC bits, and the second dongle independently receives HT8 with
 short GI and with LDPC coding. A corrected UNI40 request also works, but exposes
 post-write validation and an apparently uninitialized configuration byte; the
 on-air probes retain our deterministic direct-table path.
+The same mapping now produces independently received HE GI1/GI2 and LDPC.
+GI-only HE requests failed; paired GI/LTF settings work. LTF itself remains
+unverified because full-group5 LTF metadata is unavailable.
 
 **New STBC transmit format:** [MT7925 HT0/STBC](PHY_TRANSMIT.md) is independently
 received as NSS1/NSTS2/STBC=true, four exact frames and then one on a fresh repeat.

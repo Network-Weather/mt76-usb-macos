@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import usb.core
 
 import mt7921u as m
+import rxd as legacy_rx
 from research import mt7925_tx_probe as c3
 from research.dual_radio_probe import fixed_rate_txwi, tx_status_records
 
@@ -107,6 +108,12 @@ HT_TABLE_RATES = tuple(
     (name, 0x488) for name in ("ht8_before", "ht8_gi1", "ht8_middle", "ht8_ldpc", "ht8_after")
 )
 HT_TABLE_OPTIONS = ((0, 0), (1, 0), (0, 0), (0, 1), (0, 0))
+HE_TABLE_RATES = tuple(
+    (name, 0x600)
+    for name in ("he2_before", "he2_gi1_ltf1", "he2_gi2_ltf2", "he2_ltf1", "he2_ldpc", "he2_after")
+)
+HE_TABLE_OPTIONS = ((0, 0), (1, 0), (2, 0), (0, 0), (0, 1), (0, 0))
+HE_TABLE_LTF = (0, 1, 2, 1, 0, 0)
 ALLOWED_RATE_CODES = {
     rate
     for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES + HE_CODING_RATES
@@ -124,7 +131,17 @@ def suite_rates(suite, channel):
     if type(channel) is not int or channel not in (1, 6, 11, 36, 149):
         raise ValueError("only bounded non-DFS test channels")
     if (channel <= 11) != (
-        suite in ("lowband", "cck", "preamble", "stbc", "he-coding", "timing-burst", "ht-table")
+        suite
+        in (
+            "lowband",
+            "cck",
+            "preamble",
+            "stbc",
+            "he-coding",
+            "timing-burst",
+            "ht-table",
+            "he-table",
+        )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
     suites = {
@@ -138,6 +155,7 @@ def suite_rates(suite, channel):
         "he-coding": HE_CODING_RATES,
         "timing-burst": TIMING_BURST_RATES,
         "ht-table": HT_TABLE_RATES,
+        "he-table": HE_TABLE_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -170,26 +188,59 @@ def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
     return bytes(data)
 
 
-def program_rate(dev, code, *, gi=0, ldpc=0):
+def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
-    if type(gi) is not int or type(ldpc) is not int or (gi, ldpc) not in ((0, 0), (1, 0), (0, 1)):
-        raise ValueError("bounded table GI/LDPC controls only")
-    if (gi or ldpc) and (dev.CHIP != m.CHIP_MT7925 or code != 0x488):
-        raise ValueError("table GI/LDPC experiment is MT7925 HT8-only")
+    allowed = {
+        0x488: ((0, 0, 0), (1, 0, 0), (0, 0, 1)),
+        0x600: ((0, 0, 0), (1, 1, 0), (2, 2, 0), (0, 1, 0), (0, 0, 1)),
+    }
+    if any(type(v) is not int for v in (gi, ltf, ldpc)) or (gi, ltf, ldpc) not in allowed.get(
+        code, ((0, 0, 0),)
+    ):
+        raise ValueError("bounded table GI/LDPC/LTF controls only")
+    if (gi or ldpc or ltf) and dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("table GI/LDPC/LTF experiment is MT7925-only")
     if dev.CHIP != m.CHIP_MT7925:
         return
     # mt7925/mac.c mt7925_mac_set_fixed_rate_table at c5a3bd91.
     dev.wr(c3.ITDR0, code)
-    dev.wr(c3.ITDR1, (1 << 6) | (gi << 12) | (ldpc << 25))
+    dev.wr(c3.ITDR1, (1 << 6) | (gi << 12) | (ltf << 16) | (ldpc << 25))
     dev.wr(c3.ITCR, (1 << 31) | (1 << 16) | c3.RATE_TABLE_INDEX)
     for _ in range(100):
         if not dev.rr(c3.ITCR) & (1 << 31):
             return
         time.sleep(0.001)
     raise RuntimeError("rate table busy")
+
+
+def he_ltf_raw(raw):
+    """Connac2 full-group5 LTF field; called only for independently matched HE.
+
+    mt7921/mac.c selects group5 after six skipped words; connac2 HE radiotap
+    reads rxv[2] bits18:17. Missing/truncated group5 is unknown, never zero.
+    """
+    if len(raw) < 24:
+        return None
+    size, flags = struct.unpack_from("<II", raw)
+    size &= 65535
+    required = legacy_rx.MT_RXD1_NORMAL_GROUP_3 | legacy_rx.MT_RXD1_NORMAL_GROUP_5
+    if not 24 <= size <= len(raw) or flags & required != required:
+        return None
+    offset = 24
+    for flag, length in (
+        (legacy_rx.MT_RXD1_NORMAL_GROUP_4, 16),
+        (legacy_rx.MT_RXD1_NORMAL_GROUP_1, 16),
+        (legacy_rx.MT_RXD1_NORMAL_GROUP_2, 8),
+    ):
+        if flags & flag:
+            offset += length
+    offset += 8 + 24
+    if offset + 48 > size:
+        return None
+    return (struct.unpack_from("<I", raw, offset + 8)[0] >> 17) & 3
 
 
 def timing_padding(length):
@@ -267,6 +318,8 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
                 "rate_mbps",
             )
         }
+        if dev.CHIP == m.CHIP_MT7921 and phy.get("mode_name") == "HE-SU":
+            fields["he_ltf_size_raw"] = he_ltf_raw(raw)
         phys[phase][json.dumps(fields, sort_keys=True)] += 1
     return {
         "chip": dev.CHIP,
@@ -317,6 +370,7 @@ def main():
             "he-coding",
             "timing-burst",
             "ht-table",
+            "he-table",
         ),
         default="baseline",
     )
@@ -333,7 +387,7 @@ def main():
         p.error("timing-burst requires explicit --tx-timing")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
-    if args.suite in ("stbc", "he-coding", "ht-table") and args.transmitter != "mt7925":
+    if args.suite in ("stbc", "he-coding", "ht-table", "he-table") and args.transmitter != "mt7925":
         p.error("coding suites currently support only the Connac3 transmitter")
     try:
         rates = suite_rates(args.suite, args.channel)
@@ -352,8 +406,11 @@ def main():
         "tx_timing": args.tx_timing,
         "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
-        "table_gi_ldpc": HT_TABLE_OPTIONS if args.suite == "ht-table" else None,
+        "table_gi_ldpc": {"ht-table": HT_TABLE_OPTIONS, "he-table": HE_TABLE_OPTIONS}.get(
+            args.suite
+        ),
         "submitted": 0,
+        "table_ltf": HE_TABLE_LTF if args.suite == "he-table" else None,
         "firmware_sha256": {},
     }
     if args.tx_timing:
@@ -407,8 +464,12 @@ def main():
                     time.sleep(0.3)
                     submission_origin = time.monotonic()
                     for phase, (_, code) in enumerate(rates):
-                        gi, ldpc = HT_TABLE_OPTIONS[phase] if args.suite == "ht-table" else (0, 0)
-                        program_rate(tx, code, gi=gi, ldpc=ldpc)
+                        options = {"ht-table": HT_TABLE_OPTIONS, "he-table": HE_TABLE_OPTIONS}.get(
+                            args.suite
+                        )
+                        gi, ldpc = options[phase] if options else (0, 0)
+                        ltf = HE_TABLE_LTF[phase] if args.suite == "he-table" else 0
+                        program_rate(tx, code, gi=gi, ldpc=ldpc, ltf=ltf)
                         for seq in range(phase * args.per_phase, (phase + 1) * args.per_phase):
                             if any(job.done() for job in jobs):
                                 raise RuntimeError("capture stopped before transmit completed")

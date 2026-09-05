@@ -220,7 +220,7 @@ def test_ht_table_rom_derived_fields(gi, ldpc, word):
     ("chip", "code", "gi", "ldpc"),
     [
         (m.CHIP_MT7921, 0x488, 1, 0),
-        (m.CHIP_MT7925, 0x600, 0, 1),
+        (m.CHIP_MT7925, 0x200, 0, 1),
         (m.CHIP_MT7925, 0x488, 1, 1),
         (m.CHIP_MT7925, 0x488, 2, 0),
         (m.CHIP_MT7925, 0x488, True, 0),
@@ -230,6 +230,56 @@ def test_ht_table_rom_derived_fields(gi, ldpc, word):
 def test_ht_table_rejects_unbounded_options_before_io(chip, code, gi, ldpc):
     with pytest.raises(ValueError, match="GI/LDPC"):
         p.program_rate(SimpleNamespace(CHIP=chip), code, gi=gi, ldpc=ldpc)
+
+
+def test_he_table_preserves_mode_rate_and_pairs_gi_ltf():
+    assert p.suite_rates("he-table", 6) == p.HE_TABLE_RATES
+    assert {rate for _, rate in p.HE_TABLE_RATES} == {0x600}
+    assert len(p.HE_TABLE_RATES) * 10 <= 60
+    assert p.HE_TABLE_OPTIONS == ((0, 0), (1, 0), (2, 0), (0, 0), (0, 1), (0, 0))
+    assert p.HE_TABLE_LTF == (0, 1, 2, 1, 0, 0)
+
+
+@pytest.mark.parametrize(
+    ("gi", "ltf", "ldpc", "word"), [(1, 1, 0, 0x11040), (2, 2, 0, 0x22040), (0, 0, 1, 0x2000040)]
+)
+def test_he_table_programs_traced_fields(gi, ltf, ldpc, word):
+    writes = []
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925, wr=lambda a, v: writes.append((a, v)), rr=lambda _: 0)
+    p.program_rate(dev, 0x600, gi=gi, ldpc=ldpc, ltf=ltf)
+    assert writes == [(p.c3.ITDR0, 0x600), (p.c3.ITDR1, word), (p.c3.ITCR, 0x80010012)]
+
+
+@pytest.mark.parametrize(("gi", "ltf"), [(1, 0), (2, 0), (1, 2), (3, 3), (0, True)])
+def test_he_table_rejects_unqualified_gi_ltf_combinations(gi, ltf):
+    with pytest.raises(ValueError, match="controls"):
+        p.program_rate(SimpleNamespace(CHIP=m.CHIP_MT7925), 0x600, gi=gi, ltf=ltf)
+
+
+@pytest.mark.parametrize("optional", [0, 1, 2, 3, 4, 5, 6, 7])
+def test_he_ltf_full_group5_position_and_bounds(optional):
+    flags = p.legacy_rx.MT_RXD1_NORMAL_GROUP_3 | p.legacy_rx.MT_RXD1_NORMAL_GROUP_5
+    offset = 24
+    for bit, flag, length in (
+        (1, p.legacy_rx.MT_RXD1_NORMAL_GROUP_4, 16),
+        (2, p.legacy_rx.MT_RXD1_NORMAL_GROUP_1, 16),
+        (4, p.legacy_rx.MT_RXD1_NORMAL_GROUP_2, 8),
+    ):
+        if optional & bit:
+            flags |= flag
+            offset += length
+    offset += 32
+    raw = bytearray(offset + 48)
+    struct.pack_into("<II", raw, 0, len(raw), flags)
+    struct.pack_into("<I", raw, offset + 8, 2 << 17)
+    assert p.he_ltf_raw(raw) == 2
+    assert p.he_ltf_raw(raw[:-1]) is None
+    struct.pack_into("<I", raw, 4, flags & ~p.legacy_rx.MT_RXD1_NORMAL_GROUP_5)
+    assert p.he_ltf_raw(raw) is None
+
+
+def test_he_ltf_short_record_is_unknown():
+    assert p.he_ltf_raw(bytes(23)) is None
 
 
 @pytest.mark.parametrize("length", [True, -1, 127, 129, 256])
