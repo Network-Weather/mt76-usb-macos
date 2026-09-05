@@ -1,6 +1,38 @@
-# Station CSI control interface
+# Station CSI control and working MT7925 readout
 
-## MT7925 acknowledges controls; no sample events yet
+## Current result: live 64-tone I/Q reports on MT7925
+
+**CSI readout works on the attached A9000.** The missing step was a nonzero frame
+selector: UNI 0x4a/tag2, index0/value **0x20**, before START on **band 0**.
+This value was an explicit hypothesis from the firmware's six-bit selector and
+the beacon frame-control type/subtype bits, not a blind command sweep. It produces
+unsolicited EID 0x4a/sequence0 reports in normal unassociated monitor operation
+on channel36/20MHz. Band1 with the same selector remains silent in this setup.
+
+Two fresh-boot validation runs yielded **114 and 116 valid reports** during their
+one-second START windows, versus zero in the preceding stop/configuration windows.
+Each report contains **64 signed-16-bit I values and 64 Q values**. All payloads
+were distinct within each run and most values were nonzero. RX indices were
+0/1 in equal pairs (57/57 and 58/58), TX index0, receive-mode raw1/rate raw11,
+band/CBW/DBW/segment raw0. Neither transfer ceiling was reached; STOP and normal
+reload succeeded. One earlier run had one queued report immediately after STOP,
+so instantaneous queue emptiness is not promised.
+
+This establishes live CSI data delivery, **not** calibrated amplitude/phase,
+distance, angle, channel impulse response, or mesh-topology inference. The maximum
+chain commands 1 and 2 both still produced RX indices 0 and 1; do not advertise
+that tag as a validated one-chain restriction. No association or transmission
+was required. Transmitter addresses, coefficient arrays and their hashes are
+never exported; the tool records aggregate cardinalities/ranges only.
+
+```sh
+python research/csi_control_probe.py --chip mt7925 --ack --band 0 --chains 2 --hardware --beacon-selector
+```
+
+[Sanitized CSI readout evidence](../research/evidence/csi-readout-2026-09-05.json).
+The earlier negative controls below are retained to explain how this was found.
+
+## Initial controls: acknowledgments without sample events
 
 On 2026-09-05, the A9000's pinned MT7925 firmware accepted **UNI 0x4a** stop,
 start and maximum-chain commands: matched EID 1 command-result events contained
@@ -77,7 +109,7 @@ resolve frame-type/filter defaults and the report path. The public frame-type
 tag has an index and u32 value but does not establish their bit semantics here;
 we have not guessed a catch-all mask or written arbitrary filter settings.
 The weak MT7961-to-MT7925 test link also prevents a strong controlled-stimulus
-CSI experiment for now. Nineteen offline tests cover request bounds, chip/band
+CSI experiment for now. Initial offline tests cover request bounds, chip/band
 layouts, matched status versus unsolicited data, rejection events, truncation,
 ambient-frame filtering and absence of coefficient/address output.
 
@@ -174,3 +206,65 @@ stores the resulting word. Mapping those descriptors is the next useful lead.
 includes full raw register words, matched-event shapes and hashes of narrow ROM
 windows, but no firmware bytes, addresses of observed transmitters or samples.
 Twenty-one offline CSI-probe tests cover the new fixed read-only register set.
+
+## ROM field mapping and the frame-selector breakthrough
+
+The live field-domain callback at `0x02210484` points to ROM `0x00829e1e`.
+It accepts domains <=0x79 and indexes `GP-5308 = 0x02211344`. Domains5/6 share
+descriptor `0x02210498` / mapper `0x008322ce`; domains0x13/14 share descriptor
+`0x022104dc` / mapper `0x0082a73c`. The register descriptor is eight bytes:
+field-table pointer, u16 register offset, u8 field count, padding. Key bits15:5
+select the register; low five bits index two-byte inclusive low/high bit pairs.
+Band1 uses the next domain and adds 0x10000 to the hardware address.
+
+| Field keys, band0 | ROM descriptor / field table | Register and bits |
+|---|---|---|
+| `0x500e0..e3` | `0x84d620` / `0x85528c` | `0x820e701c`: 15:14, 13:11, 1, 0 |
+| `0x1302c0`, `0x1302c1` | `0x84b4e4` / `0x84bdf0` | `0x820e5060`: 31, 30 |
+| `0x1302c7 - index` | same | bit `24 + index`, four slots |
+| `0x1302cb - index` | same | six-bit field `6*index + 5 : 6*index` |
+
+The enable helper writes bit31 from its enable argument and bit30 from config+4;
+the direct ROM callback writes bit29. These independently explain the earlier
+`0xe0000000` START and `0x40000000` STOP results. Zero default selector fields
+suggested that zero was a specific frame type, not an all-frame wildcard.
+
+Public tag2 is **11 bytes packed**, not 12: u16 tag/length, u8 index, u32 value,
+two padding bytes. With the four-byte band prefix, the full payload is 15 bytes.
+The loaded handler consumes only the low value byte; the field writer masks to
+six bits. Configuring index0/value0x20 yields `0x00820820` in the low24 hardware
+bits: the START routine duplicates the configured selection into unused slots.
+Band0 readback was `0xf0820820` during the first active event run, band1
+`0xe0820820` without events. Bit28's extra transition is observed but not yet
+given a hardware-status name. All cleanup readbacks returned `0x20000000`.
+
+The first pointer-range assumptions stopped two descriptor reads before following
+the unexpected pointer. Subsequent bounded reads established the two exact ROM
+tables above; these were host validation failures, not firmware command errors.
+No direct MMIO write was needed to unlock CSI.
+
+## Event layout: verified I/Q with a firmware-specific zero tail
+
+The 564-byte event body consists of four reserved bytes, outer tag0/length560,
+then 22 nested u32-tag/u32-body-length fields. Nested lengths exclude their
+eight-byte headers. Observed tags are 0..12 and 17..25; I/Q tags6/7 are 128 bytes
+each, address-shaped tags10/24 are eight bytes, and the others are four bytes.
+Only documented measurement metadata is interpreted; tags10/24 and unknown
+contents are discarded.
+
+The meaningful nested fields end at body offset528, followed by **36 zero bytes**.
+Initially a strict old-layout parser rejected the tail as a duplicate tag0. The
+updated validator accepts only exactly 36 all-zero bytes after terminal tag25 of
+length4, reports that padding explicitly, and rejects nonzero/different tails.
+Both validated runs satisfy this exact rule with no invalid events. Loaded code
+at `0xe009e3cc` sums descriptor sizes while skipping tag16; its emit path skips
+13/14/15 as well. This is consistent with three unused 12-byte records accounting
+for the tail; a universal cross-firmware padding convention is not claimed.
+
+The validation runs have version raw22, data-count64, I/Q raw ranges
+[-2582,2575] and [-2386,2620]. RSSI/SNR bytes are reported as raw metadata, not
+calibrated measurements. `csi_event_summary.py` validates dimensions, lengths,
+duplicates, bounded tails and required fields, then exports aggregate counts,
+value ranges and transient I/Q digest cardinality (never digests themselves).
+Thirty-one targeted CSI tests cover command bounds, event separation, privacy,
+malformed payloads and the narrow tail rule. Production Python/C APIs are unchanged.

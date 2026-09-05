@@ -5,10 +5,12 @@
 Vendor gen4m 8fddb9d7: gl_csi.h, nic_uni_cmd_event.h/c, wlan_oid.c.
 MT7961 CE 0x4c has a 48-byte control; MT7925 UNI 0x4a has 8-byte
 stop/start TLVs. UNI SET/no-ACK follows wlanoidSetCSIControl. Normal monitor
-channel36/20MHz, three (four with --chains) <=1-second/512-transfer windows,
+channel36/20MHz, three to five <=1-second/512-transfer windows,
 finally STOP + reload. --ack requests diagnostic acknowledgments separately
 from the vendor's no-ACK envelope.
 This tests command/event availability, not validity or calibration of CSI.
+--beacon-selector tests index0/value0x20; validated CSI emits aggregate statistics
+only. No transmitter addresses, coefficient arrays or payload hashes are exported.
 """
 
 import argparse
@@ -25,6 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import usb.core
 
 import mt7921u as m
+from research.csi_event_summary import CsiSummary
 
 
 def hardware_snapshot(dev):
@@ -126,11 +129,23 @@ def chain_request(band, chains):
     return struct.pack("<B3xHHB3x", band, 3, 8, chains)
 
 
+def beacon_selector_request(band):
+    """Test index0/value0x20: candidate beacon FC bits[7:2], not yet validated.
+
+    Public packed tag2 is 11 bytes. The loaded handler consumes its low value
+    byte, and the ROM field table limits the hardware selector to six bits.
+    """
+    if type(band) is not int or band not in (0, 1):
+        raise ValueError("band must be zero or one")
+    return struct.pack("<B3xHHBI2x", band, 2, 11, 0, 0x20)
+
+
 def collect(dev, seq):
     started = time.monotonic()
     deadline = started + 1
     count = 0
     events = collections.Counter()
+    csi = CsiSummary()
     while time.monotonic() < deadline and count < 512:
         try:
             raw = bytes(dev.rx_read(timeout=100))
@@ -140,11 +155,14 @@ def collect(dev, seq):
         shape = event_shape(raw, dev.CHIP, seq)
         if shape is not None:
             events[json.dumps(shape, sort_keys=True)] += 1
+            if dev.CHIP == m.CHIP_MT7925 and shape.get("candidate_csi_event"):
+                csi.add(raw[44 : 44 + shape["body_bytes"]])
     return {
         "transfers": count,
         "elapsed_s": round(time.monotonic() - started, 3),
         "transfer_limit_reached": count == 512,
         "events": [{"shape": json.loads(key), "count": value} for key, value in events.items()],
+        "csi_summary": csi.export(),
     }
 
 
@@ -158,6 +176,9 @@ def main():
         "--state", action="store_true", help="read fixed firmware CSI configuration"
     )
     parser.add_argument("--hardware", action="store_true", help="read ROM-derived CSI MMIO")
+    parser.add_argument(
+        "--beacon-selector", action="store_true", help="test candidate frame selector 0x20"
+    )
     args = parser.parse_args()
     if args.ack and args.chip != "mt7925":
         parser.error("ACK variant applies to MT7925 UNI only")
@@ -167,6 +188,8 @@ def main():
         parser.error("state snapshots apply to MT7925 only")
     if args.hardware and args.chip != "mt7925":
         parser.error("hardware snapshots apply to MT7925 only")
+    if args.beacon_selector and args.chip != "mt7925":
+        parser.error("frame selector applies to MT7925 only")
     uid = "0846:9072" if args.chip == "mt7925" else "0e8d:7961"
     out = {
         "tool": "csi_control_probe",
@@ -175,6 +198,7 @@ def main():
         "chains": args.chains,
         "state_snapshots": args.state,
         "hardware_snapshots": args.hardware,
+        "candidate_beacon_selector": args.beacon_selector,
         "uni_option": (7 if args.ack else 6) if args.chip == "mt7925" else None,
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "phases": [],
@@ -204,6 +228,20 @@ def main():
             if args.hardware:
                 out["hardware_before"] = hardware_snapshot(dev)
             for name, start in (("stop_before", False), ("start", True), ("stop_after", False)):
+                if start and args.beacon_selector:
+                    dev.mcu_uni(0x4A, beacon_selector_request(args.band), wait=False, timeout=1000)
+                    seq = dev.msg_seq
+                    out["phases"].append(
+                        {
+                            "name": "candidate_beacon_selector",
+                            "request_sequence": seq,
+                            **collect(dev, seq),
+                        }
+                    )
+                    if args.hardware:
+                        out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
+                    if args.state:
+                        out["phases"][-1]["control_after"] = control_snapshot(dev)
                 if start and args.chains is not None:
                     dev.mcu_uni(
                         0x4A, chain_request(args.band, args.chains), wait=False, timeout=1000

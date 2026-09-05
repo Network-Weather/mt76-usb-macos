@@ -23,6 +23,37 @@ public class Mt7925AndesInspect extends GhidraScript {
 
     private String describe(PseudoDisassembler decoder, Address pc, byte[] data, boolean fromTable) throws Exception {
         long value = word(data);
+        long branch = value & 0x707f;
+        if (branch == 0x505b || branch == 0x605b || branch == 0x705b) {
+            long offset = bits(value, 8, 4) << 1 | bits(value, 25, 5) << 5
+                | bits(value, 31, 1) << 10;
+            if ((offset & 1024) != 0) offset -= 2048;
+            long constant = bits(value, 20, 5) | bits(value, 7, 1) << 5;
+            String name;
+            if (branch == 0x705b) name = (value & 0x40000000L) == 0 ? "bbc" : "bbs";
+            else {
+                name = branch == 0x505b ? "beqc" : "bnec";
+                constant |= bits(value, 30, 1) << 6;
+            }
+            return "nds." + name + " x" + bits(value, 15, 5) + "," + constant
+                + ",0x" + Long.toHexString((pc.getOffset() + offset) & 0xffffffffL)
+                + " [annotation only]";
+        }
+        // Pinned Andes opcode/operand tables: bitfield high/low are six bits.
+        // Keep this annotation-only, including on stock custom2 placeholders.
+        if ((value & 0x707f) == 0x205b || (value & 0x707f) == 0x305b) {
+            return ((value & 0x707f) == 0x205b ? "nds.bfoz" : "nds.bfos")
+                + " x" + bits(value, 7, 5) + ",x" + bits(value, 15, 5)
+                + "," + bits(value, 26, 6) + "," + bits(value, 20, 6)
+                + " [annotation only]";
+        }
+        long lea = value & 0xfe00707fL;
+        if (lea == 0x0a00005bL || lea == 0x0c00005bL || lea == 0x0e00005bL) {
+            String size = lea == 0x0a00005bL ? "h" : lea == 0x0c00005bL ? "w" : "d";
+            return "nds.lea." + size + " x" + bits(value, 7, 5)
+                + ",x" + bits(value, 15, 5) + ",x" + bits(value, 20, 5)
+                + " [annotation only]";
+        }
         // Andes binutils dd22be9a, GPTYPE_SW operand permutation. Annotation
         // only: this does not add pcode or make stock analysis understand stores.
         if ((value & 0x707f) == 0x402b) {

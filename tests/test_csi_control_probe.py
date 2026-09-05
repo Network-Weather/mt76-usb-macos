@@ -114,3 +114,12 @@ def test_hardware_snapshot_reads_only_rom_derived_band_registers():
     assert rows[0]["value"] == "0x20000001"
     with pytest.raises(ValueError, match="MT7925 only"):
         p.hardware_snapshot(SimpleNamespace(CHIP=m.CHIP_MT7921))
+
+
+def test_candidate_beacon_selector_has_exact_packed_vendor_layout():
+    for band in (0, 1):
+        data = p.beacon_selector_request(band)
+        assert len(data) == 15
+        assert struct.unpack("<B3xHHBI2x", data) == (band, 2, 11, 0, 0x20)
+    with pytest.raises(ValueError, match="band must"):
+        p.beacon_selector_request(2)

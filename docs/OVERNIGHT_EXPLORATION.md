@@ -15,7 +15,14 @@ read controls. Its 30-slot dispatcher is now identified as UNI 0x33 beamforming:
 [PFMU tag and profile-data reads work](BEAMFORMING_PROFILES.md), with correctly
 predicted unsolicited sequence-zero events. This is not yet usable CSI.
 
-**Separate CSI control lead:** [MT7925 station UNI 0x4a](STATION_CSI.md)
+**CSI readout unlocked:** [MT7925 station UNI 0x4a](STATION_CSI.md) now yields
+live I/Q reports after tag2/index0/value0x20 frame selection on band0. Two runs
+validate 114/116 reports with 64 I and 64 Q values each, distinct payloads and
+paired RX indices0/1. A firmware-specific 36-byte zero tail is explicitly checked.
+No sample arrays or transmitter identities are retained, and calibration/topology
+interpretation remains future work. Band1 stays silent in the current setup.
+
+The initial [MT7925 station UNI 0x4a control lead](STATION_CSI.md)
 acknowledges stop/start and maximum-chain tags with status zero. Both band
 selectors were tested; no CSI sample events were seen. MT7961's legacy CE 0x4c
 route returns the source-defined command-not-found event. No-ACK silence and
@@ -24,7 +31,8 @@ Follow-up loaded-code tracing identifies both the control and report constructor
 ROM-derived MMIO controls now show that stop/start/stop really changes the selected
 band's hardware at `0x820e5060` / `0x820f5060`, leaving the other band unchanged.
 Reload restores the baseline. Zero USB RAM snapshots do not negate that result;
-CSI events are still absent, and no sample/calibration capability is claimed.
+At that checkpoint CSI events were still absent; the nonzero frame selector
+subsequently unlocked the readout above. No calibration capability is claimed.
 
 **Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
 Startup exposes the EX9 table, and a GP candidate recovers meaningful string
