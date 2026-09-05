@@ -144,6 +144,32 @@ from firmware packing; classification eligibility needs separate controls.
 
 [Sanitized hardware evidence](../research/evidence/spatial-reuse-rmac-2026-09-05.json).
 
+### Independent MT7961 register trace and live control
+
+The same addresses are independently established on MT7961, not inferred from
+MT7925. `SrInitGetInd` at `0xe0272fd2` optionally refreshes through `0x0094b578`;
+that reader calls ROM slot `0x00823154`, live target `0x00827ef6`, three times.
+ROM's `0x00827efa..0x00827f08` computes the same band0 address formula. The caller
+packs the second word low half at output+8 (inter-BSS) and high half at+6
+(intra-BSS), matching the legacy structure's extra two-byte prefix.
+
+Importantly, `0x0094b578` zero-fills24 bytes and only populates offsets2..13 and
+16..23. Its two RCPI bytes at0..1 are **never filled by this hardware reader**.
+The older header's RCPI names do not establish a signal measurement on this path.
+The20-byte CAP size is also explicit in `0xe0272f4a..0xe0272f54`, whose source is
+cached state at GP+214940, not a hardware snapshot.
+
+Run `research/sr_rmac_probe.py --device mt7961 --channel 1`. A fresh ch1 control
+returned non-SRG-valid and inter-BSS-named values **4,5,11,50,48**, versus decoded
+CCK frame counts4,5,11,50,49. Immediate repeats were0,0,0,1,0 in both fields;
+all other fields and the legacy firmware query stayed zero. A separate ch36 run
+had no received frames and all-zero hardware, so it is **not** a successful
+five-GHz counter activation control. All reload/alive checks passed and no
+transfer ceilings were reached. Both chips now have live direct counter evidence,
+but their category eligibility and cross-chip comparability remain unqualified.
+
+[Sanitized MT7961 evidence](../research/evidence/legacy-spatial-reuse-rmac-2026-09-05.json).
+
 ## Live controls — 2026-09-05 UTC
 
 Fresh normal boots on channels36 and1 each returned all four expected events.

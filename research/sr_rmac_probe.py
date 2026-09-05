@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-"""Read three ROM-resolved MT7925 spatial-reuse RMAC counter registers.
+"""Read three independently ROM-resolved MT7925/MT7961 SR RMAC registers.
 
 Five100ms passive windows and immediate paired reads; no direct writes, TX or
 SR enable/reset. Counter reads may clear hardware state: exclusive ownership.
-Firmware query reads/clears its separate software accumulator. Normal reload.
+MT7925 query reads/clears its separate accumulator; legacy cache also separate.
 Field names follow firmware packing, not independently validated BSS attribution.
 """
 
@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import usb.core
 
 import mt7921u as m
+from research.legacy_spatial_reuse_query_probe import query as legacy_query
 from research.spatial_reuse_query_probe import query
 
 REGISTERS = (0x820E5198, 0x820E519C, 0x820E51A0)
@@ -42,8 +43,8 @@ def fields(words):
 
 
 def read(dev):
-    if dev.CHIP != m.CHIP_MT7925:
-        raise ValueError("MT7925 ROM-resolved registers only")
+    if dev.CHIP not in (m.CHIP_MT7925, m.CHIP_MT7921):
+        raise ValueError("MT7925/MT7961 ROM-resolved registers only")
     opened = time.monotonic_ns()
     words = [dev.rr(a) for a in REGISTERS]
     elapsed = time.monotonic_ns() - opened
@@ -79,16 +80,18 @@ def observe(dev):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--device", choices=("mt7925", "mt7961"), default="mt7925")
     parser.add_argument("--channel", type=int, choices=(1, 36), default=36)
     args = parser.parse_args()
     out = {
         "tool": "sr_rmac_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "channel": args.channel,
+        "device": args.device,
         "registers": [hex(a) for a in REGISTERS],
         "rows": [],
     }
-    with m.open_device("0846:9072") as dev:
+    with m.open_device("0846:9072" if args.device == "mt7925" else "0e8d:7961") as dev:
         images = m.load_firmware(dev.CHIP, m.firmware_dir())
 
         def boot():
@@ -103,7 +106,9 @@ def main():
             out["initial_read"] = read(dev)
             for _ in range(5):
                 out["rows"].append(observe(dev))
-            out["firmware_query"] = query(dev, 0xCB)
+            out["firmware_query"] = (
+                query(dev, 0xCB) if args.device == "mt7925" else legacy_query(dev, 18)
+            )
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__

@@ -23,9 +23,10 @@ def test_invalid_values(words):
         p.fields(words)
 
 
-def test_fixed_addresses_only_and_no_writes():
+@pytest.mark.parametrize("chip", [p.m.CHIP_MT7925, p.m.CHIP_MT7921])
+def test_fixed_addresses_only_and_no_writes(chip):
     class Device:
-        CHIP = p.m.CHIP_MT7925
+        CHIP = chip
 
         def __init__(self):
             self.reads = []
@@ -37,7 +38,7 @@ def test_fixed_addresses_only_and_no_writes():
     dev = Device()
     assert p.read(dev)["fields_raw"]["inter_bss_ppdu"] == 0
     assert dev.reads == [0x820E5198, 0x820E519C, 0x820E51A0]
-    dev.CHIP = p.m.CHIP_MT7921
+    dev.CHIP = 0xFFFF
     with pytest.raises(ValueError, match="MT7925"):
         p.read(dev)
     assert len(dev.reads) == 3
