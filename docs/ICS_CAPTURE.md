@@ -251,3 +251,37 @@ An intermediate sequence-base32 attempt failed the existing packet builder's
 0–19 bound before any packet or ICS command was sent; both reloads passed.
 The CLI now permits bases0/8 only. This was a host-side test-planning error,
 not a dongle failure. [Four successful runs plus bounded setup failure](../research/evidence/tmac-ics-2026-09-05.json).
+
+## Power and rate differentials
+
+Four additional fresh-boot twelve-packet controls separate power, rate, length
+and sequence. All retain four288-byte/frame-count2 aggregates while enabled,
+none in off phases; all control restorations and both-radio reloads pass.
+Sequence/length candidates persist. Both relative-clock candidates again have
+zero residual against TXS inter-packet deltas in each enabled phase.
+
+Two power runs change only source-defined TXD2 bits31:26 between0/−4, using
+the phase pattern0,0,−4,−4 while length independently alternates65/193. TXS
+power follows36,36,32,32. **Aggregate offset24 bits23:16** matches those values
+for all eight enabled-phase packets across sequence ranges4–7 and12–15.
+Independent good-FCS reception is23/24 overall,8/8 enabled. This is a candidate
+raw hardware power field, not calibrated transmit power, received signal or a
+new power-control mechanism. No positive offsets or calibration-table writes.
+
+Two rate runs use only the already-qualified fixed-table CCK codes0/1 (1/2Mbps),
+first0,0,1,1 then0,1,0,1. Known table writes occur before isolated submissions;
+there are no MCU queries consuming the ICS stream between packets. The second
+radio receives24/24 exact good-FCS packets and confirms CCK MCS0/1, one stream,
+20MHz matching TX statuses. **Aggregate offset88 low14 bits** matches the rate
+code for all eight enabled-phase packets in both arrangements.
+
+The alternating run also creates apparent rate matches at offsets48/96 shifted
+by7: those are the previously identified lengths69/197, whose bit7 happens to
+follow the chosen rate pattern. They fail the grouped-rate control and are
+**not rate fields**. Keeping both arrangements prevents that false mapping.
+Widths8/14 are candidate extraction masks tested here, not proof all encodings
+or high bits have the same meaning for OFDM/HT/HE, retries or other record types.
+
+[Sanitized power/rate controls](../research/evidence/tmac-ics-power-rate-2026-09-05.json).
+Next: trace the category controls and inner record boundaries, then test richer
+PHY formats with the same own-frame correlation and no ambient record export.

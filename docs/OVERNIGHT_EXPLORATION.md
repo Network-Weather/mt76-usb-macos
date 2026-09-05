@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**TMAC ICS power/rate fields survive independent controls:**
+[Two negative-power and two CCK-rate runs](ICS_CAPTURE.md#power-and-rate-differentials)
+locate offset24 bits23:16 matching TXS power36/32 and offset88 low14 matching
+CCK codes0/1. Independent reception23/24 and24/24 respectively. Grouped versus
+alternating rates reject two length-derived false positives. No calibrated-power
+claim, positive offset or opaque export; all controls/reloads pass.
+
 **TMAC ICS adds per-transmit diagnostic records with candidate fields:**
 [Four off/on/off runs](ICS_CAPTURE.md#own-transmit-diagnostic-fields) produce
 sixteen288-byte/frame-count2 aggregates only for the sixteen enabled-phase

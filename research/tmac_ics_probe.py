@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-"""Three four-packet CCK1 phases with TMAC ICS off/on/off; no ambient export."""
+"""Three four-packet CCK1/2 phases with TMAC ICS off/on/off; no ambient export.
+
+Optional independent rate or zero/negative-four power differentials only.
+Opaque records stay local in memory; output is matched metadata/hypotheses.
+"""
 
 import argparse
 import collections
@@ -38,6 +42,25 @@ def request(start):
     raw = bytearray(mac.request(start))
     struct.pack_into("<H", raw, 16, 0)  # Condition0: TMAC only.
     return bytes(raw)
+
+
+def prepared_packet(dev, sequence, nonce, power_differential=False):
+    if type(power_differential) is not bool:
+        raise ValueError("boolean power differential required")
+    payload, wire = packet(dev, sequence, nonce, 0 if sequence % 2 == 0 else 128)
+    offset = -4 if power_differential and sequence % 4 >= 2 else 0
+    raw = bytearray(wire)
+    word = struct.unpack_from("<I", raw, 12)[0]  # USB length4 + TXD2 offset8.
+    struct.pack_into("<I", raw, 12, (word & ~(63 << 26)) | ((offset & 63) << 26))
+    return payload, bytes(raw)
+
+
+def planned_rate(sequence, pattern):
+    if pattern not in ("fixed", "blocks", "alternating"):
+        raise ValueError("bounded CCK1/2 patterns only")
+    return (
+        0 if pattern == "fixed" else int(sequence % 4 >= 2) if pattern == "blocks" else sequence % 2
+    )
 
 
 def send(dev, start):
@@ -102,6 +125,8 @@ def candidate_fields(records, packets, statuses):
         "length_candidates": [],
         "clock_candidates": [],
         "relative_clock_candidates": [],
+        "power_candidates": [],
+        "rate_candidates": [],
     }
     for offset in range(8, 285, 4):
         values = [struct.unpack_from("<I", raw, offset)[0] for _, raw in records]
@@ -120,6 +145,32 @@ def candidate_fields(records, packets, statuses):
                             "bytes_added_to_frame": extra,
                         }
                     )
+        if all("power_raw" in status_by_seq[i] for i in indices):
+            powers = [status_by_seq[i]["power_raw"] for i in indices]
+            if len(set(powers)) >= 2:
+                for shift in range(25):
+                    if [(v >> shift) & 255 for v in values] == powers:
+                        out["power_candidates"].append(
+                            {
+                                "offset": offset,
+                                "shift": shift,
+                                "bits": 8,
+                                "matches_txs_power_raw": True,
+                            }
+                        )
+        if all("rate_raw" in status_by_seq[i] for i in indices):
+            rates = [status_by_seq[i]["rate_raw"] for i in indices]
+            if len(set(rates)) >= 2:
+                for shift in range(19):
+                    if [(v >> shift) & 0x3FFF for v in values] == rates:
+                        out["rate_candidates"].append(
+                            {
+                                "offset": offset,
+                                "shift": shift,
+                                "bits": 14,
+                                "matches_txs_rate_raw": True,
+                            }
+                        )
         if all("timestamp_raw" in status_by_seq[i] for i in indices):
             deltas = [
                 ((v - status_by_seq[i]["timestamp_raw"] + (1 << 31)) & 0xFFFFFFFF) - (1 << 31)
@@ -147,13 +198,14 @@ def candidate_fields(records, packets, statuses):
     return out
 
 
-def acquire(tx, rx, packets, sequence=None):
+def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
     if len(packets) != 4:
         raise ValueError("exactly four prepared packets")
     pending = list(packets.items())
     submitted, good, statuses, matches, acks = [], set(), [], [], []
     shapes, types = collections.Counter(), collections.Counter()
     records = []  # Local-only opaque bytes; reduced before returning.
+    own_phy = {}
     decoder = m.decoder_for(rx)
     by_payload = {payload: index for index, (payload, _) in pending}
     start = time.monotonic()
@@ -162,6 +214,8 @@ def acquire(tx, rx, packets, sequence=None):
         now = time.monotonic()
         if len(submitted) < 4 and now >= next_tx and now < start + 0.25:
             index, (_, wire) = pending[len(submitted)]
+            if rate_pattern != "fixed":
+                phy.program_rate(tx, planned_rate(index, rate_pattern))
             tx.bulk_out(tx.ep_out_ac_be, wire, 1000)
             submitted.append(index)
             next_tx = time.monotonic() + 0.025
@@ -179,6 +233,10 @@ def acquire(tx, rx, packets, sequence=None):
                     index = by_payload.get(decoded.get("frame"))
                     if index in submitted:
                         good.add(index)
+                        own_phy[index] = {
+                            k: decoded.get("phy", {}).get(k)
+                            for k in ("mode_name", "mcs", "nss", "bw_mhz")
+                        }
                 continue
             if len(raw) >= 4:
                 kind = (struct.unpack_from("<I", raw)[0] >> 27) & 31
@@ -208,6 +266,7 @@ def acquire(tx, rx, packets, sequence=None):
         "attempts": attempts,
         "submitted_sequences": submitted,
         "exact_good_sequences": sorted(good),
+        "exact_good_phy": own_phy,
         "tx_status": statuses,
         "own_exact_matches_in_ics": matches,
         "differential_hypotheses": candidate_fields(records, packets, statuses),
@@ -228,9 +287,15 @@ def main():
     parser.add_argument("--activate-tmac-ics", action="store_true")
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--sequence-base", type=int, choices=(0, 8), default=0)
+    parser.add_argument("--power-differential", action="store_true")
+    parser.add_argument(
+        "--rate-pattern", choices=("fixed", "blocks", "alternating"), default="fixed"
+    )
     args = parser.parse_args()
     if not (args.activate_tmac_ics and args.acknowledge_experimental_transmit):
         parser.error("explicit TMAC ICS and transmit acknowledgments required")
+    if args.power_differential and args.rate_pattern != "fixed":
+        parser.error("separate power and rate differential runs required")
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "phases": [],
@@ -274,18 +339,20 @@ def main():
             phy.program_rate(tx, 0)
             nonce = os.urandom(8)
             out["sequence_base"] = args.sequence_base
+            out["power_differential"] = args.power_differential
+            out["rate_pattern"] = args.rate_pattern
             for phase, enabled in enumerate((False, True, False)):
                 sequence = None
                 if phase:
                     attempted = True
                     sequence = send(tx, enabled)
                 packets = {
-                    i: packet(tx, i, nonce, 0 if i % 2 == 0 else 128)
+                    i: prepared_packet(tx, i, nonce, args.power_differential)
                     for i in range(
                         args.sequence_base + phase * 4, args.sequence_base + phase * 4 + 4
                     )
                 }
-                row = acquire(tx, rx, packets, sequence)
+                row = acquire(tx, rx, packets, sequence, args.rate_pattern)
                 row["ics_enabled"] = enabled
                 row["masks_after"] = masks(tx)
                 out["phases"].append(row)

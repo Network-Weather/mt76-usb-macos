@@ -36,10 +36,34 @@ def test_prepared_packet_cap():
         p.acquire(None, None, {})
 
 
+def test_bounded_rate_patterns():
+    assert [p.planned_rate(i, "fixed") for i in range(4)] == [0, 0, 0, 0]
+    assert [p.planned_rate(i, "blocks") for i in range(4)] == [0, 0, 1, 1]
+    assert [p.planned_rate(i, "alternating") for i in range(4)] == [0, 1, 0, 1]
+    with pytest.raises(ValueError, match="CCK1/2"):
+        p.planned_rate(0, "sweep")
+
+
 def test_tmac_field_pair_and_masks():
     assert p.TMAC_WORDS[0x84C810] & 0xFFFF == 0
     assert p.TMAC_WORDS[0x84C270] & 0xFFFF == 0x120
     assert p.MASKS == {0x820E4120: 1, 0x820E705C: 1 << 24}
+
+
+@pytest.mark.parametrize("sequence", range(4, 8))
+def test_power_and_length_differentials_are_independent(sequence):
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+
+    plain, plain_wire = p.prepared_packet(Device(), sequence, bytes(8))
+    changed, wire = p.prepared_packet(Device(), sequence, bytes(8), True)
+    assert plain == changed
+    assert len(changed) == (65 if sequence % 2 == 0 else 193)
+    assert wire[:12] == plain_wire[:12]
+    assert wire[16:] == plain_wire[16:]
+    word, old = struct.unpack_from("<I", wire, 12)[0], struct.unpack_from("<I", plain_wire, 12)[0]
+    assert word & ~(63 << 26) == old & ~(63 << 26)
+    assert word >> 26 == (60 if sequence % 4 >= 2 else 0)
 
 
 def test_restore_rejects_other_addresses():
@@ -58,8 +82,14 @@ def test_differential_candidates_export_no_record_words():
         timestamp = 100000 + (i - 36) * 30000
         raw = bytearray(288)
         struct.pack_into("<III", raw, 8, i << 20, len(payload) + 4, timestamp + 40)
+        power = 36 if i % 4 < 2 else 32
+        struct.pack_into("<I", raw, 24, power << 16)
+        rate = i % 2
+        struct.pack_into("<I", raw, 28, rate << 8)
         records.append((i, bytes(raw)))
-        statuses.append({"sequence": i, "timestamp_raw": timestamp})
+        statuses.append(
+            {"sequence": i, "timestamp_raw": timestamp, "power_raw": power, "rate_raw": rate}
+        )
     result = p.candidate_fields(records, packets, statuses)
     assert result["qualified_temporal_pairing"]
     assert {"offset": 8, "shift": 20, "bits": 12} in result["sequence_candidates"]
@@ -68,6 +98,12 @@ def test_differential_candidates_export_no_record_words():
     ]
     assert result["clock_candidates"] == [{"offset": 16, "minus_txs_timestamp_raw": [40] * 4}]
     assert result["relative_clock_candidates"] == [{"offset": 16, "relative_minus_txs": [0] * 4}]
+    assert {"offset": 24, "shift": 16, "bits": 8, "matches_txs_power_raw": True} in result[
+        "power_candidates"
+    ]
+    assert {"offset": 28, "shift": 8, "bits": 14, "matches_txs_rate_raw": True} in result[
+        "rate_candidates"
+    ]
     assert "record_words" not in result
     assert not p.candidate_fields(records[:3], packets, statuses)["qualified_temporal_pairing"]
     assert not p.candidate_fields(records, packets, statuses[:3])["qualified_temporal_pairing"]
