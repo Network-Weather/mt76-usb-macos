@@ -96,6 +96,55 @@ factory-calibration or unknown table-field sweep followed. Both alive checks
 and both normal reloads pass, returning each radio to channel6/20MHz.
 [Sanitized width evidence](../research/evidence/bandwidth-transmit-2026-09-05.json).
 
+#### Error-delivery and PHY-detection follow-up
+
+The later [FCS-filter breakthrough](ERROR_FRAME_CAPTURE.md) permits a stronger
+test than simply waiting for good frames. With both radios still configured
+primary6/center8/40MHz, clear only the MT7961 MAC FCS-drop bit, retain normal
+sniffer drop_err1, and add a known HT15/20MHz failed-frame control. Seven
+four-frame phases are HT20, HT15/20, HT40, HT20, HE20, HE40, HE20. HE keeps
+GI0/LTF1/LDPC1. No power or calibration changes.
+
+An initial immediate-readback guard stopped **before any TX** because the
+asynchronous filter bit had not changed; both radios reloaded. Applying the
+already established50ms settle interval verifies`RFCR201002→201000`.
+
+| Trial | Exact good receipts, seven phases | Wide failed metadata / MAC FCS |
+| --- | --- | --- |
+| Open filter, no PHY enable | 3/0/0/4/3/0/4 | Neither wide phase produces failed frames or MAC errors |
+| Open filter + known PHY enable | 3/0/0/4/4/0/4 | Neither wide phase produces failed frames or MAC errors |
+| Fresh published reproducer | 3/0/0/4/4/0/4 | Same |
+
+All28 TX statuses arrive in each completed run, format0/count1/no reported
+errors; wide phases report bandwidth1. The failed HT15 control yields three
+HT15 metadata records plus one unrelated/unverified OFDM-named record in the
+first run, then four HT15 failed records and four MAC FCS samples`[1,0]` in
+each PHY-enabled run. Failed payload identity is never claimed.
+
+The two PHY-enabled runs use only the already qualified`0x83082004` mask`0xe00`,
+clear then`0xa00`. **All16 combined HT40/HE40 windows have zero OFDM PD and MDRDY
+increments**, no SIG/tag-error increments, no MAC FCS increment and no failed
+frame delivery. Each HT15 control window increments PD/MDRDY by1; narrow good
+controls also increment these fields (one extra PD in one window is retained).
+Thus the wide negative is not explained by the FCS filter hiding otherwise
+normal failed payloads. It still does not prove absence of RF energy: transmitter
+PHY construction, frequency placement, receiver configuration and sensitivity
+remain possible causes. The PHY FCS latch is not treated as an accumulating count.
+
+The pinned [vendor TXD header](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic/nic_connac3x_tx.h)
+describes DW6 bandwidth as bits25:22; its
+[descriptor builder](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/nic/nic_txd_v3.c)
+uses literal8 for fixed-rate packets. This agrees with our working fixed20
+setting, but does not independently qualify9 as working40 on this firmware.
+The generic `FIX_BW_20=4` enum belongs to another abstraction and was not blindly
+substituted into this field. No bandwidth-nibble sweep was performed.
+
+Reproducer: [`width_error_probe.py`](../research/width_error_probe.py), requiring
+TX, error-capture and counter-write opt-ins. Filter/counter bits and both normal
+reloads are verified. [Sanitized evidence](../research/evidence/width-error-controls-2026-09-05.json)
+contains bounded status, counter and anonymous PHY observations, not failed
+frame bytes or ambient identifiers. Production defaults remain unchanged.
+
 ### HE extended-range SU is received, but not yet a robust link
 
 `--suite he-er --transmitter mt7925 --channel 6 --per-phase 4` uses five

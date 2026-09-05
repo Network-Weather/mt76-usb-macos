@@ -1,0 +1,6272 @@
+{
+  "scope": "Bounded width TX with failed-frame and PHY detection controls",
+  "setup_guard": {
+    "date_utc": "2026-09-05T17:56:13.902482+00:00",
+    "scope": "28 bounded no-ACK MT7925 probes at primary6/center8/40MHz; MT7961 FCS filter open; no PHY counter enable or power changes",
+    "submitted": 0,
+    "phases": [],
+    "firmware_sha256": {
+      "mt7921": [
+        "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      ],
+      "mt7925": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ]
+    },
+    "rfcr_before": "0x201002",
+    "rfcr_open": "0x201002",
+    "error_type": "ValueError",
+    "rfcr_fcs_bit_restored": true,
+    "cleanup_reload_alive": [
+      true,
+      true
+    ]
+  },
+  "trials": [
+    {
+      "date_utc": "2026-09-05T17:56:53.920973+00:00",
+      "scope": "28 bounded no-ACK MT7925 probes at primary6/center8/40MHz; MT7961 FCS filter open; no PHY counter enable or power changes",
+      "submitted": 28,
+      "phases": [
+        {
+          "name": "ht20_before",
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 0,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x56",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 913885,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 32756,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x4",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 13,
+                  "timestamp_raw": 1073627,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 37741,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 132,
+                  "timestamp_raw": 1238015,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 42759,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 1393116,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 47734,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht15_error_control",
+          "rate_code": 1167,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 4,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -98,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1558241,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 52894,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -99,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1723636,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 58063,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -98,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 1879947,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 62948,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x2",
+                  "0x10000"
+                ],
+                "high16_samples": [
+                  0,
+                  1
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "OFDM",
+                    "mcs": 11,
+                    "nss": 1,
+                    "nsts": 1,
+                    "bw_mhz": 40,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 6
+                  },
+                  "frame_bytes_without_fcs": 1466,
+                  "rssi_raw": -91,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 16,
+                  "timestamp_raw": 2043316,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 68040,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht40",
+          "rate_code": 1160,
+          "tx_width_mhz": 40,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 8,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x2",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 2203761,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 73067,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 157,
+                  "timestamp_raw": 2372109,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 78174,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 12,
+                  "timestamp_raw": 2524533,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 83082,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 41,
+                  "timestamp_raw": 2687727,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 88153,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht20_after",
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 12,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 2850726,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 93285,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3014752,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 98410,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3178470,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 103527,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 3340405,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 108588,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he20_before",
+          "rate_code": 1536,
+          "tx_width_mhz": 20,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 16,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 3503066,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 113671,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 7,
+                  "timestamp_raw": 3658891,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 118537,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 3818603,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 123530,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 146,
+                  "timestamp_raw": 3985573,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 128607,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he40",
+          "rate_code": 1536,
+          "tx_width_mhz": 40,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 20,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 20,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 4145819,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 133757,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 21,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 21,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 52,
+                  "timestamp_raw": 4308504,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 138792,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 22,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 22,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 4469584,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 143874,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 23,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 23,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 8,
+                  "timestamp_raw": 4632960,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 148975,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he20_after",
+          "rate_code": 1536,
+          "tx_width_mhz": 20,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 24,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 24,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 208,
+                  "timestamp_raw": 4805346,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 154162,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 25,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 25,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 7,
+                  "timestamp_raw": 4959979,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 159196,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 26,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x3",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 26,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 125,
+                  "timestamp_raw": 5120477,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 164093,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 27,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x3",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 27,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 8,
+                  "timestamp_raw": 5277421,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 169115,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "rfcr_before": "0x201002",
+      "rfcr_open": "0x201000",
+      "alive_after": [
+        true,
+        true
+      ],
+      "rfcr_fcs_bit_restored": true,
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T17:57:50.734381+00:00",
+      "scope": "28 bounded no-ACK MT7925 probes at primary6/center8/40MHz; MT7961 FCS filter open and known PHY counter enable; no power changes",
+      "submitted": 28,
+      "phases": [
+        {
+          "name": "ht20_before",
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 0,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x55",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 922944,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 32763,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 0,
+                "ofdm_pd": 0,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 0,
+                "ofdm_mdrdy": 0
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 5,
+                "ofdm_pd": 1,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 5,
+                "ofdm_mdrdy": 1
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1091738,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 38041,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 10,
+                "ofdm_pd": 1,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 10,
+                "ofdm_mdrdy": 1
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 15,
+                "ofdm_pd": 2,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 15,
+                "ofdm_mdrdy": 2
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 396,
+                  "timestamp_raw": 1271982,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 43280,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 16,
+                "ofdm_pd": 2,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 16,
+                "ofdm_mdrdy": 2
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 21,
+                "ofdm_pd": 3,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 22,
+                "ofdm_mdrdy": 3
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 10,
+                  "timestamp_raw": 1427421,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 48524,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 25,
+                "ofdm_pd": 3,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 25,
+                "ofdm_mdrdy": 3
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 30,
+                "ofdm_pd": 4,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 30,
+                "ofdm_mdrdy": 4
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht15_error_control",
+          "rate_code": 1167,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 4,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -98,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 13,
+                  "timestamp_raw": 1599753,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 53905,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 35,
+                "ofdm_pd": 4,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 35,
+                "ofdm_mdrdy": 4
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 40,
+                "ofdm_pd": 5,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 40,
+                "ofdm_mdrdy": 5
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -99,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 1767052,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 59144,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 40,
+                "ofdm_pd": 5,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 40,
+                "ofdm_mdrdy": 5
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 45,
+                "ofdm_pd": 6,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 46,
+                "ofdm_mdrdy": 6
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -99,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 1927122,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 64146,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 50,
+                "ofdm_pd": 6,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 50,
+                "ofdm_mdrdy": 6
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 55,
+                "ofdm_pd": 7,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 55,
+                "ofdm_mdrdy": 7
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x4",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -98,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 22,
+                  "timestamp_raw": 2094554,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 69358,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 60,
+                "ofdm_pd": 7,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 60,
+                "ofdm_mdrdy": 7
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10006",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 65,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 65,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht40",
+          "rate_code": 1160,
+          "tx_width_mhz": 40,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 8,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 7,
+                  "timestamp_raw": 2271548,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 74905,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 65,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 65,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 70,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 70,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 45,
+                  "timestamp_raw": 2436458,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 80020,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 75,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 75,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 80,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 80,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x3",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 82,
+                  "timestamp_raw": 2604462,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 85234,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 84,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 84,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 90,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 90,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x2",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 2766798,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 90385,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 90,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 90,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 95,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 95,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht20_after",
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 12,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 2933719,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 95602,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 100,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 100,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 105,
+                "ofdm_pd": 9,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 105,
+                "ofdm_mdrdy": 9
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 145,
+                  "timestamp_raw": 3107221,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 100883,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 106,
+                "ofdm_pd": 9,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 106,
+                "ofdm_mdrdy": 9
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x1"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 112,
+                "ofdm_pd": 10,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 112,
+                "ofdm_mdrdy": 10
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x4",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3266361,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 105997,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 115,
+                "ofdm_pd": 10,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 115,
+                "ofdm_mdrdy": 10
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 120,
+                "ofdm_pd": 11,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 120,
+                "ofdm_mdrdy": 11
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 3435119,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 111271,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 125,
+                "ofdm_pd": 11,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 125,
+                "ofdm_mdrdy": 11
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 130,
+                "ofdm_pd": 12,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 130,
+                "ofdm_mdrdy": 12
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he20_before",
+          "rate_code": 1536,
+          "tx_width_mhz": 20,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 16,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 3604878,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 116573,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 130,
+                "ofdm_pd": 12,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 130,
+                "ofdm_mdrdy": 12
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x8",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 137,
+                "ofdm_pd": 13,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 137,
+                "ofdm_mdrdy": 13
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3773208,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 121836,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 142,
+                "ofdm_pd": 13,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 142,
+                "ofdm_mdrdy": 13
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 147,
+                "ofdm_pd": 14,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 147,
+                "ofdm_mdrdy": 14
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x4",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3942044,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 127112,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 152,
+                "ofdm_pd": 14,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 152,
+                "ofdm_mdrdy": 14
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x7",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 157,
+                "ofdm_pd": 15,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 157,
+                "ofdm_mdrdy": 15
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 4109799,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 132354,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 157,
+                "ofdm_pd": 15,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 157,
+                "ofdm_mdrdy": 15
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0xb",
+                  "0x1"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 168,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 168,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he40",
+          "rate_code": 1536,
+          "tx_width_mhz": 40,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 20,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0xa",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 20,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 4283829,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 137793,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 178,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 178,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 183,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 183,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 21,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 21,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 48,
+                  "timestamp_raw": 4454194,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 143072,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 188,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 188,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 193,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 193,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 22,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 22,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 15,
+                  "timestamp_raw": 4615840,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 148157,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 193,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 193,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 198,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 198,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 23,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 23,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 162,
+                  "timestamp_raw": 4787269,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 153367,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 203,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 203,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 208,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 208,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he20_after",
+          "rate_code": 1536,
+          "tx_width_mhz": 20,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 24,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x1",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 24,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 24,
+                  "timestamp_raw": 4953042,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 158686,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 210,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 211,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x7",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 216,
+                "ofdm_pd": 17,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 216,
+                "ofdm_mdrdy": 17
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 25,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x3",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 25,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 5117352,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 163841,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 218,
+                "ofdm_pd": 17,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 218,
+                "ofdm_mdrdy": 17
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 261,
+                "ofdm_pd": 19,
+                "cck_sfd_error": 39,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 222,
+                "ofdm_mdrdy": 18
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 26,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 26,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 5285844,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 169104,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 266,
+                "ofdm_pd": 19,
+                "cck_sfd_error": 39,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 227,
+                "ofdm_mdrdy": 18
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 271,
+                "ofdm_pd": 20,
+                "cck_sfd_error": 39,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 232,
+                "ofdm_mdrdy": 19
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 27,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 27,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 5453390,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 174342,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 271,
+                "ofdm_pd": 20,
+                "cck_sfd_error": 39,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 232,
+                "ofdm_mdrdy": 19
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 276,
+                "ofdm_pd": 21,
+                "cck_sfd_error": 39,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 237,
+                "ofdm_mdrdy": 20
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "rfcr_before": "0x201002",
+      "rfcr_open": "0x201000",
+      "original_counter_bits": 0,
+      "enabled_counter_bits": 2560,
+      "alive_after": [
+        true,
+        true
+      ],
+      "counter_bits_restored": true,
+      "rfcr_fcs_bit_restored": true,
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T18:01:06.853414+00:00",
+      "scope": "28 bounded no-ACK MT7925 probes at primary6/center8/40MHz; MT7961 FCS filter open and known PHY counter enable; no power changes",
+      "submitted": 28,
+      "phases": [
+        {
+          "name": "ht20_before",
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 0,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x67",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 912074,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 32497,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 0,
+                "ofdm_pd": 0,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 0,
+                "ofdm_mdrdy": 0
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 5,
+                "ofdm_pd": 1,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 5,
+                "ofdm_mdrdy": 1
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 30,
+                  "timestamp_raw": 1073218,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 37506,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 10,
+                "ofdm_pd": 1,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 10,
+                "ofdm_mdrdy": 1
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 15,
+                "ofdm_pd": 2,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 15,
+                "ofdm_mdrdy": 2
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1238417,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 42695,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 15,
+                "ofdm_pd": 2,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 15,
+                "ofdm_mdrdy": 2
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 20,
+                "ofdm_pd": 3,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 20,
+                "ofdm_mdrdy": 3
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 1401921,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 47803,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 25,
+                "ofdm_pd": 3,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 25,
+                "ofdm_mdrdy": 3
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 30,
+                "ofdm_pd": 4,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 30,
+                "ofdm_mdrdy": 4
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht15_error_control",
+          "rate_code": 1167,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 4,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x1",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -99,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 66,
+                  "timestamp_raw": 1569952,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 52991,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 32,
+                "ofdm_pd": 4,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 0,
+                "cck_mdrdy": 32,
+                "ofdm_mdrdy": 4
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x1"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 38,
+                "ofdm_pd": 5,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 38,
+                "ofdm_mdrdy": 5
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x3",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -98,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 1735626,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 58233,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 40,
+                "ofdm_pd": 5,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 40,
+                "ofdm_mdrdy": 5
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 45,
+                "ofdm_pd": 6,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 45,
+                "ofdm_mdrdy": 6
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -99,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 1903799,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 63488,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 50,
+                "ofdm_pd": 6,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 50,
+                "ofdm_mdrdy": 6
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 55,
+                "ofdm_pd": 7,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 55,
+                "ofdm_mdrdy": 7
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [
+                {
+                  "phy": {
+                    "mode_name": "HT",
+                    "mcs": 15,
+                    "nss": 2,
+                    "nsts": 2,
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "rate_mbps": 130
+                  },
+                  "frame_bytes_without_fcs": 65,
+                  "rssi_raw": -98,
+                  "own_frame_identity_verified": false
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1167,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 2063986,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 68493,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 55,
+                "ofdm_pd": 7,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 55,
+                "ofdm_mdrdy": 7
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x10005",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  1,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 60,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 60,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht40",
+          "rate_code": 1160,
+          "tx_width_mhz": 40,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 8,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 2231961,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 73741,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 65,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 65,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 70,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 70,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x4",
+                  "0x1"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 83,
+                  "timestamp_raw": 2399411,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 78895,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 75,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 75,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 80,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 80,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 2560036,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 83994,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 80,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 80,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 85,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 85,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 2726517,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 89198,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 90,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 90,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 95,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 95,
+                "ofdm_mdrdy": 8
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "ht20_after",
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "ltf": 0,
+          "ldpc": 0,
+          "windows": [
+            {
+              "sequence": 12,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 97,
+                  "timestamp_raw": 2898282,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 94472,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 96,
+                "ofdm_pd": 8,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 97,
+                "ofdm_mdrdy": 8
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 102,
+                "ofdm_pd": 9,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 102,
+                "ofdm_mdrdy": 9
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3057378,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 99537,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 105,
+                "ofdm_pd": 9,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 105,
+                "ofdm_mdrdy": 9
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 110,
+                "ofdm_pd": 10,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 110,
+                "ofdm_mdrdy": 10
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 3225418,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 104789,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 115,
+                "ofdm_pd": 10,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 115,
+                "ofdm_mdrdy": 10
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 120,
+                "ofdm_pd": 11,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 120,
+                "ofdm_mdrdy": 11
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": false,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3392255,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 110002,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 120,
+                "ofdm_pd": 11,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 120,
+                "ofdm_mdrdy": 11
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 125,
+                "ofdm_pd": 12,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 125,
+                "ofdm_mdrdy": 12
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he20_before",
+          "rate_code": 1536,
+          "tx_width_mhz": 20,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 16,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 81,
+                  "timestamp_raw": 3560513,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 115183,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 130,
+                "ofdm_pd": 12,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 130,
+                "ofdm_mdrdy": 12
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 135,
+                "ofdm_pd": 13,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 135,
+                "ofdm_mdrdy": 13
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x2",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 3725423,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 120414,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 138,
+                "ofdm_pd": 13,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 138,
+                "ofdm_mdrdy": 13
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x9",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 145,
+                "ofdm_pd": 14,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 145,
+                "ofdm_mdrdy": 14
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 3887588,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 125482,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 145,
+                "ofdm_pd": 14,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 145,
+                "ofdm_mdrdy": 14
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 150,
+                "ofdm_pd": 15,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 150,
+                "ofdm_mdrdy": 15
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 4052992,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 130650,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 155,
+                "ofdm_pd": 15,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 155,
+                "ofdm_mdrdy": 15
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 160,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 160,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he40",
+          "rate_code": 1536,
+          "tx_width_mhz": 40,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 20,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x0",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 20,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 4219757,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 135862,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 160,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 160,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 165,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 166,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 21,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 21,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 4381275,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 140909,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 170,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 170,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 175,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 175,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 22,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x3",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 22,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 26,
+                  "timestamp_raw": 4545243,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 146010,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 179,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 180,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 185,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 185,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 23,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x1",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": false,
+              "good_phy": [],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 23,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 39,
+                  "timestamp_raw": 4710535,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 151162,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 185,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 185,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 190,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 190,
+                "ofdm_mdrdy": 16
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "name": "he20_after",
+          "rate_code": 1536,
+          "tx_width_mhz": 20,
+          "ltf": 1,
+          "ldpc": 1,
+          "windows": [
+            {
+              "sequence": 24,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 24,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 4879565,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 156478,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 195,
+                "ofdm_pd": 16,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 195,
+                "ofdm_mdrdy": 16
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 200,
+                "ofdm_pd": 17,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 200,
+                "ofdm_mdrdy": 17
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 25,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x1",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 25,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 11,
+                  "timestamp_raw": 5048767,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 161761,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 202,
+                "ofdm_pd": 17,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 202,
+                "ofdm_mdrdy": 17
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x7",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 208,
+                "ofdm_pd": 18,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 209,
+                "ofdm_mdrdy": 18
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 26,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x3",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 26,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 5221497,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 167166,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 210,
+                "ofdm_pd": 18,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 210,
+                "ofdm_mdrdy": 18
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 215,
+                "ofdm_pd": 19,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 215,
+                "ofdm_mdrdy": 19
+              },
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 27,
+              "before": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x5",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HE-SU",
+                  "mcs": 0,
+                  "nss": 2,
+                  "bw_mhz": 20,
+                  "ldpc": true,
+                  "gi": 0
+                }
+              ],
+              "failed_metadata": [],
+              "tx_status": [
+                {
+                  "sequence": 27,
+                  "format": 0,
+                  "rate_raw": 1536,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 9,
+                  "timestamp_raw": 5389569,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 172413,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "phy_before": {
+                "cck_pd": 220,
+                "ofdm_pd": 19,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 220,
+                "ofdm_mdrdy": 19
+              },
+              "after": {
+                "register": "0x820ed698",
+                "words_raw": [
+                  "0x6",
+                  "0x0"
+                ],
+                "high16_samples": [
+                  0,
+                  0
+                ]
+              },
+              "phy_after": {
+                "cck_pd": 225,
+                "ofdm_pd": 20,
+                "cck_sfd_error": 0,
+                "cck_sig_error": 0,
+                "ofdm_tag_error": 0,
+                "ofdm_sig_error": 0,
+                "cck_fcs_error": 0,
+                "ofdm_fcs_error": 1,
+                "cck_mdrdy": 225,
+                "ofdm_mdrdy": 20
+              },
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "rfcr_before": "0x201002",
+      "rfcr_open": "0x201000",
+      "original_counter_bits": 0,
+      "enabled_counter_bits": 2560,
+      "alive_after": [
+        true,
+        true
+      ],
+      "counter_bits_restored": true,
+      "rfcr_fcs_bit_restored": true,
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    }
+  ]
+}
