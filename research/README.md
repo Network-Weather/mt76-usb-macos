@@ -18,8 +18,16 @@ The ongoing [radio observability exploration](../docs/RADIO_OBSERVABILITY.md) fo
 extended receive vectors, control exchanges, and two-radio timing, with dated evidence
 and explicit distinctions between hypotheses and measured capabilities.
 
+The follow-up [receiver evidence and power experiments](../docs/RECEIVER_EVIDENCE.md)
+test BlockAck/data visibility and bounded per-packet attenuation.
+The [MT7925 transmit experiment](../docs/MT7925_TRANSMIT.md) tests the reverse
+direction, fixed-rate table, and source-address preservation.
+
 | script | question | state |
 |---|---|---|
+| [`mt7925_tx_probe.py`](mt7925_tx_probe.py) | Can connac3 transmit controlled probes and preserve their addresses? | **partly answered** — DIS_MAT preserves frame bytes; 5 GHz OFDM and relative attenuation measured; production API unchanged |
+| [`delivery_evidence.py`](delivery_evidence.py) | Can receiver-reported receipt distinguish the two observers' visibility? | **partly answered** — shared BlockAcks expose complementary recent-data visibility; no link-loss-rate claim |
+| [`tx_power_probe.py`](tx_power_probe.py) | Do per-packet power-offset codes change actual received signal? | **partly answered** — negative codes lower independently measured signal; absolute power/units uncalibrated |
 | [`rx_vector_probe.py`](rx_vector_probe.py) | What does the extended receive vector contain, and is Group 5 delivered? | **partly answered** — MT7961 enable works; MT7925 duplicate RCPI and HE/EHT color/direction checked |
 | [`dual_radio_probe.py`](dual_radio_probe.py) | Can shared packets align clocks, and do controlled rates reach the air? | **partly answered** — microsecond clock agreement and 60/60 OFDM TX at 5 GHz channels 36/149 |
 | [`clock_retune_probe.py`](clock_retune_probe.py) | Does a clock model survive a channel excursion? | **answered for tested excursions** — both radios preserve calibration after returning; long-term stability untested |

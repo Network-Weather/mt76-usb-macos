@@ -923,6 +923,41 @@ beacon does not include them, and no client association was observed during thes
 decoder's handling of per-STA profiles and of element and subelement fragmentation is covered by
 synthetic fixtures cross-checked against tshark in `tests/test_multi_link.py`, not by air.
 
+## Receiver evidence and per-packet power (2026-09-04)
+
+The dated [receiver-evidence report](RECEIVER_EVIDENCE.md) records the test bed,
+commands, acceptance criteria, aggregate evidence, and limitations. At 5 GHz
+channels 36 and 149 / 20 MHz, 100/100 controlled OFDM probes per channel were independently decoded;
+TXWI offset codes -8 and -16 reduced received signal and TX status power relative
+to interleaved zero-code controls. Absolute transmit power remains uncalibrated.
+The passive BlockAck comparison met its recent-data visibility criterion on
+channel 132 / 80 MHz: 101 shared BlockAcks exposed acknowledged sequence positions
+whose data was observed by both radios (70), only MT7961 (31), only MT7925 (one),
+or neither recently (five). These are repeated-window opportunities, not unique
+packets, and must not be presented as a packet-loss estimator. Channel 149's
+initial dwell did not meet the recent-data criterion.
+
+## MT7925 bounded transmit (2026-09-04)
+
+The [MT7925 transmit report](MT7925_TRANSMIT.md) records source derivation, test bed,
+commands, acceptance criteria, and failures. Ten of ten controlled channel 36 /
+20 MHz OFDM probes from the A9000 were independently decoded by the MT7961 when
+matching their synthetic payload. Their source addresses were rewritten, so the
+earlier source-only matcher had falsely suggested no reception. TX status alone
+was not used as proof. The production MT7925 injection API remains unsupported.
+Setting DIS_MAT then preserved all submitted frame bytes: 20/20 on channel 36 and
+59/60 on channel 149, with the missing independent decode explicitly unexplained.
+The channel 149 interleaved power-code test received 60/60 byte-exact frames and
+measured relative reductions of 4 and 8 dB for codes -8 and -16. Both chips remained
+responsive; transmitter firmware was reloaded afterward. Absolute power remains
+uncalibrated.
+
+Repeating the MT7925 power cycle on channel 36 also receives 60/60 byte-exact
+frames, with lower signal in both attenuation phases. Relative reductions there
+are 3.25 and 6.25 dB versus adjacent baselines; the code is not a calibrated RF
+transfer function. Full results, including 199/200 byte-exact observations across
+four DIS_MAT runs and the one unexplained miss, are in the report.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
@@ -949,8 +984,9 @@ as a current release qualification.
 - working noise-floor measurements; CCA-busy is now available through the MCU paths documented
   above;
 - suspend/resume, sleep/wake, hot-unplug recovery, and long-duration soak behavior;
-- sustained or high-rate injection, working injection above 2.4 GHz, TX power, TX feedback, and
-  regulatory-domain enforcement; and
+- sustained or high-rate injection, absolute TX-power calibration, and regulatory-domain
+  enforcement (bounded 5 GHz OFDM injection, TX feedback, and relative attenuation have
+  separate research evidence above); and
 - automatic recovery from a device that stops responding.
 
 Do not turn an item in this section into a positive claim until a dated result, exact test

@@ -1,0 +1,486 @@
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "date_utc": "2026-09-04T23:23:28.998928+00:00",
+      "firmware_sha256": {
+        "mt7921": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "mt7925": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        }
+      },
+      "lookback_ms": 100,
+      "paired": {
+        "clock": {
+          "all_fit": {
+            "max_us_if_1mhz": 0.8,
+            "median_us_if_1mhz": 0.216,
+            "p95_us_if_1mhz": 0.641
+          },
+          "host_span_s": 29.801,
+          "pairs": 37,
+          "radio1_ticks_per_host_second": 999999.2,
+          "relative_drift_ppm": -0.8013,
+          "second_half_prediction": {
+            "max_us_if_1mhz": 0.619,
+            "median_us_if_1mhz": 0.275,
+            "p95_us_if_1mhz": 0.614
+          },
+          "status": "fit"
+        },
+        "comparison": "sequence_window_opportunities_not_unique_packets",
+        "counts": {
+          "ack_bits_data_seen_by_both": 0,
+          "ack_bits_data_seen_by_neither_recently": 8720,
+          "ack_bits_data_seen_only_mt7921": 0,
+          "ack_bits_data_seen_only_mt7925": 0,
+          "common_ba_fingerprints": 182,
+          "shared_ba_events": 182
+        }
+      },
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "ack_bits_with_recent_data_seen": 0,
+            "ack_bits_without_recent_data_seen": 32014,
+            "blockack_windows": 815,
+            "frames": 3175,
+            "recent_data_seen_but_bit_zero": 0,
+            "timeouts": 12
+          },
+          "elapsed_s": 30.001,
+          "phy_frames": {
+            "HT": 206,
+            "OFDM": 2961,
+            "VHT": 8
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "ack_bits_with_recent_data_seen": 0,
+            "ack_bits_without_recent_data_seen": 13314,
+            "blockack_windows": 283,
+            "frames": 2599,
+            "recent_data_seen_but_bit_zero": 0
+          },
+          "elapsed_s": 30.002,
+          "phy_frames": {
+            "HT": 291,
+            "OFDM": 2294,
+            "VHT": 14
+          }
+        }
+      ],
+      "register_alive_after": [
+        true,
+        true
+      ],
+      "target": [
+        "5GHz",
+        149,
+        155,
+        80
+      ],
+      "tool": "delivery_evidence"
+    },
+    {
+      "channel": 36,
+      "date_utc": "2026-09-04T23:26:13.744937+00:00",
+      "firmware_sha256": {
+        "mt7921": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "mt7925": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        }
+      },
+      "frames_per_phase": 20,
+      "gap_s": 0.05,
+      "offset_codes": [
+        0,
+        -8,
+        0,
+        -16,
+        0
+      ],
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "NORMAL": 882,
+            "TXS": 100
+          },
+          "phases": [
+            {
+              "phase": 0,
+              "phy_modes": {},
+              "received": 0,
+              "receiver_metrics": {
+                "foe_raw_candidate": null,
+                "ib0_signed_candidate": null,
+                "ib1_signed_candidate": null,
+                "rssi": null,
+                "snr_candidate": null,
+                "wb0_signed_candidate": null
+              },
+              "requested_signed_code": 0,
+              "tx_status_power_raw": {
+                "max": 44,
+                "median": 44,
+                "min": 44,
+                "n": 20
+              },
+              "unique_sequences": 0
+            },
+            {
+              "phase": 1,
+              "phy_modes": {},
+              "received": 0,
+              "receiver_metrics": {
+                "foe_raw_candidate": null,
+                "ib0_signed_candidate": null,
+                "ib1_signed_candidate": null,
+                "rssi": null,
+                "snr_candidate": null,
+                "wb0_signed_candidate": null
+              },
+              "requested_signed_code": -8,
+              "tx_status_power_raw": {
+                "max": 36,
+                "median": 36,
+                "min": 36,
+                "n": 20
+              },
+              "unique_sequences": 0
+            },
+            {
+              "phase": 2,
+              "phy_modes": {},
+              "received": 0,
+              "receiver_metrics": {
+                "foe_raw_candidate": null,
+                "ib0_signed_candidate": null,
+                "ib1_signed_candidate": null,
+                "rssi": null,
+                "snr_candidate": null,
+                "wb0_signed_candidate": null
+              },
+              "requested_signed_code": 0,
+              "tx_status_power_raw": {
+                "max": 44,
+                "median": 44,
+                "min": 44,
+                "n": 20
+              },
+              "unique_sequences": 0
+            },
+            {
+              "phase": 3,
+              "phy_modes": {},
+              "received": 0,
+              "receiver_metrics": {
+                "foe_raw_candidate": null,
+                "ib0_signed_candidate": null,
+                "ib1_signed_candidate": null,
+                "rssi": null,
+                "snr_candidate": null,
+                "wb0_signed_candidate": null
+              },
+              "requested_signed_code": -16,
+              "tx_status_power_raw": {
+                "max": 28,
+                "median": 28,
+                "min": 28,
+                "n": 20
+              },
+              "unique_sequences": 0
+            },
+            {
+              "phase": 4,
+              "phy_modes": {},
+              "received": 0,
+              "receiver_metrics": {
+                "foe_raw_candidate": null,
+                "ib0_signed_candidate": null,
+                "ib1_signed_candidate": null,
+                "rssi": null,
+                "snr_candidate": null,
+                "wb0_signed_candidate": null
+              },
+              "requested_signed_code": 0,
+              "tx_status_power_raw": {
+                "max": 44,
+                "median": 44,
+                "min": 44,
+                "n": 20
+              },
+              "unique_sequences": 0
+            }
+          ]
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "NORMAL": 917
+          },
+          "phases": [
+            {
+              "phase": 0,
+              "phy_modes": {
+                "OFDM": 20
+              },
+              "received": 20,
+              "receiver_metrics": {
+                "foe_raw_candidate": {
+                  "max": 917504,
+                  "median": 655360,
+                  "min": 0,
+                  "n": 20
+                },
+                "ib0_signed_candidate": {
+                  "max": -52,
+                  "median": -58.5,
+                  "min": -63,
+                  "n": 20
+                },
+                "ib1_signed_candidate": {
+                  "max": -38,
+                  "median": -41,
+                  "min": -44,
+                  "n": 20
+                },
+                "rssi": {
+                  "max": -37,
+                  "median": -40,
+                  "min": -43,
+                  "n": 20
+                },
+                "snr_candidate": {
+                  "max": 11,
+                  "median": 10,
+                  "min": 10,
+                  "n": 20
+                },
+                "wb0_signed_candidate": {
+                  "max": -50,
+                  "median": -57.5,
+                  "min": -61,
+                  "n": 20
+                }
+              },
+              "requested_signed_code": 0,
+              "tx_status_power_raw": null,
+              "unique_sequences": 20
+            },
+            {
+              "phase": 1,
+              "phy_modes": {
+                "OFDM": 20
+              },
+              "received": 20,
+              "receiver_metrics": {
+                "foe_raw_candidate": {
+                  "max": 917504,
+                  "median": 589824,
+                  "min": 0,
+                  "n": 20
+                },
+                "ib0_signed_candidate": {
+                  "max": -61,
+                  "median": -64,
+                  "min": -65,
+                  "n": 20
+                },
+                "ib1_signed_candidate": {
+                  "max": -45,
+                  "median": -47,
+                  "min": -47,
+                  "n": 20
+                },
+                "rssi": {
+                  "max": -45,
+                  "median": -46,
+                  "min": -47,
+                  "n": 20
+                },
+                "snr_candidate": {
+                  "max": 10,
+                  "median": 10,
+                  "min": 10,
+                  "n": 20
+                },
+                "wb0_signed_candidate": {
+                  "max": -60,
+                  "median": -63,
+                  "min": -64,
+                  "n": 20
+                }
+              },
+              "requested_signed_code": -8,
+              "tx_status_power_raw": null,
+              "unique_sequences": 20
+            },
+            {
+              "phase": 2,
+              "phy_modes": {
+                "OFDM": 20
+              },
+              "received": 20,
+              "receiver_metrics": {
+                "foe_raw_candidate": {
+                  "max": 786432,
+                  "median": 393216,
+                  "min": 0,
+                  "n": 20
+                },
+                "ib0_signed_candidate": {
+                  "max": -56,
+                  "median": -57.5,
+                  "min": -61,
+                  "n": 20
+                },
+                "ib1_signed_candidate": {
+                  "max": -41,
+                  "median": -43,
+                  "min": -44,
+                  "n": 20
+                },
+                "rssi": {
+                  "max": -41,
+                  "median": -42,
+                  "min": -43,
+                  "n": 20
+                },
+                "snr_candidate": {
+                  "max": 10,
+                  "median": 10,
+                  "min": 10,
+                  "n": 20
+                },
+                "wb0_signed_candidate": {
+                  "max": -47,
+                  "median": -56,
+                  "min": -61,
+                  "n": 20
+                }
+              },
+              "requested_signed_code": 0,
+              "tx_status_power_raw": null,
+              "unique_sequences": 20
+            },
+            {
+              "phase": 3,
+              "phy_modes": {
+                "OFDM": 20
+              },
+              "received": 20,
+              "receiver_metrics": {
+                "foe_raw_candidate": {
+                  "max": 917504,
+                  "median": 589824,
+                  "min": 0,
+                  "n": 20
+                },
+                "ib0_signed_candidate": {
+                  "max": -61,
+                  "median": -61,
+                  "min": -65,
+                  "n": 20
+                },
+                "ib1_signed_candidate": {
+                  "max": -50,
+                  "median": -50,
+                  "min": -51,
+                  "n": 20
+                },
+                "rssi": {
+                  "max": -50,
+                  "median": -50,
+                  "min": -50,
+                  "n": 20
+                },
+                "snr_candidate": {
+                  "max": 9,
+                  "median": 9,
+                  "min": 9,
+                  "n": 20
+                },
+                "wb0_signed_candidate": {
+                  "max": -59,
+                  "median": -60,
+                  "min": -63,
+                  "n": 20
+                }
+              },
+              "requested_signed_code": -16,
+              "tx_status_power_raw": null,
+              "unique_sequences": 20
+            },
+            {
+              "phase": 4,
+              "phy_modes": {
+                "OFDM": 20
+              },
+              "received": 20,
+              "receiver_metrics": {
+                "foe_raw_candidate": {
+                  "max": 917504,
+                  "median": 262144,
+                  "min": 0,
+                  "n": 20
+                },
+                "ib0_signed_candidate": {
+                  "max": -53,
+                  "median": -53,
+                  "min": -54,
+                  "n": 20
+                },
+                "ib1_signed_candidate": {
+                  "max": -42,
+                  "median": -42,
+                  "min": -43,
+                  "n": 20
+                },
+                "rssi": {
+                  "max": -41,
+                  "median": -41.5,
+                  "min": -42,
+                  "n": 20
+                },
+                "snr_candidate": {
+                  "max": 10,
+                  "median": 10,
+                  "min": 10,
+                  "n": 20
+                },
+                "wb0_signed_candidate": {
+                  "max": -53,
+                  "median": -53,
+                  "min": -53,
+                  "n": 20
+                }
+              },
+              "requested_signed_code": 0,
+              "tx_status_power_raw": null,
+              "unique_sequences": 20
+            }
+          ]
+        }
+      ],
+      "register_alive_after": [
+        true,
+        true
+      ],
+      "submitted": 100,
+      "tool": "tx_power_probe"
+    }
+  ]
+}

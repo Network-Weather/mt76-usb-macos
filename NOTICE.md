@@ -29,6 +29,8 @@ the same license; see [LICENSE](LICENSE).
 The upstream notices retained for the transcribed source surfaces are:
 
 - Copyright (C) 2023 MediaTek Inc. (`mt792x_usb.c`, `mt792x_regs.h`)
+- Copyright (C) 2023 MediaTek Inc. (`mt7925/mac.c`, `mt7925/init.c`,
+  `mt76_connac3_mac.h`; research-only transmit subset in `research/mt7925_tx_probe.py`)
 - Copyright (C) 2022 MediaTek Inc. (`mt76_connac2_mac.h`, `mt7921/usb.c`)
 - Copyright (C) 2020 MediaTek Inc. (`mt76_connac_mcu.c`, `mt76_connac_mac.c`,
   `mt7921/mcu.c`, `mt7921/mac.c`)
