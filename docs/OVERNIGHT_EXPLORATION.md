@@ -21,6 +21,9 @@ mapping is not yet established.
 Additional1→11→6 controls change distributions within2.4GHz, with long-window
 totals98,177/64,592/106,713 despite similar dwell times. Sample fractions are
 not automatically full-dwell coverage; idle/busy gating remains to be tested.
+The subsequent MCU-MIB crosscheck does not support a simple8µs-per-sample plus
+1µs-per-primary-CCA-tick wall-time identity. Raw query windows/counters are kept;
+coverage and physical power calibration remain unqualified, not fitted away.
 
 **Per-rate power reports work, but MT7925 inactive-width rows retain history:**
 [both source-defined report interfaces](TXPOWER_TABLE_STATE.md) answer26

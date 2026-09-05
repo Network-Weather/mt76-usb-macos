@@ -156,3 +156,36 @@ call channel11 quieter solely because it collected fewer samples, or recommend
 a channel change from these uncalibrated distributions alone.
 
 [Within-band evidence](../research/evidence/mt7925-histogram-channels-2026-09-05.json).
+
+## MIB crosscheck does not justify a CCA-complement conversion
+
+`--mib-crosscheck --acknowledge-consuming-counters` brackets each acquisition
+with one source-defined UNI22 request containing offsets11/12/13/17/19/20/52:
+MDRDY count, CCK/OFDM MDRDY duration, primary CCA, CCA+NAV+TX, primary ED and NAV.
+The MCU is the sole MIB-counter owner; there are no direct consuming MIB reads
+or MIB-enable writes. Normal histogram control restoration/reload still applies.
+
+Three fresh passive runs on11/36/6 pass, with all active views retaining equal
+totals and all stopped reads stable. Representative long windows:
+
+| Channel | Histogram samples | Host enable/stop ms | MIB midpoint interval ms | Primary CCA raw ticks | CCK / OFDM MDRDY raw ticks |
+| --- | --- | --- | --- | --- | --- |
+| 11 | 100,010 | 1010.925 | 1018.482 | 320,215 | 150,989 / 4,521 |
+| 36 | 122,910 | 1015.788 | 1021.301 | 28,347 | 0 / 21,532 |
+| 6 | 104,824 | 1016.441 | 1020.177 | 323,442 | 154,479 / 0 |
+
+If one tentatively assigns8µs per histogram sample and1µs per primary-CCA tick,
+their sums are1120.295/1011.627/1162.034ms. The2.4GHz cases exceed the observed
+intervals substantially: **the simple CCA-complement model is not supported**.
+This does not identify the correct gating or independently settle either unit.
+Decoded-duration fields provide another possible comparison, not a demonstrated
+formula. No additive channel-occupancy decomposition is claimed.
+
+The short channel11 baseline query took97.2ms; other query durations and both
+opened/closed times remain in the evidence. MCU waits can discard delivered
+frames, and query windows are not atomic with histogram start/stop. These
+limitations must not be hidden by reporting just the requested sleep duration.
+
+[Histogram/MIB evidence](../research/evidence/mt7925-histogram-mib-2026-09-05.json).
+The operational result remains a normalized distribution of **collected** power
+samples, with wall-time coverage and physical power scale explicitly unqualified.

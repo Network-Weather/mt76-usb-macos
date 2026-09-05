@@ -18,6 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from research import mt7925_mib_characterize as mib
 from research.txpower_register_probe import check_image, m, read_words
 
 WINDOWS = (
@@ -59,6 +60,7 @@ BANKS = {"ordinary_getter": 0x83088600, "timer_getter": 0x83001000}
 OTHER_VIEWS = {"ordinary_index1": 0x83098600, "timer_index1": 0x83011000}
 DURATIONS = (0.25, 1.0)
 CHANNELS = (1, 6, 11, 36)
+MIB_OFFSETS = (11, 12, 13, 17, 19, 20, 52)
 THRESHOLD_ADDRESS = 0x02216F2C  # Traced GP+18220; ten signed labels, not calibration.
 
 
@@ -129,6 +131,15 @@ def controls(dev):
     }
 
 
+def mib_sample(dev):
+    opened = time.monotonic()
+    values, midpoint = mib.sample(dev, MIB_OFFSETS, 0)
+    closed = time.monotonic()
+    if any(values.get(offset) is None for offset in MIB_OFFSETS):
+        raise ValueError("missing source-named histogram crosscheck counter")
+    return {"values": values, "opened_s": opened, "midpoint_s": midpoint, "closed_s": closed}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--enable-histogram", action="store_true")
@@ -138,9 +149,13 @@ def main():
         action="store_true",
         help="read two traced index1 windows too; no index1 writes",
     )
+    parser.add_argument("--mib-crosscheck", action="store_true")
+    parser.add_argument("--acknowledge-consuming-counters", action="store_true")
     args = parser.parse_args()
     if not args.enable_histogram:
         parser.error("explicit histogram reset/enable acknowledgment required")
+    if args.mib_crosscheck and not args.acknowledge_consuming_counters:
+        parser.error("MIB crosscheck requires exclusive consuming-counter acknowledgment")
     images = m.load_firmware(m.CHIP_MT7925, m.firmware_dir())
     check_image(images[1])
     out = {
@@ -150,6 +165,7 @@ def main():
             k: hex(v) for k, v in (BANKS | OTHER_VIEWS if args.compare_views else BANKS).items()
         },
         "channel": args.channel,
+        "mib_offsets": MIB_OFFSETS if args.mib_crosscheck else [],
         "rows": [],
     }
     original = {}
@@ -190,6 +206,8 @@ def main():
                 reset(dev)
                 row = {"duration_requested": duration, "after_reset": snapshot()}
                 out["rows"].append(row)
+                if args.mib_crosscheck:
+                    row["mib_before"] = mib_sample(dev)
                 start = time.monotonic()
                 set_bits(dev, CONTROL, 5)
                 if args.compare_views:
@@ -199,6 +217,15 @@ def main():
                 if args.compare_views:
                     row["stopped_controls"] = controls(dev)
                 row["host_enable_stop_seconds"] = time.monotonic() - start
+                if args.mib_crosscheck:
+                    row["mib_after"] = mib_sample(dev)
+                    row["mib_delta"] = {
+                        offset: (
+                            row["mib_after"]["values"][offset] - row["mib_before"]["values"][offset]
+                        )
+                        & 0xFFFFFFFFFFFFFFFF
+                        for offset in MIB_OFFSETS
+                    }
                 row["stopped"] = snapshot()
                 time.sleep(0.05)
                 row["stopped_repeat"] = snapshot()

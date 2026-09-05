@@ -75,6 +75,22 @@ def test_controls_are_read_only_and_masked():
     assert not dev.writes
 
 
+def test_mib_crosscheck_uses_only_source_selected_offsets(monkeypatch):
+    def sample(dev, offsets, band):
+        assert offsets == (11, 12, 13, 17, 19, 20, 52)
+        assert band == 0
+        return dict.fromkeys(offsets, 5), 1.0
+
+    monkeypatch.setattr(p.mib, "sample", sample)
+    assert p.mib_sample(Device())["values"] == dict.fromkeys(p.MIB_OFFSETS, 5)
+
+
+def test_missing_crosscheck_counter_refused(monkeypatch):
+    monkeypatch.setattr(p.mib, "sample", lambda *_: ({}, 1.0))
+    with pytest.raises(ValueError, match="missing source-named"):
+        p.mib_sample(Device())
+
+
 @pytest.mark.parametrize(
     ("address", "word", "bits"),
     [
