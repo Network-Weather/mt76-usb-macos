@@ -360,6 +360,46 @@ mode; the cleanup evidence specifically covers the transmitter reload, not a
 claimed second receiver reload inside this older probe.
 [Lowband evidence](../research/evidence/lowband-transmit-2026-09-05.json).
 
+### Negative power offsets expose a two-stream reception boundary
+
+The [earlier OFDM power-offset controls](MT7925_TRANSMIT.md) already established
+signed TXD power adjustment, including independent signal reductions. A new
+HT8/2SS/20MHz channel6 control extends that capability to the currently weak
+two-stream link and, unlike the earlier OFDM runs, finds a reception boundary.
+This is not a newly discovered register or calibrated receiver sensitivity.
+
+[`tx_power_offset_probe.py`](../research/tx_power_offset_probe.py) sends exactly
+five four-frame phases with raw signed offsets0/−4/0/−8/0. Only MT7925 TXD2
+bits31:26 change, with all other descriptor bits,65-byte synthetic payload
+shape, no-ACK/BA policy, rate and channel held fixed. Sources are the pinned
+[signed per-packet field](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic/nic_tx.h#L825)
+and [Connac3 constructor](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/nic/nic_txd_v3.c#L542).
+No positive offset, calibration/power-table write or counter-enable write occurs.
+
+| Offset phase | 0 before | −4 | 0 middle | −8 | 0 after |
+| --- | --- | --- | --- | --- | --- |
+| Exact good receipts, first / repeat | 3/3 | 4/4 | 4/4 | **0/0** | 4/4 |
+| TX-status raw power, both runs | 36 | 32 | 36 | 28 | 36 |
+| Median RCPI0/1, first run | 16/21 | 12/17.5 | 17/18 | no receipts | 17/17.5 |
+| Median RCPI0/1, repeat | 14/22 | 11/19 | 15.5/19 | no receipts | 17/18.5 |
+
+All40 statuses match their submitted sequence/PID and report one transmission,
+HT8 and no error bits. All independently received packets decode HT8/2SS/20MHz.
+Raw RCPI comes from Group3 word1 here; the helper uses Group5 word6 when that
+optional group is present. RCPI2/3 are255, not valid additional receive chains.
+The driver's corresponding signal conversion is retained separately; it is not
+an absolute RF calibration. Baseline drift and missing weak packets make this
+unsuitable for fitting a precise attenuation curve or estimating loss probability.
+
+The eight unreceived−8 packets, positive−4 controls and complete middle/after
+recovery demonstrate a repeatable **power-offset-dependent observation boundary**
+in this particular short test. They do not isolate the original RF degradation,
+prove that unreceived packets never left the antenna, or measure usable range.
+Both fresh boots use private nonces,100ms/256-transfer receive windows and50ms
+gaps; all alive and normal reload checks pass. [Sanitized trials](../research/evidence/ht-power-offset-2026-09-05.json)
+retain failed receipts as well as successful signal samples. Production APIs
+and passive defaults are unchanged.
+
 ### CCK rates and selectable preambles
 
 `--suite cck` and `--suite preamble` use only channels1/6/11,20MHz, with the

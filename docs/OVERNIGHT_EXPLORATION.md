@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Negative power offsets expose a two-stream observation boundary:**
+[HT8 follow-up controls](PHY_TRANSMIT.md#negative-power-offsets-expose-a-two-stream-reception-boundary)
+extend the earlier OFDM power mechanism to the currently weak channel6 link.
+Both runs receive4/4 at−4,0/4 at−8, and4/4 after restoring zero; all TX statuses
+track36/32/36/28/36 exactly. No positive offset, calibrated sensitivity or
+original-degradation diagnosis is claimed. Raw own-packet RCPI is retained.
+
 **CSI input is an internal timing report:** [the provenance trace](STATION_CSI.md#csi-input-comes-from-the-internal-timing-report-path)
 follows packet-type bits31:27 through the firmware classifier and type4 branch
 into the CSI entry. The gate is not parsing a normal RXD: its unnamed flags are

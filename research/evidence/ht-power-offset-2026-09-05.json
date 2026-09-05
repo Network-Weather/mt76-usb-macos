@@ -1,0 +1,1597 @@
+{
+  "scope": "HT8 two-stream follow-up to existing OFDM per-packet power controls. Only zero/-4/-8 raw signed offsets; no positive power change. Synthetic exact-match receipts and signal metadata only.",
+  "trials": [
+    {
+      "date_utc": "2026-09-05T18:59:16.741324+00:00",
+      "transmitter": "mt7925",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "power_offset_raw": 0,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 0,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    16,
+                    22,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -99,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -99
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    16,
+                    21,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -100,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -100
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    15,
+                    21,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -103,
+                    -100,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -100
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": -4,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 4,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    9,
+                    17,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -106,
+                    -102,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -102
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    13,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -104,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    12,
+                    17,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -104,
+                    -102,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -102
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    12,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -104,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": 0,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 8,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    16,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": -8,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 12,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": 0,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    18,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -101,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    16,
+                    17,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -102,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -102
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    17,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -102,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -102
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T19:00:00.781869+00:00",
+      "transmitter": "mt7925",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "power_offset_raw": 0,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 0,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    14,
+                    22,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -103,
+                    -99,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -99
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    14,
+                    21,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -103,
+                    -100,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -100
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    14,
+                    22,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -103,
+                    -99,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -99
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": -4,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 4,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    11,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -105,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    10,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -105,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    12,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -104,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    11,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -105,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 32,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": 0,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 8,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    14,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -103,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    18,
+                    20,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -101,
+                    -100,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -100
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    15,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -103,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    16,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": -8,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 12,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "exact_good": false,
+              "good_phy": [],
+              "good_signal": [],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 28,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "power_offset_raw": 0,
+          "rate_code": 1160,
+          "windows": [
+            {
+              "sequence": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    17,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -102,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -102
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    18,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -101,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    18,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "good_signal": [
+                {
+                  "rcpi_raw": [
+                    17,
+                    19,
+                    255,
+                    255
+                  ],
+                  "rcpi_source": "g3_word1",
+                  "chain_signal_driver_units": [
+                    -102,
+                    -101,
+                    17,
+                    17
+                  ],
+                  "rssi_driver_units": -101
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    }
+  ]
+}
