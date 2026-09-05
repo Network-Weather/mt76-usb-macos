@@ -1,6 +1,8 @@
 # MT7925 ICS capture path
 
-UNI0x49 reaches a distinct MAC/PHY sniffer state machine on the pinned firmware.
+**RMAC ICS opens a working type12 USB diagnostic stream**, reproduced in two
+off/on/off runs. See [MAC receive aggregates](#mac-receive-aggregates).
+UNI0x49 also reaches a distinct PHY sniffer state machine on the pinned firmware.
 This is a concrete capture lead, **not yet a working raw-PHY capture result**.
 The later [bounded activation checks](#bounded-activation-checks) program the
 ring and triggers but produce no capture events. The initial read-only
@@ -155,3 +157,40 @@ entry`0221b770→e00b1cb8` performs no extra class-specific setter.
 The shared MAC helper `0083238c` toggles bit24 of`820e705c` (band1`820f705c`).
 These facts narrow the missing capture-source/completion question without
 claiming a working sampler. [Two-run evidence](../research/evidence/ics-control-2026-09-05.json).
+
+## MAC receive aggregates
+
+The separate RMAC branch **does work**. Two fresh-boot off/on/off controls each
+use400ms collection windows, no TX, and no filter-setting action. During enable,
+the USB packet endpoint0x84 produces respectively20 and21 **type12 aggregates**;
+all41 have declared length384 and header frame-count3. All four off windows have
+zero ICS aggregates, while ordinary type2 receive packets remain visible in
+every phase. There are no invalid aggregate lengths. Start/stop ACKs all report
+CID49/status0, and both controls read back enabled only in the middle phase.
+This qualifies a new diagnostic transport, **not yet decoded extra measurements**.
+
+[`rmac_ics_probe.py`](../research/rmac_ics_probe.py) sends the same92-byte UNI49
+layout with module2, action1/0, condition0=1 (RMAC only), band0, all other
+conditions zero. It verifies the existing dispatcher/ICS hashes plus the two
+specific MAC ROM windows before activation. No PHY ring is started.
+
+Setter `0082b670` and getter `0082b69c` use **`820e50d0` bit0**; their band1
+branch uses`820f50d0`. Shared helper `0083238c` uses **`820e705c` bit24** after
+combining TMAC/RMAC enable states. The two masks are initially zero, change to
+1/0x1000000 during enable, and return to zero through the stop command. Explicit
+masked restoration and normal reload also pass in both runs. Unlike the PHY
+stop caveat, these two observed MAC controls turn off through the command.
+
+The source [RX header and packet types](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic/nic_rx.h)
+define ICS12 / PHY ICS13 and the eight-byte aggregate header: u16 byte count,
+five-bit frame count, six reserved bits, five-bit packet type, reserved u16,
+and PSE FID. The [host RX implementation](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/nic/nic_rx.c)
+wraps and logs that buffer; it does not decode the inner diagnostic records.
+Do not infer a128-byte inner-record stride merely from384/3: the aggregate
+header and any padding/record headers still need mapping.
+
+The collector exports only endpoint/type counts and length/frame-count shapes,
+never FIDs, inner words, identifiers or traffic payloads. Counts describe the
+leading packet in each USB read, not a claim to enumerate every possible packed
+DMA block. No packet-completeness, calibrated RSSI, chain, timestamp or topology
+interpretation yet. [Sanitized two-run evidence](../research/evidence/rmac-ics-2026-09-05.json).

@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**RMAC ICS opens another USB diagnostic stream:**
+[Two off/on/off controls](ICS_CAPTURE.md#mac-receive-aggregates) produce20/21
+type12 aggregates only while enabled, all384 bytes with declared frame-count3.
+Four off windows have none; ordinary RX remains visible throughout. Start/stop
+ACKs, two traced control bits, masked restores and normal reloads all pass.
+Only aggregate shape/counts exported; inner records and measurements not decoded.
+
 **A separate raw-PHY ICS path programs capture, but does not yet complete:**
 [UNI49 capture](ICS_CAPTURE.md) exposes a repeating sixteen-chunk callback,
 device SRAM export, concrete trigger/status fields, and a shared prerequisite
