@@ -192,3 +192,37 @@ RF STOP leaves ICS enabled until its separate STOP/restoration, as expected.
 The key remaining question is which RF setup operation populates P-RXV2, and
 whether a narrowly traced control can enable it with normal full-frame RX.
 [Four attempts, including the failed prerequisite](../research/evidence/legacy-ics-rf-stream-2026-09-05.json).
+
+## Staged entry brackets stream availability, not the filling bit
+
+Two fresh-boot [staged runs](../research/evidence/legacy-ics-stages-2026-09-05.json)
+use only the existing commands and20 synthetic HT8 frames each. The
+[stage probe](../research/legacy_ics_stage_probe.py) reasserts CE93 RMAC ICS and
+verifies its enable masks before each four-frame,600ms window:
+
+| Stage | Normal exact good-FCS | Own ICS headers | CFO/SNR fields |
+| --- | --- | --- | --- |
+| Normal monitor + ICS | 4/4,4/4 | 4/4,4/4 | All-one sentinel −1/63 |
+| RF-mode entry only | 0,0 | 0,0 | No records |
+| STOP/band/paths/frequency/width setup | 0,0 | 0,0 | No records |
+| RX START | 0,0 | 3/4,4/4 | CFO1459..2162, SNR15..26 |
+| RX STOP | 0,0 | 0,0 | No records |
+
+All40 submissions have matching TX status. Both runs restore all four masks and
+reload both radios. No receiver packet types at all arrive in the entered,
+configured or stopped windows; enabled ICS readback alone is not an active RX
+path. The missing first own header in one START window is retained, not silently
+converted into a lossless-stream claim. No full-payload/FCS claim applies in RF
+mode. These controls **cannot distinguish setup-time P-RXV2 filling from
+START-time filling**, because the intermediate stages provide no vectors.
+
+The pinned SET dispatcher at`00931b2c` sends selector1 to`00931e66`; the
+little-endian signed-halfword table at`00931eb0` maps value0 to`00932030` and
+value2 to`0093220e`. The ordinary RX-start tail`009322f4..0093232e` separately
+calls `00964a9c`, `0093091a`, `00930b9a` and `009311c2`. Thus START is not a
+single vector-enable write. RF initialization`00933114` independently calls
+`0094382e(0,1,band)` at`009332c4` and conditionally`00943852(1,band)` at
+`009332ea/00933300`. The first wrapper writes abstract field keys
+`(band<<16)+680/681`; **these are field indices, not register masks**. Resolving
+their old-chip ROM descriptors is the next narrow target. No old-chip register
+address is inferred from the newer radio's similarly named controls.

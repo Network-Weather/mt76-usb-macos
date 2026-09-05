@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Staged RF entry brackets availability without overclaiming causality:**
+[Two20-frame runs](LEGACY_ICS.md#staged-entry-brackets-stream-availability-not-the-filling-bit)
+receive8/8 normal controls, then7/8 RF START headers with populated CFO/SNR.
+Entry-only, configured-before-START and stopped windows have no records even
+with ICS enable readback. Forty TX statuses, all restoration/reloads pass.
+The empty intermediate stages cannot identify the filling bit; static tracing
+now identifies two specific old-chip vector-control wrappers to resolve next.
+
 **RF-mode ICS exposes populated CFO/SNR beyond the five-record log cap:**
 [Three successful controls](LEGACY_ICS.md#rf-mode-ics-streams-populated-cfosnr-beyond-the-finite-log-cap)
 receive12/12 exact normal prerequisites and20/20 known RF headers. Each final
