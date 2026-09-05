@@ -60,3 +60,16 @@ def test_rx_path_is_in_high_word(mask):
     assert rx_setting(106, mask << 16) == struct.pack("<B3xII", 1, 106, mask << 16)
     with pytest.raises(ValueError, match="only fixed-channel receive"):
         rx_setting(106, mask)
+
+
+def test_engineering_query_action_and_reply():
+    body = p.engineering_query(46)
+    assert len(body) == 96
+    assert struct.unpack_from("<4xHHB3xII", body) == (0, 92, 4, 46, 0)
+    assert body[20:] == bytes(76)
+    with pytest.raises(ValueError, match="not allowlisted"):
+        p.engineering_query(1)
+    result = p.summarize_engineering(struct.pack("<4xHHII", 0, 12, 46, 123), 46)
+    assert result["scalar"]["value_u32"] == 123
+    result = p.summarize_engineering(struct.pack("<II24x", 0x46, 0xC00000BB), 46)
+    assert result["status_u32"] == 0xC00000BB

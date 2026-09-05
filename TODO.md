@@ -9,7 +9,9 @@ records 554 offline tests, live checks on both dongles, and the explicit limits.
 ## C parity sprint (R30)
 
 Current exploration priority: new firmware/chip measurement and transmit surfaces,
-not further acquisition infrastructure. [PHY transmit findings](docs/PHY_TRANSMIT.md)
+with [autonomous continuation findings and next leads](docs/OVERNIGHT_EXPLORATION.md)
+tracked in draft PR #31. Keep committing/pushing; do not merge without direction.
+This takes priority over further acquisition infrastructure. [PHY transmit findings](docs/PHY_TRANSMIT.md)
 record bounded experiments and remaining leads. Continuous acquisition remains on
 its pushed branch; no two-hour soak was started.
 

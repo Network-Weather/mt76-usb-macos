@@ -47,6 +47,27 @@ def rx_query(tag):
     return struct.pack("<4xHH4x", tag, 8)
 
 
+def engineering_query(selector):
+    at_query(selector)  # same read-only selector allowlist
+    # nicUniCmdTestmodeCtrl maps GET_AT=2 to GET_AT_ENG=4.
+    return struct.pack("<4xHHB3xII76x", 0, 92, 4, selector, 0)
+
+
+def summarize_engineering(body, selector):
+    out = {"reply_bytes": len(body)}
+    if len(body) < 8:
+        return out
+    cid, status = struct.unpack_from("<II", body)
+    if cid == 0x46:
+        return out | {"command_result_cid": cid, "status_u32": status}
+    tag, size = struct.unpack_from("<HH", body, 4)
+    if tag == 0 and 12 <= size <= len(body) - 4:
+        out["tlv_tag"] = tag
+        out["tlv_bytes"] = size
+        out["scalar"] = summarize(body[8:16], selector)
+    return out
+
+
 def summarize(body, selector=None):
     out = {"reply_bytes": len(body), "nonzero_bytes": sum(b != 0 for b in body)}
     if selector is not None and 8 <= len(body) <= 16:
@@ -80,8 +101,11 @@ def main():
         "--selector", type=int, action="append", help="subset of the chip's query allowlist"
     )
     p.add_argument("--test-mode", action="store_true", help="volatile idle RF-test mode, no TX")
+    p.add_argument("--engineering", action="store_true", help="MT7925 UNI 0x46 GET_AT_ENG queries")
     args = p.parse_args()
-    allowed = list(QUERIES) if args.chip == "mt7961" else [8, 9]
+    if args.engineering and args.chip != "mt7925":
+        p.error("engineering UNI queries apply only to mt7925")
+    allowed = list(QUERIES) if args.chip == "mt7961" or args.engineering else [8, 9]
     selectors = args.selector if args.selector is not None else allowed
     if not selectors or len(selectors) > len(allowed) or any(s not in allowed for s in selectors):
         p.error("selectors must be a bounded subset of the chip's query allowlist")
@@ -90,6 +114,7 @@ def main():
         "tool": "station_testmode_probe",
         "chip": args.chip,
         "test_mode": args.test_mode,
+        "engineering": args.engineering,
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "rows": [],
     }
@@ -126,11 +151,19 @@ def main():
                     time.sleep(0.2)
                 if args.chip == "mt7961":
                     reply = dev.mcu_cmd_word(m.MCU_CE_CMD(1), at_query(selector), timeout=1500)
+                elif args.engineering:
+                    reply = dev.mcu_uni(0x46, engineering_query(selector), query=True, timeout=1500)
                 else:
                     reply = dev.mcu_uni(0x32, rx_query(selector), query=True, timeout=1500)
                 row.update(
                     state="matched_reply",
-                    **summarize(dev.reply_body(reply), selector if args.chip == "mt7961" else None),
+                    **(
+                        summarize_engineering(dev.reply_body(reply), selector)
+                        if args.engineering
+                        else summarize(
+                            dev.reply_body(reply), selector if args.chip == "mt7961" else None
+                        )
+                    ),
                 )
             except (m.McuError, RuntimeError) as exc:
                 row.update(state="no_matching_reply", error_type=type(exc).__name__)

@@ -1,0 +1,186 @@
+{
+  "runs": [
+    {
+      "tool": "icap_capture_probe",
+      "date_utc": "2026-09-05T07:03:12.116702+00:00",
+      "samples_requested": 256,
+      "node_candidate": 0,
+      "architecture": 0,
+      "prepare_rx": false,
+      "retrieve": false,
+      "polls": [
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ]
+      ],
+      "before": [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 1,
+          "function_raw": 12
+        }
+      ],
+      "start_events": [],
+      "alive_after": true,
+      "stop_events": [],
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "icap_capture_probe",
+      "date_utc": "2026-09-05T07:04:15.573625+00:00",
+      "samples_requested": 256,
+      "node_candidate": 0,
+      "architecture": 0,
+      "prepare_rx": true,
+      "retrieve": true,
+      "polls": [
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ]
+      ],
+      "before": [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 1,
+          "function_raw": 12
+        }
+      ],
+      "start_events": [],
+      "completion_observed": false,
+      "retrieval_skipped": "capture did not report completion",
+      "alive_after": true,
+      "stop_events": [],
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "icap_capture_probe",
+      "date_utc": "2026-09-05T07:05:18.099450+00:00",
+      "samples_requested": 64,
+      "node_candidate": 0,
+      "architecture": 0,
+      "prepare_rx": false,
+      "icap_channel": true,
+      "retrieve": true,
+      "polls": [
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ]
+      ],
+      "before": [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 1,
+          "function_raw": 12
+        }
+      ],
+      "start_events": [],
+      "completion_observed": false,
+      "retrieval_skipped": "capture did not report completion",
+      "alive_after": true,
+      "stop_events": [],
+      "cleanup_reload_alive": true
+    }
+  ]
+}
