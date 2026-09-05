@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: BSD-3-Clause-Clear */
 /* Fake USB replay. No firmware, radio, or ambient identifiers. */
 #include "mt76_session.h"
+#include "mt76_probe_metrics.h"
 #include <assert.h>
 #include <pthread.h>
 #include <stdatomic.h>
@@ -59,6 +60,16 @@ static void *caller(void *s) {
     return NULL;
 }
 int session_replay_test(int test_chip, int test_mode) {
+    mt_probe_clock_t clock = {0};
+    mt_probe_clock_observe(&clock, UINT32_C(0xfffffff0), 1000000000);
+    mt_probe_clock_observe(&clock, 16, 1000032000);
+    assert(clock.wrap_candidates == 1 && !clock.backsteps);
+    mt_probe_clock_observe(&clock, 15, 1000042000);
+    assert(clock.backsteps == 1 && clock.wrap_candidates == 1);
+    mt_probe_clock_observe(&clock, 99, UINT64_C(3000000000000));
+    assert(clock.ambiguous_gaps == 1);
+    mt_probe_clock_observe(&clock, 98, 1); /* host reorder cannot look like a wrap */
+    assert(clock.ambiguous_gaps == 2 && clock.backsteps == 2);
     chip = test_chip; mode = test_mode; step = -1; writes = 0; reader_set = false;
     mt7921_dev_t dev = {0};
     dev.usb.chip = chip;

@@ -3,10 +3,13 @@
 #include "mt76_session.h"
 #include "mt7921_radio.h"
 #include "mt7921_rxd.h"
+#include "mt76_probe_metrics.h"
 #include <CommonCrypto/CommonDigest.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <mach/mach.h>
+#include <sys/resource.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -49,6 +52,7 @@ static int query(mt7921_dev_t *dev, void *ctx) {
 typedef struct {
     uint64_t consumed, decoded, undecoded, timestamps, transitioning, off_channel, max_latency_us;
     uint64_t queries, retunes, max_mib_us, max_retune_us, legacy_discards;
+    mt_probe_clock_t clock;
 } counts_t;
 static void consume(const mt_session_packet_t *p, int chip, unsigned channel, counts_t *counts) {
     counts->consumed++;
@@ -57,6 +61,7 @@ static void consume(const mt_session_packet_t *p, int chip, unsigned channel, co
         counts->undecoded++; return;
     }
     counts->decoded++; counts->timestamps += frame.has_timestamp;
+    if (frame.has_timestamp) mt_probe_clock_observe(&counts->clock, frame.timestamp, p->received_ns);
     counts->transitioning += p->transitioning;
     counts->off_channel += strcmp(frame.band, "5GHz") || frame.channel != channel;
     uint64_t latency = mt_radio_monotonic_us() - p->received_ns / 1000;
@@ -65,6 +70,19 @@ static void consume(const mt_session_packet_t *p, int chip, unsigned channel, co
 static void report(const char *event, mt76_session_t *s, const counts_t *c, uint64_t started,
                     bool alive, int result, const char *id) {
     mt_session_stats_t st; mt_session_snapshot(s, &st);
+    /* Local Apple SDK mach/task_info.h: MACH_TASK_BASIC_INFO sizes are bytes.
+     * getrusage ru_maxrss is also bytes on macOS; never label it current RSS. */
+    mach_task_basic_info_data_t info = {0};
+    mach_msg_type_number_t info_count = MACH_TASK_BASIC_INFO_COUNT;
+    bool memory_ok = task_info(mach_task_self(), MACH_TASK_BASIC_INFO,
+                              (task_info_t)&info, &info_count) == KERN_SUCCESS;
+    struct rusage usage = {0};
+    bool usage_ok = getrusage(RUSAGE_SELF, &usage) == 0;
+    char resident[32], peak[32];
+    if (memory_ok) snprintf(resident, sizeof(resident), "%" PRIu64, (uint64_t)info.resident_size);
+    else snprintf(resident, sizeof(resident), "null");
+    if (usage_ok) snprintf(peak, sizeof(peak), "%" PRIu64, (uint64_t)usage.ru_maxrss);
+    else snprintf(peak, sizeof(peak), "null");
     printf("{\"event\":\"%s\",\"tool\":\"c_session_probe\",\"usb_id\":\"%s\","
            "\"elapsed_seconds\":%.3f,\"state\":%d,\"epoch_ns\":%" PRIu64 ","
            "\"frames_received\":%" PRIu64 ",\"frames_delivered\":%" PRIu64 ","
@@ -79,7 +97,10 @@ static void report(const char *event, mt76_session_t *s, const counts_t *c, uint
            "\"max_delivery_latency_us\":%" PRIu64 ",\"mib_queries\":%" PRIu64 ","
            "\"max_mib_latency_us\":%" PRIu64 ",\"retunes\":%" PRIu64 ","
            "\"max_retune_latency_us\":%" PRIu64 ",\"channel_known\":%s,\"requested_control\":%u,"
-           "\"legacy_mcu_discarded_frames\":%" PRIu64 ",\"register_alive_after\":%s,\"exit_code\":%d}\n",
+           "\"legacy_mcu_discarded_frames\":%" PRIu64 ",\"register_alive_after\":%s,\"exit_code\":%d,"
+           "\"resident_bytes\":%s,\"peak_resident_bytes\":%s,\"timestamp_first\":%u,\"timestamp_last\":%u,"
+           "\"timestamp_wrap_candidates\":%" PRIu64 ",\"timestamp_backsteps\":%" PRIu64 ","
+           "\"timestamp_ambiguous_gaps\":%" PRIu64 "}\n",
            event, id, (mt_radio_monotonic_us() - started) / 1e6, st.state, st.epoch_ns,
            st.frames_received, st.frames_delivered, st.frames_dropped, st.frame_depth, st.frames_high_water,
            st.events_received, st.events_delivered, st.events_dropped, st.event_depth, st.events_high_water,
@@ -87,7 +108,9 @@ static void report(const char *event, mt76_session_t *s, const counts_t *c, uint
            st.unmatched_replies, st.commands_completed, c->decoded, c->undecoded, c->timestamps,
            c->transitioning, c->off_channel, c->max_latency_us, c->queries, c->max_mib_us, c->retunes,
            c->max_retune_us, st.channel_known ? "true" : "false", st.control,
-           c->legacy_discards, !strcmp(event, "summary") ? (alive ? "true" : "false") : "null", result);
+           c->legacy_discards, !strcmp(event, "summary") ? (alive ? "true" : "false") : "null", result,
+           resident, peak, c->clock.first, c->clock.last, c->clock.wrap_candidates,
+           c->clock.backsteps, c->clock.ambiguous_gaps);
 }
 int main(int argc, char **argv) {
     const char *id = NULL, *dir = "firmware";
