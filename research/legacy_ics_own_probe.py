@@ -21,6 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from research import legacy_ics_probe as legacy
+from research import normal_phy_counter_probe as counters
 from research import phy_tx_probe as phy
 from research import rmac_ics_match as matching
 from research.noise_self_tx_probe import packet
@@ -130,6 +131,7 @@ def main():
     parser.add_argument("--activate-legacy-rmac-ics", action="store_true")
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--enable-group5", action="store_true")
+    parser.add_argument("--enable-phy-counters", action="store_true")
     args = parser.parse_args()
     if not (args.activate_legacy_rmac_ics and args.acknowledge_experimental_transmit):
         parser.error("explicit ICS and transmit acknowledgments required")
@@ -138,9 +140,11 @@ def main():
         "max_submissions": 16,
         "channel": 6,
         "group5_requested": args.enable_group5,
+        "phy_counters_requested": args.enable_phy_counters,
         "phases": [],
     }
     originals, attempted = {}, False
+    counter_attempted = False
     with contextlib.ExitStack() as stack:
         rx, tx = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
         radios = (rx, tx)
@@ -168,6 +172,22 @@ def main():
             ):
                 raise ValueError("ICS already enabled")
             out["before_masks"] = legacy.masks(rx)
+            if args.enable_phy_counters:
+                if rx.CHIP != m.CHIP_MT7921:
+                    raise ValueError("old-chip PHY counters only")
+                word = legacy.valid_word(rx.rr(counters.CONTROL))
+                if word & counters.MASK:
+                    raise ValueError("exclusive initially disabled counters required")
+                counter_attempted = True
+                for enabled in (False, True):
+                    rx.wr(
+                        counters.CONTROL, counters.control_value(rx.rr(counters.CONTROL), enabled)
+                    )
+                out["counter_enabled_bits"] = (
+                    legacy.valid_word(rx.rr(counters.CONTROL)) & counters.MASK
+                )
+                if out["counter_enabled_bits"] != 0xA00:
+                    raise RuntimeError("counter enable readback failed")
             if args.enable_group5:
                 attempted = True
                 rx.wr(legacy.DMA_DCR0, legacy.valid_word(rx.rr(legacy.DMA_DCR0)) | legacy.G5_ENABLE)
@@ -180,11 +200,23 @@ def main():
                 packets = {i: packet(tx, i, nonce, 128 if i % 2 else 0) for i in range(first, last)}
                 phase = acquire(tx, rx, packets)
                 phase.update({"ics_enabled": enabled, "masks_after": legacy.masks(rx)})
+                if args.enable_phy_counters:
+                    phase["counter_bits_after"] = (
+                        legacy.valid_word(rx.rr(counters.CONTROL)) & counters.MASK
+                    )
                 out["phases"].append(phase)
             out["alive_after"] = [dev.alive() for dev in radios]
         except Exception as exc:
             out["error_type"] = type(exc).__name__
         finally:
+            if counter_attempted:
+                try:
+                    rx.wr(counters.CONTROL, counters.control_value(rx.rr(counters.CONTROL), False))
+                    out["counter_restored"] = (
+                        legacy.valid_word(rx.rr(counters.CONTROL)) & counters.MASK == 0
+                    )
+                except Exception as exc:
+                    out["counter_restore_error_type"] = type(exc).__name__
             if attempted:
                 try:
                     legacy.send(rx, False)
@@ -203,6 +235,7 @@ def main():
         any(k.endswith("error_type") for k in out)
         or not all(out.get("cleanup_reload_alive", [False]))
         or not all(out.get("restored", {}).values())
+        or (counter_attempted and not out.get("counter_restored"))
     )
 
 

@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Remaining RF-init controls narrowed; PHY counters do not fill P-RXV2:**
+[Exact field maps and accessor correction](LEGACY_ICS.md#remaining-rf-init-fields-and-phy-counter-control)
+show GP+10820 is a writer, not a getter. Several RF-init values already match
+normal operation; other fields are MDP header translation/deaggregation and
+MAC setup, not activated speculatively. A16/16-good normal ICS trial with the
+known PHY counter enable still has8/8 sentinel vectors; restoration/reloads pass.
+Next target: GET50 wideband/in-band signal fields and their hardware source.
+
 **Traced RF DMA setup also fails to recover normal CFO/SNR:**
 [Read-only staged comparison and two fixed controls](LEGACY_ICS.md#rf-dma-setup-matches-the-trace-but-is-insufficient-in-normal-mode)
 confirm all five820e7050 field values at RF entry. Combined DMA/RMAC/RXV

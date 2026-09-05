@@ -356,3 +356,48 @@ working normal-mode configuration, a bad-FCS cause, or valid calibrated units.**
 It is retained for exceptional-path investigation. All44 submissions across
 the staged run and two controls have TX status; every activated mask restores,
 and both radios reload. [Complete sanitized evidence](../research/evidence/legacy-rx-dma-setup-2026-09-05.json).
+
+## Remaining RF-init fields and PHY-counter control
+
+The remaining wrappers narrow the search without additional speculative writes.
+GP+10820 (live02013820) is **00826b7a, a multi-field writer**, not a getter:
+it consumes key/value pairs and calls00826b70 →00826b12, whose final operation
+is masked MMIO storage. GP+10828 is00826bb0, the combined-register writer.
+The initial getter hypothesis for009446fc is therefore rejected. It writes
+170a63=1 and170a49=0; live mapping finds both values already set in normal mode.
+
+| RF-init key | Resolved field | Normal value | Traced RF-init value |
+| --- | --- | --- | --- |
+| 170a63 | 820e4004 bit30 | 1 | 1 |
+| 170a49 | 820e4000 bit22 | 0 | 0 |
+| 20022 | 820e2040 bit2 | 0 | 0 |
+| 230001 | 820cd000 bit23 | 0 | 0 |
+| 230005 | 820cd000 bit19 | 1 | 0 |
+| 230006 | 820cd000 bit18 | 0 | 0 |
+| 230009 | 820cd000 bit15 | 0 | 0 |
+| 1200e8 | 820e5610 bits15:0 | 12000 | 5120 |
+
+Domain17 descriptor020138c8 →00827f30 uses table0084b1f4 and band0
+base820e4000. Domain2 descriptor02013890 →00826e0e uses table0084aa6c,
+base820e2000. Domain23 descriptor02013924 →0082fc0a uses table0084c628,
+base820cd000. Its field230005 is the MDP header-translation bit19 named in
+the pinned mt76 MT7921 register definitions; bit15 is deaggregation enable.
+These are MAC-path setup, not a demonstrated PHY measurement recipe. No
+direct activation of these remaining fields was performed. Actual pointers,
+bit pairs and private-ROM hashes are retained in the evidence, not ROM bytes.
+
+The separate RF RX-start PHY-statistics operation was already validated in
+[normal PHY counters](PHY_RX_COUNTERS.md#normal-monitor-mode-enablefreeze-control).
+One16-frame normal-mode ICS test now enables that exact83082004 mask0xe00
+to0xa00, with initially-disabled ownership required. It receives16/16 complete
+good-FCS HT8 frames and8/8 enabled own ICS headers; all eight CFO/SNR fields
+remain−1/63. Counter enable stays0xa00 throughout; its original zero mask and
+all ICS masks restore, followed by both-radio reload. This rejects the counter
+enable alone as the missing P-RXV2 control. `legacy_ics_own_probe.py
+--enable-phy-counters` records this explicitly and never enters RF mode.
+[Sanitized pointer/field and counter evidence](../research/evidence/legacy-rf-init-fields-2026-09-05.json).
+
+The next measurement target moves beyond this normal-P-RXV2 search: the
+firmware's GET50 wideband/in-band RSSI reader has returned packed raw words,
+but its per-field layout, hardware source and normal-mode availability remain
+unresolved. Existing RF-mode ICS CFO/SNR streaming remains the working route.
