@@ -31,6 +31,31 @@ succeeded on all three runs.
 
 ## Protocol pointers and reproduction
 
+### HE extended-range SU is received, but not yet a robust link
+
+`--suite he-er --transmitter mt7925 --channel 6 --per-phase 4` uses five
+20MHz phases with LTF1/GI0/LDPC0 and unchanged power: HE2SS, ordinary HE1SS,
+HE-ER1SS, HE-ER1SS/DCM, HE2SS. Rates`0x240` and`0x250` encode mode9 and its
+DCM bit4; NSS stays1 and no upper106-tone, STBC or beamforming setting is used.
+This follows the existing pinned mt76 enum/header, not a guessed command.
+
+| Fresh run | HE2SS before | HE1SS | HE-ER1SS | HE-ER/DCM | HE2SS after |
+|---|---|---|---|---|---|
+| Default receiver,4 per phase | 4/4 | 1/4 | **1/4** | 0/4 | 4/4 |
+| Group5 receiver,6 per phase | 5/6 | 2/6 | **1/6** | 0/6 | 6/6 |
+
+Both exact ER receipts independently decode as **HE-ER-SU, MCS0, NSS1/NSTS1,
+20MHz, GI0, no LDPC/DCM/STBC**,8.6Mbps calculated rate. The Group5 receipt also
+reports LTF1 at the independently validated word0 location; the shifted Linux
+pointer candidate reports3 and is not interpreted as LTF. This establishes a
+transmit format, **not extended usable range, reliable delivery, or a power gain**.
+Ordinary one-stream controls are also weak. DCM remains unreceived, not proven
+incapable of transmitting. No further stream/power sweep was performed.
+
+Both alive checks and transmitter reload pass. The Group5 run additionally
+restores the exact receiver report register and reloads the receiver successfully.
+[Sanitized HE-ER evidence](../research/evidence/he-er-transmit-2026-09-05.json).
+
 ### 2.4GHz follow-up: usable forward direction, reverse still unverified
 
 `--suite lowband --channel 1 --per-phase 4` uses six bounded phases at20MHz:
@@ -38,7 +63,8 @@ OFDM6, HT0/1SS, HT8/2SS, HE0/1SS, HE0/2SS, OFDM6. It excludes VHT and all
 wider bandwidths; the existing60-packet ceiling,50ms spacing, no-ACK policy,
 fresh private nonce and independent whole-frame/FCS/PHY checks remain. Only
 channels1/6/11 accept this suite and the later CCK/preamble, STBC, HE-coding,
-HT/HE-table and timing-burst suites; baseline/streams/spatial require36/149.
+HT/HE-table, HE-ER, HE-coding-LTF, HE-Group5-cycle and timing-burst suites;
+baseline/streams/spatial require36/149.
 
 Two fresh MT7925-transmitter runs at12:00:43 and12:01:34 UTC on2026-09-05
 each submitted24 frames. The MT7961 receiver independently reported:

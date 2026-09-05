@@ -24,6 +24,11 @@ used by current MT7921's reassigned radiotap pointer instead mostly yields3.
 the small reproducer and sanitized evidence. No Linux implementation or external
 maintainer message was sent; this is the concrete documentation gift.
 
+**HE extended-range SU format received:** [HE-ER TX controls](PHY_TRANSMIT.md)
+yield one independent exact receipt in each of two fresh runs, with the second
+also validating LTF1 via Group5. One-stream controls remain weak and ER/DCM
+has no receipts; this is format evidence, not a range or reliability claim.
+
 **New STBC transmit format:** [MT7925 HT0/STBC](PHY_TRANSMIT.md) is independently
 received as NSS1/NSTS2/STBC=true, four exact frames and then one on a fresh repeat.
 HT controls bracket both trials; the degraded/variable link prevents a gain claim.

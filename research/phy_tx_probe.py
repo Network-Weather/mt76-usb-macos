@@ -117,9 +117,26 @@ HE_TABLE_OPTIONS = ((0, 0), (1, 0), (2, 0), (0, 0), (0, 1), (0, 0))
 HE_TABLE_LTF = (0, 1, 2, 1, 0, 0)
 HE_CODING_LTF = (1, 1, 1, 1, 1)
 HE_G5_RATES = (("he2_g5_off_before", 0x600), ("he2_g5_on", 0x600), ("he2_g5_off_after", 0x600))
+# mt76.h mode9 is HE extended-range SU; DCM is rate bit4. One stream,
+# full20MHz tone allocation, MCS0, no STBC and no power/beamforming changes.
+HE_ER_RATES = (
+    ("he2_before", 0x600),
+    ("he1_control", 0x200),
+    ("he_er1", 0x240),
+    ("he_er1_dcm", 0x250),
+    ("he2_after", 0x600),
+)
+HE_ER_LTF = (1, 1, 1, 1, 1)
+CONNAC3_CODING_CODES.update((0x240, 0x250))
 ALLOWED_RATE_CODES = {
     rate
-    for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES + HE_CODING_RATES
+    for _, rate in RATES
+    + STREAM_RATES
+    + CCK_RATES
+    + PREAMBLE_RATES
+    + STBC_RATES
+    + HE_CODING_RATES
+    + HE_ER_RATES
 }
 # Vendor gen4m 8fddb9d7 wlanAntPathFavorSelect: 0=WF0, 1=WF1,
 # 0x18=duplicated one-stream path. Connac2 TXD DW7 bits 15:11.
@@ -146,6 +163,7 @@ def suite_rates(suite, channel):
             "he-table",
             "he-coding-ltf",
             "he-g5-cycle",
+            "he-er",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -163,6 +181,7 @@ def suite_rates(suite, channel):
         "he-table": HE_TABLE_RATES,
         "he-coding-ltf": HE_CODING_RATES,
         "he-g5-cycle": HE_G5_RATES,
+        "he-er": HE_ER_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -206,6 +225,8 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0):
         0x200: ((0, 0, 0), (0, 1, 0)),
         0x210: ((0, 0, 0), (0, 1, 0)),
         0x4600: ((0, 0, 0), (0, 1, 0)),
+        0x240: ((0, 1, 0),),
+        0x250: ((0, 1, 0),),
     }
     if any(type(v) is not int for v in (gi, ltf, ldpc)) or (gi, ltf, ldpc) not in allowed.get(
         code, ((0, 0, 0),)
@@ -342,7 +363,7 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
                 "rate_mbps",
             )
         }
-        if dev.CHIP == m.CHIP_MT7921 and phy.get("mode_name") == "HE-SU":
+        if dev.CHIP == m.CHIP_MT7921 and phy.get("mode_name") in ("HE-SU", "HE-ER-SU"):
             fields["he_ltf_mt76_pointer_raw"] = he_ltf_raw(raw)
             fields["he_ltf_vendor_word0_raw"] = he_ltf_raw(raw, vendor=True)
             fields["he_ltf_group5_present"] = bool(
@@ -406,13 +427,14 @@ def main():
             "he-table",
             "he-coding-ltf",
             "he-g5-cycle",
+            "he-er",
         ),
         default="baseline",
     )
     args = p.parse_args()
     if args.receiver_g5 and (
         args.transmitter != "mt7925"
-        or args.suite not in ("he-table", "he-coding-ltf", "he-g5-cycle")
+        or args.suite not in ("he-table", "he-coding-ltf", "he-g5-cycle", "he-er")
     ):
         p.error("receiver Group5 is restricted to MT7925 HE table/coding experiments")
     if args.suite == "he-g5-cycle" and not args.receiver_g5:
@@ -430,7 +452,7 @@ def main():
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
     if (
-        args.suite in ("stbc", "he-coding", "ht-table", "he-table", "he-coding-ltf")
+        args.suite in ("stbc", "he-coding", "ht-table", "he-table", "he-coding-ltf", "he-er")
         and args.transmitter != "mt7925"
     ):
         p.error("coding suites currently support only the Connac3 transmitter")
@@ -456,7 +478,11 @@ def main():
         ),
         "submitted": 0,
         "receiver_g5": args.receiver_g5,
-        "table_ltf": {"he-table": HE_TABLE_LTF, "he-coding-ltf": HE_CODING_LTF}.get(args.suite),
+        "table_ltf": {
+            "he-table": HE_TABLE_LTF,
+            "he-coding-ltf": HE_CODING_LTF,
+            "he-er": HE_ER_LTF,
+        }.get(args.suite),
         "firmware_sha256": {},
     }
     if args.tx_timing:
@@ -544,9 +570,11 @@ def main():
                             args.suite
                         )
                         gi, ldpc = options[phase] if options else (0, 0)
-                        ltfs = {"he-table": HE_TABLE_LTF, "he-coding-ltf": HE_CODING_LTF}.get(
-                            args.suite
-                        )
+                        ltfs = {
+                            "he-table": HE_TABLE_LTF,
+                            "he-coding-ltf": HE_CODING_LTF,
+                            "he-er": HE_ER_LTF,
+                        }.get(args.suite)
                         ltf = ltfs[phase] if ltfs else 0
                         program_rate(tx, code, gi=gi, ldpc=ldpc, ltf=ltf)
                         for seq in range(phase * args.per_phase, (phase + 1) * args.per_phase):

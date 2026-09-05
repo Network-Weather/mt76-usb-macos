@@ -313,6 +313,30 @@ def test_he_g5_cycle_keeps_identical_rate_and_three_bounded_phases():
     assert {code for _, code in p.HE_G5_RATES} == {0x600}
 
 
+def test_he_er_suite_is_one_stream_mode9_with_bounded_controls():
+    rates = p.suite_rates("he-er", 6)
+    assert rates == p.HE_ER_RATES
+    assert rates[0][1] == rates[-1][1] == 0x600
+    assert len(rates) * 10 <= 60
+    assert dict(rates)["he_er1"] == 9 << 6
+    assert dict(rates)["he_er1_dcm"] == (9 << 6) | (1 << 4)
+    assert p.HE_ER_LTF == (1, 1, 1, 1, 1)
+
+
+@pytest.mark.parametrize("code", [0x240, 0x250])
+def test_he_er_requires_newer_chip_and_ltf1(code):
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.program_rate(SimpleNamespace(CHIP=m.CHIP_MT7921), code, ltf=1)
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.descriptor(SimpleNamespace(CHIP=m.CHIP_MT7921), b"", 0, code)
+    with pytest.raises(ValueError, match="controls"):
+        p.program_rate(SimpleNamespace(CHIP=m.CHIP_MT7925), code)
+    writes = []
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925, wr=lambda a, v: writes.append((a, v)), rr=lambda _: 0)
+    p.program_rate(dev, code, ltf=1)
+    assert writes == [(p.c3.ITDR0, code), (p.c3.ITDR1, 0x10040), (p.c3.ITCR, 0x80010012)]
+
+
 def test_he_coding_ltf_changes_only_training_setting_from_old_suite():
     assert p.suite_rates("he-coding-ltf", 6) == p.HE_CODING_RATES
     assert p.HE_CODING_LTF == (1, 1, 1, 1, 1)
