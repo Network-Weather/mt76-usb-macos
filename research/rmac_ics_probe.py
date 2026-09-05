@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from research import ics_trace_probe as trace
+from research import rmac_ics_match as matching
 from research.ics_control_probe import valid_word
 from research.mt7925_noise_event_probe import event_body
 from research.txpower_register_probe import check_image, m, read_words
@@ -70,8 +71,9 @@ def send(dev, start):
     return dev.msg_seq
 
 
-def collect(dev, sequence=None):
+def collect(dev, sequence=None, match_rxd=False):
     types, shapes, acks = collections.Counter(), collections.Counter(), []
+    normal, aggregates = [], []  # Local-only bounded buffers, never returned.
     start = time.monotonic()
     attempts, malformed = 0, 0
     while time.monotonic() - start < 0.4 and attempts < 512:
@@ -86,6 +88,8 @@ def collect(dev, sequence=None):
             if len(raw) >= 4:
                 kind = (struct.unpack_from("<I", raw)[0] >> 27) & 31
                 types[(ep, kind)] += 1
+                if match_rxd and kind == 2 and len(normal) < matching.LIMIT:
+                    normal.append(bytes(raw))
             try:
                 shape = aggregate_shape(raw)
             except ValueError:
@@ -93,6 +97,8 @@ def collect(dev, sequence=None):
                 shape = None
             if shape:
                 shapes[(ep, shape["type"], shape["bytes"], shape["frame_count"])] += 1
+                if match_rxd and len(aggregates) < matching.LIMIT:
+                    aggregates.append(bytes(raw[: shape["bytes"]]))
             parsed = event_body(raw)
             if parsed and parsed[:2] == (1, sequence) and len(parsed[2]) == 8:
                 cid, status = struct.unpack("<II", parsed[2])
@@ -110,19 +116,24 @@ def collect(dev, sequence=None):
         ],
         "invalid_aggregate_lengths": malformed,
         "acknowledgments": acks,
+        "in_memory_matching": matching.reduce_matches(normal, aggregates) if match_rxd else None,
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--activate-rmac-ics", action="store_true")
-    if not parser.parse_args().activate_rmac_ics:
+    parser.add_argument("--match-rxd-in-memory", action="store_true")
+    parser.add_argument("--channel", type=int, choices=(6, 36), default=6)
+    args = parser.parse_args()
+    if not args.activate_rmac_ics:
         parser.error("explicit RMAC ICS acknowledgment required")
     images = m.load_firmware(m.CHIP_MT7925, m.firmware_dir())
     check_image(images[1])
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "start_request_hex": request(True).hex(),
+        "channel": args.channel,
     }
     attempted, originals = False, {}
     with m.open_device("0846:9072") as dev:
@@ -130,7 +141,7 @@ def main():
             dev.bringup(*images, log=lambda *_: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            dev.tune("2.4GHz", 6, 6, 20)
+            dev.tune("2.4GHz" if args.channel == 6 else "5GHz", args.channel, args.channel, 20)
             out["verified"] = trace.verify(dev)
             out["rom"] = []
             for name, address, size, expected in WINDOWS:
@@ -144,13 +155,13 @@ def main():
             if any(originals.values()):
                 raise ValueError("ICS already enabled")
             out["before_masks"] = masks(dev)
-            out["off_before"] = collect(dev)
+            out["off_before"] = collect(dev, match_rxd=args.match_rxd_in_memory)
             attempted = True
             sequence = send(dev, True)
-            out["on"] = collect(dev, sequence)
+            out["on"] = collect(dev, sequence, args.match_rxd_in_memory)
             out["on_masks"] = masks(dev)
             sequence = send(dev, False)
-            out["off_after"] = collect(dev, sequence)
+            out["off_after"] = collect(dev, sequence, args.match_rxd_in_memory)
             out["off_after_masks"] = masks(dev)
         except Exception as exc:
             out["error_type"] = type(exc).__name__

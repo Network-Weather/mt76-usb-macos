@@ -435,3 +435,54 @@ The HT results also strengthen, without proving, the L-SIG-length hypothesis:
 4/3.6µs. This is a model comparison, not a new measured-airtime calibration.
 No opaque records, ambient payloads or clock origins are published.
 [Five coding controls](../research/evidence/tmac-ics-coding-2026-09-05.json).
+
+## Receive records can be paired without publishing traffic
+
+`rmac_ics_probe.py --activate-rmac-ics --match-rxd-in-memory` now compares
+ordinary good-FCS RXD records with RMAC diagnostics entirely in process memory.
+The passive off/on/off windows remain400ms/512 bulk-read attempts each; at most
+128 ordinary and128 diagnostic transfers are retained per window. Only counts,
+field offsets, equality results and relative-clock residual extrema are returned.
+No headers, MAC addresses, payloads, packet timestamps or raw vector words are
+saved. The optional channel is restricted to6 or36, always20MHz.
+
+Four fresh-boot runs produce20,31,18,35 enabled-phase diagnostics, all384 bytes
+with frame-count3, alongside20,31,19,36 good complete ordinary RXD records.
+Their **24-byte MAC-header copies occur at aggregate offset144** in20,31,18,19
+diagnostics, respectively. The last run is channel36 and has only20 distinct
+eligible24-byte normal headers; shorter frames are not matched by this method.
+The first run discovers the header location. Subsequent reducers require a
+header match to exactly one retained normal frame, leaving23,18,19 usable pairs;
+repeated headers are excluded rather than assigned by proximity.
+
+These sixty uniquely paired records establish several partial relationships:
+
+| Ordinary RXD reference | ICS location | Evidence |
+| --- | --- | --- |
+| P-RXV word1 | Offset124 | Exact varying word in all three paired runs |
+| P-RXV word3 / C-RXV word6 | Offset48 | Exact RCPI word in all three runs |
+| RCPI0 / RCPI1 bytes | Offset368 bits23:16 /31:24 | Both byte copies repeat in all three runs |
+| C-RXV words0..21 | Offsets24..111 | Explicit full-word comparison passes37/37 pairs in last two runs |
+| RXD timestamp changes | Offsets20,116,212 | Relative residuals within−1..+1 ticks across sixty pairs |
+
+The word search requires at least eight pairs and four distinct reference values;
+unchanging zero/default words do not independently qualify a field. The explicit
+block comparison separately records equality and variation per word. C-RXV
+words22/23 **fail37/37** at the corresponding offsets112/116, explaining why the
+entire96-byte group never matches contiguously. Do not cast a full group or infer
+subrecord boundaries by dividing384 by the declared frame count. The full16-byte
+P-RXV group and fixed32-byte RXD never match either.
+
+This makes a concrete receive-side bridge between standard RX metadata and ICS,
+including signal-byte redundancy and relative timing. It does not yet establish
+new calibrated SNR/CFO values: source-defined fields from other chip/vector
+formats cannot be transplanted merely because some surrounding words match.
+No absolute clock epoch, PPDU boundary or ranging interpretation is established.
+
+All initial off windows have no ICS. The final two post-stop windows retain
+**two and three** diagnostics despite cleared control masks; the earlier runs
+retain none. Queued/in-flight delivery is plausible but not proven by these
+captures, which do not timestamp generation or distinguish pre/post-ACK receipt.
+Thus stop is not established as an immediate empty-queue boundary. Start/stop
+ACKs, masked restoration and normal reload pass throughout.
+[Four sanitized matching runs](../research/evidence/rmac-ics-matching-2026-09-05.json).

@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**RMAC ICS now has an in-memory bridge to ordinary receive metadata:**
+[Four passive controls](ICS_CAPTURE.md#receive-records-can-be-paired-without-publishing-traffic)
+locate24-byte header copies at144 and yield sixty unique-header pairs in three
+mapping runs. RCPI word/byte copies and three relative clocks repeat across ch6
+and ch36; C-RXV words0..21 match,22/23 fail. No traffic/identifiers/raw vectors
+are exported. Two post-stop windows retain2/3 diagnostics despite cleared masks;
+stop is not an immediate empty-queue guarantee. All restoration/reloads pass.
+
 **ICS GI/LDPC controls narrow the noncontiguous TX-vector mapping:**
 [Five coding runs](ICS_CAPTURE.md#guard-interval-and-coding-narrow-the-split-layout)
 receive20/20 enabled-phase packets independently,48/60 overall. Changed patterns
