@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+"""Bounded MT7961 receive-vector log readout under eight synthetic no-ACK probes.
+
+Send four MT7925 HT MCS8/20MHz controls and require independent receipt of at
+least one before four RF RX stimuli. STOP precedes reading four PHY words from at most
+three records. No full vectors, frame identities, payloads or hashes are emitted.
+Pinned firmware writer stride176 and getter bound exclude the newest record.
+Both radios are normally reloaded on exit. Explicit transmit opt-in required.
+"""
+
+import argparse
+import collections
+import concurrent.futures
+import contextlib
+import datetime
+import json
+import os
+import struct
+import sys
+import threading
+import time
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import usb.core
+
+import mt7921u as m
+from research.cfo_crosscheck_probe import decode_cached_fields, snapshot
+from research.mt7925_tx_probe import controlled_frame
+from research.phy_tx_probe import descriptor, program_rate
+from research.testmode_receiver_probe import rx_setting
+
+
+def log_offsets(count):
+    """Only four known PHY words in at most three complete older records."""
+    if type(count) is not int or not 0 <= count <= 5:
+        raise ValueError("pinned log count must be zero through five")
+    return tuple(
+        tuple(record * 176 + word * 4 for word in (0, 6, 20, 21))
+        for record in range(min(max(count - 1, 0), 3))
+    )
+
+
+def log_fields(word0, word6, word20, word21):
+    fields = decode_cached_fields(word0, word20, word21)
+    if type(word6) is not int or not 0 <= word6 <= 0xFFFFFFFF:
+        raise ValueError("unsigned 32-bit RCPI word required")
+    return {
+        "phy_mode": (word0 >> 4) & 15,
+        "rcpi_bytes": [word6 & 255, (word6 >> 8) & 255],
+        "fields": fields,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
+    args = parser.parse_args()
+    if not args.acknowledge_experimental_transmit:
+        parser.error("explicit transmit acknowledgment required")
+    out = {
+        "tool": "rxv_log_probe",
+        "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "maximum_submissions": 8,
+        "rate": "HT MCS8 two-stream",
+        "channel": 36,
+        "width_mhz": 20,
+        "submitted": 0,
+    }
+    marker = b"\xdd\x0c\x02NW\x01" + os.urandom(8)
+    frames = {i: controlled_frame(i) + marker for i in range(8)}
+    code = (1 << 10) | (2 << 6) | 8
+    with contextlib.ExitStack() as stack:
+        radios = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
+        images = [m.load_firmware(d.CHIP, m.firmware_dir()) for d in radios]
+        rx, tx = radios
+
+        def boot(i):
+            d = radios[i]
+            with contextlib.redirect_stdout(sys.stderr):
+                d.bringup(*images[i], log=lambda *_: None)
+            d.set_monitor_mode()
+            d.set_sniffer(True)
+            d.tune("5GHz", 36, 36, 20)
+
+        def read_log_count():
+            raw = rx.mcu_cmd_word(m.MCU_CE_CMD(1), struct.pack("<B3xII", 2, 36, 40), timeout=1000)
+            body = rx.reply_body(raw)
+            if len(body) < 8 or struct.unpack_from("<I", body)[0] != 36:
+                raise RuntimeError("missing matched count")
+            return struct.unpack_from("<I", body, 4)[0]
+
+        def read_log_fields(count):
+            if not 2 <= count <= 5:
+                return {"skipped": "need two to five logged records"}
+            rows = []
+            # Writer stride176; getter excludes newest record via last-start-offset-4.
+            for record, offsets in enumerate(log_offsets(count)):
+                words = {}
+                for index, offset in zip((0, 6, 20, 21), offsets, strict=True):
+                    raw = rx.mcu_cmd_word(
+                        m.MCU_CE_CMD(1), struct.pack("<B3xII", 2, 40, offset), timeout=1000
+                    )
+                    body = rx.reply_body(raw)
+                    if len(body) < 8 or struct.unpack_from("<I", body)[0] != 40:
+                        raise RuntimeError("missing matched vector word")
+                    words[index] = struct.unpack_from("<I", body, 4)[0]
+                rows.append(
+                    {
+                        "record": record,
+                        **log_fields(words[0], words[6], words[20], words[21]),
+                    }
+                )
+            return {"records": rows}
+
+        def collect(ready, start):
+            decode = m.decoder_for(rx)
+            counts = collections.Counter()
+            seen = set()
+            matched_phy = collections.Counter()
+            deadline = time.monotonic() + 1.5
+            ready.set()
+            while time.monotonic() < deadline and counts["transfers"] < 1024:
+                try:
+                    raw = bytes(rx.rx_read(timeout=50))
+                except usb.core.USBTimeoutError:
+                    continue
+                counts["transfers"] += 1
+                d = decode(raw)
+                if not d:
+                    continue
+                counts[d["pkt_type_name"]] += 1
+                if not d.get("fcs_err"):
+                    for seq in range(start, start + 4):
+                        if d.get("frame") == frames[seq]:
+                            seen.add(seq)
+                            phy = d.get("phy", {})
+                            matched_phy[
+                                tuple(phy.get(k) for k in ("mode_name", "mcs", "nss", "bw_mhz"))
+                            ] += 1
+            return {
+                "counts": dict(counts),
+                "exact_synthetic_frames": len(seen),
+                "matched_phy": [
+                    {"mode": p[0], "mcs": p[1], "nss": p[2], "width_mhz": p[3], "count": n}
+                    for p, n in matched_phy.items()
+                ],
+                "transfer_limit_reached": counts["transfers"] == 1024,
+            }
+
+        def burst(start):
+            ready = threading.Event()
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                job = pool.submit(collect, ready, start)
+                if not ready.wait(2):
+                    raise RuntimeError("observer not ready")
+                for seq in range(start, start + 4):
+                    frame = frames[seq]
+                    body = descriptor(tx, frame, seq, code) + frame
+                    wire = struct.pack("<I", len(body)) + body
+                    wire += bytes((-len(wire)) % 4 + 4)
+                    tx.bulk_out(tx.ep_out_ac_be, wire, 1000)
+                    out["submitted"] += 1
+                    time.sleep(0.05)
+                return job.result(timeout=3)
+
+        try:
+            for i in range(2):
+                boot(i)
+            program_rate(tx, code)
+            out["normal_control"] = burst(0)
+            if not out["normal_control"]["exact_synthetic_frames"]:
+                raise RuntimeError("no independent control receipt; skip RF stimulus")
+            rx.mcu_cmd_word(m.MCU_CE_CMD(1), struct.pack("<B3xII", 0, 1, 0), wait=False)
+            time.sleep(0.2)
+            for selector, value in (
+                (1, 0),
+                (104, 0),
+                (106, 3 << 16),
+                (18, 5180000),
+                (15, 0),
+                (1, 2),
+            ):
+                rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(selector, value), wait=False)
+                time.sleep(0.1)
+            out["before"] = {"count": read_log_count(), "cached": snapshot(rx)}
+            out["rf_stimulus"] = burst(4)
+            out["after"] = {
+                "count": read_log_count(),
+                "cached": snapshot(rx),
+                "cached_phy_mode": (rx.rr(0x02040808) >> 4) & 15,
+            }
+            rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 0), wait=False)
+            time.sleep(0.2)
+            out["stopped"] = {"count": read_log_count(), "cached": snapshot(rx)}
+            out["log_readout"] = read_log_fields(out["stopped"]["count"])
+            out["alive_after"] = [d.alive() for d in radios]
+        except Exception as exc:
+            out["error_type"] = type(exc).__name__
+        finally:
+            try:
+                rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 0), wait=False)
+            except Exception as exc:
+                out["stop_error_type"] = type(exc).__name__
+            out["cleanup"] = []
+            for i in range(2):
+                try:
+                    boot(i)
+                    out["cleanup"].append({"alive": radios[i].alive()})
+                except Exception as exc:
+                    out["cleanup"].append({"error_type": type(exc).__name__})
+    print(json.dumps(out, indent=2))
+
+    return int("error_type" in out or not all(row.get("alive") for row in out["cleanup"]))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

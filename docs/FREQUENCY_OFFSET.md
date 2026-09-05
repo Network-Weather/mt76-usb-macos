@@ -133,6 +133,8 @@ All reload/alive checks passed.
 - MT7961 normal Group5 currently carries18 words; blindly indexing20/21 would
   read outside it. A separate standalone-report route or a proven alternative
   layout is needed for passive per-packet CFO.
+  Follow-up: a [finite RF-test vector log](RX_VECTOR_LOG.md) now exposes separate
+  reception records through scalar queries. It is not a continuous monitor stream.
 - CE `0xc8` can drain counters; this diagnostic remains separate from acquisition.
 
 Primary comparisons: local mt76 revision
