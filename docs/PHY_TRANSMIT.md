@@ -66,6 +66,35 @@ does not prove restored RF performance**. Wider-band tests are deferred while
 the baseline link is unreliable. No physical power-cycle or antenna adjustment
 was performed. [Sanitized runs](../research/evidence/spatial-stream-transmit-2026-09-05.json).
 
+### Spatial-path and firmware-table controls (2026-09-05 UTC)
+
+`--suite spatial --transmitter mt7961` changes only Connac2 TXD word 7 bits
+15:11, leaving the existing word-6 selector bit 10 zero. Five OFDM6 phases use
+SPE indices `0,1,0,24,0`; power, 20-MHz channel 36, no-ACK and the private
+per-run frame nonce are unchanged. The vendor gen4m source at `8fddb9d7`
+(`wlanAntPathFavorSelect`, `wlan_def.h`, `nic_connac2x_tx.h`) names indices 0/1
+as WF0/WF1 and 24 as duplicated one-stream selection. Upstream mt7915 test
+descriptors likewise set the DW7 index without setting DW6 bit 10. These names
+are source intent, not independently verified physical antenna routing here.
+
+All 30 submissions produced TX statuses (raw power 44, OFDM6, no ACK-error bits),
+but **zero exact frames arrived in any phase**. MT7925 received 202 unrelated
+frames during this run; those frames were discarded, not saved. Both alive
+checks and transmitter reload passed. Spatial index changes did not restore
+the reverse-direction baseline; a silent RF path and ineffective descriptor
+selection remain distinguishable possibilities, not resolved causes.
+
+A separate **no-transmission** MT7925 test tried the upstream `UNI 0x40` fixed
+rate-table command: tag 0, length 16, slot 18, OFDM6, WTBL selection, no
+LDPC/beamforming/dynamic BW. Both zero GI/LTF and exact upstream GI/LTF=1/1
+returned command-result **0xc0000001** with matched sequence. This is a
+rejected request, not proof the entire command family is absent. The working
+direct ITDR table-programming route is unchanged. Each trial reloaded normally.
+
+[Sanitized evidence](../research/evidence/spatial-path-controls-2026-09-05.json)
+contains all three trials. No power increase, calibration writes, association,
+profile writes or beamforming/sounding transmission occurred.
+
 ### Initial one-stream method
 
 All rate/descriptor facts come from mt76 baseline `c5a3bd91`:

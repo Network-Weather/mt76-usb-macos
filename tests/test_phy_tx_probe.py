@@ -33,6 +33,41 @@ def test_rate_allowlist():
         p.descriptor(dev, b"", 0, 0xFFFF)
 
 
+@pytest.mark.parametrize("spe", [0, 1, 24])
+def test_spatial_code_only_changes_connac2_word7_field(spe):
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7921)
+    dev._build_txwi = lambda frame, seq, pid: bytes.fromhex("a5" * 32)
+    frame = p.c3.controlled_frame(0)
+    before = p.descriptor(dev, frame, 0, 0x4B)
+    after = p.descriptor(dev, frame, 0, 0x4B, spe_idx=spe)
+    assert after[:28] == before[:28]
+    word = struct.unpack_from("<I", after, 28)[0]
+    assert (word >> 11) & 31 == spe
+    assert word & ~(31 << 11) == struct.unpack_from("<I", before, 28)[0] & ~(31 << 11)
+    assert not struct.unpack_from("<I", after, 24)[0] & (1 << 10)
+
+
+@pytest.mark.parametrize(
+    ("chip", "rate", "spe"),
+    [
+        (m.CHIP_MT7925, 0x4B, 0),
+        (m.CHIP_MT7921, 0x488, 1),
+        (m.CHIP_MT7921, 0x4B, 2),
+        (m.CHIP_MT7921, 0x4B, -1),
+    ],
+)
+def test_spatial_rejects_other_chip_rate_or_code(chip, rate, spe):
+    with pytest.raises(ValueError, match="spatial experiment"):
+        p.descriptor(SimpleNamespace(CHIP=chip), b"", 0, rate, spe_idx=spe)
+
+
+def test_spatial_controls_and_packet_ceiling():
+    assert len(p.SPATIAL_RATES) == len(p.SPATIAL_SPE) == 5
+    assert p.SPATIAL_SPE == (0, 1, 0, 24, 0)
+    assert {rate for _, rate in p.SPATIAL_RATES} == {0x4B}
+    assert len(p.SPATIAL_RATES) * 10 <= 60
+
+
 def test_stream_suite_encodes_nss_minus_one_and_stays_bounded():
     assert len(p.STREAM_RATES) == 6
     assert dict(p.STREAM_RATES)["ht8_2ss"] == 0x488

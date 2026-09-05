@@ -54,11 +54,22 @@ STREAM_RATES = (
     ("ofdm_after", 0x4B),
 )
 ALLOWED_RATE_CODES = {rate for _, rate in RATES + STREAM_RATES}
+# Vendor gen4m 8fddb9d7 wlanAntPathFavorSelect: 0=WF0, 1=WF1,
+# 0x18=duplicated one-stream path. Connac2 TXD DW7 bits 15:11.
+# Keep DW6 selection bit 10 at the existing zero, as mt7915 test descriptors do.
+SPATIAL_SPE = (0, 1, 0, 24, 0)
+SPATIAL_RATES = tuple(
+    (name, 0x4B) for name in ("spe0_before", "spe1", "spe0_middle", "spe24_duplicate", "spe0_after")
+)
 
 
-def descriptor(dev, frame, seq, code, fixed_bw=False):
+def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
+    if spe_idx is not None and (
+        dev.CHIP != m.CHIP_MT7921 or code != 0x4B or spe_idx not in (0, 1, 24)
+    ):
+        raise ValueError("spatial experiment is Connac2 OFDM6 with SPE 0/1/24 only")
     if dev.CHIP == m.CHIP_MT7925:
         data = bytearray(c3.build_txwi(frame, seq, disable_mat=True))
         if fixed_bw:
@@ -70,6 +81,9 @@ def descriptor(dev, frame, seq, code, fixed_bw=False):
         raise ValueError("unsupported chip")
     data = bytearray(fixed_rate_txwi(dev, frame, seq, "ofdm6", True))
     struct.pack_into("<I", data, 24, m.MT_TXD6_FIXED_BW | (code << 16))
+    if spe_idx is not None:
+        word = struct.unpack_from("<I", data, 28)[0]
+        struct.pack_into("<I", data, 28, (word & ~(31 << 11)) | (spe_idx << 11))
     return bytes(data)
 
 
@@ -155,13 +169,15 @@ def main():
     p.add_argument("--per-phase", type=int, choices=range(1, 11), default=5)
     p.add_argument("--acknowledge-experimental-transmit", action="store_true")
     p.add_argument("--fixed-bw", action="store_true", help="connac3 explicit 20 MHz TXD flag")
-    p.add_argument("--suite", choices=("baseline", "streams"), default="baseline")
+    p.add_argument("--suite", choices=("baseline", "streams", "spatial"), default="baseline")
     args = p.parse_args()
     if not args.acknowledge_experimental_transmit:
         p.error("explicit transmit acknowledgment required")
     if args.fixed_bw and args.transmitter != "mt7925":
         p.error("fixed-bw variant applies only to mt7925")
-    rates = STREAM_RATES if args.suite == "streams" else RATES
+    if args.suite == "spatial" and args.transmitter != "mt7961":
+        p.error("spatial suite currently supports only the Connac2 transmitter")
+    rates = {"baseline": RATES, "streams": STREAM_RATES, "spatial": SPATIAL_RATES}[args.suite]
     out = {
         "tool": "phy_tx_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -171,6 +187,7 @@ def main():
         "gap_s": 0.05,
         "fixed_bw": args.fixed_bw,
         "suite": args.suite,
+        "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
         "submitted": 0,
         "firmware_sha256": {},
     }
@@ -217,7 +234,8 @@ def main():
                             if any(job.done() for job in jobs):
                                 raise RuntimeError("capture stopped before transmit completed")
                             frame = expected[seq]
-                            body = descriptor(tx, frame, seq, code, args.fixed_bw) + frame
+                            spe = SPATIAL_SPE[phase] if args.suite == "spatial" else None
+                            body = descriptor(tx, frame, seq, code, args.fixed_bw, spe) + frame
                             wire = struct.pack("<I", len(body)) + body
                             wire += bytes((-len(wire)) % 4 + 4)
                             tx.bulk_out(tx.ep_out_ac_be, wire, 1000)
