@@ -36,6 +36,8 @@ The upstream notices retained for the transcribed source surfaces are:
   `mt7921/mcu.c`, `mt7921/mac.c`)
 - Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> (`usb.c`)
 - Copyright (C) 2016 Felix Fietkau <nbd@nbd.name> (`eeprom.c`)
+- Copyright (C) 2016 Felix Fietkau <nbd@nbd.name> (`mac80211.c` fixed-rate table
+  assignments used in the research transmit experiments)
 
 Those names and dates come from the headers at the pinned revision. “Portions copyright the
 mt76 authors” is not used as a substitute for retaining the concrete upstream notices.

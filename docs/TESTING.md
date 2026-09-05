@@ -958,6 +958,30 @@ are 3.25 and 6.25 dB versus adjacent baselines; the code is not a calibrated RF
 transfer function. Full results, including 199/200 byte-exact observations across
 four DIS_MAT runs and the one unexplained miss, are in the report.
 
+## Controlled channel geometry (2026-09-04)
+
+The [channel-geometry report](CHANNEL_GEOMETRY.md) records commands, test bed,
+acceptance criteria, and limitations. An MT7961 sends 20 MHz OFDM probes while
+the MT7925 observes primary 36 or 44 within the same 80 MHz center-42 span.
+Five same-primary/narrow control phases each receive 12/12 byte-exact frames;
+two other-primary phases each receive 0/12. Both radios remain responsive.
+This must not be generalized to all PHY formats or interpreted as no RF energy:
+an 80 MHz capture is not four independent 20 MHz capture radios.
+The reverse direction gives `12,12,0,12,11,0,12`, preserving one unexplained
+control miss. In total both observers decode 119/120 matching-primary controls
+and 0/48 other-primary probes in the same span. Firmware cleanup and all alive
+checks pass.
+
+## MT7925 interleaved rates and deep attenuation (2026-09-04)
+
+The [extended transmit report](MT7925_TRANSMIT.md#interleaved-phy-rates-and-stronger-attenuation)
+records commands and limits. Two 60-frame runs on channel 149 / 20 MHz each receive
+all 60 byte-exact frames, 30 at 6 Mbps and 30 at 54 Mbps, with no rate mismatches.
+The stronger cycle includes code -32: roughly 15.5 dB relative attenuation and raw
+TX power byte 250, consistent with signed -6 after a 32-count reduction from 26.
+Both radios remain alive, and transmitter firmware cleanup succeeds. No decoding
+boundary or absolute sensitivity rating was established by these short probes.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

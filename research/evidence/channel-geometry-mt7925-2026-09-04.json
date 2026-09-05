@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "cleanup_alive": [
+        true,
+        true
+      ],
+      "date_utc": "2026-09-05T00:12:13.569130+00:00",
+      "firmware_sha256": {
+        "mt7921": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "mt7925": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        }
+      },
+      "frames_per_phase": 12,
+      "gap_s": 0.05,
+      "phases": [
+        {
+          "phase": 0,
+          "radios": [
+            {
+              "chip": "mt7921",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 193,
+                "TXS": 12
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [
+                {
+                  "count": 12,
+                  "fields": {
+                    "error_bits": 0,
+                    "power_raw": 44,
+                    "rate_raw": 75
+                  }
+                }
+              ],
+              "unique_sequences": 0
+            },
+            {
+              "chip": "mt7925",
+              "controlled_phy": {
+                "OFDM:6.0:20": 12
+              },
+              "counts": {
+                "NORMAL": 194,
+                "controlled_byte_exact": 12
+              },
+              "descriptor_channels": {
+                "5GHz:36": 12
+              },
+              "median_rssi": -40,
+              "tx_status": [],
+              "unique_sequences": 12
+            }
+          ],
+          "register_alive_after": [
+            true,
+            true
+          ],
+          "rx_center": 36,
+          "rx_primary": 36,
+          "rx_width_mhz": 20,
+          "submitted": 12,
+          "tx_channel": 36
+        },
+        {
+          "phase": 1,
+          "radios": [
+            {
+              "chip": "mt7921",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 180,
+                "TXS": 12
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [
+                {
+                  "count": 12,
+                  "fields": {
+                    "error_bits": 0,
+                    "power_raw": 44,
+                    "rate_raw": 75
+                  }
+                }
+              ],
+              "unique_sequences": 0
+            },
+            {
+              "chip": "mt7925",
+              "controlled_phy": {
+                "OFDM:6.0:20": 12
+              },
+              "counts": {
+                "NORMAL": 212,
+                "controlled_byte_exact": 12
+              },
+              "descriptor_channels": {
+                "5GHz:36": 12
+              },
+              "median_rssi": -41,
+              "tx_status": [],
+              "unique_sequences": 12
+            }
+          ],
+          "register_alive_after": [
+            true,
+            true
+          ],
+          "rx_center": 42,
+          "rx_primary": 36,
+          "rx_width_mhz": 80,
+          "submitted": 12,
+          "tx_channel": 36
+        },
+        {
+          "phase": 2,
+          "radios": [
+            {
+              "chip": "mt7921",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 26,
+                "TXS": 12
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [
+                {
+                  "count": 12,
+                  "fields": {
+                    "error_bits": 0,
+                    "power_raw": 44,
+                    "rate_raw": 75
+                  }
+                }
+              ],
+              "unique_sequences": 0
+            },
+            {
+              "chip": "mt7925",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 185
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [],
+              "unique_sequences": 0
+            }
+          ],
+          "register_alive_after": [
+            true,
+            true
+          ],
+          "rx_center": 42,
+          "rx_primary": 36,
+          "rx_width_mhz": 80,
+          "submitted": 12,
+          "tx_channel": 44
+        },
+        {
+          "phase": 3,
+          "radios": [
+            {
+              "chip": "mt7921",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 35,
+                "TXS": 12
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [
+                {
+                  "count": 12,
+                  "fields": {
+                    "error_bits": 0,
+                    "power_raw": 44,
+                    "rate_raw": 75
+                  }
+                }
+              ],
+              "unique_sequences": 0
+            },
+            {
+              "chip": "mt7925",
+              "controlled_phy": {
+                "OFDM:6.0:20": 12
+              },
+              "counts": {
+                "NORMAL": 29,
+                "controlled_byte_exact": 12
+              },
+              "descriptor_channels": {
+                "5GHz:44": 12
+              },
+              "median_rssi": -39,
+              "tx_status": [],
+              "unique_sequences": 12
+            }
+          ],
+          "register_alive_after": [
+            true,
+            true
+          ],
+          "rx_center": 44,
+          "rx_primary": 44,
+          "rx_width_mhz": 20,
+          "submitted": 12,
+          "tx_channel": 44
+        },
+        {
+          "phase": 4,
+          "radios": [
+            {
+              "chip": "mt7921",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 72,
+                "TXS": 12
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [
+                {
+                  "count": 12,
+                  "fields": {
+                    "error_bits": 0,
+                    "power_raw": 44,
+                    "rate_raw": 75
+                  }
+                }
+              ],
+              "unique_sequences": 0
+            },
+            {
+              "chip": "mt7925",
+              "controlled_phy": {
+                "OFDM:6.0:20": 12
+              },
+              "counts": {
+                "NORMAL": 84,
+                "controlled_byte_exact": 12
+              },
+              "descriptor_channels": {
+                "5GHz:44": 12
+              },
+              "median_rssi": -42,
+              "tx_status": [],
+              "unique_sequences": 12
+            }
+          ],
+          "register_alive_after": [
+            true,
+            true
+          ],
+          "rx_center": 42,
+          "rx_primary": 44,
+          "rx_width_mhz": 80,
+          "submitted": 12,
+          "tx_channel": 44
+        },
+        {
+          "phase": 5,
+          "radios": [
+            {
+              "chip": "mt7921",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 156,
+                "TXS": 12
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [
+                {
+                  "count": 12,
+                  "fields": {
+                    "error_bits": 0,
+                    "power_raw": 44,
+                    "rate_raw": 75
+                  }
+                }
+              ],
+              "unique_sequences": 0
+            },
+            {
+              "chip": "mt7925",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 31
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [],
+              "unique_sequences": 0
+            }
+          ],
+          "register_alive_after": [
+            true,
+            true
+          ],
+          "rx_center": 42,
+          "rx_primary": 44,
+          "rx_width_mhz": 80,
+          "submitted": 12,
+          "tx_channel": 36
+        },
+        {
+          "phase": 6,
+          "radios": [
+            {
+              "chip": "mt7921",
+              "controlled_phy": {},
+              "counts": {
+                "NORMAL": 156,
+                "TXS": 12
+              },
+              "descriptor_channels": {},
+              "median_rssi": null,
+              "tx_status": [
+                {
+                  "count": 12,
+                  "fields": {
+                    "error_bits": 0,
+                    "power_raw": 44,
+                    "rate_raw": 75
+                  }
+                }
+              ],
+              "unique_sequences": 0
+            },
+            {
+              "chip": "mt7925",
+              "controlled_phy": {
+                "OFDM:6.0:20": 12
+              },
+              "counts": {
+                "NORMAL": 192,
+                "controlled_byte_exact": 12
+              },
+              "descriptor_channels": {
+                "5GHz:36": 12
+              },
+              "median_rssi": -42,
+              "tx_status": [],
+              "unique_sequences": 12
+            }
+          ],
+          "register_alive_after": [
+            true,
+            true
+          ],
+          "rx_center": 36,
+          "rx_primary": 36,
+          "rx_width_mhz": 20,
+          "submitted": 12,
+          "tx_channel": 36
+        }
+      ],
+      "tool": "channel_geometry_probe",
+      "transmitter": "mt7921"
+    }
+  ]
+}
