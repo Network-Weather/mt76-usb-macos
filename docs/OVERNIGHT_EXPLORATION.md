@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**A separate raw-PHY ICS path is mapped, not yet activated:**
+[UNI49 capture](ICS_CAPTURE.md) exposes a repeating sixteen-chunk callback,
+device SRAM export, concrete trigger/status fields, and a shared prerequisite
+that is already set after normal monitor setup. No ICS command or sample read
+at this checkpoint. Fixed code/ROM verification and normal reload checks pass;
+capture-source setup and complete stop side effects remain investigation targets.
+
 **Histogram acquisition coexists with own TX, with a coverage caveat:**
 [Four quiet/TX/quiet controls](NOISE_SELF_TRANSMIT.md) independently receive78/79
 synthetic CCK1 frames. Two long bursts reduce sample totals and quiet-after
