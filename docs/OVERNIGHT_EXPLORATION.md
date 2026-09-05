@@ -23,7 +23,9 @@ received frame. Units and physical interpretation remain unvalidated.
 **Station radar detector:** [MT7925 UNI19 STOP/START/STOP](RADAR_DETECTOR.md)
 returns success after correcting quiet-endpoint receive throttling. Three short
 post-START windows yield no pulse reports; hardware activation remains unproven.
-The MT7961 CE8F STOP-only control stays silent, and no START was sent on that route.
+MT7961 CE8F stays silent on USB, but a later traced RAM-state read follows
+STOP/START/STOP as0/0x101/0x100 and reload restores0, proving handler execution.
+Its on-chip capture buffer is allocated; lower-level hardware activation is next.
 
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and

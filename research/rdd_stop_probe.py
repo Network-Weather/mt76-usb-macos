@@ -49,7 +49,11 @@ def summarize(raw, chip, sequence):
         return None
     eid, seq = raw[offset : offset + 2]
     ext = raw[offset + 4]
-    candidate = eid == 0x11 if chip == m.CHIP_MT7925 else eid == 0xED and ext == 0x3A
+    candidate = (
+        eid == 0x11
+        if chip == m.CHIP_MT7925
+        else eid in (0x50, 0x60) or (eid == 0xED and ext == 0x3A)
+    )
     if seq != sequence and not (candidate and seq == 0):
         return None
     body = raw[header:size]

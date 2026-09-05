@@ -4,6 +4,8 @@ On the pinned MT7925 firmware, **UNI0x19 STOP/START/STOP returns status0** in
 normal unassociated channel36/20MHz receive mode. Three post-START one-second
 windows contain301 good-FCS OFDM frames and **no candidate radar events**. This
 establishes command acceptance, not hardware activation or usable pulse telemetry.
+MT7961's silent CE8F route also **executes the receiver-control handler**: a later
+firmware-derived state check follows STOP/START/STOP despite receiving no ACKs.
 No transmitted test pattern, radar emulation, threshold writes, TX queue controls,
 DFS-channel transmission or calibrated detection claim is involved.
 
@@ -27,8 +29,9 @@ Sources at gen4m commit`8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`:
 The bridge is conditional on DFS-master support in that source. These protocol
 facts do not establish which detector implementation the shipped image contains.
 
-Source event candidates are UNI EID`0x11` (tags0 pulse/1 report), or legacy
-EID`0xed`/extended EID`0x3a`. The probe deliberately exports only event metadata;
+Source event candidates are UNI EID`0x11` (tags0 pulse/1 report), legacy station
+EIDs`0x50` (send pulse)/`0x60` (report), or AP-style legacy EID`0xed`/extended
+EID`0x3a`. The probe deliberately exports only event metadata;
 no unobserved variable-length pulse structure is advertised as a working parser.
 Do not confuse station CE`0x8f`, AP EXT`0x3a`, and internal dispatch-table tags.
 
@@ -56,13 +59,49 @@ earlier commands were refused or the firmware stopped replying. No window hit
 its transfer cap (256 originally,512 after the correction). All observed frames
 and replies came through endpoint0x84; none came through0x85.
 
-The MT7961 silence remains ambiguous, especially with no normal ch36 frames in
-those windows. No START was issued to that chip by these new tools. Older AP-EXT
+The MT7961 silence in these initial windows remains ambiguous, especially with
+no normal ch36 frames. No START was issued to that chip at that checkpoint. Older AP-EXT
 experiments are separate and must not be counted as validation of the CE route.
 
 [Sanitized evidence](../research/evidence/radar-detector-2026-09-05.json).
 Only counts, timing, fixed command status and event shapes are retained. Raw
 ambient identities, frame bodies and detector payloads are not published.
+
+## MT7961: a silent command still changes receiver state
+
+Following the string-identified NDS32 entry`0x00961422` (`rdmCmdRddCtrl`) gives
+an independent way to test the CE route without requiring an ACK. This is **not**
+the earlier numerically matched`0x0095c90e` function, which belongs to MU control.
+
+- START/control1 calls region setter`0x00960f04`, stores enable1 at
+  GP+`0x34214`, then calls`0x00960dcc` (`rdmRddStart`).
+- STOP/control0 checks that enable byte, clears it, and calls`0x00960e88`
+  (`rdmRddStop`). The selected region byte at GP+`0x34215` is retained by STOP.
+- Runtime GP is`0x02003000`, so one fixed read at`0x02037214` covers both bytes.
+- The start helper asks`0x0096bcca` for its buffer. That calls allocation lookup
+  `0x0093e7f8` with selectors0/3/0. The lookup walks18 records of24 bytes at
+  GP+174232=`0x0202d898`, compares fields at0/8/20, and returns base/size at12/16.
+- A normal-boot read finds exactly one matching record: base`0x00401c00`,
+  size1024. Thus **missing allocation is not the explanation** in this control.
+  No raw buffer contents are read and no host-supplied DMA address is used.
+
+`research/legacy_rdd_state_probe.py --enable-passive-detector` checks the exact
+allocation and an inactive state before the single FCC-profile START, then sends
+STOP and reloads normal firmware. On2026-09-05 at14:58 UTC:
+
+| Phase | State word | Enable byte | Region byte |
+|---|---|---:|---:|
+| Normal boot / initial STOP | `0x000` | 0 | 0 |
+| CE8F START | `0x101` | 1 | 1 |
+| CE8F STOP / cleanup STOP | `0x100` | 0 | 1 |
+| Full normal reload | `0x000` | 0 | 0 |
+
+There are **zero USB transfers, ACKs or pulse events** in all four one-second
+windows, yet the state follows the request and cleanup restores it. This
+establishes the CE8F-to-RDD-handler connection, not a functioning pulse sensor:
+the host-state byte is set before lower-level capture setup, whose errors are
+not propagated through that byte. Hardware register readback is the next check.
+[Allocation/state evidence](../research/evidence/legacy-radar-state-2026-09-05.json).
 
 ## What would turn this into a measurement?
 

@@ -39,7 +39,13 @@ def test_legacy_not_found_and_no_arbitrary_payload():
 
 
 @pytest.mark.parametrize(
-    ("chip", "eid", "ext"), [(p.m.CHIP_MT7921, 0xED, 0x3A), (p.m.CHIP_MT7925, 0x11, 0)]
+    ("chip", "eid", "ext"),
+    [
+        (p.m.CHIP_MT7921, 0xED, 0x3A),
+        (p.m.CHIP_MT7921, 0x50, 0),
+        (p.m.CHIP_MT7921, 0x60, 0),
+        (p.m.CHIP_MT7925, 0x11, 0),
+    ],
 )
 def test_unsolicited_candidate_metadata_only(chip, eid, ext):
     result = p.summarize(event(chip, eid, b"private", seq=0, ext=ext), chip, 7)
