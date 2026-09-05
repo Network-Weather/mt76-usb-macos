@@ -12,6 +12,12 @@ show channel6 concentrated in bins7–8, channel36 in bin0, then a return to the
 channel6 distribution. Both views have identical totals but differing bins in
 all eight windows. No calibrated noise floor or chain labels claimed. No TX or
 UNI36 activation; only two traced volatile masks, all restorations/reloads pass.
+The [four-view follow-up](MT7925_NOISE_HISTOGRAM.md#four-view-comparison-counter-indices-are-not-interchangeable-with-controls)
+finds three active distributions with exactly equal totals under index0 control,
+while the ordinary index1 bank stays zero. The extra timer view is concentrated
+in bin6 on channel6, versus bins7–8 in the first timer view. Control index1 stays
+disabled. Raw indices replace provisional RF-band labels; physical chain/stage
+mapping is not yet established.
 
 **Per-rate power reports work, but MT7925 inactive-width rows retain history:**
 [both source-defined report interfaces](TXPOWER_TABLE_STATE.md) answer26

@@ -25,17 +25,18 @@ copied blindly into a host TLV.
 
 Initializer `e00532bc` registers callback `e0054194` on timer state `0224c3e8`,
 calls wrapper `e0078ffe` four times, and arms a timer with argument500 (time unit
-not validated here). The four calls are **band0 reset, band0 enable, band1 reset,
-band1 enable**, not four separate chain selectors. Wrapper `e0078ffe` calls
+not validated here). The four calls are **index0 reset, index0 enable, index1
+reset, index1 enable**. These are raw helper indices: the physical band/chain
+mapping must not be inferred uniformly across register blocks. Wrapper `e0078ffe` calls
 ordinary histogram helper `e005ae5e`:
 
-| Operation | Band0 hardware effect |
+| Operation | Index0 hardware effect |
 | --- | --- |
 | 0 reset | `83088230` bit29 clear → set → clear; preserve other bits |
 | 1 enable | Set `83082004` bits2:0 to5; preserve other bits |
 | 2 stop/read | Clear those three bits, copy requested u32 bins from `83088600`, copy ten threshold labels |
 
-Firmware adds `band << 16` to these addresses. Only band0 is tested; the
+Firmware adds `index << 16` to these addresses. Only index0 controls are written; the
 reproducer reads exactly eleven counters and never exposes an arbitrary count.
 **MT7925's enable helper does not write `83088234`**, unlike MT7961's helper.
 No sibling-chip option bits were added to the test.
@@ -45,11 +46,11 @@ Operation2 references ten signed bytes at GP+18220 = `02216f2c`:
 older engine, but are not a demonstrated conversion from bins to received dBm.
 
 The timer callback uses a different getter: `e007900c` → `e005af12` stops both
-bands and reads eleven words each from **`83001000` and `83011000`**. Result
+control indices and reads eleven words each from **`83001000` and `83011000`**. Result
 formatter `e0054118` constructs EID0x36 with tag2/length92 and two44-byte arrays.
 This is an event-producing lead, not merely firmware log output. No live event
-or two-bank activation is claimed. The test independently reads only the
-**band0** view at `83001000` alongside `83088600`.
+or two-control activation is claimed. The initial test independently reads only
+the **index0** view at `83001000` alongside `83088600`.
 
 ## Bounded passive controls
 
@@ -61,7 +62,7 @@ then reset-separated quarter-second and one-second acquisition windows. Each
 window ends with two stopped counter snapshots50ms apart. Both original masked
 controls are restored and checked, then normal monitor firmware is reloaded.
 
-`--channel` accepts only6 or36 at20MHz. There is no TX, RF-test mode, band1
+`--channel` accepts only6 or36 at20MHz. There is no TX, RF-test mode, index1
 write, host-memory DMA, nonvolatile programming, or ambient payload/identifier
 export. Shared histogram history is reset and **cannot be restored**. Snapshot
 timing includes USB control overhead, not a hardware-latched acquisition duration.
@@ -93,3 +94,40 @@ live evidence of measurement behavior.
 Next: distinguish environmental power from receiver configuration/gain effects,
 resolve the relationship between the two views, and establish a safe host-event
 request if useful. Do not infer a −65dBm home noise floor from bin7 dominance.
+
+## Four-view comparison: counter indices are not interchangeable with controls
+
+`--compare-views` adds fixed reads at `83098600` and `83011000`, both derived
+from the same firmware helpers. It performs **no additional writes**. Two later
+runs also read low control bits during sampling: `83082004 =5` while
+`83092004 =0`; both are0 after stopping.
+
+Despite control index1 remaining disabled, the `83011000` view accumulates,
+resets and stops with index0. Its total equals those of `83088600` and
+`83001000` in every window, while `83098600` remains all zero:
+
+| Fresh boot / channel | Short total, each active view | Long total, each active view |
+| --- | --- | --- |
+| 19:32:37 / 6 | 18,001 | 105,760 |
+| 19:33:26 / 36 | 31,899 | 121,933 |
+| 19:33:32 / 6 | 27,914 | 107,093 |
+
+On channel6, `83001000` is concentrated in bins7–8 and `83011000` in bin6.
+On36, both are concentrated in bin0; returning to6 restores the split. All
+baselines/post-reset views are zero and all stopped snapshots repeat exactly.
+All code checks, masked restorations and normal reloads pass. The first short
+window has a lower total than prior trials; these are sample counts, not a
+promise of wall-clock coverage or a calibrated sampling rate.
+
+This supports distinct per-chain or processing-stage observations within one
+enabled engine, **not two independently enabled RF bands**. Pinned mt76's
+[MT7916-style IRPI address map](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7915/regs.h#L1203)
+and [MT7996 CSD map](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7996/regs.h#L760)
+use the same0x1000 base and0x10000 per-chain stride. That is corroborating
+sibling-driver evidence, not proof of MT7925 physical antenna labels or the
+meaning of the ordinary getter's distribution. The earlier provisional band0/
+band1 wording for these helper indices is therefore replaced with raw indices.
+
+[Four-view evidence](../research/evidence/mt7925-histogram-views-2026-09-05.json).
+The new capability is synchronized, nonidentical histogram views; it does not
+yet identify which antenna sees a particular interferer.

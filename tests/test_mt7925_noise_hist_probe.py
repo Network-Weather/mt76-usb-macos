@@ -56,6 +56,24 @@ def test_only_two_source_traced_bank0_windows():
     assert not dev.writes
 
 
+def test_compare_reads_only_two_additional_source_windows():
+    dev = Device()
+    assert len(p.banks(dev, True)) == 4
+    assert len(dev.reads) == 44
+    assert dev.reads[22:] == list(range(0x83098600, 0x8309862C, 4)) + list(
+        range(0x83011000, 0x8301102C, 4)
+    )
+    assert not dev.writes
+
+
+def test_controls_are_read_only_and_masked():
+    dev = Device()
+    dev.values[p.CONTROL] |= 5
+    assert p.controls(dev) == {"0x83082004": 5, "0x83092004": 0}
+    assert dev.reads == [p.CONTROL, 0x83092004]
+    assert not dev.writes
+
+
 @pytest.mark.parametrize(
     ("address", "word", "bits"),
     [

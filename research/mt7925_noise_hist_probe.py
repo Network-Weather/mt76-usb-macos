@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-"""Bounded firmware-traced MT7925 histogram test, band0 only, no TX.
+"""Bounded firmware-traced MT7925 histogram test, control index0 only, no TX.
 
 Requires exclusive ownership and explicit acknowledgment: resets shared histogram
 history. Only reset bit29 and capture bits2:0 are changed, restored, then normal
-firmware is reloaded. No UNI36 activation, band1 writes, or calibration claims.
+firmware is reloaded. No UNI36 activation, index1 writes, or calibration claims.
 """
 
 import argparse
@@ -56,6 +56,7 @@ CONTROL = 0x83082004
 RESET = 0x83088230
 MASKS = {CONTROL: 7, RESET: 1 << 29}
 BANKS = {"ordinary_getter": 0x83088600, "timer_getter": 0x83001000}
+OTHER_VIEWS = {"ordinary_index1": 0x83098600, "timer_index1": 0x83011000}
 DURATIONS = (0.25, 1.0)
 THRESHOLD_ADDRESS = 0x02216F2C  # Traced GP+18220; ten signed labels, not calibration.
 
@@ -112,9 +113,18 @@ def reset(dev):
         raise RuntimeError("histogram reset remained asserted")
 
 
-def banks(dev):
+def banks(dev, compare_views=False):
+    selected = BANKS | OTHER_VIEWS if compare_views else BANKS
     return {
-        name: list(struct.unpack("<11I", read_words(dev, base, 44))) for name, base in BANKS.items()
+        name: list(struct.unpack("<11I", read_words(dev, base, 44)))
+        for name, base in selected.items()
+    }
+
+
+def controls(dev):
+    return {
+        hex(address): struct.unpack("<I", read_words(dev, address, 4))[0] & 7
+        for address in (CONTROL, 0x83092004)
     }
 
 
@@ -122,6 +132,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--enable-histogram", action="store_true")
     parser.add_argument("--channel", type=int, choices=(6, 36), default=6)
+    parser.add_argument(
+        "--compare-views",
+        action="store_true",
+        help="read two traced index1 windows too; no index1 writes",
+    )
     args = parser.parse_args()
     if not args.enable_histogram:
         parser.error("explicit histogram reset/enable acknowledgment required")
@@ -130,13 +145,18 @@ def main():
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "firmware_sha256": [hashlib.sha256(b).hexdigest() for b in images],
-        "bank_addresses": {k: hex(v) for k, v in BANKS.items()},
+        "bank_addresses": {
+            k: hex(v) for k, v in (BANKS | OTHER_VIEWS if args.compare_views else BANKS).items()
+        },
         "channel": args.channel,
         "rows": [],
     }
     original = {}
     wrote = False
     with m.open_device("0846:9072") as dev:
+
+        def snapshot():
+            return banks(dev, args.compare_views)
 
         def boot():
             dev.bringup(*images, log=lambda *_: None)
@@ -159,22 +179,28 @@ def main():
             out["original_masked_bits"] = {hex(a): v for a, v in original.items()}
             if any(original.values()):
                 raise RuntimeError("histogram already enabled or reset asserted")
-            out["baseline_before"] = banks(dev)
+            out["baseline_before"] = snapshot()
+            if args.compare_views:
+                out["baseline_controls"] = controls(dev)
             time.sleep(0.25)
-            out["baseline_after"] = banks(dev)
+            out["baseline_after"] = snapshot()
             for duration in DURATIONS:
                 wrote = True
                 reset(dev)
-                row = {"duration_requested": duration, "after_reset": banks(dev)}
+                row = {"duration_requested": duration, "after_reset": snapshot()}
                 out["rows"].append(row)
                 start = time.monotonic()
                 set_bits(dev, CONTROL, 5)
+                if args.compare_views:
+                    row["enabled_controls"] = controls(dev)
                 time.sleep(duration)
                 set_bits(dev, CONTROL, 0)
+                if args.compare_views:
+                    row["stopped_controls"] = controls(dev)
                 row["host_enable_stop_seconds"] = time.monotonic() - start
-                row["stopped"] = banks(dev)
+                row["stopped"] = snapshot()
                 time.sleep(0.05)
-                row["stopped_repeat"] = banks(dev)
+                row["stopped_repeat"] = snapshot()
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
