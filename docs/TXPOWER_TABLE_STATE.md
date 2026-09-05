@@ -78,6 +78,61 @@ firmware-band column stays0. Tail max/min fields stay63/−128, whose operationa
 limit/sentinel meanings are not validated. A zero inactive-width row is not
 proof of zero RF power;127 is treated as N.A by the source debugfs printers.
 
+## MT7925 report reads hardware, not just a retained report cache
+
+A follow-up firmware trace and live comparison locate the report's data source:
+**the retained inactive-width values also exist in the hardware register table**.
+This narrows the finding beyond report-cache staleness; it still does not prove
+which inactive entries the transmitter would use or identify the writer's cause.
+
+The pinned loaded-code path is:
+
+| Stage | Address | Relevant behavior |
+| --- | --- | --- |
+| UNI2b dispatcher | `e00a1564` | Live command record `0221c024`; tag table `02219cc4` |
+| Tag7 wrapper | `e00a1760` | Passes category at payload+1, band at+2 and sequence |
+| Category2 report | `e00a1710` | Fills841 bytes through `e00a1632`, emits tag5 |
+| Rate-array getter | `e008f522` | Calls `e00acf04`, then formatter `e008f468` |
+| Packed-table getter | `e00acf04` | Calls `e00aceb2`, returns `022685ac + band*424` |
+| Hardware reader | `e00aceb2` | Clears that RAM scratch, copies106 register words from `820e4140 + band*65536` through offset+423 |
+| Formatter | `e008f468` | Unpacks417 signed bytes into one column of the two-band array |
+
+The first29 bytes of the packed table provide CCK/OFDM/HT20/HT40; three
+padding bytes follow, then388 rate bytes at offsets32..419. The final copied
+word at420..423 does not enter this report. The other output column remains
+zero because the output was cleared and only the requested column is filled;
+it is not an independently measured zero-power second radio.
+
+The emitter `e00a15c8` writes841 as the TLV length without adding its header,
+explaining the observed response convention. The filler also writes channel
+state getter key6 into the final byte, consistent with all center-channel
+controls. A conditional path at `e00a16a6` calls `e008f4f4` and formats another
+table into RAM `02260bd4`; its flag at `02221c9f` is1 in all three live samples.
+Therefore **host report-only does not mean no internal RAM writes**. This
+trace does not certify every helper's side effects. No host power setter or
+direct register write was used, and the selected hardware rows are unchanged
+across each query.
+
+[`txpower_register_probe.py`](../research/txpower_register_probe.py) pins the RAM
+image and verifies three loaded-code windows, the instruction table and the two
+exact dispatch records before touching the power table. It then reads only the
+420 required table bytes before and after each of three reports:
+
+| Primary / center / width | HT20 | HT40 | Before/report/after agreement |
+| --- | --- | --- | --- |
+| 6 / 6 / 20 | 36 | 0 | All417 selected values |
+| 6 / 8 / 40 | 36 | 36 | All417 selected values |
+| 36 / 36 / 20 | 26 | **36 retained** | All417 selected values |
+
+All code hashes and pointers match; alive and normal reload checks pass.
+The bound is1879 aligned reads, with no TX or register writes. Values are raw
+power-table codes, not calibration data or measured radiated power. Snapshots
+are sequential, not an atomic register transaction. Experimental Andes
+instruction annotations remain a trace limitation; the independent417-value
+live comparisons support the recovered formatter and register source.
+[Sanitized evidence](../research/evidence/txpower-register-provenance-2026-09-05.json)
+exports report values, pointers, hashes and comparison booleans, not code bytes.
+
 ## MT7961 supplies distinct table planes
 
 USER entries are127 apart from zero-valued slots in the VHT rows. EEPROM and MAC planes are nonuniform

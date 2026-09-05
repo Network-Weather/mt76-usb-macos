@@ -12,6 +12,13 @@ HT20 is36 on2.4GHz, then retaining36 when returning to5GHz/20. These are table
 states, not a current all-width RF power plan. MT7961 exposes distinct user,
 EEPROM-derived and MAC curves. Existing USB reset also returns success on both;
 it was already part of normal reload, not a newly tested recovery mechanism.
+Follow-up [firmware and register provenance](TXPOWER_TABLE_STATE.md#mt7925-report-reads-hardware-not-just-a-retained-report-cache)
+shows the report refreshing RAM from hardware registers `820e4140..820e42e7`.
+All417 selected rate values agree with independent register reads before and
+after three queries. Retained HT40 values therefore exist in the hardware table,
+not just a stale report cache; their use for transmission remains unproven.
+The query does internally write scratch/report RAM. No host power setter or
+direct register write, and all verification/reload checks pass.
 
 **Negative power offsets expose a two-stream observation boundary:**
 [HT8 follow-up controls](PHY_TRANSMIT.md#negative-power-offsets-expose-a-two-stream-reception-boundary)
