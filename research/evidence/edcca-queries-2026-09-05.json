@@ -1,0 +1,272 @@
+{
+  "runs": [
+    {
+      "tool": "edcca_query_probe",
+      "date_utc": "2026-09-05T11:27:04.065149+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "uni_option": 3,
+      "rows": [
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        },
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "edcca_query_probe",
+      "date_utc": "2026-09-05T11:27:28.292004+00:00",
+      "channel": 1,
+      "width_mhz": 20,
+      "uni_option": 3,
+      "rows": [
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            191,
+            194,
+            197
+          ],
+          "threshold_signed": [
+            -65,
+            -62,
+            -59
+          ],
+          "auxiliary_byte": 0
+        },
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            191,
+            194,
+            197
+          ],
+          "threshold_signed": [
+            -65,
+            -62,
+            -59
+          ],
+          "auxiliary_byte": 0
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "edcca_query_probe",
+      "date_utc": "2026-09-05T11:29:24.788335+00:00",
+      "channel": 36,
+      "width_mhz": 80,
+      "uni_option": 3,
+      "rows": [
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        },
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "edcca_query_probe",
+      "date_utc": "2026-09-05T11:30:04.074970+00:00",
+      "channel": 36,
+      "width_mhz": 160,
+      "uni_option": 3,
+      "rows": [
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        },
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}
