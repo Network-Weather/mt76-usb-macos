@@ -130,34 +130,11 @@ int mt7921_rxd_decode_connac3(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_f
     }
 
     uint32_t remove_pad = (rxd2 >> C3_RXD2_NORMAL_HDR_OFFSET_SHIFT) & C3_RXD2_NORMAL_HDR_OFFSET_MASK;
-    uint32_t off = C3_RXD_FIXED_LEN;
-    bool have_prxv = false;
-    uint32_t prxv[4] = {0};
-
-    /* Groups in mt7925_mac_fill_rx order: 4, 1, 2, 3 (+5 inside 3). */
-    if (rxd1 & MT_RXD3_NORMAL_GROUP_4) {
-        if (off + C3_GROUP_LEN > buf_len) return -1;
-        out->fc_rxd = (uint16_t)(c3_read_le32(buf + off) & 0xFFFF); /* MT_RXD8_FRAME_CONTROL */
-        off += C3_GROUP_LEN;
-    }
-    if (rxd1 & MT_RXD3_NORMAL_GROUP_1) {
-        off += C3_GROUP_LEN;
-    }
-    if (rxd1 & MT_RXD3_NORMAL_GROUP_2) {
-        off += C3_GROUP_LEN;
-    }
-    if (rxd1 & MT_RXD3_NORMAL_GROUP_3) {
-        if (off + C3_GROUP_LEN <= buf_len) {
-            have_prxv = true;
-            for (int i = 0; i < 4; i++) prxv[i] = c3_read_le32(buf + off + 4 * i);
-        }
-        off += C3_GROUP_LEN;
-        if (rxd1 & MT_RXD3_NORMAL_GROUP_5) {
-            off += C3_GROUP5_LEN;
-        }
-    }
-    /* Group 5 without group 3 is not stepped over, as in the driver; the frame slice is then
-     * whatever follows, so callers see it through the 802.11 header validity. */
+    int group_end = mt7921_rxd_groups(buf, buf_len, true, out);
+    if (group_end < 0) return -1;
+    uint32_t off = (uint32_t)group_end;
+    bool have_prxv = out->g3_words != 0;
+    const uint32_t *prxv = out->g3;
 
     if (have_prxv) {
         /* RCPI0..3 are the four bytes of P-RXV word 3, chain 0 low. */

@@ -59,7 +59,21 @@ typedef struct {
     int frame_family;
     bool has_phy;
     mt7921_phy_info_t phy;
+    /* mt7921/mt7925_mac_fill_rx, mt76 c5a3bd91: Group 2 local 32-bit
+     * microsecond counter. Wraps; not wall time, synchronized TSF, or ranging. */
+    bool has_timestamp;
+    uint32_t timestamp;
+    uint8_t group_mask;
+    uint8_t g3_words;      /* 0, 2 (connac2), or 4 (connac3) */
+    uint8_t g5_words;      /* 0, 18 (connac2), or 24 (connac3) */
+    uint32_t g3[4];
+    uint32_t g5[24];       /* Raw words, not calibrated noise/SNR. No PN/frame data. */
 } mt7921_rxd_frame_t;
+
+/* Internal shared bounded group walk; caller has classified a normal RX frame.
+ * Returns header-end offset or -1; observes both USB and declared DMA bounds. */
+int mt7921_rxd_groups(const uint8_t *buf, uint32_t len, bool connac3,
+                     mt7921_rxd_frame_t *out);
 
 int mt7921_decode_rxv(uint32_t rxv0, uint32_t rxv1, mt7921_phy_info_t *phy);
 int mt7921_frame_family(const uint8_t *frame, uint32_t len);
