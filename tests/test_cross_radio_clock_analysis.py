@@ -48,6 +48,25 @@ def test_airtime_dependent_latch_separation_is_not_treated_as_clock_drift():
     assert result["absolute_latch_point_or_propagation_time_validated"] is False
 
 
+def test_short_preamble_removes_exactly96us_at_unchanged_payload_rate():
+    trial = fixture()
+    trial["suite"] = "preamble"
+    for n, rate in enumerate((1, 5, 3, 7)):
+        row = trial["radios"][0]["tx_status"][n]["fields"]
+        row["rate_raw"] = rate
+        trial["radios"][1]["own_rx_timing"][n]["rxd_timestamp_raw"] = (
+            row["timestamp_raw"] + 500000 + ppdu_airtime_us(rate, 65)
+        )
+    out = analyze(trial)
+    assert out["per_boot_offset_spread_us"] == 0
+    for long, short in (("1", "5"), ("3", "7")):
+        assert (
+            out["rates"][long]["modeled_ppdu_airtime_us"]
+            - out["rates"][short]["modeled_ppdu_airtime_us"]
+            == 96
+        )
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [

@@ -19,7 +19,7 @@ from research.tx_timing_analysis import ppdu_airtime_us, slope, unwrap
 
 
 def analyze(trial):
-    if trial.get("suite") != "cck":
+    if trial.get("suite") not in ("cck", "preamble"):
         raise ValueError("bounded CCK/OFDM rate control required")
     # Reuse complete, unique, single-attempt format0 TX status validation.
     analyze_tx(trial)

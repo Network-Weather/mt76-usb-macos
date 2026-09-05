@@ -8,14 +8,22 @@ from research.tx_timing_analysis import analyze, ppdu_airtime_us, unwrap
 
 @pytest.mark.parametrize(
     ("rate", "short", "long"),
-    [(0, 744, 1768), (1, 468, 980), (2, 293, 479), (3, 243, 336), (75, 116, 288)],
+    [
+        (0, 744, 1768),
+        (1, 468, 980),
+        (2, 293, 479),
+        (3, 243, 336),
+        (5, 372, 884),
+        (7, 147, 240),
+        (75, 116, 288),
+    ],
 )
 def test_ppdu_model_includes_fcs_preamble_and_ofdm_service_tail(rate, short, long):
     assert ppdu_airtime_us(rate, 65) == short
     assert ppdu_airtime_us(rate, 193) == long
 
 
-@pytest.mark.parametrize(("rate", "length"), [(5, 65), (0, True), (0, 513), (0, 0)])
+@pytest.mark.parametrize(("rate", "length"), [(4, 65), (6, 65), (0, True), (0, 513), (0, 0)])
 def test_model_rejects_unqualified_rate_or_length(rate, length):
     with pytest.raises(ValueError, match=r"bounded|CCK"):
         ppdu_airtime_us(rate, length)

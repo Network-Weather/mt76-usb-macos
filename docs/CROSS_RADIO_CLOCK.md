@@ -74,6 +74,31 @@ be converted to meters or interpreted as an RTT measurement.
 
 ## Reproduce the offline check
 
+### Preamble-only control strengthens the relative-latch result
+
+Two subsequent `--suite preamble --tx-timing` runs retain four probes per
+phase and alternate OFDM6, CCK2-long, CCK2-short, CCK11-long, CCK11-short,
+OFDM6. Within each long/short pair the PHY rate and MAC length are unchanged.
+The [pinned Linux frame-duration implementation](https://github.com/torvalds/linux/blob/8ab1afb2eb246ab15b301cd255b5943d208a93c1/net/mac80211/util.c#L119)
+uses144+48µs versus72+24µs for the CCK preamble plus PLCP header: a96µs
+difference. The research model now accepts only the already exercised short
+codes5/7; it still rejects short1Mbps and untested code6.
+
+| Fresh run | Exact receipts | CCK2 long−short RX−TX median | CCK11 long−short | Corrected offset spread |
+|---|---|---|---|---|
+| 65 MAC bytes | 0/3/4/4/4/4 | **96µs** | **96µs** | 2µs,19 pairs |
+| 193 MAC bytes | 2/3/4/4/4/4 | **97µs** | **97µs** | 2µs,21 pairs |
+
+The extra tick in the longer run fits its1–2-tick within-boot variation; it is
+not evidence for a97µs physical preamble difference. All24 TX statuses per
+run and all alive/transmitter-reload checks pass. This isolates a preamble
+contribution at unchanged payload rate, supporting whole-PPDU-duration rather
+than payload-only separation. Absolute latch points remain unproved. Across
+the original and preamble runs there are76 matched clock pairs, not a distance
+calibration. [Sanitized preamble controls](../research/evidence/cross-radio-preamble-clock-2026-09-05.json).
+
+### Offline invocation
+
 ```sh
 python research/cross_radio_clock_analysis.py /path/to/retained-trial.json
 ```

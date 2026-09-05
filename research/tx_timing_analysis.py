@@ -15,18 +15,19 @@ from pathlib import Path
 
 
 def ppdu_airtime_us(rate, frame_bytes):
-    """Long CCK/OFDM6 preamble+payload; excludes SIFS and ERP signal extension.
+    """CCK/OFDM6 preamble+payload; excludes SIFS and ERP signal extension.
 
     MAC bytes exclude hardware-added FCS. This is a model, not measured airtime.
     """
     if type(frame_bytes) is not int or not 1 <= frame_bytes <= 512:
         raise ValueError("bounded frame length required")
-    if type(rate) is not int or rate not in (0, 1, 2, 3, 0x4B):
-        raise ValueError("only long CCK or OFDM6")
+    if type(rate) is not int or rate not in (0, 1, 2, 3, 5, 7, 0x4B):
+        raise ValueError("only bounded CCK or OFDM6")
     bits = 8 * (frame_bytes + 4)
     if rate == 0x4B:
         return 20 + 4 * math.ceil((16 + bits + 6) / 24)
-    return 192 + math.ceil(bits / (1, 2, 5.5, 11)[rate])
+    preamble = 96 if rate in (5, 7) else 192
+    return preamble + math.ceil(bits / (1, 2, 5.5, 11)[rate & 3])
 
 
 def unwrap(values, bits):
@@ -53,7 +54,7 @@ def analyze(trial, frame_bytes=None):
     if (
         trial.get("tool") != "phy_tx_probe"
         or trial.get("transmitter") != "mt7925"
-        or trial.get("suite") not in ("cck", "timing-burst")
+        or trial.get("suite") not in ("cck", "preamble", "timing-burst")
         or trial.get("tx_timing") is not True
     ):
         raise ValueError("bounded MT7925 CCK timing trial required")
