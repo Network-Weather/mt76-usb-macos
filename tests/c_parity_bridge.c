@@ -123,3 +123,30 @@ int parity_rate_table(int rate, unsigned mode, unsigned *words) {
     words[6] = f.writes; words[7] = f.reads; words[8] = f.pauses;
     return ret;
 }
+
+static unsigned vendor_calls, vendor_timeout, vendor_mode;
+static IOReturn vendor_request(void *self, IOUSBDevRequestTO *r) {
+    (void)self;
+    vendor_calls++;
+    if (!r->noDataTimeout || r->noDataTimeout > 25 ||
+        r->completionTimeout != r->noDataTimeout || r->wLenDone) return kIOReturnBadArgument;
+    vendor_timeout = r->completionTimeout;
+    if (vendor_mode == 1) return kIOReturnTimeout;
+    if (vendor_mode == 2) { r->wLenDone = 2; return kIOReturnSuccess; }
+    memset(r->pData, 0xff, r->wLength);
+    r->wLenDone = r->wLength;
+    return kIOReturnSuccess;
+}
+int parity_vendor_timeout(unsigned mode) {
+    IOUSBDeviceInterface182 interface = {0};
+    interface.DeviceRequestTO = vendor_request;
+    IOUSBDeviceInterface182 *pointer = &interface;
+    mt7921_usb_t usb = {0}; usb.dev = &pointer;
+    uint32_t value = 0;
+    vendor_calls = vendor_timeout = 0; vendor_mode = mode;
+    int ret = mt7921_usb_vendor_req(&usb, 0x63, 0xc0, 0, 0, &value, 4, 25);
+    if (!vendor_calls || !vendor_timeout || vendor_calls > 10) return 1;
+    if (mode == 1) return ret == -1 ? 0 : 2;
+    if (mode == 2) return ret == 2 ? 0 : 3;
+    return ret == 4 && value == UINT32_MAX ? 0 : 4;
+}

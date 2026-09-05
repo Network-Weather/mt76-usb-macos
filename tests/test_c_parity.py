@@ -423,3 +423,8 @@ def test_passive_cli_needs_firmware_not_tx_ack(native_probe):
     )
     assert result.returncode == 1
     assert "Missing/unpinned" in result.stderr
+
+
+@pytest.mark.parametrize("mode", range(3))
+def test_vendor_timeout_and_short_read(native, mode):
+    assert native.parity_vendor_timeout(mode) == 0

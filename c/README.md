@@ -13,6 +13,8 @@ MT7925 controlled TX, the measured OFDM/power controls, and per-chip TX-status
 decoding are implemented and cross-checked against the Python research helpers.
 Live qualification of these new C paths is pending; these are not general TX APIs.
 See the [C parity sprint checklist](../TODO.md#c-parity-sprint-r30).
+The [port contract and verification method](../docs/C_PARITY.md) map each Python
+primitive to its native C API and state the measurement/cleanup limitations.
 Passing the existing C tests is not evidence that those features were ported.
 
 The project remains an interrogation/capture instrument with explicitly gated radio

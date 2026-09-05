@@ -22,7 +22,7 @@
 #define MT7921_ERR_IO      -1
 
 typedef struct {
-    IOUSBDeviceInterface **dev;
+    IOUSBDeviceInterface182 **dev; /* DeviceRequestTO: explicit control-transfer deadlines */
     IOUSBInterfaceInterface **intf;
     uint16_t vid;
     uint16_t pid;

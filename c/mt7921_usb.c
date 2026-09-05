@@ -9,14 +9,15 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdarg.h>
+#include <time.h>
 
 #define VEND_TIMEOUT_MS 1000
 #define VEND_RETRIES    10
 
 static uint64_t current_time_ms(void) {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (uint64_t)tv.tv_sec * 1000ULL + (uint64_t)tv.tv_usec / 1000ULL;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000ULL + (uint64_t)ts.tv_nsec / 1000000ULL;
 }
 
 static char g_last_error[256];
@@ -148,11 +149,11 @@ int mt7921_usb_open(mt7921_usb_t *usb, const char *usb_id) {
         set_error("IOCreatePlugInInterfaceForService failed (0x%x)", kr);
         return -1;
     }
-    IOUSBDeviceInterface **dev = NULL;
-    HRESULT res = (*plugin)->QueryInterface(plugin, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID), (LPVOID*)&dev);
+    IOUSBDeviceInterface182 **dev = NULL;
+    HRESULT res = (*plugin)->QueryInterface(plugin, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID182), (LPVOID*)&dev);
     (*plugin)->Release(plugin);
     if (res || !dev) {
-        set_error("QueryInterface(kIOUSBDeviceInterfaceID) failed");
+        set_error("QueryInterface(kIOUSBDeviceInterfaceID182) failed");
         return -1;
     }
 
@@ -276,10 +277,11 @@ int mt7921_usb_reset(mt7921_usb_t *usb) {
 int mt7921_usb_vendor_req(mt7921_usb_t *usb, uint8_t req, uint8_t req_type,
                           uint16_t value, uint16_t index, void *data,
                           uint16_t length, uint32_t timeout_ms) {
-    if (!usb || !usb->dev) return -1;
-    (void)timeout_ms;
-
-    IOUSBDevRequest devReq;
+    if (!usb || !usb->dev || !timeout_ms) return -1;
+    /* Apple IOUSBLib.h: DeviceRequestTO is available on interface 182+.
+     * The original DeviceRequest call ignored timeout_ms; retries now share one
+     * monotonic deadline rather than each receiving a new full timeout. */
+    IOUSBDevRequestTO devReq = {0};
     devReq.bmRequestType = req_type;
     devReq.bRequest = req;
     devReq.wValue = value;
@@ -288,8 +290,13 @@ int mt7921_usb_vendor_req(mt7921_usb_t *usb, uint8_t req, uint8_t req_type,
     devReq.pData = data;
     devReq.wLenDone = 0;
 
+    uint64_t deadline = current_time_ms() + timeout_ms;
     for (int retry = 0; retry < VEND_RETRIES; retry++) {
-        kern_return_t kr = (*usb->dev)->DeviceRequest(usb->dev, &devReq);
+        uint64_t now = current_time_ms();
+        if (now >= deadline) return -1;
+        devReq.noDataTimeout = devReq.completionTimeout = (UInt32)(deadline - now);
+        devReq.wLenDone = 0;
+        kern_return_t kr = (*usb->dev)->DeviceRequestTO(usb->dev, &devReq);
         if (kr == KERN_SUCCESS) {
             return (int)devReq.wLenDone;
         }
