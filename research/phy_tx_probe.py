@@ -142,7 +142,7 @@ def main():
         p.error("fixed-bw variant applies only to mt7925")
     out = {
         "tool": "phy_tx_probe",
-        "date_utc": datetime.datetime.now(datetime.UTC).isoformat(),
+        "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "transmitter": args.transmitter,
         "channel": args.channel,
         "per_phase": args.per_phase,

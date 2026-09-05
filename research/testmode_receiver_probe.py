@@ -93,7 +93,7 @@ def main():
         p.error("explicit TX acknowledgment required")
     out = {
         "tool": "testmode_receiver_probe",
-        "date_utc": datetime.datetime.now(datetime.UTC).isoformat(),
+        "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "channel": 36,
         "width_mhz": 20,
         "submitted": 0,

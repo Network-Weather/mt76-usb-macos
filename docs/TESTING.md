@@ -31,6 +31,12 @@ mask as the difference between idle and live sampling. Band-only and unchanged
 setup remained idle; mask-enabled counters advanced and froze after stop.
 See [request encoding, table, evidence and limits](STATION_TESTMODE.md#rx-path-activation-follow-up).
 
+ICAP follow-up: a status-only request returned a matched 68-byte event after
+station mode 2; RF-test and spectrum mode attempts were silent in their 1.5-second
+event windows. No IQ capture was started or validated. The follow-up suite reports
+**604 passing Python tests**, with targeted ruff checks, documentation/JSON checks
+and whitespace checks passing. [ICAP protocol and limits](STATION_TESTMODE.md#icap-status-through-station-mode-entry).
+
 ### Radio-observability research, 2026-09-04
 
 The [radio observability report](RADIO_OBSERVABILITY.md) records new research-only

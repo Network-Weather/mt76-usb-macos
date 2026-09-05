@@ -27,6 +27,7 @@ whether a wider receive configuration observes independent narrower channels.
 
 | script | question | state |
 |---|---|---|
+| [`icap_status_probe.py`](icap_status_probe.py) | Does station mode entry unlock ICAP status? | **yes after mode 2** — matched 68-byte status event; no IQ capture or spectrum measurement yet |
 | [`station_testmode_probe.py`](station_testmode_probe.py) | Are station-specific test queries reachable? | **yes on MT7961 after idle RF-test mode entry**; [details and limits](../docs/STATION_TESTMODE.md) |
 | [`testmode_receiver_probe.py`](testmode_receiver_probe.py) | Can the RF-test receiver sample live activity? | **yes with explicit RX path** — changing counters/signal words; stop freezes them; [controlled comparisons](../docs/STATION_TESTMODE.md#rx-path-activation-follow-up); signal units and probe-specific effects unvalidated |
 | [`phy_tx_probe.py`](phy_tx_probe.py) | Can either chip transmit HT/VHT/HE with the existing injection path? | **new measured capabilities** — HT/VHT both directions, HE-SU from MT7961; [evidence](../docs/PHY_TRANSMIT.md) |

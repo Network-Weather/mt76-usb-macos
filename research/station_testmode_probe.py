@@ -90,7 +90,7 @@ def main():
         "tool": "station_testmode_probe",
         "chip": args.chip,
         "test_mode": args.test_mode,
-        "date_utc": datetime.datetime.now(datetime.UTC).isoformat(),
+        "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "rows": [],
     }
     with m.open_device(uid) as dev:

@@ -56,6 +56,39 @@ python research/testmode_receiver_probe.py --acknowledge-experimental-transmit -
 The first enables sampling, the second is the band-only negative control.
 Each invocation sends at most 48 paced no-ACK packets and resets both devices.
 
+## ICAP status through station mode entry
+
+The same station CE 0x01 mode switch can request opmodes 1 (RF-test),
+2 (ICAP) and 4 (spectrum). A status-only experiment then sent EXT 0x04 **QUERY**,
+88-byte payload: action 1, three zeros, little-endian function 12 (`0x0c`),
+80 zero bytes. This follows `wlanoidExtRfTestICapStatus` in the pinned station source.
+No capture-start, IQ dump, ADC/gain change, or transmitter-start command was sent.
+
+After requesting ICAP mode 2, a 1.5-second bounded receive window observed a
+sequence-matched EID `0xed` / EXT EID `4` event, 68-byte body, function 12 and
+raw `capture_done=1`. Mode-1 and mode-4 attempts produced no firmware events in
+their corresponding windows. All attempts passed alive and firmware-reset cleanup.
+Two more mode-2 attempts reproduced the same reply across fresh firmware resets
+(three successful ICAP status attempts total).
+[Evidence](../research/evidence/icap-status-2026-09-04.json).
+
+This establishes a **responsive ICAP status interface**, not a working capture.
+`done=1` was reported without starting any capture and cannot establish sample
+validity. Mode-4 silence is not proof that spectrum functionality is absent.
+The event collector handles unsolicited as well as sequence-matched notifications;
+all reported positive replies here were sequence-matched. It excludes normal
+frame payloads and records only event metadata.
+
+```sh
+python research/icap_status_probe.py
+python research/icap_status_probe.py --mode 2 --mode 2
+```
+
+The next ICAP experiment is a bounded on-chip capture with known capture-node
+selection and explicit sample ceiling, followed by status and shape/count-only
+validation of retrieved samples. Do not configure host-memory/EMI DMA from a
+phone-driver reference on this USB host, or assume raw IQ can be calibrated yet.
+
 ## MT7961: initial mode-entry and query experiment
 
 The upstream station interface is **CE command 0x01**, not EXT RF_TEST 0x04.
@@ -143,8 +176,8 @@ Next concrete leads, not capability claims:
 
 - RX-path/band activation is established above. Next isolate per-chain signal-word
   packing and controlled-traffic effects before interpreting the words as measurements.
-- Use the now-responding MT7961 station mode-switch path to investigate ICAP/spectrum
-  status. Earlier standalone EXT spectrum silence did not test this route.
+- ICAP status now responds through station mode 2, as recorded above. Capture-start
+  prerequisites, on-chip node selection and bounded sample retrieval are next.
 - MT7925's UNI 0x46 engineering-query action is distinct from UNI 0x32 statistics;
   the vendor bridge maps GET_AT action 2 to GET_AT_ENG action 4. This remains untested.
 - Legacy station `ACCESS_RX_STAT` uses a separate eight-byte request with a
@@ -161,6 +194,10 @@ Motorola's public MediaTek gen4m source, pinned at
 The follow-up RX path comes from
 [operation_gen4m.c](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/wlan_service/glue/hal/gen4m/operation_gen4m.c),
 checked against the separate QA wrapper in `os/linux/gl_qa_agent.c` at that revision.
+ICAP status requests use
+[wlan_oid.c](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/common/wlan_oid.c)
+and [wlan_oid.h](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/wlan_oid.h)
+at the same revision.
 The read files carry BSD-2-Clause headers. Used for protocol facts; no vendor
 implementation or header copied into this repository. Request builders and
 bounded experiments are independent. This is a different source from the

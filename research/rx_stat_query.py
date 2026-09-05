@@ -38,7 +38,7 @@ def main():
     args = p.parse_args()
     out = {
         "tool": "rx_stat_query",
-        "date": datetime.datetime.now(datetime.UTC).isoformat(),
+        "date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "usb_id": args.usb_id,
         "channel": 36,
         "rows": [],
