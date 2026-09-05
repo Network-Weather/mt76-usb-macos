@@ -109,6 +109,7 @@ def tx_status(raw, *, include_timing=False):
             # mt76_connac3_mac.h: raw hardware fields, units not established.
             # Format0 alone defines the 25-bit front-time field.
             records[-1].update(
+                bandwidth_raw=words[0] >> 29,
                 tx_delay_raw=words[2] & 0xFFFF,
                 timestamp_raw=words[4],
                 rate_stbc=bool(words[3] & (1 << 7)),

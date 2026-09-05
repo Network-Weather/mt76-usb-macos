@@ -337,6 +337,57 @@ def test_he_er_requires_newer_chip_and_ltf1(code):
     assert writes == [(p.c3.ITDR0, code), (p.c3.ITDR1, 0x10040), (p.c3.ITCR, 0x80010012)]
 
 
+def test_bandwidth_suite_has_same_rate_20_40_20_controls_and_bounded_geometry():
+    rates = p.suite_rates("bandwidth", 6)
+    assert rates == p.WIDTH_RATES
+    assert [code for _, code in rates] == [0x488] * 3 + [0x600] * 3
+    assert p.WIDTH_TX_MHZ == (20, 40, 20, 20, 40, 20)
+    assert p.WIDTH_LTF == (0, 0, 0, 1, 1, 1)
+    assert len(rates) * 10 <= 60
+    with pytest.raises(ValueError, match="primary6"):
+        p.suite_rates("bandwidth", 1)
+
+
+@pytest.mark.parametrize("code", [0x488, 0x600])
+def test_40mhz_descriptor_changes_only_explicit_bw_bits(code):
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925)
+    frame = p.c3.controlled_frame(0)
+    narrow = p.descriptor(dev, frame, 0, code, fixed_bw=True)
+    wide = p.descriptor(dev, frame, 0, code, width_mhz=40)
+    assert wide[:24] == narrow[:24]
+    assert wide[28:] == narrow[28:]
+    assert struct.unpack_from("<I", wide, 24)[0] == 0x252001C
+    assert (
+        struct.unpack_from("<I", wide, 24)[0] ^ struct.unpack_from("<I", narrow, 24)[0] == 1 << 22
+    )
+
+
+@pytest.mark.parametrize(
+    ("chip", "code", "width"),
+    [
+        (m.CHIP_MT7921, 0x488, 40),
+        (m.CHIP_MT7925, 0x80, 40),
+        (m.CHIP_MT7925, 0x488, 80),
+        (m.CHIP_MT7925, 0x488, True),
+    ],
+)
+def test_bandwidth_descriptor_rejects_unqualified_geometry_before_io(chip, code, width):
+    with pytest.raises(ValueError, match="MHz"):
+        p.descriptor(SimpleNamespace(CHIP=chip), b"", 0, code, width_mhz=width)
+
+
+def test_bandwidth_he_uses_ldpc_for_wide_and_narrow_controls():
+    assert p.WIDTH_OPTIONS == ((0, 0), (0, 0), (0, 0), (0, 1), (0, 1), (0, 1))
+    for phase, (_, code) in enumerate(p.WIDTH_RATES):
+        writes = []
+        dev = SimpleNamespace(
+            CHIP=m.CHIP_MT7925, wr=lambda a, v, target=writes: target.append((a, v)), rr=lambda _: 0
+        )
+        gi, ldpc = p.WIDTH_OPTIONS[phase]
+        p.program_rate(dev, code, gi=gi, ldpc=ldpc, ltf=p.WIDTH_LTF[phase])
+        assert writes[1] == (p.c3.ITDR1, 0x40 if phase < 3 else 0x2010040)
+
+
 def test_he_coding_ltf_changes_only_training_setting_from_old_suite():
     assert p.suite_rates("he-coding-ltf", 6) == p.HE_CODING_RATES
     assert p.HE_CODING_LTF == (1, 1, 1, 1, 1)

@@ -4,7 +4,8 @@
 # Copyright (c) 2026 Primatech Paper Co LLC d/b/a Network Weather
 """Try bounded HT/VHT/HE fixed-rate TX, with independent receiver evidence.
 
-At most 60 synthetic no-ACK probes, 50 ms spacing, bounded channels at 20 MHz.
+At most60 synthetic no-ACK probes, normally50ms spacing, bounded channels.
+The bandwidth suite alone tests40MHz, primary6/center8, with20MHz controls.
 Lowband/coding/timing suites use channels1/6/11 and exclude VHT; others use36/149.
 Known OFDM controls bracket the candidate rates. No association or ambient frame
 output. Full firmware reload in finally removes all experimental transmitter state.
@@ -127,6 +128,19 @@ HE_ER_RATES = (
     ("he2_after", 0x600),
 )
 HE_ER_LTF = (1, 1, 1, 1, 1)
+WIDTH_RATES = (
+    ("ht20_before", 0x488),
+    ("ht40", 0x488),
+    ("ht20_after", 0x488),
+    ("he20_before", 0x600),
+    ("he40", 0x600),
+    ("he20_after", 0x600),
+)
+WIDTH_TX_MHZ = (20, 40, 20, 20, 40, 20)
+WIDTH_LTF = (0, 0, 0, 1, 1, 1)
+# Full40MHz HE-SU requires LDPC (BCC is limited to <=242-tone RUs).
+# Apply LDPC to both HE20 controls too, isolating width within that triplet.
+WIDTH_OPTIONS = ((0, 0), (0, 0), (0, 0), (0, 1), (0, 1), (0, 1))
 CONNAC3_CODING_CODES.update((0x240, 0x250))
 ALLOWED_RATE_CODES = {
     rate
@@ -164,6 +178,7 @@ def suite_rates(suite, channel):
             "he-coding-ltf",
             "he-g5-cycle",
             "he-er",
+            "bandwidth",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -182,15 +197,22 @@ def suite_rates(suite, channel):
         "he-coding-ltf": HE_CODING_RATES,
         "he-g5-cycle": HE_G5_RATES,
         "he-er": HE_ER_RATES,
+        "bandwidth": WIDTH_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
+    if suite == "bandwidth" and channel != 6:
+        raise ValueError("bandwidth experiment requires primary6/center8")
     return suites[suite]
 
 
-def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
+def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None, *, width_mhz=20):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
+    if type(width_mhz) is not int or width_mhz not in (20, 40):
+        raise ValueError("bounded20/40MHz transmit only")
+    if width_mhz == 40 and (dev.CHIP != m.CHIP_MT7925 or code not in (0x488, 0x600)):
+        raise ValueError("40MHz experiment requires MT7925 HT8/HE2SS")
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
     if spe_idx is not None and (
@@ -199,10 +221,12 @@ def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
         raise ValueError("spatial experiment is Connac2 OFDM6 with SPE 0/1/24 only")
     if dev.CHIP == m.CHIP_MT7925:
         data = bytearray(c3.build_txwi(frame, seq, disable_mat=True))
-        if fixed_bw:
-            # connac3_mac.h MT_TXD6_FIXED_BW bit 25; BW bits 24:22 = 0 (20 MHz).
+        if fixed_bw or width_mhz == 40:
+            # connac3_mac.h: FIXED_BW bit25, BW bits24:22 codes0=20/1=40MHz.
             word = struct.unpack_from("<I", data, 24)[0]
-            struct.pack_into("<I", data, 24, word | (1 << 25))
+            struct.pack_into(
+                "<I", data, 24, (word & ~(7 << 22)) | (1 << 25) | (int(width_mhz == 40) << 22)
+            )
         return bytes(data)
     if dev.CHIP != m.CHIP_MT7921:
         raise ValueError("unsupported chip")
@@ -221,7 +245,7 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0):
         raise ValueError("coding experiment rate encoding is MT7925-only")
     allowed = {
         0x488: ((0, 0, 0), (1, 0, 0), (0, 0, 1)),
-        0x600: ((0, 0, 0), (1, 1, 0), (2, 2, 0), (0, 1, 0), (0, 0, 1)),
+        0x600: ((0, 0, 0), (1, 1, 0), (2, 2, 0), (0, 1, 0), (0, 0, 1), (0, 1, 1)),
         0x200: ((0, 0, 0), (0, 1, 0)),
         0x210: ((0, 0, 0), (0, 1, 0)),
         0x4600: ((0, 0, 0), (0, 1, 0)),
@@ -428,6 +452,7 @@ def main():
             "he-coding-ltf",
             "he-g5-cycle",
             "he-er",
+            "bandwidth",
         ),
         default="baseline",
     )
@@ -452,7 +477,8 @@ def main():
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
     if (
-        args.suite in ("stbc", "he-coding", "ht-table", "he-table", "he-coding-ltf", "he-er")
+        args.suite
+        in ("stbc", "he-coding", "ht-table", "he-table", "he-coding-ltf", "he-er", "bandwidth")
         and args.transmitter != "mt7925"
     ):
         p.error("coding suites currently support only the Connac3 transmitter")
@@ -465,20 +491,26 @@ def main():
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "transmitter": args.transmitter,
         "channel": args.channel,
+        "configured_center": 8 if args.suite == "bandwidth" else args.channel,
+        "configured_width_mhz": 40 if args.suite == "bandwidth" else 20,
+        "phase_tx_width_mhz": WIDTH_TX_MHZ if args.suite == "bandwidth" else [20] * len(rates),
         "per_phase": args.per_phase,
         "gap_s": None if args.suite == "timing-burst" else 0.05,
         "phase_gap_seconds": [phase_gap(args.suite, i) for i in range(len(rates))],
-        "fixed_bw": args.fixed_bw,
+        "fixed_bw": args.fixed_bw or args.suite == "bandwidth",
         "suite": args.suite,
         "tx_timing": args.tx_timing,
         "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
-        "table_gi_ldpc": {"ht-table": HT_TABLE_OPTIONS, "he-table": HE_TABLE_OPTIONS}.get(
-            args.suite
-        ),
+        "table_gi_ldpc": {
+            "ht-table": HT_TABLE_OPTIONS,
+            "he-table": HE_TABLE_OPTIONS,
+            "bandwidth": WIDTH_OPTIONS,
+        }.get(args.suite),
         "submitted": 0,
         "receiver_g5": args.receiver_g5,
         "table_ltf": {
+            "bandwidth": WIDTH_LTF,
             "he-table": HE_TABLE_LTF,
             "he-coding-ltf": HE_CODING_LTF,
             "he-er": HE_ER_LTF,
@@ -501,12 +533,18 @@ def main():
         radios = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
         images = [m.load_firmware(dev.CHIP, m.firmware_dir()) for dev in radios]
 
-        def boot(i):
+        def boot(i, cleanup=False):
             dev = radios[i]
             dev.bringup(*images[i], log=lambda *_: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            dev.tune("2.4GHz" if args.channel <= 11 else "5GHz", args.channel, args.channel, 20)
+            wide = args.suite == "bandwidth" and not cleanup
+            dev.tune(
+                "2.4GHz" if args.channel <= 11 else "5GHz",
+                args.channel,
+                8 if wide else args.channel,
+                40 if wide else 20,
+            )
 
         for i, dev in enumerate(radios):
             boot(i)
@@ -566,11 +604,14 @@ def main():
                             out["receiver_g5_phase_values"].append(hex(observed))
                             if observed != target:
                                 raise RuntimeError("Group5 cycle write not verified")
-                        options = {"ht-table": HT_TABLE_OPTIONS, "he-table": HE_TABLE_OPTIONS}.get(
-                            args.suite
-                        )
+                        options = {
+                            "ht-table": HT_TABLE_OPTIONS,
+                            "he-table": HE_TABLE_OPTIONS,
+                            "bandwidth": WIDTH_OPTIONS,
+                        }.get(args.suite)
                         gi, ldpc = options[phase] if options else (0, 0)
                         ltfs = {
+                            "bandwidth": WIDTH_LTF,
                             "he-table": HE_TABLE_LTF,
                             "he-coding-ltf": HE_CODING_LTF,
                             "he-er": HE_ER_LTF,
@@ -582,7 +623,19 @@ def main():
                                 raise RuntimeError("capture stopped before transmit completed")
                             frame = expected[seq]
                             spe = SPATIAL_SPE[phase] if args.suite == "spatial" else None
-                            body = descriptor(tx, frame, seq, code, args.fixed_bw, spe) + frame
+                            tx_width = WIDTH_TX_MHZ[phase] if args.suite == "bandwidth" else 20
+                            body = (
+                                descriptor(
+                                    tx,
+                                    frame,
+                                    seq,
+                                    code,
+                                    args.fixed_bw or args.suite == "bandwidth",
+                                    spe,
+                                    width_mhz=tx_width,
+                                )
+                                + frame
+                            )
                             wire = struct.pack("<I", len(body)) + body
                             wire += bytes((-len(wire)) % 4 + 4)
                             before_submit = time.monotonic()
@@ -617,13 +670,13 @@ def main():
                 except Exception as exc:
                     out["receiver_g5_restore_error_type"] = type(exc).__name__
             try:
-                boot(tx_index)
+                boot(tx_index, cleanup=True)
                 out["cleanup_reload_alive"] = tx.alive()
             except Exception as exc:
                 out["cleanup_error_type"] = type(exc).__name__
-            if args.receiver_g5:
+            if args.receiver_g5 or args.suite == "bandwidth":
                 try:
-                    boot(0)
+                    boot(0, cleanup=True)
                     out["cleanup_receiver_reload_alive"] = radios[0].alive()
                 except Exception as exc:
                     out["cleanup_receiver_error_type"] = type(exc).__name__
@@ -638,6 +691,7 @@ def main():
                 not out.get("receiver_g5_restored") or not out.get("cleanup_receiver_reload_alive")
             )
         )
+        or (args.suite == "bandwidth" and not out.get("cleanup_receiver_reload_alive"))
     )
 
 

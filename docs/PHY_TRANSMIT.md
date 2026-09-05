@@ -31,6 +31,42 @@ succeeded on all three runs.
 
 ## Protocol pointers and reproduction
 
+### First40MHz control: status width works, independent reception does not
+
+The later stable channel6 HT8/HE2SS narrow controls justified one bounded width
+test. `--suite bandwidth --transmitter mt7925 --channel 6 --per-phase 4
+--tx-timing --acknowledge-experimental-transmit` configures both radios to
+primary6/center8/40MHz, then sends HT20/HT40/HT20 and HE20/HE40/HE20.
+All24 frames remain synthetic, no-ACK and50ms paced; power is unchanged.
+Connac3 TXD6 bit25 selects fixed bandwidth; bits24:22 select0/1 for20/40MHz.
+Only bit22 changes between each narrow/wide/narrow triplet. TXS0 bits31:29
+provide an optional independent **transmitter-reported** bandwidth code.
+
+| Fresh trial | Exact receipts, six phases | TX statuses |
+|---|---|---|
+| Initial BCC | 4/0/4/4/0/4 | HE40 missing |
+| BCC repeat with width decoding | 4/0/4/4/0/4 | 20/24; HT40 reports width1 |
+| Corrected HE LDPC | 4/0/4/4/0/4 | 24/24; both wide phases report width1 |
+| Fresh HE LDPC repeat | 4/0/4/4/0/4 | 24/24; both wide phases report width1 |
+
+The first HE40 request was not a qualified HE-SU format: full40MHz requires
+LDPC. [MathWorks' HE-SU configuration](https://in.mathworks.com/help/wlan/ref/wlanhesuconfig.html)
+limits BCC to RU sizes at most242 tones, and
+[Rohde & Schwarz's signal-generation note](https://scdn.rohde-schwarz.com/ur/pws/dl_downloads/dl_application/application_notes/1gp115/1GP115_0E_Generating_WLAN_11ax_Signals.pdf)
+specifies LDPC above20MHz. The corrected suite uses LTF1/GI0/LDPC1 for **all
+three HE phases**, so its width comparison does not also change coding.
+HT retains LTF0/GI0/BCC. The original BCC-wide variant is not a CLI option.
+
+Changing to LDPC restores the missing HE40 TX statuses twice. Every observed
+status reports format0, transmit count1 and no error bits16..22; neither this
+nor the width code proves a decodable transmission. **No40MHz frame was
+independently received**, while all16 narrow controls arrive in each run.
+The corrected HE20 receipts independently report LDPC=true. RF/receiver-width
+configuration and wide PHY construction remain unresolved; no power, antenna,
+factory-calibration or unknown table-field sweep followed. Both alive checks
+and both normal reloads pass, returning each radio to channel6/20MHz.
+[Sanitized width evidence](../research/evidence/bandwidth-transmit-2026-09-05.json).
+
 ### HE extended-range SU is received, but not yet a robust link
 
 `--suite he-er --transmitter mt7925 --channel 6 --per-phase 4` uses five
@@ -158,8 +194,9 @@ An explicit MT7961 test-mode exit and a forced whole-WFSYS reset were tried;
 both reloaded successfully, but neither restored the reverse-direction control.
 The forced reset changed firmware state from 3 to 0 before successful reload.
 The cause of this RF-performance change is unresolved; **alive/reload success
-does not prove restored RF performance**. Wider-band tests are deferred while
-the baseline link is unreliable. No physical power-cycle or antenna adjustment
+does not prove restored RF performance**. Wider-band tests were deferred at this
+point; the later stable channel6 controls permit the bounded40MHz test above.
+No physical power-cycle or antenna adjustment
 was performed. [Sanitized runs](../research/evidence/spatial-stream-transmit-2026-09-05.json).
 
 ### Spatial-path and firmware-table controls (2026-09-05 UTC)
