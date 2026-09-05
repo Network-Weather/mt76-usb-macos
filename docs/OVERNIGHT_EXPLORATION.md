@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Short RTS/CTS/ACK transmit capability works:**
+[two CCK1 controls](CONTROL_FRAME_TRANSMIT.md) each receive4/4 of all three
+classes with exact16/10-byte headers and zero Duration. Probe controls3/4 and4/4
+bracket both runs. Unique status PIDs handle control headers without sequence
+fields. OFDM fails probes too, so is not a control-specific negative. No actual
+peer handshake or ACK timing; all filters already open, all restorations/reloads pass.
+
 **MT7925 has a working multi-bin PHY histogram:**
 [firmware-traced controls](MT7925_NOISE_HISTOGRAM.md) establish reset, timed
 accumulation and stopped stability in two band0 register views. Four fresh boots

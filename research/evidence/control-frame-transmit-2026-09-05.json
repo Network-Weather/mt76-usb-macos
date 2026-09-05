@@ -1,0 +1,1588 @@
+{
+  "scope": "Three20-frame MT7925→MT7961 runs: OFDM6 with failed probe controls, then two successful CCK1 runs with fresh synthetic per-packet destinations. Zero software-controlled Duration, no requested ACK/BA, no association or production traffic.",
+  "runs": [
+    {
+      "date_utc": "2026-09-05T19:43:27.940942+00:00",
+      "rate": "ofdm6",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "kind": "probe",
+          "windows": [
+            {
+              "sequence": 0,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 16
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 17
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 18
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 19
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "rts",
+          "windows": [
+            {
+              "sequence": 4,
+              "bytes_without_fcs": 16,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 20
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "bytes_without_fcs": 16,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 21
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "bytes_without_fcs": 16,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 22
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "bytes_without_fcs": 16,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 23
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "cts",
+          "windows": [
+            {
+              "sequence": 8,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 24
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 25
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 26
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 27
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "ack",
+          "windows": [
+            {
+              "sequence": 12,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 28
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 29
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 30
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "bytes_without_fcs": 10,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 31
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "probe",
+          "windows": [
+            {
+              "sequence": 16,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 32
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 33
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 34
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 75,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 35
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "original_filter_bits": {
+        "0x820e5000": 0,
+        "0x820e5004": 0
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored_filters": {
+        "0x820e5000": true,
+        "0x820e5004": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T19:44:02.989197+00:00",
+      "rate": "cck1",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "kind": "probe",
+          "windows": [
+            {
+              "sequence": 0,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 16
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 17
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 18
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 19
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "rts",
+          "windows": [
+            {
+              "sequence": 4,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 20
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 21
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 22
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 23
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "cts",
+          "windows": [
+            {
+              "sequence": 8,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 24
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 25
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 26
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 27
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "ack",
+          "windows": [
+            {
+              "sequence": 12,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 28
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 29
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 30
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 31
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "probe",
+          "windows": [
+            {
+              "sequence": 16,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 32
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 33
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 34
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 35
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "original_filter_bits": {
+        "0x820e5000": 0,
+        "0x820e5004": 0
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored_filters": {
+        "0x820e5000": true,
+        "0x820e5004": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T19:45:04.259900+00:00",
+      "rate": "cck1",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "kind": "probe",
+          "windows": [
+            {
+              "sequence": 0,
+              "bytes_without_fcs": 65,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 16
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 17
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 18
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 19
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "rts",
+          "windows": [
+            {
+              "sequence": 4,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 20
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 21
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 22
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "bytes_without_fcs": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 23
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "cts",
+          "windows": [
+            {
+              "sequence": 8,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 24
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 25
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 26
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 27
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "ack",
+          "windows": [
+            {
+              "sequence": 12,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 28
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 29
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 30
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "bytes_without_fcs": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 31
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        },
+        {
+          "kind": "probe",
+          "windows": [
+            {
+              "sequence": 16,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 32
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 33
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 34
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "bytes_without_fcs": 65,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "CCK",
+                  "mcs": 0,
+                  "nss": 1,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 0,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 35
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ]
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "original_filter_bits": {
+        "0x820e5000": 0,
+        "0x820e5004": 0
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored_filters": {
+        "0x820e5000": true,
+        "0x820e5004": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    }
+  ]
+}
