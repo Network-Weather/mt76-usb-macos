@@ -98,6 +98,52 @@ and host-call brackets, with invalid-bus/mode checks. A retained read selector
 is not claimed to have been cleared by reload; no timestamp value was set.
 [Sanitized snapshot/diagnostic evidence](../research/evidence/tsf-snapshot-2026-09-05.json).
 
+### An advancing LPON counter exists, but has a different apparent epoch
+
+Two explicitly source-derived, read-only candidates were checked: LPON
+offset`0x314` from MT7915 and`0x37c` from MT7916/MT7996, at the known MT792x
+band0 base`0x820eb000`. See the pinned
+[MT7915/7916 offset table](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7915/mmio.c)
+and [MT7996 FRCR definition](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7996/regs.h).
+These are related-chip register names, not an independently recovered MT792x
+register specification. No adjacent-address sweep or counter writes were used.
+
+On **both** tested dongles, six samples50ms apart return zero at`0x820eb314`
+but an advancing counter at **`0x820eb37c`**. First-to-last host-call brackets
+are consistent with1MHz on both chips; this short USB-bracketed check is not
+a calibrated frequency or drift measurement. Both normal reloads pass.
+The small `research.lpon_clock.read_counter` helper reads only37c, rejects
+invalid bus words/unknown chips, and preserves host-call brackets. It neither
+resets a clock nor treats this counter as TSF.
+
+Two fresh24-frame CCK-suite controls then read37c immediately before and
+after each blocking USB receive call. Only exact own good-FCS RX frames and
+the bounded own PID/sequence TX statuses are serialized. Each run receives
+19 exact frames and all24 valid TX statuses; both alive checks and transmitter
+reloads pass. The observed differences are:
+
+| MAC bytes | MT7961 counter-after minus RXD timestamp | MT7925 counter-after minus TXS timestamp |
+|---|---|---|
+| 65 | 124691..126028 ticks | 133234..134880 ticks |
+| 193 | 120064..121718 ticks | 134448..137837 ticks |
+
+These offsets are much larger than the per-record read-call windows and
+change between boots. **The counter cannot simply replace the RXD/TXS clock.**
+The differences combine any clock-origin offset, timestamp semantics and
+delivery delay; they are not measurements of USB latency. In particular,
+they do not independently locate the packet timestamp latch. The counter
+is a useful local elapsed-time candidate, not yet a precision cross-radio
+alignment or ranging primitive. Packet-counter reads also perturb USB polling;
+this wrapper is an opt-in experiment, not a default acquisition change.
+
+```sh
+python research/lpon_packet_clock_probe.py --suite cck --transmitter mt7925 \
+  --channel 6 --per-phase 4 --tx-timing --acknowledge-experimental-transmit
+# Repeat with --timing-padding 128 for the longer-packet control.
+```
+
+[Sanitized counter and packet controls](../research/evidence/lpon-clock-2026-09-05.json).
+
 ## Reproduce the offline check
 
 ### Preamble-only control strengthens the relative-latch result
