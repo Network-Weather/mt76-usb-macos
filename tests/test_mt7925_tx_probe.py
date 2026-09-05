@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 import struct
+from types import SimpleNamespace
 
 import pytest
 
 import mt7921u as m
+from research import mt7925_tx_probe as probe
 from research.mt7925_tx_probe import ITCR, ITDR0, ITDR1, build_txwi, set_ofdm_rate, tx_status
 
 
@@ -65,3 +67,45 @@ def test_connac3_status_uses_four_word_header_twelve_word_records():
         }
     ]
     assert tx_status(raw[:-1]) == []
+
+
+def test_capture_power_phase_assignment_and_exact_bytes(monkeypatch):
+    samples = []
+    for seq, signal in ((0, -50), (12, -54), (36, -58), (60, -50)):
+        frame = m.build_probe_request(probe.SOURCE, probe.SSID, seq)
+        frame = frame[:-6] + bytes((1, 1, 0x8C))
+        samples.append(
+            {
+                "pkt_type": 2,
+                "pkt_type_name": "NORMAL",
+                "frame": frame,
+                "rssi": signal,
+                "phy": {"mode_name": "OFDM", "rate_mbps": 6.0},
+            }
+        )
+    items = iter(range(4))
+    times = iter((0, 0, 1, 2, 3, 9))
+    monkeypatch.setattr(probe.time, "monotonic", lambda: next(times))
+    monkeypatch.setattr(m, "decoder_for", lambda dev: lambda raw: samples[raw[0]])
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7921, rx_read=lambda **kw: bytes((next(items),)))
+    barrier = SimpleNamespace(wait=lambda **kw: None)
+    result = probe.capture(dev, 8, barrier, 60, [0, -8, 0, -16, 0])
+    assert result["unique_sequences"] == 3
+    assert result["counts"]["controlled_bytes_exact"] == 3
+    assert [p["median_rssi"] for p in result["phases"]] == [-50, -54, None, -58, None]
+    assert [p["unique_sequences"] for p in result["phases"]] == [1, 1, 0, 1, 0]
+
+
+def test_capture_assigns_transmit_status_to_phase(monkeypatch):
+    words = [0x4B, (36 << 20) | 10, 0, 3 << 24, 0, 1 << 25] + [0] * 6
+    raw = struct.pack("<4I", 64, 0, 0, 0) + struct.pack("<12I", *words)
+    times = iter((0, 0, 9))
+    monkeypatch.setattr(probe.time, "monotonic", lambda: next(times))
+    monkeypatch.setattr(
+        m, "decoder_for", lambda dev: lambda raw: {"pkt_type": 0, "pkt_type_name": "TXS"}
+    )
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925, rx_read=lambda **kw: raw)
+    barrier = SimpleNamespace(wait=lambda **kw: None)
+    result = probe.capture(dev, 8, barrier, 60, [0, -8, 0, -16, 0])
+    assert result["phases"][3]["tx_power_raw_values"] == {10: 1}
+    assert result["tx_status"][0]["fields"]["tx_count_format0"] == 1

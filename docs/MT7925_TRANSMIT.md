@@ -66,6 +66,64 @@ The only descriptor change is word 6 bit 3. All 20 TX statuses report OFDM 6 Mbp
 one transmission, and zero error bits. Both chips remain alive and firmware cleanup
 succeeds. This validates DIS_MAT for byte-preserving Probe Requests on this setup.
 
+## Cross-channel and attenuation follow-up
+
+The [follow-up evidence](../research/evidence/mt7925-transmit-followup-2026-09-04.json)
+contains all three additional runs. Report dates use the host's local date;
+individual JSON timestamps are UTC.
+
+Channel 149 with `--count 60 --disable-mat`: 59/60 distinct frames were independently
+decoded, all 59 byte-exact. There were 60 TX statuses with one transmission and no
+reported error bits. The missing independent decode is unexplained and must not be
+silently counted as received; TX status is not delivery proof for no-ACK frames.
+
+```bash
+./.venv/bin/python research/mt7925_tx_probe.py --channel 149 --count 60 \
+  --disable-mat --power-cycle --acknowledge-experimental-transmit \
+  --output /tmp/mt7925-power149.json
+```
+
+This sends five 12-frame phases with power codes `0, -8, 0, -16, 0`, modifying
+connac3 word 2 bits 31:26 (`MT_TXD2_POWER_OFFSET`). The connac2 location is different.
+Acceptance requires independent receive, a signal reduction relative to adjacent
+zero-code controls, a corresponding TX-status change, and successful cleanup.
+
+| Channel 149 phase | 0 | -8 | 0 | -16 | 0 |
+|---|---:|---:|---:|---:|---:|
+| Independent byte-exact frames | 12 | 12 | 12 | 12 | 12 |
+| Receiver median RSSI | -60 | -65 | -62 | -70 | -62 |
+| TX-status raw power byte | 26 | 18 | 26 | 10 | 26 |
+
+Relative to adjacent zero-code medians, attenuation is 4 and 8 dB. This independently
+agrees with the roughly half-dB code steps found on MT7961, now with transmitter
+and observer roles reversed. It does not calibrate absolute power or justify
+labeling raw 26 as 26 dBm. Both radios stayed responsive and the post-experiment
+firmware reload succeeded. No association or AP/client settings were changed.
+
+Repeating the same power-cycle command with `--channel 36` again receives all
+60 frames byte-exact, with the same `26, 18, 26, 10, 26` TX-status power sequence.
+Receiver medians are `-50, -54, -51.5, -58, -52`. Relative reductions against
+adjacent baseline medians are 3.25 and 6.25 dB: correct direction, but less than
+channel 149's 4 and 8 dB. The difference reinforces that this is an RF observation
+with baseline variation, not a calibrated code-to-dBm transfer function. Both
+radios and the cleanup reload pass again.
+
+Across the four DIS_MAT runs, 199/200 submitted frames are independently received
+byte-exact (20/20, 59/60, 60/60, 60/60). The single missing observation remains
+unexplained. Zero-code TX power stays raw 26 in these MT7925 runs; this differs
+from MT7961's raw 44 but is not an absolute-power or cross-chip calibration.
+
+For Network Weather, the new capability is a controlled transmitter/observer pair
+in either direction: characterize receive bias, signal-dependent telemetry, and
+observer visibility without associating or changing the home's AP settings.
+This is not yet a link-quality estimator, automatic power plan, or dependable
+general-purpose packet injector.
+
+The complete `scripts/check.sh` gate passes: 412 Python tests, Ruff, documentation,
+distribution builds, dependency consistency, and C offline tests. The production
+driver files are unchanged. No captures, firmware, or ambient identifiers are
+committed, only aggregate evidence and synthetic test cases.
+
 The tool returns 2 for no independent decode, 1 for observed execution/cleanup
 errors, and 0 for independent receipt. A zero exit code does not promise complete
 delivery, arbitrary frame types, auto-ACK, absolute power calibration, or regulatory

@@ -103,10 +103,13 @@ def tx_status(raw):
     return records
 
 
-def capture(dev, seconds, barrier, count):
+def capture(dev, seconds, barrier, count, phase_codes):
     decode = m.decoder_for(dev)
     counts, phys, statuses = collections.Counter(), collections.Counter(), collections.Counter()
     sequences, signals = set(), []
+    phase_rx = collections.defaultdict(set)
+    phase_rssi, phase_power = collections.defaultdict(list), collections.defaultdict(list)
+    per_phase = count // len(phase_codes)
     barrier.wait(timeout=15)
     started = time.monotonic()
     while time.monotonic() - started < seconds:
@@ -123,7 +126,9 @@ def capture(dev, seconds, barrier, count):
         counts[d["pkt_type_name"]] += 1
         if d["pkt_type"] == 0 and dev.CHIP == m.CHIP_MT7925:
             for status in tx_status(raw):
-                if status.pop("sequence") < count:
+                seq = status.pop("sequence")
+                if seq < count:
+                    phase_power[seq // per_phase].append(status["power_raw"])
                     statuses[json.dumps(status, sort_keys=True)] += 1
         frame = d.get("frame", b"")
         if len(frame) < 24 or d.get("fcs_err"):
@@ -137,6 +142,7 @@ def capture(dev, seconds, barrier, count):
         if seq >= count:
             continue
         sequences.add(seq)
+        phase_rx[seq // per_phase].add(seq)
         counts["controlled_source_preserved"] += frame[10:16] == SOURCE
         counts["controlled_source_rewritten"] += frame[10:16] != SOURCE
         expected = m.build_probe_request(SOURCE, SSID, seq)
@@ -146,6 +152,7 @@ def capture(dev, seconds, barrier, count):
         phys[f"{phy.get('mode_name')}:{phy.get('rate_mbps')}"] += 1
         if d.get("rssi") is not None:
             signals.append(d["rssi"])
+            phase_rssi[seq // per_phase].append(d["rssi"])
     return {
         "chip": dev.CHIP,
         "counts": dict(counts),
@@ -153,6 +160,16 @@ def capture(dev, seconds, barrier, count):
         "controlled_phys": dict(phys),
         "median_rssi": statistics.median(signals) if signals else None,
         "tx_status": [{"fields": json.loads(k), "count": v} for k, v in statuses.items()],
+        "phases": [
+            {
+                "phase": i,
+                "power_code": code,
+                "unique_sequences": len(phase_rx[i]),
+                "median_rssi": statistics.median(phase_rssi[i]) if phase_rssi[i] else None,
+                "tx_power_raw_values": dict(collections.Counter(phase_power[i])),
+            }
+            for i, code in enumerate(phase_codes)
+        ],
     }
 
 
@@ -161,12 +178,16 @@ def main():
     parser.add_argument("--channel", type=int, choices=(36, 149), default=36)
     parser.add_argument("--count", type=int, default=10)
     parser.add_argument("--power-code", type=int, choices=(0, -8, -16), default=0)
+    parser.add_argument("--power-cycle", action="store_true", help="60 frames: 0/-8/0/-16/0 codes")
     parser.add_argument("--disable-mat", action="store_true", help="set connac3 DIS_MAT bit")
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if not args.acknowledge_experimental_transmit or not 1 <= args.count <= 60:
         parser.error("TX acknowledgment and count 1..60 required")
+    if args.power_cycle and (args.count != 60 or args.power_code != 0):
+        parser.error("power-cycle requires count 60 and default power-code")
+    phase_codes = [0, -8, 0, -16, 0] if args.power_cycle else [args.power_code]
     result = {
         "tool": "mt7925_tx_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -174,6 +195,7 @@ def main():
         "count": args.count,
         "power_code": args.power_code,
         "disable_mat": args.disable_mat,
+        "phase_codes": phase_codes,
         "gap_s": 0.05,
         "firmware_sha256": {},
         "submitted": 0,
@@ -196,16 +218,16 @@ def main():
             result["rate_table"] = set_ofdm_rate(radios[1])
             barrier = threading.Barrier(3)
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
-                jobs = [pool.submit(capture, dev, 8, barrier, args.count) for dev in radios]
+                jobs = [
+                    pool.submit(capture, dev, 8, barrier, args.count, phase_codes) for dev in radios
+                ]
                 barrier.wait(timeout=15)
                 time.sleep(0.5)
                 for seq in range(args.count):
                     frame = m.build_probe_request(SOURCE, SSID, seq)
                     frame = frame[:-6] + bytes((1, 1, 0x8C))
-                    body = (
-                        build_txwi(frame, seq, args.power_code, disable_mat=args.disable_mat)
-                        + frame
-                    )
+                    code = phase_codes[seq // (args.count // len(phase_codes))]
+                    body = build_txwi(frame, seq, code, disable_mat=args.disable_mat) + frame
                     wire = struct.pack("<I", len(body)) + body
                     wire += b"\x00" * ((-len(wire)) % 4 + 4)
                     radios[1].bulk_out(radios[1].ep_out_ac_be, wire, 1000)

@@ -945,6 +945,18 @@ commands, acceptance criteria, and failures. Ten of ten controlled channel 36 /
 matching their synthetic payload. Their source addresses were rewritten, so the
 earlier source-only matcher had falsely suggested no reception. TX status alone
 was not used as proof. The production MT7925 injection API remains unsupported.
+Setting DIS_MAT then preserved all submitted frame bytes: 20/20 on channel 36 and
+59/60 on channel 149, with the missing independent decode explicitly unexplained.
+The channel 149 interleaved power-code test received 60/60 byte-exact frames and
+measured relative reductions of 4 and 8 dB for codes -8 and -16. Both chips remained
+responsive; transmitter firmware was reloaded afterward. Absolute power remains
+uncalibrated.
+
+Repeating the MT7925 power cycle on channel 36 also receives 60/60 byte-exact
+frames, with lower signal in both attenuation phases. Relative reductions there
+are 3.25 and 6.25 dB versus adjacent baselines; the code is not a calibrated RF
+transfer function. Full results, including 199/200 byte-exact observations across
+four DIS_MAT runs and the one unexplained miss, are in the report.
 
 ## Previously observed, not rerun in the current validation
 

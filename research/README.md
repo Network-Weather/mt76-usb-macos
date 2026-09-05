@@ -25,7 +25,7 @@ direction, fixed-rate table, and source-address preservation.
 
 | script | question | state |
 |---|---|---|
-| [`mt7925_tx_probe.py`](mt7925_tx_probe.py) | Can connac3 transmit controlled probes and preserve their addresses? | **partly answered** — 10/10 independently decoded; source rewritten without DIS_MAT; production API unchanged |
+| [`mt7925_tx_probe.py`](mt7925_tx_probe.py) | Can connac3 transmit controlled probes and preserve their addresses? | **partly answered** — DIS_MAT preserves frame bytes; 5 GHz OFDM and relative attenuation measured; production API unchanged |
 | [`delivery_evidence.py`](delivery_evidence.py) | Can receiver-reported receipt distinguish the two observers' visibility? | **partly answered** — shared BlockAcks expose complementary recent-data visibility; no link-loss-rate claim |
 | [`tx_power_probe.py`](tx_power_probe.py) | Do per-packet power-offset codes change actual received signal? | **partly answered** — negative codes lower independently measured signal; absolute power/units uncalibrated |
 | [`rx_vector_probe.py`](rx_vector_probe.py) | What does the extended receive vector contain, and is Group 5 delivered? | **partly answered** — MT7961 enable works; MT7925 duplicate RCPI and HE/EHT color/direction checked |
