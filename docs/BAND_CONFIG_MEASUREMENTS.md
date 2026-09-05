@@ -1,7 +1,7 @@
 # Band-config queries and receive-vector reporting
 
-**MT7925 exposes EDCCA enable and a three-byte threshold configuration through
-normal-mode UNI queries.** The receive-vector reporting switch in the same
+**MT7925 exposes three real PHY threshold bytes through normal-mode UNI
+queries, but its EDCCA enable reply is synthesized by a stub.** The receive-vector reporting switch in the same
 command family acknowledges off/on/off but did not produce a new record type
 on either dongle. No new normal-mode CFO/SNR interface is claimed.
 
@@ -22,7 +22,7 @@ normal firmware boot and receive-channel setup:
 - Matched EID`0x21` has a12-byte body: reserved4, event tag/length8, data4.
 - **Event tags differ from request tags:** request5 yields event0, request6 event1.
 - Event0 returns enable byte0/1 and three zero bytes. Event1 returns the three
-  threshold bytes plus an auxiliary byte, observed0.
+  threshold bytes plus a request-echo byte, observed0 (not a fourth threshold).
 
 The raw USB transfer includes20 extra bytes beyond the descriptor's declared
 event size. These are not a second TLV or part of the EDCCA payload. The parser
@@ -48,6 +48,50 @@ still returns **three**, not four, values. No160MHz-specific threshold is inferr
 No EDCCA enable/threshold SET is exposed by this tool. No TX, RF-test mode,
 direct MMIO writes or raw replies are exported.
 [Sanitized EDCCA evidence](../research/evidence/edcca-queries-2026-09-05.json).
+
+### Handler provenance and physical cross-check
+
+The actual dispatcher checks packet option bit2 at`0xe0031144`, searches twelve
+12-byte records at GP+9328 =`0x02214c70`, and selects the SET pointer at+4 or
+QUERY pointer at+8. Its event builder explicitly uses EID`0x21` at`0xe00311a0`.
+A bounded144-byte live table read matches these callbacks:
+
+| Command tag | SET callback | QUERY callback |
+|---:|---|---|
+| 1, RX-vector reporting | `0xe0030dda` | null |
+| 5, EDCCA enable | `0xe0030e14` | `0xe0030e70` |
+| 6, EDCCA thresholds | `0xe0030eb4` | `0xe0030ef0` |
+| 7, still being investigated | `0xe0030f28` | `0xe0030f60` |
+
+The enable query zeroes an eight-byte buffer and calls`0xe0078ebc`, which calls
+`0xe0057c4e`. That leaf is simply **return0**: it never fills the buffer. The
+query's bit8 test on that zero buffer then takes the branch that stores enable1
+at`0xe0030ea8`. Consequently **enable1 does not establish hardware EDCCA enable**
+on this firmware. Earlier live evidence records the wire value accurately, but
+it must not be promoted to a verified hardware state.
+
+The threshold path is different: `0xe0030ef0` →`0xe0078ecc` →`0xe0057c52`.
+The read branch at`0xe0057cde` extracts four unsigned bytes into four halfwords:
+band0`0x83088554` bits7:0,15:8,23:16, and`0x83088608` bits7:0. The UNI wrapper
+copies only the first three, then **echoes request TLV byte7** into the last
+reply byte at`0xe0030f1c`. Thus the extra internal field is inaccessible through
+this query wrapper; it is not that echoed byte. No per-width meaning is yet proven.
+
+`edcca_query_probe.py --registers` reads only those two exact registers before
+and after the query pairs. Fresh channel36/160MHz and channel1/20MHz runs at
+11:41–11:42 UTC both show stable registers and exact triplet agreement:
+
+| Channel | `0x83088554` | `0x83088608` | Four extracted signed bytes |
+|---|---|---|---|
+| 36 /160MHz | `0xd8c1bebb` | `0x00000000` | −69,−66,−63,0 |
+| 1 /20MHz | `0xd8c5c2bf` | `0x00000000` | −65,−62,−59,0 |
+
+This establishes register provenance, not calibration or the meaning of the
+zero fourth field. Both runs finish normal reload/alive checks. The address
+`0x83088608` is also inside a **different chip's** MT7961 histogram window:
+never transfer the MT7961 bin interpretation to MT7925 merely by address.
+[Hardware cross-check evidence](../research/evidence/edcca-hardware-2026-09-05.json),
+[live callback table](../research/evidence/band-config-dispatch-2026-09-05.json).
 
 ## Important framing-control correction
 
