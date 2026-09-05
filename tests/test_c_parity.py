@@ -85,6 +85,16 @@ def native(tmp_path_factory):
         ct.POINTER(ct.c_uint64),
     ]
     lib.mt_mib_delta.restype = ct.c_bool
+    lib.mt_probe_txwi.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.c_uint,
+        ct.c_int,
+        ct.c_int,
+        ct.c_void_p,
+    ]
+    lib.parity_txs.argtypes = [ct.c_int, ct.c_char_p, ct.c_uint, ct.POINTER(ct.c_int)]
     return lib
 
 
@@ -219,3 +229,113 @@ def test_g5_restores_after_fault(native, fail, enabled):
 @pytest.mark.parametrize("mode", range(4))
 def test_mcu_stale_timeout_error_and_truncation(native, chip, mode):
     assert native.parity_mcu_fault(chip, mode) == 0
+
+
+@pytest.mark.parametrize(
+    ("chip", "rate", "powers"),
+    [(0, 0, (0,)), (0, 1, (0, -8, -16)), (1, 1, (0, -8, -16, -32)), (1, 2, (0, -8, -16, -32))],
+)
+def test_tx_shared_bytes(native, chip, rate, powers):
+    from types import SimpleNamespace
+
+    from research.dual_radio_probe import fixed_rate_txwi
+    from research.mt7925_tx_probe import build_txwi
+    from research.tx_power_probe import power_txwi
+
+    dev = SimpleNamespace(_build_txwi=lambda f, s, p: m.Mt7921uDevice._build_txwi(None, f, s, p))
+    for seq in (0, 17, 4095):
+        for power in powers:
+            for multicast in (True, False):
+                frame = bytearray(
+                    m.build_probe_request(bytes.fromhex("020000000001"), b"test", seq)
+                )
+                frame[4] = 255 if multicast else 2
+                frame = bytes(frame)
+                out = ct.create_string_buffer(64)
+                assert native.mt_probe_txwi(chip, frame, len(frame), seq, rate, power, out) == 64
+                if chip:
+                    reference = build_txwi(
+                        frame, seq, power, disable_mat=True, rate="ofdm6" if rate == 1 else "ofdm54"
+                    )
+                elif rate:
+                    reference = power_txwi(dev, frame, seq, power)
+                else:
+                    reference = fixed_rate_txwi(dev, frame, seq, "cck1", True)
+                assert out.raw == reference
+
+
+def test_tx_invalid_inputs(native):
+    frame = b"\x40\x00" + bytes(22)
+    out = ct.create_string_buffer(b"x" * 64, 64)
+    for chip, rate, power in (
+        (0, 2, 0),
+        (0, 1, -32),
+        (1, 0, 0),
+        (1, 1, 1),
+        (1, 1, -33),
+        (2, 1, 0),
+        (0, 0, -8),
+    ):
+        assert native.mt_probe_txwi(chip, frame, len(frame), 0, rate, power, out) == -1
+        assert out.raw == b"x" * 64
+    for bad in (b"", frame[:23], b"\xc0" + frame[1:], frame + bytes(513)):
+        assert native.mt_probe_txwi(1, bad, len(bad), 0, 1, 0, out) == -1
+    assert native.mt_probe_txwi(1, frame, len(frame), 4096, 1, 0, out) == -1
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("fmt", range(4))
+def test_txs_shared_bytes(native, chip, fmt):
+    from research.dual_radio_probe import tx_status_records
+    from research.mt7925_tx_probe import tx_status
+
+    prefix, size = (16, 48) if chip else (8, 32)
+    record = [0x4B | (fmt << 23) | (3 << 16), 17 << 20 | 250, 0, 3 << 24, 0, 7 << 25]
+    raw = struct.pack("<I", prefix + size) + bytes(prefix - 4)
+    raw += struct.pack("<6I", *record) + bytes(size - 24)
+    values = (ct.c_int * 160)()
+    assert native.parity_txs(chip, raw, len(raw), values) == 1
+    reference = (tx_status if chip else tx_status_records)(raw)[0]
+    assert values[0] == reference["format"]
+    assert values[1] == reference["rate_raw" if chip else "rate"]
+    assert values[2] == reference["power_raw" if chip else "tx_power_raw"]
+    assert list(values[3:8]) == [-6, 17, 3, 3, 3]
+    assert values[8] == (chip == 1 and fmt == 0)
+    assert values[9] == (7 if values[8] else 0)
+    for end in range(len(raw)):
+        assert native.parity_txs(chip, raw, end, values) == -1
+    assert native.parity_txs(chip, raw + bytes(8), len(raw) + 8, values) == 1
+    bad = bytearray(raw)
+    bad[3] = 2 << 3
+    assert native.parity_txs(chip, bytes(bad), len(bad), values) == -1
+    bad = bytearray(raw)
+    bad[0] -= 1
+    assert native.parity_txs(chip, bytes(bad), len(bad), values) == -1
+
+
+@pytest.mark.parametrize("rate", [1, 2])
+@pytest.mark.parametrize("mode", range(6))
+def test_rate_table_write_and_faults(native, rate, mode):
+    words = (ct.c_uint * 9)()
+    result = native.parity_rate_table(rate, mode, words)
+    assert (result == 0) == (mode == 0)
+    if mode == 0:
+        from research.mt7925_tx_probe import set_ofdm_rate
+
+        class Device:
+            CHIP = m.CHIP_MT7925
+
+            def __init__(self):
+                self.writes = []
+
+            def wr(self, address, value):
+                self.writes.extend((address, value))
+
+            def rr(self, address):
+                return 0
+
+        dev = Device()
+        set_ofdm_rate(dev, "ofdm6" if rate == 1 else "ofdm54")
+        assert list(words[:6]) == dev.writes
+    if mode == 5:
+        assert tuple(words[6:]) == (3, 100, 100)

@@ -10,7 +10,10 @@ TEST_OBJS = test_rxd.o mt7921_rxd.o mt7921_rxd_connac3.o mt7921_mcu.o mt7921_usb
 SMOKE_OBJS += mt7921_radio.o
 TEST_OBJS += mt7921_radio.o
 
-all: mt7921_smoke test_rxd
+all: mt7921_smoke mt76_radio_probe test_rxd
+
+mt76_radio_probe: mt76_radio_probe.o $(filter-out mt7921_smoke.o,$(SMOKE_OBJS))
+	$(CC) $(CFLAGS) $(FRAMEWORKS) -o $@ $^
 
 mt7921_smoke: $(SMOKE_OBJS)
 	$(CC) $(CFLAGS) $(FRAMEWORKS) -o $@ $^
@@ -27,6 +30,6 @@ test: test_rxd
 	./test_rxd
 
 clean:
-	rm -f *.o *.d mt7921_smoke test_rxd
+	rm -f *.o *.d mt7921_smoke mt76_radio_probe test_rxd
 
 .PHONY: all test clean

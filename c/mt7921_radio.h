@@ -49,4 +49,32 @@ int mt_g5_begin(mt_g5_guard_t *guard, mt_radio_reg_io_t io);
 int mt_g5_restore(mt_g5_guard_t *guard);
 int mt_g5_begin_device(mt7921_dev_t *dev, mt_g5_guard_t *guard);
 mt_radio_reg_io_t mt_radio_device_io(mt7921_dev_t *dev);
+
+enum { MT_PROBE_CCK1, MT_PROBE_OFDM6, MT_PROBE_OFDM54 };
+/* Pure descriptor builder for Probe Requests only, <=512 bytes. Connac2 supports
+ * CCK1 (zero offset) and OFDM6 (0/-8/-16); connac3 OFDM6/54 (0/-8/-16/-32).
+ * Units of power_code are experimental codes, NOT absolute dBm. DIS_MAT is always
+ * set on connac3 to preserve the submitted source in the measured subset. */
+int mt_probe_txwi(int chip, const uint8_t *frame, size_t len, unsigned sequence,
+                  int rate, int power_code, uint8_t *out);
+/* MT7925 table write, bounded 100 polls. Caller must reload firmware even on error. */
+int mt_probe_rate_table(mt_radio_reg_io_t io, int rate);
+int mt_probe_prepare(mt7921_dev_t *dev, int rate);
+/* Requires successful mt7921_tune, supported measured channel/rate/width and table.
+ * <=60 attempted writes per boot; >=50 ms spacing; no ACK. CLI must additionally
+ * require explicit transmit acknowledgement. Single-owner, no concurrent retune. */
+int mt_probe_transmit(mt7921_dev_t *dev, const uint8_t *frame, size_t len,
+                      unsigned sequence, int rate, int power_code);
+
+typedef struct {
+    uint8_t format, power_raw, pid, ack_error_bits, error_bits_16_22;
+    int16_t power_signed; /* signed representation only; NOT calibrated dBm */
+    uint16_t rate_raw, sequence;
+    bool has_tx_count;
+    uint8_t tx_count;     /* connac3 format 0 only */
+} mt_tx_status_t;
+/* Packet type must be TXS (0). Strict DMA bounds and complete records; USB padding
+ * beyond DMA length is ignored. Returns record count or -1, no partial output. */
+int mt_tx_status_parse(int chip, const uint8_t *raw, size_t len,
+                       mt_tx_status_t *out, size_t capacity);
 #endif

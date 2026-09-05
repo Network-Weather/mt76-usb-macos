@@ -79,3 +79,47 @@ int parity_mcu_fault(int chip, int mode) {
     if (mode) return ret != 0 ? 0 : 1;
     return ret || len != 64 || mcu.dropped_frames != 1 || mcu.stale_events != 1;
 }
+
+int parity_txs(int chip, const unsigned char *raw, unsigned len, int *v) {
+    mt_tx_status_t out[16];
+    int n = mt_tx_status_parse(chip, raw, len, out, 16);
+    if (n <= 0) return n;
+    for (int i = 0; i < n; i++) {
+        int *p = v + i * 10;
+        p[0] = out[i].format; p[1] = out[i].rate_raw;
+        p[2] = out[i].power_raw; p[3] = out[i].power_signed;
+        p[4] = out[i].sequence; p[5] = out[i].pid;
+        p[6] = out[i].ack_error_bits; p[7] = out[i].error_bits_16_22;
+        p[8] = out[i].has_tx_count; p[9] = out[i].tx_count;
+    }
+    return n;
+}
+
+typedef struct { unsigned writes, reads, pauses, mode; uint32_t words[6]; } fake_table_t;
+static int table_write(void *ctx, uint32_t addr, uint32_t v) {
+    fake_table_t *f = ctx;
+    if (f->writes >= 3) return -1;
+    f->words[2 * f->writes] = addr;
+    f->words[2 * f->writes + 1] = v;
+    return ++f->writes == f->mode ? -1 : 0;
+}
+static int table_read(void *ctx, uint32_t addr, uint32_t *v) {
+    (void)addr;
+    fake_table_t *f = ctx;
+    f->reads++;
+    if (f->mode == 4) return -1;
+    *v = f->mode == 5 ? 1U << 31 : 0x10012;
+    return 0;
+}
+static void table_pause(void *ctx, unsigned ms) {
+    fake_table_t *f = ctx;
+    f->pauses += ms;
+}
+int parity_rate_table(int rate, unsigned mode, unsigned *words) {
+    fake_table_t f = {.mode = mode};
+    mt_radio_reg_io_t io = {&f, table_read, table_write, table_pause};
+    int ret = mt_probe_rate_table(io, rate);
+    memcpy(words, f.words, sizeof(f.words));
+    words[6] = f.writes; words[7] = f.reads; words[8] = f.pauses;
+    return ret;
+}

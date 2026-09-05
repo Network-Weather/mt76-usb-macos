@@ -9,8 +9,9 @@ are implemented and cross-checked against Python on synthetic bytes for all 32
 group masks on both chips, including malformed DMA/group lengths. They are not yet
 hardware-qualified in this port. MCU occupancy queries and reversible experimental
 Group-5 control are implemented with offline wire and fault-injection tests.
-MT7925 controlled TX, the measured OFDM/power controls,
-and per-chip TX-status decoding are **planned**, not implemented here yet.
+MT7925 controlled TX, the measured OFDM/power controls, and per-chip TX-status
+decoding are implemented and cross-checked against the Python research helpers.
+Live qualification of these new C paths is pending; these are not general TX APIs.
 See the [C parity sprint checklist](../TODO.md#c-parity-sprint-r30).
 Passing the existing C tests is not evidence that those features were ported.
 
@@ -66,6 +67,25 @@ Run offline unit tests:
 ```bash
 make test
 ```
+
+The bounded native research CLI emits redacted NDJSON and is passive unless
+`--transmit` and `--acknowledge-experimental-transmit` are both supplied:
+
+```bash
+./mt76_radio_probe --usb-id 0846:9072 --fw ../firmware --mib --seconds 6
+./mt76_radio_probe --usb-id 0e8d:7961 --fw ../firmware --mib --g5-cycle --seconds 3
+./mt76_radio_probe --usb-id 0846:9072 --fw ../firmware --channel 36 --seconds 6 \
+  --transmit 20 --rate ofdm6 --power-code -8 --acknowledge-experimental-transmit
+```
+
+This experiment uses 20 MHz only, on 2.4 GHz channel 6, 5 GHz 36/149, or passive
+6 GHz 37. OFDM TX is limited to 5 GHz 36/149; CCK1 to MT7921 on channel 6 with
+zero power offset. MT7921 supports OFDM6 and offsets 0/-8/-16; MT7925 supports
+OFDM6/54 and 0/-8/-16/-32. At most 60 writes per boot, paced at least 50 ms apart.
+The CLI reloads firmware after TX/table experiments, including failures, and
+restores Group-5 on normal/error/signal exits. SIGKILL, host crash, and unplug can
+prevent cleanup; restart/reload before reuse. It does not enforce a regulatory domain.
+The older smoke/injection API remains MT7921-only and unchanged in rate.
 
 ## Running Hardware Smoke Test
 
