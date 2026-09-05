@@ -56,9 +56,9 @@ EX9 J/JAL targets use address concatenation, not normal PC-relative addition;
 the helper marks the corrected target separately. It does not inject decompiler
 semantics or claim to repair the complete Ghidra analysis.
 
-**GP candidate 0x02002bb4** resolves six independent `addi.gp` references to
+An initial **file-layout GP surrogate 0x02002bb4** resolves six independent `addi.gp` references to
 matching format strings/function names, including `rdmCmdRddCtrl` and
-`muExtCmdMuTxRxCtrl`. This is strong static inference, not a live CPU register read.
+`muExtCmdMuTxRxCtrl`. This is not the runtime GP: startup relocates those bytes.
 It yields direct ICAP-mode-guard and histogram string references:
 
 - ICAP-mode guard reference: 0x00933de2.
@@ -80,3 +80,25 @@ missing from the installed Ghidra decoder; see the upstream
 and [GNU port submission](https://sourceware.org/legacy-ml/binutils/2013-07/msg00066.html).
 The helper is still a bounded linear inspector, not a complete control-flow or
 decompiler repair. It stops at other unknown instructions rather than guessing.
+
+## Runtime relocation resolves the real GP
+
+Startup 0x0091500c copies an overlapping data range backward, moving it **0x44c
+bytes upward**. Its source/destination GP-relative boundaries differ by exactly
+that amount. Consequently the runtime GP is **0x02003000**, not the file-layout
+surrogate 0x02002bb4. This remains a startup/memory inference, not a CPU-register
+read, but live hardware verifies it:
+
+- Reads at 0x02018c98 and 0x0201e0d8 match original region-1 bytes at addresses
+  lower by 0x44c, not the unrelocated file offsets.
+- The internal table start moves from 0x02018c98 to 0x020190e4. Its first two
+  handler values read back correctly at 0x020190e4 and 0x020190ec.
+- Field-access callback slots computed from the corrected GP return code pointers;
+  the earlier surrogate-based slots returned all ones.
+- All five extracted regions were re-compared byte-for-byte with the pinned RAM
+  container and matched. This is runtime relocation, not a stale firmware file.
+
+Only the demonstrated copied range should receive this address adjustment; do
+not add 0x44c to every firmware address. Code and the EX9 table retain their
+declared locations. Use the file surrogate for string searches in the original
+region file, and the runtime GP for live memory addresses.

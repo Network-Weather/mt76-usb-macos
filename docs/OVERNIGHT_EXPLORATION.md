@@ -194,6 +194,34 @@ The low-level routine uses abstract register-field access callbacks with selecto
 keys 0x260000/1/2; the read path uses keys based on 0x13004 shifted by five.
 Resolving those callbacks is a better next step than repeating initialization.
 
+## Runtime data relocation and shared field access
+
+The 256-byte ICAP ROM window (local-only SHA-256
+`b109e321be83821b4bd7fe0bb4a5c183250b3ce727ed1f7468324f38dfa006ae`)
+decodes as NDS32. Start at 0x008322da writes field key 0x5a0013 through a
+GP-relative callback; status at 0x00832344 reads the same field. Both use the
+same field-access family as IPI. No ROM bytes are included in the repository.
+
+The first attempt to read the callbacks used the file-layout GP surrogate and
+returned all ones. A CE 0xc0 QUERY control at known code address 0x00915000
+raised McuError; cleanup passed, and that route was not used to infer memory.
+USB reads of known data words instead exposed **runtime relocation by +0x44c**.
+Startup disassembly and four live table/string-word controls agree. All extracted
+regions still exactly match the pinned image; see [NDS32_RECON](NDS32_RECON.md).
+
+Corrected **runtime GP 0x02003000** resolves the callbacks:
+
+| GP offset | Live slot | Target |
+|---|---|---|
+| 0x10800 | 0x02013800 | 0x00826c7e |
+| 0x10808 | 0x02013808 | 0x00826ca2 |
+| 0x1080c | 0x0201380c | 0x00826b70 |
+
+[Sanitized relocation/pointer evidence](../research/evidence/firmware-relocation-2026-09-05.json).
+These are pointer reads, not host function calls. Both device checks and full
+reload cleanup passed. Next: decode this narrowly scoped ROM accessor family
+to resolve the field keys to actual register locations.
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 
