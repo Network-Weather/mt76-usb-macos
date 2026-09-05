@@ -389,6 +389,11 @@ transmitters remained visible throughout. Post-ACK counts match the table.
 Thus this is a **CSI-only transmitter filter**, not a normal receive filter.
 An earlier run independently reproduced ADD isolation and START restoration.
 Operationally, apply the allowlist **after START**, and reapply after restarting.
+The START initialization helper `0xe0060e72` independently explains this:
+`0xe0060ec8` stores zero to the list bitmap and `0xe0060ecc` stores zero to its
+count byte. The earlier call at `0xe0060eae` also supplies the list base, zero and
+length0x24 to a memory-fill-shaped routine; the explicit stores suffice to prove
+the reset without relying on that routine's name.
 REMOVE and full normal reload are attempted in cleanup; reload/alive passed.
 
 The loaded helper `0xe00611d4` uses a five-slot, six-byte address list at
@@ -401,3 +406,29 @@ The address RAM was **not read or published**. Only single-entry behavior has
 been tested; duplicate, full-list and multi-entry semantics remain unvalidated.
 
 [Sanitized filter evidence](../research/evidence/csi-filter-2026-09-05.json).
+
+## Specific data/control selectors: still no readout
+
+Five additional passive controls narrow the present result without broad command
+sweeping. Each used fresh normal firmware, matched status0 for all controls,
+one-second windows, no transfer-cap truncation, and successful normal reload.
+
+| Candidate FC[7:2] | Primary / width | Good-FCS matching frames during START | CSI |
+|---|---|---:|---:|
+| QoS data0x22 | 149 / 80 | 0 | 0 |
+| Non-QoS data0x02 | 36 / 20 | 1 | 0 |
+| BlockAck0x25 | 149 / 80 | 5 | 0 |
+| RTS0x2d | 149 / 80 | 1 | 0 |
+| BlockAck0x25 | 36 / 20 | 3 | 0 |
+
+The hardware selector fields agree with each requested repeated six-bit value;
+the two channel149 control-frame START snapshots include bit28, also seen with
+working beacon capture. **Bit28 is not thereby proven to mean completed CSI.**
+No QoS opportunity was observed, and the data/RTS counts are small. BlockAck has
+matching frames on two channels but still no report. These are tested negative
+controls, not a general firmware prohibition or a validated type/subtype mapping
+for every frame class. The currently established readout remains beacon CSI.
+
+The probe now accepts only named beacon/data/QoS/BlockAck/RTS selectors and two
+previously tested passive primaries. Primary149 supports only20/80 here; invalid
+geometry is rejected before device access. [Sanitized evidence](../research/evidence/csi-other-frame-controls-2026-09-05.json).

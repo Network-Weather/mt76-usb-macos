@@ -5,7 +5,7 @@
 Vendor gen4m 8fddb9d7: gl_csi.h, nic_uni_cmd_event.h/c, wlan_oid.c.
 MT7961 CE 0x4c has a 48-byte control; MT7925 UNI 0x4a has 8-byte
 stop/start TLVs. UNI SET/no-ACK follows wlanoidSetCSIControl. Normal monitor
-channel36 at 20/80/160MHz receive width, three to five <=1-second/512-transfer windows,
+channel36/149 at bounded receive widths, three to five <=1-second/512-transfer windows,
 finally STOP + reload. --ack requests diagnostic acknowledgments separately
 from the vendor's no-ACK envelope.
 This tests command/event availability, not validity or calibration of CSI.
@@ -131,7 +131,7 @@ def chain_request(band, chains):
 
 
 def beacon_selector_request(band):
-    """Test index0/value0x20: candidate beacon FC bits[7:2], not yet validated.
+    """Test index0/value0x20: beacon FC bits[7:2], validated on MT7925.
 
     Public packed tag2 is 11 bytes. The loaded handler consumes its low value
     byte, and the ROM field table limits the hardware selector to six bits.
@@ -140,18 +140,24 @@ def beacon_selector_request(band):
 
 
 def frame_selector_request(band, selector):
-    """Only beacon/QoS-data FC[7:2] hypotheses, no arbitrary filter mask."""
+    """Named FC[7:2] candidates only, no arbitrary filter mask."""
     if type(band) is not int or band not in (0, 1):
         raise ValueError("band must be zero or one")
-    if type(selector) is not int or selector not in (0x20, 0x22):
-        raise ValueError("only beacon/QoS-data selector candidates")
+    if type(selector) is not int or selector not in (0x02, 0x20, 0x22, 0x25, 0x2D):
+        raise ValueError("only named frame selector candidates")
     return struct.pack("<B3xHHBI2x", band, 2, 11, 0, selector)
 
 
-def receive_center(width):
-    """Fixed primary36 passive width control, not a channel or TX sweep."""
+def receive_center(width, primary=36):
+    """Two previously tested passive primaries; no arbitrary geometry or TX."""
     if type(width) is not int or width not in (20, 80, 160):
         raise ValueError("only 20/80/160 MHz receive widths")
+    if type(primary) is not int or primary not in (36, 149):
+        raise ValueError("only primary36/149")
+    if primary == 149:
+        if width == 160:
+            raise ValueError("primary149 only supports 20/80 in this probe")
+        return 149 if width == 20 else 155
     return {20: 36, 80: 42, 160: 50}[width]
 
 
@@ -219,6 +225,7 @@ def main():
     parser.add_argument("--band", type=int, choices=(0, 1), default=0)
     parser.add_argument("--chains", type=int, choices=(1, 2))
     parser.add_argument("--width", type=int, choices=(20, 80, 160), default=20)
+    parser.add_argument("--primary", type=int, choices=(36, 149), default=36)
     parser.add_argument(
         "--state", action="store_true", help="read fixed firmware CSI configuration"
     )
@@ -230,10 +237,31 @@ def main():
     selectors.add_argument(
         "--qos-data-selector", action="store_true", help="test frame selector 0x22"
     )
+    selectors.add_argument(
+        "--data-selector", action="store_true", help="test non-QoS data selector 0x02"
+    )
+    selectors.add_argument(
+        "--blockack-selector", action="store_true", help="test BlockAck selector 0x25"
+    )
+    selectors.add_argument("--rts-selector", action="store_true", help="test RTS selector 0x2d")
     parser.add_argument(
         "--correlate", action="store_true", help="aggregate CSI/beacon coincidences"
     )
     args = parser.parse_args()
+    selection = next(
+        (
+            (name, value)
+            for name, value in (
+                ("beacon", 0x20),
+                ("qos_data", 0x22),
+                ("data", 0x02),
+                ("blockack", 0x25),
+                ("rts", 0x2D),
+            )
+            if getattr(args, f"{name}_selector")
+        ),
+        None,
+    )
     if args.ack and args.chip != "mt7925":
         parser.error("ACK variant applies to MT7925 UNI only")
     if args.chains is not None and args.chip != "mt7925":
@@ -242,27 +270,34 @@ def main():
         parser.error("state snapshots apply to MT7925 only")
     if args.hardware and args.chip != "mt7925":
         parser.error("hardware snapshots apply to MT7925 only")
-    if (args.beacon_selector or args.qos_data_selector) and args.chip != "mt7925":
+    if selection is not None and args.chip != "mt7925":
         parser.error("frame selector applies to MT7925 only")
-    if args.qos_data_selector and args.correlate:
+    if selection is not None and selection[0] != "beacon" and args.correlate:
         parser.error("current source correlation is beacon-only")
     if args.correlate and args.chip != "mt7925":
         parser.error("correlation applies to MT7925 only")
     if args.width != 20 and args.chip != "mt7925":
         parser.error("wider CSI receive tests apply to MT7925 only")
+    try:
+        center = receive_center(args.width, args.primary)
+    except ValueError as exc:
+        parser.error(str(exc))
     uid = "0846:9072" if args.chip == "mt7925" else "0e8d:7961"
     out = {
         "tool": "csi_control_probe",
         "chip": args.chip,
         "band": args.band,
         "receive_width_mhz": args.width,
-        "primary_channel": 36,
-        "center_channel": receive_center(args.width),
+        "primary_channel": args.primary,
+        "center_channel": center,
         "chains": args.chains,
         "state_snapshots": args.state,
         "hardware_snapshots": args.hardware,
         "candidate_beacon_selector": args.beacon_selector,
         "candidate_qos_data_selector": args.qos_data_selector,
+        "candidate_data_selector": args.data_selector,
+        "candidate_blockack_selector": args.blockack_selector,
+        "candidate_rts_selector": args.rts_selector,
         "correlation_enabled": args.correlate,
         "uni_option": (7 if args.ack else 6) if args.chip == "mt7925" else None,
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -287,23 +322,21 @@ def main():
             dev.bringup(*images, log=lambda *_: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            dev.tune("5GHz", 36, receive_center(args.width), args.width)
+            dev.tune("5GHz", args.primary, center, args.width)
             if args.state:
                 out["control_before"] = control_snapshot(dev)
             if args.hardware:
                 out["hardware_before"] = hardware_snapshot(dev)
             for name, start in (("stop_before", False), ("start", True), ("stop_after", False)):
-                if start and (args.beacon_selector or args.qos_data_selector):
-                    selector = 0x20 if args.beacon_selector else 0x22
+                if start and selection is not None:
+                    selector_name, selector = selection
                     dev.mcu_uni(
                         0x4A, frame_selector_request(args.band, selector), wait=False, timeout=1000
                     )
                     seq = dev.msg_seq
                     out["phases"].append(
                         {
-                            "name": "candidate_beacon_selector"
-                            if args.beacon_selector
-                            else "candidate_qos_data_selector",
+                            "name": f"candidate_{selector_name}_selector",
                             "request_sequence": seq,
                             **collect(dev, seq, args.correlate),
                         }

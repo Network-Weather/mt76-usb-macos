@@ -132,12 +132,31 @@ def test_receive_width_control_preserves_primary36_geometry():
             p.receive_center(invalid)
 
 
-def test_only_two_bounded_frame_selectors():
+def test_only_named_bounded_frame_selectors():
+    for selector in (0x25, 0x2D):
+        assert struct.unpack("<B3xHHBI2x", p.frame_selector_request(0, selector)) == (
+            0,
+            2,
+            11,
+            0,
+            selector,
+        )
+    assert struct.unpack("<B3xHHBI2x", p.frame_selector_request(0, 0x02)) == (0, 2, 11, 0, 0x02)
     assert struct.unpack("<B3xHHBI2x", p.frame_selector_request(0, 0x22)) == (0, 2, 11, 0, 0x22)
     assert p.frame_selector_request(1, 0x20) == p.beacon_selector_request(1)
     for invalid in (True, 0, 0x21, 0x3F, 0xFF):
         with pytest.raises(ValueError, match="selector candidates"):
             p.frame_selector_request(0, invalid)
+
+
+def test_second_passive_primary_is_bounded():
+    assert p.receive_center(20, 149) == 149
+    assert p.receive_center(80, 149) == 155
+    with pytest.raises(ValueError, match="primary149"):
+        p.receive_center(160, 149)
+    for invalid in (True, 0, 37, 165, "36"):
+        with pytest.raises(ValueError, match="primary36/149"):
+            p.receive_center(20, invalid)
 
 
 def test_normal_frame_shape_contains_only_type_and_phy():

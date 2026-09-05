@@ -1,0 +1,2298 @@
+{
+  "experiment": "Specific passive CSI data and control frame selectors",
+  "firmware_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+  "privacy": "Aggregate event shapes, frame classes and hardware controls only",
+  "runs": [
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "receive_width_mhz": 80,
+      "primary_channel": 149,
+      "center_channel": 155,
+      "chains": null,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "candidate_beacon_selector": false,
+      "candidate_qos_data_selector": true,
+      "candidate_data_selector": false,
+      "correlation_enabled": false,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:54:25.219902+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 85,
+          "elapsed_s": 1.031,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 9
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 15
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 6
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 6
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 35
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "candidate_qos_data_selector",
+          "request_sequence": 2,
+          "transfers": 16,
+          "elapsed_s": 1.069,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 7
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 59,
+          "elapsed_s": 1.04,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 40
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xe08a28a2",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 15,
+          "elapsed_s": 1.06,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 6
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 6
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x408a28a2",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "receive_width_mhz": 20,
+      "primary_channel": 36,
+      "center_channel": 36,
+      "chains": null,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "candidate_beacon_selector": false,
+      "candidate_qos_data_selector": false,
+      "candidate_data_selector": true,
+      "correlation_enabled": false,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:54:32.995350+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 66,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "candidate_data_selector",
+          "request_sequence": 2,
+          "transfers": 64,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 58
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 61,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xf0082082",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 61,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 58
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x40082082",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "receive_width_mhz": 80,
+      "primary_channel": 149,
+      "center_channel": 155,
+      "chains": null,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "candidate_beacon_selector": false,
+      "candidate_qos_data_selector": false,
+      "candidate_data_selector": false,
+      "candidate_blockack_selector": true,
+      "candidate_rts_selector": false,
+      "correlation_enabled": false,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:56:19.101443+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 57,
+          "elapsed_s": 1.07,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 33
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 6
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "candidate_blockack_selector",
+          "request_sequence": 2,
+          "transfers": 14,
+          "elapsed_s": 1.047,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 8
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 22,
+          "elapsed_s": 1.056,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 6
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xf0965965",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 51,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 22
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 6
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x40965965",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "receive_width_mhz": 80,
+      "primary_channel": 149,
+      "center_channel": 155,
+      "chains": null,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "candidate_beacon_selector": false,
+      "candidate_qos_data_selector": false,
+      "candidate_data_selector": false,
+      "candidate_blockack_selector": false,
+      "candidate_rts_selector": true,
+      "correlation_enabled": false,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:56:26.828701+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 50,
+          "elapsed_s": 1.024,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 9
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 14
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 7
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "candidate_rts_selector",
+          "request_sequence": 2,
+          "transfers": 38,
+          "elapsed_s": 1.042,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 23
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 47,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 9
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 228,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 24
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xf0b6db6d",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 24,
+          "elapsed_s": 1.033,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 10
+            },
+            {
+              "shape": {
+                "bw_mhz": 40,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 224,
+                "nss": 1,
+                "phy_mode_raw": 4
+              },
+              "count": 8
+            },
+            {
+              "shape": {
+                "bw_mhz": 80,
+                "fc_type_subtype": 84,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x40b6db6d",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "receive_width_mhz": 20,
+      "primary_channel": 36,
+      "center_channel": 36,
+      "chains": null,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "candidate_beacon_selector": false,
+      "candidate_qos_data_selector": false,
+      "candidate_data_selector": false,
+      "candidate_blockack_selector": true,
+      "candidate_rts_selector": false,
+      "correlation_enabled": false,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:58:16.539737+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 65,
+          "elapsed_s": 1.019,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "candidate_blockack_selector",
+          "request_sequence": 2,
+          "transfers": 66,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 58
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 81,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 7
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xf0965965",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 65,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 58
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": null,
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x40965965",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    }
+  ]
+}
