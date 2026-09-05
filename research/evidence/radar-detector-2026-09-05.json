@@ -1,0 +1,285 @@
+{
+  "scope": "Source-defined station RDD STOP and bounded MT7925 receive START; no TX, emulation, thresholds or raw pulse payloads",
+  "runs": [
+    {
+      "tool": "rdd_stop_probe",
+      "chip": "mt7961",
+      "channel": 36,
+      "date_utc": "2026-09-05T12:38:36.507059+00:00",
+      "rows": [
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {},
+          "transfers": 0,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0185620000120252
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {},
+          "transfers": 0,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.007999666966498
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "rdd_stop_probe",
+      "chip": "mt7925",
+      "channel": 36,
+      "date_utc": "2026-09-05T12:38:44.199995+00:00",
+      "rows": [
+        {
+          "events": [
+            {
+              "eid": 1,
+              "ext_eid": 0,
+              "sequence_matches": true,
+              "body_bytes": 8,
+              "candidate_rdd_event": false,
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 45
+          },
+          "endpoint_transfers": {
+            "84": 46
+          },
+          "transfers": 46,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0209100421052426
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 46
+          },
+          "endpoint_transfers": {
+            "84": 46
+          },
+          "transfers": 46,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0079154160339385
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "rdd_receive_probe",
+      "chip": "mt7925",
+      "channel": 36,
+      "detector_region_raw": 1,
+      "date_utc": "2026-09-05T12:41:13.692355+00:00",
+      "rows": [
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 46
+          },
+          "endpoint_transfers": {
+            "84": 46
+          },
+          "transfers": 46,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0148921250365674
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 46
+          },
+          "endpoint_transfers": {
+            "84": 46
+          },
+          "transfers": 46,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.016455083154142
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 46
+          },
+          "endpoint_transfers": {
+            "84": 46
+          },
+          "transfers": 46,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0152477079536766
+        }
+      ],
+      "initial_stop": {
+        "events": [
+          {
+            "eid": 1,
+            "ext_eid": 0,
+            "sequence_matches": true,
+            "body_bytes": 8,
+            "candidate_rdd_event": false,
+            "command_result_status": 0
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 44
+        },
+        "endpoint_transfers": {
+          "84": 45
+        },
+        "transfers": 45,
+        "transfer_limit_reached": false,
+        "elapsed_seconds": 1.0005022091791034
+      },
+      "alive_after": true,
+      "final_stop": {
+        "events": [],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 46
+        },
+        "endpoint_transfers": {
+          "84": 46
+        },
+        "transfers": 46,
+        "transfer_limit_reached": false,
+        "elapsed_seconds": 1.0214415830560029
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "rdd_receive_probe",
+      "chip": "mt7925",
+      "channel": 36,
+      "detector_region_raw": 1,
+      "date_utc": "2026-09-05T12:44:02.664526+00:00",
+      "rows": [
+        {
+          "events": [
+            {
+              "eid": 1,
+              "ext_eid": 0,
+              "sequence_matches": true,
+              "body_bytes": 8,
+              "candidate_rdd_event": false,
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 77
+          },
+          "endpoint_transfers": {
+            "84": 78
+          },
+          "transfers": 78,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.001375666121021
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 154
+          },
+          "endpoint_transfers": {
+            "84": 154
+          },
+          "transfers": 154,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.0005162919405848
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 70
+          },
+          "endpoint_transfers": {
+            "84": 70
+          },
+          "transfers": 70,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.0007469169795513
+        }
+      ],
+      "initial_stop": {
+        "events": [
+          {
+            "eid": 1,
+            "ext_eid": 0,
+            "sequence_matches": true,
+            "body_bytes": 8,
+            "candidate_rdd_event": false,
+            "command_result_status": 0
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 65
+        },
+        "endpoint_transfers": {
+          "84": 66
+        },
+        "transfers": 66,
+        "transfer_limit_reached": false,
+        "endpoint_timeout_ms": 1,
+        "elapsed_seconds": 1.0000960419420153
+      },
+      "alive_after": true,
+      "final_stop": {
+        "events": [
+          {
+            "eid": 1,
+            "ext_eid": 0,
+            "sequence_matches": true,
+            "body_bytes": 8,
+            "candidate_rdd_event": false,
+            "command_result_status": 0
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 66
+        },
+        "endpoint_transfers": {
+          "84": 67
+        },
+        "transfers": 67,
+        "transfer_limit_reached": false,
+        "endpoint_timeout_ms": 1,
+        "elapsed_seconds": 1.000700542004779
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "rdd_stop_probe",
+      "chip": "mt7961",
+      "channel": 36,
+      "date_utc": "2026-09-05T12:44:11.567846+00:00",
+      "rows": [
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {},
+          "transfers": 0,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.0008078329265118
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {},
+          "transfers": 0,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.0011860840022564
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

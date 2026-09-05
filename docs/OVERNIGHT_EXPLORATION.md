@@ -20,6 +20,11 @@ updates during controlled two-stream HT reception in two fresh runs. Its values
 then persist across CCK packets, so they must not be attached blindly to each
 received frame. Units and physical interpretation remain unvalidated.
 
+**Station radar detector:** [MT7925 UNI19 STOP/START/STOP](RADAR_DETECTOR.md)
+returns success after correcting quiet-endpoint receive throttling. Three short
+post-START windows yield no pulse reports; hardware activation remains unproven.
+The MT7961 CE8F STOP-only control stays silent, and no START was sent on that route.
+
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and
 a bounded instruction-table read supports an experimental Andes-style expansion.
