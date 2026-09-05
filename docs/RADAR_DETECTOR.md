@@ -156,10 +156,39 @@ These remain textual annotations, not new Ghidra pcode or a complete ISA decoder
 
 [Hardware mappings and both-chip readback evidence](../research/evidence/radar-hardware-2026-09-05.json).
 
+## Ordinary HT traffic can coexist; pulse capture still idle
+
+`research/rdd_stimulus_probe.py --acknowledge-experimental-transmit --channel 1`
+adds twelve ordinary MT7925 HT-MCS8/two-stream Probe Requests: four with the
+MT7961 detector off, four armed, four off again. Requests are synthetic, no-ACK,
+20MHz, at least50ms apart, and carry a fresh per-run private marker. Only exact
+full-frame matches with good FCS count as receipts. There are no power changes,
+emulated radar patterns, threshold changes or raw pulse-buffer reads.
+
+| Fresh run | Exact receipts: off / armed / off | Producer while armed |
+|---|---|---|
+| Channel36 | 0/4,0/4,0/4 | Fixed at ring start |
+| Channel1 first | 2/4,0/4,4/4 | Fixed at ring start |
+| Channel1 repeat | **4/4,4/4,4/4** | Fixed at ring start |
+
+The first channel1 run suggested an HT reception side effect; the fresh repeat
+**did not reproduce it** and proves at least four exact HT receipts coexist with
+mode5. Ambient CCK/OFDM traffic also continues while armed. Do not claim that
+radar mode disables HT based on the first run. The weak/variable RF link remains
+a confound; the channel36 all-zero run has no independent receive control.
+
+All three runs preserve mode0→5→0, observe no candidate pulse event, and show
+producer`0x00401c00` throughout the armed and post-STOP snapshots. No window hits
+its receive-transfer ceiling. Both radios reload/alive successfully and the
+receiver's nine hardware reads return to baseline. This is a normal-Wi-Fi
+coexistence control, **not** a positive radar/pulse sensitivity control, and no
+interference source is inferred from an idle producer.
+[Sanitized stimulus evidence](../research/evidence/radar-stimulus-2026-09-05.json).
+
 ## What would turn this into a measurement?
 
-Complete the newer chip's hardware map, and test whether ordinary controlled
-Wi-Fi reception coexists with the armed older-chip detector. No random register
+Complete the newer chip's hardware map, and trace the pulse-production and
+reporting prerequisites now that ordinary HT coexistence is demonstrated. No random register
 sweep, threshold guessing or emulated radar is needed. Ordinary traffic and
 successful command ACKs are not a positive control
 for radar sensitivity. Even real pulse reports would need separate validation

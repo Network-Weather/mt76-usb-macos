@@ -1,0 +1,1263 @@
+{
+  "scope": "Twelve ordinary HT2SS frames per run, exact independent receipt and fixed producer readback across RDD off/on/off; no emulation or raw pulse data",
+  "runs": [
+    {
+      "tool": "rdd_stimulus_probe",
+      "date_utc": "2026-09-05T15:13:14.524729+00:00",
+      "channel": 36,
+      "rate_code": 1160,
+      "submitted": 12,
+      "maximum_submissions": 12,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ],
+      "cleanup_rx_hardware": {
+        "registers_raw": {
+          "0x83082004": "0x0",
+          "0x83080038": "0x0",
+          "0x83080014": "0x0",
+          "0x830a5000": "0x80",
+          "0x830a5008": "0xf0",
+          "0x830a500c": "0x0",
+          "0x830a5010": "0x0",
+          "0x830a5014": "0x0",
+          "0x830a2030": "0xa00"
+        },
+        "detector_mode_bits8_6": 0,
+        "capture_field_270000": 0,
+        "capture_field_270020": 0,
+        "buffer_begin": "0x0",
+        "buffer_end": "0x0",
+        "producer_word": "0x0"
+      },
+      "rows": [
+        {
+          "requested_enabled": false,
+          "control": {
+            "requested_enabled": false,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "allocation_checked": null,
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {},
+              "endpoint_transfers": {},
+              "transfers": 0,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.00443104095757
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 0,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 1,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 2,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 3,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            }
+          ]
+        },
+        {
+          "requested_enabled": true,
+          "control": {
+            "requested_enabled": true,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x101",
+              "host_enabled_byte": 1,
+              "detector_region_byte": 1
+            },
+            "allocation_checked": {
+              "base": "0x401c00",
+              "bytes": 1024
+            },
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {},
+              "endpoint_transfers": {},
+              "transfers": 0,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.0001904999371618
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x140",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf9",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 5,
+              "capture_field_270000": 1,
+              "capture_field_270020": 1,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 4,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 5,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 6,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 7,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            }
+          ]
+        },
+        {
+          "requested_enabled": false,
+          "control": {
+            "requested_enabled": false,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x101",
+              "host_enabled_byte": 1,
+              "detector_region_byte": 1
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x100",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 1
+            },
+            "allocation_checked": null,
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {},
+              "endpoint_transfers": {},
+              "transfers": 0,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.0012694578617811
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x140",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf9",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 5,
+              "capture_field_270000": 1,
+              "capture_field_270020": 1,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf8",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 1,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 8,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 9,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 10,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 11,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {},
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "rdd_stimulus_probe",
+      "date_utc": "2026-09-05T15:13:44.592716+00:00",
+      "channel": 1,
+      "rate_code": 1160,
+      "submitted": 12,
+      "maximum_submissions": 12,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ],
+      "cleanup_rx_hardware": {
+        "registers_raw": {
+          "0x83082004": "0x0",
+          "0x83080038": "0x0",
+          "0x83080014": "0x0",
+          "0x830a5000": "0x80",
+          "0x830a5008": "0xf0",
+          "0x830a500c": "0x0",
+          "0x830a5010": "0x0",
+          "0x830a5014": "0x0",
+          "0x830a2030": "0xa00"
+        },
+        "detector_mode_bits8_6": 0,
+        "capture_field_270000": 0,
+        "capture_field_270020": 0,
+        "buffer_begin": "0x0",
+        "buffer_end": "0x0",
+        "producer_word": "0x0"
+      },
+      "rows": [
+        {
+          "requested_enabled": false,
+          "control": {
+            "requested_enabled": false,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "allocation_checked": null,
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {
+                "1": 41,
+                "0": 238
+              },
+              "endpoint_transfers": {
+                "84": 279
+              },
+              "transfers": 279,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.0013822501059622
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 0,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "2": 1,
+                "0": 9
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 1,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {
+                "0": 12
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 2,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {
+                "0": 26,
+                "1": 6
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 3,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 17,
+                "2": 1,
+                "1": 2
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            }
+          ]
+        },
+        {
+          "requested_enabled": true,
+          "control": {
+            "requested_enabled": true,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x101",
+              "host_enabled_byte": 1,
+              "detector_region_byte": 1
+            },
+            "allocation_checked": {
+              "base": "0x401c00",
+              "bytes": 1024
+            },
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {
+                "0": 79,
+                "1": 12
+              },
+              "endpoint_transfers": {
+                "84": 91
+              },
+              "transfers": 91,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.0008547080215067
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x140",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf9",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 5,
+              "capture_field_270000": 1,
+              "capture_field_270020": 1,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 4,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {
+                "0": 8,
+                "1": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 5,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {
+                "0": 16,
+                "1": 2
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 6,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {
+                "0": 10,
+                "1": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 7,
+              "exact_good_fcs_phy": null,
+              "normal_by_phy": {
+                "0": 12,
+                "1": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            }
+          ]
+        },
+        {
+          "requested_enabled": false,
+          "control": {
+            "requested_enabled": false,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x101",
+              "host_enabled_byte": 1,
+              "detector_region_byte": 1
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x100",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 1
+            },
+            "allocation_checked": null,
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {
+                "0": 96,
+                "1": 20
+              },
+              "endpoint_transfers": {
+                "84": 116
+              },
+              "transfers": 116,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.0006458340212703
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x140",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf9",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 5,
+              "capture_field_270000": 1,
+              "capture_field_270020": 1,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf8",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 1,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 8,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "2": 1,
+                "0": 8
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 9,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "2": 1,
+                "0": 10,
+                "1": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 10,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "2": 1,
+                "0": 9
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 11,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "2": 1,
+                "0": 10,
+                "1": 3
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "rdd_stimulus_probe",
+      "date_utc": "2026-09-05T15:14:13.785363+00:00",
+      "channel": 1,
+      "rate_code": 1160,
+      "submitted": 12,
+      "maximum_submissions": 12,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ],
+      "cleanup_rx_hardware": {
+        "registers_raw": {
+          "0x83082004": "0x0",
+          "0x83080038": "0x0",
+          "0x83080014": "0x0",
+          "0x830a5000": "0x80",
+          "0x830a5008": "0xf0",
+          "0x830a500c": "0x0",
+          "0x830a5010": "0x0",
+          "0x830a5014": "0x0",
+          "0x830a2030": "0xa00"
+        },
+        "detector_mode_bits8_6": 0,
+        "capture_field_270000": 0,
+        "capture_field_270020": 0,
+        "buffer_begin": "0x0",
+        "buffer_end": "0x0",
+        "producer_word": "0x0"
+      },
+      "rows": [
+        {
+          "requested_enabled": false,
+          "control": {
+            "requested_enabled": false,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "allocation_checked": null,
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {
+                "0": 385,
+                "1": 127
+              },
+              "endpoint_transfers": {
+                "84": 512
+              },
+              "transfers": 512,
+              "transfer_limit_reached": true,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 0.991034833015874
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 0,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 34,
+                "2": 1,
+                "1": 2
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 1,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "1": 2,
+                "0": 16,
+                "2": 2
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 2,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 8,
+                "1": 1,
+                "2": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 3,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 19,
+                "2": 1,
+                "1": 3
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x0",
+              "detector_mode": 0
+            }
+          ]
+        },
+        {
+          "requested_enabled": true,
+          "control": {
+            "requested_enabled": true,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x0",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 0
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x101",
+              "host_enabled_byte": 1,
+              "detector_region_byte": 1
+            },
+            "allocation_checked": {
+              "base": "0x401c00",
+              "bytes": 1024
+            },
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {
+                "0": 100,
+                "1": 14
+              },
+              "endpoint_transfers": {
+                "84": 114
+              },
+              "transfers": 114,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.0006881249137223
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0x0",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x80",
+                "0x830a5008": "0xf0",
+                "0x830a500c": "0x0",
+                "0x830a5010": "0x0",
+                "0x830a5014": "0x0",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 0,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x0",
+              "buffer_end": "0x0",
+              "producer_word": "0x0"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x140",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf9",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 5,
+              "capture_field_270000": 1,
+              "capture_field_270020": 1,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 4,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "2": 1,
+                "0": 13,
+                "1": 2
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 5,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 15,
+                "2": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 6,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 21,
+                "1": 4,
+                "2": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            },
+            {
+              "sequence": 7,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 18,
+                "1": 4,
+                "2": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 5
+            }
+          ]
+        },
+        {
+          "requested_enabled": false,
+          "control": {
+            "requested_enabled": false,
+            "before": {
+              "address": "0x2037214",
+              "raw": "0x101",
+              "host_enabled_byte": 1,
+              "detector_region_byte": 1
+            },
+            "after": {
+              "address": "0x2037214",
+              "raw": "0x100",
+              "host_enabled_byte": 0,
+              "detector_region_byte": 1
+            },
+            "allocation_checked": null,
+            "receive": {
+              "events": [],
+              "good_fcs_frames_by_phy_mode": {
+                "0": 64,
+                "1": 6
+              },
+              "endpoint_transfers": {
+                "84": 70
+              },
+              "transfers": 70,
+              "transfer_limit_reached": false,
+              "endpoint_timeout_ms": 1,
+              "elapsed_seconds": 1.0007804159540683
+            },
+            "hardware_before": {
+              "registers_raw": {
+                "0x83082004": "0x140",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf9",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 5,
+              "capture_field_270000": 1,
+              "capture_field_270020": 1,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            },
+            "hardware_after": {
+              "registers_raw": {
+                "0x83082004": "0x0",
+                "0x83080038": "0xc",
+                "0x83080014": "0x0",
+                "0x830a5000": "0x81",
+                "0x830a5008": "0xf8",
+                "0x830a500c": "0x401c00",
+                "0x830a5010": "0x401e00",
+                "0x830a5014": "0x401c00",
+                "0x830a2030": "0xa00"
+              },
+              "detector_mode_bits8_6": 0,
+              "capture_field_270000": 1,
+              "capture_field_270020": 0,
+              "buffer_begin": "0x401c00",
+              "buffer_end": "0x401e00",
+              "producer_word": "0x401c00"
+            }
+          },
+          "packets": [
+            {
+              "sequence": 8,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "2": 1,
+                "0": 4
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 9,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 13,
+                "2": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 10,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 14,
+                "2": 1
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            },
+            {
+              "sequence": 11,
+              "exact_good_fcs_phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "normal_by_phy": {
+                "0": 30,
+                "2": 1,
+                "1": 9
+              },
+              "rdd_events": [],
+              "transfer_limit_reached": false,
+              "producer_word": "0x401c00",
+              "detector_mode": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
