@@ -1,0 +1,1147 @@
+{
+  "date": "2026-09-05",
+  "method": "Separate register-observation reruns of bounded known commands; no direct register writes or data retrieval",
+  "ipi_normal": {
+    "tool": "ipi_compact_probe",
+    "date_utc": "2026-09-05T07:39:52.657204+00:00",
+    "rf_rx": false,
+    "register_checks": true,
+    "rows": [
+      {
+        "compact": false,
+        "histograms": [
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "registers_before": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "set_reply": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "tag": 0,
+          "tlv_bytes": 0,
+          "dispatch_refused": false,
+          "words_u32": [
+            163,
+            0,
+            1199325311,
+            0
+          ]
+        },
+        "registers_after_set": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      },
+      {
+        "compact": true,
+        "histograms": [
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "registers_before": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "set_reply": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "tag": 0,
+          "tlv_bytes": 0,
+          "dispatch_refused": false,
+          "words_u32": [
+            163,
+            0,
+            1199067262,
+            0
+          ]
+        },
+        "registers_after_set": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      }
+    ]
+  },
+  "ipi_rf_rx": {
+    "tool": "ipi_compact_probe",
+    "date_utc": "2026-09-05T07:40:07.026507+00:00",
+    "rf_rx": true,
+    "register_checks": true,
+    "rows": [
+      {
+        "compact": false,
+        "histograms": [
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "registers_before": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "set_reply": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 2,
+          "tag": 0,
+          "tlv_bytes": 0,
+          "dispatch_refused": false,
+          "words_u32": [
+            163,
+            0,
+            28,
+            0
+          ]
+        },
+        "registers_after_set": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      },
+      {
+        "compact": true,
+        "histograms": [
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          {
+            "body_bytes": 56,
+            "histogram": {
+              "echoed_idx": 12,
+              "band_idx": 0,
+              "bins": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "free_run": 0,
+              "tx_assert_us": 0
+            },
+            "registers_after_query": {
+              "control_raw": "0x0",
+              "field_0": 0,
+              "field_1": 0,
+              "field_2": 0,
+              "counter_words_raw": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "counters_23bit": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        ],
+        "registers_before": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "set_reply": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 2,
+          "tag": 0,
+          "tlv_bytes": 0,
+          "dispatch_refused": false,
+          "words_u32": [
+            163,
+            0,
+            28,
+            0
+          ]
+        },
+        "registers_after_set": {
+          "control_raw": "0x0",
+          "field_0": 0,
+          "field_1": 0,
+          "field_2": 0,
+          "counter_words_raw": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "counters_23bit": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      }
+    ]
+  },
+  "icap": {
+    "tool": "icap_capture_probe",
+    "date_utc": "2026-09-05T07:40:22.829572+00:00",
+    "samples_requested": 64,
+    "trigger_event": 4294967295,
+    "node_candidate": 73,
+    "architecture": 0,
+    "prepare_rx": false,
+    "icap_channel": true,
+    "retrieve": false,
+    "register_checks": true,
+    "polls": [
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ]
+    ],
+    "before": [
+      {
+        "eid": 237,
+        "ext_eid": 4,
+        "sequence_matches": true,
+        "unsolicited_sequence": false,
+        "body_bytes": 68,
+        "candidate_capture_done_raw": 1,
+        "function_raw": 12
+      }
+    ],
+    "registers_before": {
+      "registers_raw": {
+        "0x80021090": 1024,
+        "0x80021098": 1048576,
+        "0x8002109c": 1179644,
+        "0x800210a4": 1310716,
+        "0x800210b4": 0
+      },
+      "active_bit": 0
+    },
+    "start_events": [],
+    "registers_after_start": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 64,
+        "0x800210b4": 0
+      },
+      "active_bit": 1
+    },
+    "completion_observed": false,
+    "registers_after_polls": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 64,
+        "0x800210b4": 0
+      },
+      "active_bit": 1
+    },
+    "alive_after": true,
+    "stop_events": [],
+    "registers_after_stop": {
+      "registers_raw": {
+        "0x80021090": 1265,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 64,
+        "0x800210b4": 0
+      },
+      "active_bit": 0
+    },
+    "cleanup_reload_alive": true
+  }
+}

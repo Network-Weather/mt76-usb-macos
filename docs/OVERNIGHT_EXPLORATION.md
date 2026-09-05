@@ -222,6 +222,23 @@ These are pointer reads, not host function calls. Both device checks and full
 reload cleanup passed. Next: decode this narrowly scoped ROM accessor family
 to resolve the field keys to actual register locations.
 
+## Concrete IPI and ICAP hardware field maps recovered
+
+Following the shared ROM accessors resolves the actual registers and bit ranges;
+see [FIRMWARE_FIELD_MAPS](FIRMWARE_FIELD_MAPS.md). The IPI GET path reads twelve
+23-bit values at 0x830af0a8 through 0x830af0d4, not the older sibling-chip address.
+ICAP active is bit 1 of 0x80021090. Field keys index a ROM description; their low
+five bits are not bit positions. An independent bounded table resolver and unit
+tests reproduce the mappings without redistributing ROM bytes.
+
+Separate live register checks preserve the previous outcomes but narrow them:
+IPI initialization still leaves its resolved control and counters reading zero,
+with both request layouts in normal/RF RX. ICAP control changes 0x400 → 0x4f3
+on start and 0x4f3 → 0x4f1 on stop, exactly matching its active/status semantics.
+Three short post-start polls remain incomplete. All firmware reloads pass.
+[Command/register evidence](../research/evidence/field-register-controls-2026-09-05.json).
+Next: trace capture setup and IPI access gating from these concrete locations.
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 

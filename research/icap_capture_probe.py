@@ -26,6 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import usb.core
 
 import mt7921u as m
+from research.firmware_fields import icap_snapshot
 from research.icap_status_probe import event_summary, status_request
 from research.testmode_receiver_probe import rx_setting
 
@@ -123,6 +124,7 @@ def main():
         "--icap-channel", action="store_true", help="explicit ICAP channel-switch preparation"
     )
     p.add_argument("--retrieve", action="store_true")
+    p.add_argument("--registers", action="store_true", help="separate ROM-derived register check")
     args = p.parse_args()
     out = {
         "tool": "icap_capture_probe",
@@ -134,6 +136,7 @@ def main():
         "prepare_rx": args.prepare_rx,
         "icap_channel": args.icap_channel,
         "retrieve": args.retrieve,
+        "register_checks": args.registers,
         "polls": [],
     }
     with m.open_device("0e8d:7961") as dev:
@@ -169,14 +172,20 @@ def main():
                     time.sleep(0.1)
             ext(status_request(), query=True)
             out["before"] = collect(dev, 0.3, dev.msg_seq)
+            if args.registers:
+                out["registers_before"] = icap_snapshot(dev)
             ext(capture_request(args.samples, trigger_event=out["trigger_event"], node=args.node))
             out["start_events"] = collect(dev, 0.3, dev.msg_seq)
+            if args.registers:
+                out["registers_after_start"] = icap_snapshot(dev)
             for _ in range(3):
                 ext(status_request(), query=True)
                 out["polls"].append(collect(dev, 0.3, dev.msg_seq))
             out["completion_observed"] = any(
                 e.get("candidate_capture_done_raw") == 1 for poll in out["polls"] for e in poll
             )
+            if args.registers:
+                out["registers_after_polls"] = icap_snapshot(dev)
             if args.retrieve and out["completion_observed"]:
                 ext(data_request(), query=True)
                 out["data_events"] = collect(dev, 1.0, dev.msg_seq)
@@ -196,6 +205,8 @@ def main():
                     )
                 )
                 out["stop_events"] = collect(dev, 0.2, dev.msg_seq)
+                if args.registers:
+                    out["registers_after_stop"] = icap_snapshot(dev)
             except (m.McuError, RuntimeError, usb.core.USBError) as exc:
                 out["stop_error_type"] = type(exc).__name__
             boot()

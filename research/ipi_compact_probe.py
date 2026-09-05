@@ -19,6 +19,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import mt7921u as m
+from research.firmware_fields import ipi_snapshot
 from research.ipi_hist_cmd import ipi_request, parse_histogram
 from research.station_testmode_probe import summarize
 from research.testmode_receiver_probe import rx_setting
@@ -37,11 +38,13 @@ def main():
 
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--rf-rx", action="store_true")
+    p.add_argument("--registers", action="store_true", help="separate ROM-derived register check")
     args = p.parse_args()
     out = {
         "tool": "ipi_compact_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "rf_rx": args.rf_rx,
+        "register_checks": args.registers,
         "rows": [],
     }
     with m.open_device("0e8d:7961") as dev:
@@ -70,11 +73,15 @@ def main():
                     ):
                         dev.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(selector, value), wait=False)
                         time.sleep(0.1)
+                if args.registers:
+                    row["registers_before"] = ipi_snapshot(dev)
                 raw = dev.mcu_cmd_word(m.MCU_EXT_CMD(0xA3), initialization(compact), timeout=1000)
                 row["set_reply"] = summarize(dev.reply_body(raw))
                 row["set_reply"]["dispatch_refused"] = is_refusal(dev.reply_body(raw), 0xA3)
                 if len(dev.reply_body(raw)) == 16:
                     row["set_reply"]["words_u32"] = list(struct.unpack("<4I", dev.reply_body(raw)))
+                if args.registers:
+                    row["registers_after_set"] = ipi_snapshot(dev)
                 for _ in range(3):
                     time.sleep(0.5)
                     raw = dev.mcu_cmd_word(
@@ -84,6 +91,8 @@ def main():
                     row["histograms"].append(
                         {"body_bytes": len(body), "histogram": parse_histogram(body)}
                     )
+                    if args.registers:
+                        row["histograms"][-1]["registers_after_query"] = ipi_snapshot(dev)
                 row["alive_after"] = dev.alive()
             except Exception as exc:
                 row["error_type"] = type(exc).__name__
