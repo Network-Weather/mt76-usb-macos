@@ -5,6 +5,12 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Ordinary Data and QoS Data transmission demonstrated:**
+[bounded synthetic frame controls](DATA_FRAME_TRANSMIT.md) receive4/4 of each
+class in two fresh MT7925→MT7961 HT8 runs. No association/IP/ACK/BA setup.
+Reverse MT7961 CCK fails all classes including probe controls, so it cannot
+yet supply the controlled data stimulus into MT7925 CSI. Both radios reload.
+
 **HT40 payload transmission demonstrated:** [receive-path controls](PHY_TRANSMIT.md#ht40-payloads-received-before-the-extra-receive-path-command)
 receive exact HT8/2SS/40MHz frames2/4 then4/4. Adding Linux's source-shaped
 SET_RX_PATH command removes wide PD/MDRDY in12/12 windows across three runs,

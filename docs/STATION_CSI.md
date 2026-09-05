@@ -526,6 +526,11 @@ after changing those commands. This is not a persistent radio-chain setting.
 
 ## Specific data/control selectors: still no readout
 
+Later [synthetic Data/QoS transmit controls](DATA_FRAME_TRANSMIT.md) demonstrate
+both classes4/4 twice from MT7925 to MT7961, but the reverse CCK link fails even
+probe controls. The generator is qualified in the wrong direction for MT7925
+CSI; a positive controlled data stimulus into that receiver is still missing.
+
 Five additional passive controls narrow the present result without broad command
 sweeping. Each used fresh normal firmware, matched status0 for all controls,
 one-second windows, no transfer-cap truncation, and successful normal reload.
