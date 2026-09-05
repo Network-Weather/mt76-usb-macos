@@ -5,6 +5,12 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Rejected engineering/statistics/RTT requests have no dispatcher entries:**
+The [live61-entry UNI table](MT7925_UNI_DISPATCH.md) lacks0x32/0x46/0x5d, and
+the verified dispatcher miss path emits`0xc00000bb`. Working MIB, power, CSI,
+thermal and noise handlers match earlier pointers. No discovered command is
+invoked. The buffer trace also places noise tag2 at the normal first-TLV offset.
+
 **Short RTS/CTS/ACK transmit capability works:**
 [two CCK1 controls](CONTROL_FRAME_TRANSMIT.md) each receive4/4 of all three
 classes with exact16/10-byte headers and zero Duration. Probe controls3/4 and4/4
