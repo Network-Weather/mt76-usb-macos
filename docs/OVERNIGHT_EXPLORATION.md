@@ -15,6 +15,11 @@ windows while the separate software accumulator stays zero. BSS attribution is
 not yet qualified; the useful hardware source and its read-clear hazard are now
 documented and probed without direct writes.
 
+**Latched CN/EVM fields:** [a single MT7961 PHY register](PHY_SIGNAL_FIELDS.md)
+updates during controlled two-stream HT reception in two fresh runs. Its values
+then persist across CCK packets, so they must not be attached blindly to each
+received frame. Units and physical interpretation remain unvalidated.
+
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and
 a bounded instruction-table read supports an experimental Andes-style expansion.

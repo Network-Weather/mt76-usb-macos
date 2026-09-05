@@ -7,6 +7,9 @@ produced PHY-header and FCS errors. These complement MAC delivery counts and the
 finite RX-vector log. They do not by themselves classify non-Wi-Fi interference,
 attribute errors to a transmitter, or measure calibrated RF power.
 
+The adjacent [CN/EVM diagnostic register](PHY_SIGNAL_FIELDS.md) is a separate
+latched raw signal surface, not another cumulative counter.
+
 Pinned RAM SHA-256:
 `b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9`.
 
@@ -42,6 +45,14 @@ order: e.g. CCK SIG precedes SFD, and OFDM SIG precedes TAG. The table above
 follows actual GET41/register order, not a guessed copy of the public structure.
 PD and MDRDY are detection and receive-ready counter names, not exact-frame
 counts. CCK interpretation was not validated by transmitting CCK in this test.
+
+The firmware's human-readable PHY diagnostic calls `0x00942d0e` into a40-byte
+buffer and computes **FalseCca = PD - MDRDY** separately for CCK and OFDM:
+`0x0096261c..0x00962624` uses buffer offsets0/32, and
+`0x00962660..0x00962668` uses4/36. Thus that label is derived arithmetic over
+these same counters, not a separate detector or proof of non-Wi-Fi interference.
+The printer uses a signed decimal format; snapshot/reset/wrap effects still
+apply. No new SCS command or threshold write was inferred from the label.
 
 ## Live results and counter semantics
 
