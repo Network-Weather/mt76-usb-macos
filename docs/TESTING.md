@@ -25,6 +25,12 @@ Validation for this research branch: **599 offline Python tests passed**, target
 ruff lint/format checks passed, local documentation/JSON checks passed, and
 `git diff --check` passed. This is not a repeat of full C sanitizer or release gates.
 
+Follow-up RX-path activation: four controlled runs, each with 12/12 exact-frame
+monitor controls and 36 bounded test probes, isolated the explicit high-word RX
+mask as the difference between idle and live sampling. Band-only and unchanged
+setup remained idle; mask-enabled counters advanced and froze after stop.
+See [request encoding, table, evidence and limits](STATION_TESTMODE.md#rx-path-activation-follow-up).
+
 ### Radio-observability research, 2026-09-04
 
 The [radio observability report](RADIO_OBSERVABILITY.md) records new research-only

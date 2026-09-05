@@ -5,7 +5,58 @@ A9000, macOS 26.6.1, Python 3.14.7, pinned firmware from [NOTICE](../NOTICE.md).
 Research only. [Redacted evidence](../research/evidence/station-testmode-2026-09-04.json)
 contains commands' scalar outcomes and the bounded receive perturbation.
 
-## MT7961: mode entry unlocks queries, live sampling not established
+**Follow-up:** the MT7961 sampler is now active with an explicit RX-path write.
+The initial negative below is retained as history; see [RX-path activation](#rx-path-activation-follow-up).
+
+## RX-path activation follow-up
+
+Four matched-condition runs isolated the missing setting. Each began with 12/12
+synthetic OFDM6 probes independently decoded in normal monitor mode, then entered
+RF-test mode and used the same 36-probe/quiet/attenuation sequence described below.
+All were on channel 36 at 20 MHz; both firmware reloads passed after every run.
+[Redacted evidence](../research/evidence/testmode-rx-path-2026-09-04.json).
+
+| Additional setup | RX OK initial → last phase | RX error initial → last phase | Signal words |
+|---|---:|---:|---|
+| Band 0 + RX mask 3 + explicit CBW/DBW/primary | 7 → 213 | 1 → 142 | changing |
+| Band 0 + RX mask 3, no extra bandwidth writes | 8 → 224 | 11 → 193 | changing |
+| None (same monitor control) | 0 → 0 | 0 → 0 | fixed |
+| Band 0 only | 0 → 0 | 0 → 0 | fixed |
+
+**Critical protocol detail:** CE TEST_CTRL action 1, function **106**, value
+**`3 << 16` (`0x00030000`)**, following function 104/value 0 (DBDC band 0).
+The receive antenna mask occupies the **high 16 bits**. The reference
+`operation_gen4m.c::mt_op_set_rx_path` specifies that encoding. Its separate QA
+wrapper contains a logical-OR expression which collapses a nonzero mask to 1;
+we did not copy that expression. Both firmware-visible values and experiment
+outcomes are recorded rather than inheriting correctness from a vendor wrapper.
+
+The path-only run also tested stop: after function 1/value 0, counts reached
+225/193 and remained exactly 225/193 across the subsequent 0.6-second dwell;
+both signal words also froze. This provides start/stop evidence for a live
+test-mode receiver, not merely a responsive query handler.
+
+Queries of configuration selectors 15/18/71/72/73/104/106 returned echoed selectors
+with zero first values even for the nonzero frequency/path settings. They are
+**not validated configuration readbacks**. Behavioral controls establish activation.
+
+Limits: aggregate counters include ambient frames; individual query reads are
+sequential, not an atomic sample. RSSI words are raw, packing/units remain unverified,
+and the attenuation phases did not establish a calibrated or probe-specific signal
+response. This is a separate test mode, not concurrent normal monitor capture.
+No new Linux implementation or shipped Python/C API is asserted.
+
+Reproduce using the project venv and pinned firmware directory:
+
+```sh
+python research/testmode_receiver_probe.py --acknowledge-experimental-transmit --rx-path 3 --verify-monitor-control
+python research/testmode_receiver_probe.py --acknowledge-experimental-transmit --select-band --verify-monitor-control
+```
+
+The first enables sampling, the second is the band-only negative control.
+Each invocation sends at most 48 paced no-ACK packets and resets both devices.
+
+## MT7961: initial mode-entry and query experiment
 
 The upstream station interface is **CE command 0x01**, not EXT RF_TEST 0x04.
 `mt7921/testmode.c` and `mt7921/mcu.h` at mt76 `c5a3bd91` define a 12-byte
@@ -90,8 +141,8 @@ No ambient frames, identifiers, USB serials, or firmware bytes are saved.
 
 Next concrete leads, not capability claims:
 
-- Establish the test receiver's required RX-path/band settings and verify a
-  counter follows independently controlled traffic before interpreting its signal words.
+- RX-path/band activation is established above. Next isolate per-chain signal-word
+  packing and controlled-traffic effects before interpreting the words as measurements.
 - Use the now-responding MT7961 station mode-switch path to investigate ICAP/spectrum
   status. Earlier standalone EXT spectrum silence did not test this route.
 - MT7925's UNI 0x46 engineering-query action is distinct from UNI 0x32 statistics;
@@ -107,6 +158,9 @@ Motorola's public MediaTek gen4m source, pinned at
 [UNI formats](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic_uni_cmd_event.h),
 [legacy-to-UNI bridge](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/nic/nic_uni_cmd_event.c),
 [QA hook protocol usage](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/os/linux/gl_hook_api.c).
+The follow-up RX path comes from
+[operation_gen4m.c](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/wlan_service/glue/hal/gen4m/operation_gen4m.c),
+checked against the separate QA wrapper in `os/linux/gl_qa_agent.c` at that revision.
 The read files carry BSD-2-Clause headers. Used for protocol facts; no vendor
 implementation or header copied into this repository. Request builders and
 bounded experiments are independent. This is a different source from the

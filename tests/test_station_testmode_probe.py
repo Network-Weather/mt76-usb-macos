@@ -53,3 +53,10 @@ def test_receiver_settings_exclude_transmit_and_other_channels(selector, value):
 @pytest.mark.parametrize(("selector", "value"), [(1, 0), (1, 2), (18, 5180000), (15, 0)])
 def test_receiver_settings_encoding(selector, value):
     assert rx_setting(selector, value) == struct.pack("<B3xII", 1, selector, value)
+
+
+@pytest.mark.parametrize("mask", [1, 2, 3])
+def test_rx_path_is_in_high_word(mask):
+    assert rx_setting(106, mask << 16) == struct.pack("<B3xII", 1, 106, mask << 16)
+    with pytest.raises(ValueError, match="only fixed-channel receive"):
+        rx_setting(106, mask)

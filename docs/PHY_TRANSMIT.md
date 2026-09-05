@@ -58,7 +58,9 @@ allowlists, exact matching, duplicate counting, and FCS rejection.
 ## Receive-stat lead: AP interface is refused, station interface remains open
 
 **Follow-up:** the [station testmode experiment](STATION_TESTMODE.md) unlocked
-MT7961's CE queries after idle mode entry; live sampling remains unproven.
+MT7961's CE queries after idle mode entry. A subsequent explicit RX-path write
+activated live counters and signal words; their units and probe-specific effects
+remain unvalidated.
 
 `research/rx_stat_query.py --usb-id 0e8d:7961` tested EXT `0xa4` QUERY,
 four-byte payloads `00 00 00 00`, `03 00 00 00`, `04 00 00 00`,
