@@ -80,7 +80,19 @@ PREAMBLE_RATES = (
     ("cck11_short", 7),
     ("ofdm_after", 0x4B),
 )
-ALLOWED_RATE_CODES = {rate for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES}
+# Connac3 STBC is bit14 (not Connac2 bit13). For one spatial stream,
+# upstream mt7915 test descriptors encode two space-time streams, NSS field1.
+# This is an independently received format experiment, not a gain claim.
+STBC_RATES = (
+    ("ht8_before", 0x488),
+    ("ht0_before", 0x80),
+    ("ht0_stbc", 0x4480),
+    ("ht0_after", 0x80),
+    ("ht8_after", 0x488),
+)
+ALLOWED_RATE_CODES = {
+    rate for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES
+}
 # Vendor gen4m 8fddb9d7 wlanAntPathFavorSelect: 0=WF0, 1=WF1,
 # 0x18=duplicated one-stream path. Connac2 TXD DW7 bits 15:11.
 # Keep DW6 selection bit 10 at the existing zero, as mt7915 test descriptors do.
@@ -93,7 +105,7 @@ SPATIAL_RATES = tuple(
 def suite_rates(suite, channel):
     if type(channel) is not int or channel not in (1, 6, 11, 36, 149):
         raise ValueError("only bounded non-DFS test channels")
-    if (channel <= 11) != (suite in ("lowband", "cck", "preamble")):
+    if (channel <= 11) != (suite in ("lowband", "cck", "preamble", "stbc")):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
     suites = {
         "baseline": RATES,
@@ -102,6 +114,7 @@ def suite_rates(suite, channel):
         "lowband": LOWBAND_RATES,
         "cck": CCK_RATES,
         "preamble": PREAMBLE_RATES,
+        "stbc": STBC_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -111,6 +124,8 @@ def suite_rates(suite, channel):
 def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
+    if code == 0x4480 and dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("STBC rate encoding is MT7925-only")
     if spe_idx is not None and (
         dev.CHIP != m.CHIP_MT7921 or code != 0x4B or spe_idx not in (0, 1, 24)
     ):
@@ -135,6 +150,8 @@ def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
 def program_rate(dev, code):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
+    if code == 0x4480 and dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("STBC rate encoding is MT7925-only")
     if dev.CHIP != m.CHIP_MT7925:
         return
     # mt7925/mac.c mt7925_mac_set_fixed_rate_table at c5a3bd91.
@@ -187,7 +204,18 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None):
             signals[phase].append(d["rssi"])
         phy = d.get("phy", {})
         fields = {
-            k: phy.get(k) for k in ("mode_name", "mcs", "nss", "bw_mhz", "gi", "ldpc", "rate_mbps")
+            k: phy.get(k)
+            for k in (
+                "mode_name",
+                "mcs",
+                "nss",
+                "nsts",
+                "stbc",
+                "bw_mhz",
+                "gi",
+                "ldpc",
+                "rate_mbps",
+            )
         }
         phys[phase][json.dumps(fields, sort_keys=True)] += 1
     return {
@@ -216,7 +244,7 @@ def main():
     p.add_argument("--fixed-bw", action="store_true", help="connac3 explicit 20 MHz TXD flag")
     p.add_argument(
         "--suite",
-        choices=("baseline", "streams", "spatial", "lowband", "cck", "preamble"),
+        choices=("baseline", "streams", "spatial", "lowband", "cck", "preamble", "stbc"),
         default="baseline",
     )
     args = p.parse_args()
@@ -226,6 +254,8 @@ def main():
         p.error("fixed-bw variant applies only to mt7925")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
+    if args.suite == "stbc" and args.transmitter != "mt7925":
+        p.error("STBC suite currently supports only the Connac3 transmitter")
     try:
         rates = suite_rates(args.suite, args.channel)
     except ValueError as exc:

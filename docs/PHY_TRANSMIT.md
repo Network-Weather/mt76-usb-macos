@@ -165,7 +165,44 @@ direct ITDR table-programming route is unchanged. Each trial reloaded normally.
 contains all three trials. No power increase, calibration writes, association,
 profile writes or beamforming/sounding transmission occurred.
 
-### Initial one-stream method
+### MT7925 HT STBC is independently received
+
+`--suite stbc --transmitter mt7925 --channel 1 --per-phase 4` sends20 paced,
+synthetic no-ACK Probe Requests with a fresh private nonce. Five phases use
+HT8/two-stream, HT0/one-stream, HT0/STBC, HT0/one-stream, HT8/two-stream.
+Only the established fixed-rate table changes; power,20MHz bandwidth, GI and
+LDPC remain unchanged. The suite is low-band-only and chip-guarded.
+
+The STBC rate is **`0x4480`**: Connac3 STBC bit14, space-time-streams-minus-one
+field1 at bits13:10, HT mode2 at bits9:6, MCS0. Connac2 uses a different STBC
+bit13 and is explicitly rejected for this code. The two-space-time-stream
+encoding follows the upstream test-mode convention, not an assumption that
+STBC means two independent spatial data streams.
+
+| Fresh channel1 run | HT8 before | HT0 before | HT0 STBC | HT0 after | HT8 after |
+|---|---|---|---|---|---|
+| First | 4/4 | 2/4 | **4/4** | 1/4 | 4/4 |
+| Repeat | 1/4 | 0/4 | **1/4** | 1/4 | 2/4 |
+
+Every exact STBC receipt decodes as **HT MCS0, NSS1, NSTS2, STBC=true**,20MHz,
+GI0, LDPC=false. Neighboring controls report STBC=false; HT8 has NSS2/NSTS2,
+and ordinary HT0 has NSS1/NSTS1. The receiving radio's PHY/FCS/full-frame
+checks establish the format, not the transmitter's status alone. The generic
+TX-status rate field does not include its separately encoded STBC indicator,
+so it is not used as STBC proof.
+
+The fresh repeat confirms the format despite poorer reception in every phase.
+This is **not a diversity-gain, calibrated power, throughput, or restored-link
+claim**. Device-reported RSSI remains roughly−101..−102 and the link is variable.
+Both alive checks and transmitter normal reload pass after both runs. The
+existing probe reloads only the transmitter; it does not claim a receiver reload.
+
+[Sanitized STBC evidence](../research/evidence/stbc-transmit-2026-09-05.json).
+Primary source at mt76 commit`c5a3bd91aa735b669618610d5f0ebfa5786845a6`:
+[Connac3 rate fields](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac3_mac.h),
+[upstream STBC/NSS test encoding](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7915/mac.c).
+
+### Initial one-stream method (historical baseline)
 
 All rate/descriptor facts come from mt76 baseline `c5a3bd91`:
 

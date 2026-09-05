@@ -126,6 +126,51 @@ def test_preamble_codes_change_only_short_preamble_bit():
     assert rates["cck11_short"] ^ rates["cck11_long"] == 4
 
 
+def test_stbc_uses_connac3_bit14_and_two_space_time_streams():
+    rates = p.suite_rates("stbc", 1)
+    assert len(rates) * 10 <= 60
+    code = dict(rates)["ht0_stbc"]
+    assert code == (1 << 14) | (1 << 10) | (2 << 6)
+    assert rates[0][1] == rates[-1][1] == 0x488
+    assert rates[1][1] == rates[-2][1] == 0x80
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925)
+    frame = p.c3.controlled_frame(0)
+    assert p.descriptor(dev, frame, 0, code) == p.descriptor(dev, frame, 0, 0x80)
+    with pytest.raises(ValueError, match="lowband"):
+        p.suite_rates("stbc", 36)
+
+
+def test_stbc_wrong_chip_never_writes():
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7921)
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.program_rate(dev, 0x4480)
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.descriptor(dev, b"", 0, 0x4480)
+
+
+def test_stbc_table_write_exact_rate_and_existing_selector():
+    class Device:
+        CHIP = m.CHIP_MT7925
+
+        def __init__(self):
+            self.writes = []
+
+        def wr(self, address, value):
+            self.writes.append((address, value))
+
+        def rr(self, address):
+            assert address == p.c3.ITCR
+            return 0
+
+    dev = Device()
+    p.program_rate(dev, 0x4480)
+    assert dev.writes == [
+        (p.c3.ITDR0, 0x4480),
+        (p.c3.ITDR1, 64),
+        (p.c3.ITCR, (1 << 31) | (1 << 16) | 18),
+    ]
+
+
 @pytest.mark.parametrize(
     ("suite", "channel"),
     [
