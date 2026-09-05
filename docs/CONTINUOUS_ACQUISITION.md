@@ -12,6 +12,8 @@ This is an additive acquisition API, not a networking driver or a claim of lossl
 - Frame and event queues are separately bounded, drop newest on overflow, and report
   received/delivered/dropped counts, depths and high-water marks. Full consumer queues
   never block the MCU response path. Raw queued data is sensitive and stays in memory.
+  Legacy MCU/MIB drop fields retain their narrow command-reader meaning; use the
+  session's frame/event drop counters for consumer-queue overflow.
 - Command deadlines include queueing and I/O. A missing reply, short write, or transport
   failure invalidates the session, even if a callback catches the exception. Do not reuse
   the four-bit sequence after an ambiguous timeout; do a fresh bring-up instead.
@@ -60,9 +62,10 @@ These are replay tests, not hardware qualification.
 
 ## Remaining acceptance work
 
-- Python and C have passed initial short hardware runs with MIB queries and retunes
-  on both reference radios. Longer-run acceptance and dated evidence follow separately.
-- Multi-hour passive soak, cancellation and clean reinitialization evidence.
+- Python and C have passed short hardware runs with MIB queries and retunes;
+  C also passed five-minute stress runs. Both passed cancellation and clean reinitialization.
+  See [dated acceptance evidence](TESTING.md#continuous-acquisition-sessions-2026-09-04).
+- Multi-hour passive soak and leak evidence remain outstanding.
 - Keep hot-unplug and warm adoption explicitly unqualified until exercised.
 
 ## Native C checkpoint
@@ -84,7 +87,7 @@ C callbacks therefore cannot have a guaranteed return deadline. After successful
 drain remaining packets, then destroy the session and close the device. Serialize lifecycle
 calls and ensure all API callers have returned before destroying the session.
 
-Offline checkpoint: 594 pytest tests, native tests, ASan/UBSan and a separate native
+Latest offline checkpoint: 613 pytest tests, native tests, ASan/UBSan and a separate native
 ThreadSanitizer replay run pass. Shared routing fixtures cover all 32 packet types,
 flag variants, descriptor boundaries, and 2,000 deterministic malformed records.
 Native replay covers overflow, stale replies, 32-command sequence wrap, timeouts,
@@ -108,3 +111,7 @@ malformed input and undecoded frames. Off-requested-channel observations are ret
 and counted, not automatically treated as decoding faults. Delivery latency includes
 consumer scheduling/command waits; it is not over-the-air latency. Heartbeats do not perform
 the final register-health check (native `register_alive_after` is null until the summary).
+
+`scripts/session_lifecycle.py --implementation c|python --usb-id VID:PID --fw DIR`
+tests SIGTERM on its own child followed by fresh bring-up. Stopping the worker stops host
+acquisition; it does not promise firmware power-down or preservation of device FIFO contents.

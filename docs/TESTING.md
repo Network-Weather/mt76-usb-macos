@@ -982,7 +982,80 @@ TX power byte 250, consistent with signed -6 after a 32-count reduction from 26.
 Both radios remain alive, and transmitter firmware cleanup succeeds. No decoding
 boundary or absolute sensitivity rating was established by these short probes.
 
+## Continuous acquisition sessions (2026-09-04)
+
+Local date 2026-09-04 / UTC 2026-09-05, Apple Silicon macOS 26.6.1, Python 3.14.7,
+the same checksum-pinned firmware and reference ALFA `0e8d:7961` / A9000 `0846:9072`.
+The [session contract](CONTINUOUS_ACQUISITION.md) is additive to existing capture APIs.
+[Redacted machine-readable evidence](../research/evidence/continuous-acquisition-2026-09-04.json)
+retains initial runs, native stress results, all cancellation/restart phases, source
+checkpoints and untested cases. No firmware, raw packets or network identifiers are retained.
+
+The native stress binary was built from `5740d4f`. Each radio ran for five minutes,
+alternating 5 GHz channels 36/149 at 20 MHz every two seconds and requesting primary CCA
+about once per second. This is a bounded qualification, **not a multi-hour soak**.
+
+| Native five-minute run | MT7961 | MT7925 |
+| --- | ---: | ---: |
+| Decoded frames delivered | 16,828 | 23,631 |
+| Successful retunes | 146 | 146 |
+| Successful CCA queries | 289 | 290 |
+| Matched MCU replies | 581 | 436 |
+| Frame queue high-water | 5 / 256 | 11 / 256 |
+| Software queue drops / USB errors / malformed records | 0 / 0 / 0 | 0 / 0 / 0 |
+| Frames received during retune callbacks and preserved | 36 | 42 |
+| Off-requested-channel observations retained | 132 | 159 |
+| Maximum host retune call, including queueing | 529.531 ms | 345.149 ms |
+| Register alive after stop | yes | yes |
+
+Every received frame was delivered and decoded, every delivered frame had its raw hardware
+timestamp, and no unmatched replies or status events occurred in these stress runs. The
+MT7961's two-command retune explains its extra replies. Per-frame descriptor channel remains
+the observed channel; queue generation only records host control state. Retune latency and
+packet delivery latency are not direct measurements of physical RF blind time. No assertion
+of zero over-the-air loss follows from zero software drops. These relatively quiet dwells
+also do not establish saturation performance or absence of firmware-internal loss.
+
+Initial Python 30-second runs delivered 1,629 / 1,718 frames, with 28 CCA queries and five
+retunes per radio. Initial native 60-second runs delivered 2,776 / 4,134 frames, with 57
+queries and 11 retunes per radio. All had zero reported queue drops, USB errors or undecoded
+frames and successful health checks. Their development-snapshot provenance is explicit in
+the evidence; they precede the final timing and setup-counter reporting refinements.
+
+Final code checkpoint `1dfa505` was tested with `scripts/session_lifecycle.py` on both radios,
+once for C and once for Python. Each of the four cases sends SIGTERM about 2.2 seconds after
+the probe reports ready, requires orderly exit 130 and successful register health, then
+starts a fresh process, reloads firmware and captures for three seconds. **All eight phases
+passed**, with balanced frame accounting and no queue drops, USB errors or legacy MCU frame
+discards. This validates process cancellation and clean reinitialization, not hot-unplug,
+SIGKILL or cancellation at a deterministically chosen in-flight USB instruction.
+
+Commands (run one process per dongle; substitute either reference USB ID):
+
+```sh
+make -C c mt76_session_probe
+c/mt76_session_probe --usb-id 0e8d:7961 --fw /path/to/firmware --seconds 300 --hop-seconds 2
+python scripts/session_probe.py --usb-id 0846:9072 --fw /path/to/firmware --seconds 30
+python scripts/session_lifecycle.py --implementation c --usb-id 0e8d:7961 --fw /path/to/firmware
+python scripts/session_lifecycle.py --implementation python --usb-id 0846:9072 --fw /path/to/firmware
+```
+
+Offline: 613 tests pass, alongside the C suites, ASan/UBSan, a separate native TSan replay
+run and zero diagnostics from Clang analysis of the session and probe. Shared fixtures
+cover every type/flag combination, DMA boundaries and malformed records; lifecycle tests
+exercise sequence wrap, stale replies, overflow, short writes, swallowed timeout errors,
+small reply buffers, owner guards, queue-full refusal and callback/stop races.
+
+Remaining: multi-hour soak and leak evidence, timestamp-wrap endurance, physical endpoint
+stalls, hot-unplug, suspend/resume and session-specific tri-band/wide-channel regression.
+Warm adoption and automatic recovery are deliberately unsupported. Arbitrary blocking
+application callbacks cannot be forcibly cancelled. C retains caller memory until callback
+exit; a stop timeout in either implementation retains ownership rather than closing live USB.
+
 ## Native C acquisition parity (2026-09-04)
+
+The subsequent [continuous-session qualification](#continuous-acquisition-sessions-2026-09-04)
+is separately scoped; the full parity sweeps below are not session soak evidence.
 
 R30 implementation completed on `feat/c-acquisition-parity`; Python reference
 `6081908`. Native code checkpoints: `da3ea36` RX metadata, `44aac54` MIB/G5,

@@ -9,7 +9,8 @@ Current work on `feat/continuous-acquisition`; not yet merged. See
 - [x] Native C worker, copied packet queues, ownership guards, safe callback lifetime.
 - [x] Shared routing replay, overflow/sequence/cancellation tests, ASan/UBSan and TSan.
 - [x] Initial passive MIB/retune hardware checks in both languages on both reference adapters.
-- [ ] Longer capture, cancellation, clean reinitialization and durable evidence.
+- [x] Five-minute native stress, Python/C cancellation, clean reinitialization and
+  [durable evidence](docs/TESTING.md#continuous-acquisition-sessions-2026-09-04).
 - [ ] Multi-hour passive soak; keep hot-unplug and warm adoption explicitly unqualified.
 - [ ] Review and merge after evidence gates, retaining honest retune/queue-loss limits.
 

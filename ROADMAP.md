@@ -86,7 +86,8 @@ on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#retune-frame-loss-2026-09-02)):
 commands totalling about 16 ms, and with the caller draining continuously it drops a median of one
 frame per hop and at most eight, at 100 to 250 frames per second. That is a 16 ms blind window per
 hop, not bulk loss. The device object now carries the drop counters, so any caller can attribute
-lost frames to the command that lost them; R5 turns that into a queue that loses nothing.
+lost frames to the command that lost them; R5 preserves command-time frames in bounded
+queues and makes any consumer-overflow losses explicit.
 
 Done when one reader drains the endpoint and demultiplexes into an MCU-reply queue and a frame
 queue; startup, stop, retune, and device-loss behavior have explicit states; cancellation does
@@ -95,8 +96,9 @@ USB errors, and current channel are observable. Cold boot, warm reattach, and re
 distinct transitions; a warm path must drain or classify buffered RX without accidentally
 accepting a stale MCU response.
 
-Implementation is underway on `feat/continuous-acquisition`. Short Python/C hardware runs
-pass on both reference radios; multi-hour soak is not yet qualified. The first API requires
+Implementation is on `feat/continuous-acquisition`. Short Python/C hardware runs, five-minute
+native stress and cancellation/reinitialization checks pass on both reference radios;
+multi-hour soak is not yet qualified. The first API requires
 explicit fresh bring-up and refuses warm adoption rather than accepting uncertain state.
 It removes deliberate command-time frame discards, not physical RF retune blind intervals;
 bounded consumer queues may still overflow, with explicit counters.
