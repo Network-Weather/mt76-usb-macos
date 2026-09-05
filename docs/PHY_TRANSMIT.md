@@ -31,6 +31,40 @@ succeeded on all three runs.
 
 ## Protocol pointers and reproduction
 
+### 2.4GHz follow-up: usable forward direction, reverse still unverified
+
+`--suite lowband --channel 1 --per-phase 4` uses six bounded phases at20MHz:
+OFDM6, HT0/1SS, HT8/2SS, HE0/1SS, HE0/2SS, OFDM6. It excludes VHT and all
+wider bandwidths; the existing60-packet ceiling,50ms spacing, no-ACK policy,
+fresh private nonce and independent whole-frame/FCS/PHY checks remain. Only
+channels1/6/11 accept this suite; the other suites still require36/149.
+
+Two fresh MT7925-transmitter runs at12:00:43 and12:01:34 UTC on2026-09-05
+each submitted24 frames. The MT7961 receiver independently reported:
+
+| Setting | Run1 exact receipts | Run2 exact receipts | Verified receive PHY |
+|---|---:|---:|---|
+| OFDM before | 4/4 | 4/4 | OFDM6,1SS,20MHz |
+| HT0 | 4/4 | 4/4 | HT MCS0,1SS,20MHz |
+| HT8 | 4/4 | 4/4 | HT MCS8,2SS,20MHz |
+| HE0,1SS | 1/4 | 0/4 | One HE-SU MCS0,1SS receipt only |
+| HE0,2SS | 4/4 | 4/4 | HE-SU MCS0,2SS,20MHz |
+| OFDM after | 4/4 | 4/4 | OFDM6,1SS,20MHz |
+
+This establishes a reproducible **2.4GHz forward probing path** for OFDM,
+HT1/2SS and HE2SS. HE1SS remains unreliable. Raw receiver signal values were
+roughly−94..−92, so these successes do not establish restored RF power or a
+healthy long-range link. No throughput/interoperability claim is made.
+
+A reciprocal MT7961-transmitter run at12:01:06 UTC submitted24 frames but the
+MT7925 independently received none. Both radios remained alive after all three
+runs, and each transmitter's normal firmware reload succeeded. The reverse RF
+problem remains unresolved; no additional power, antenna, factory calibration
+or nonvolatile writes were attempted. The receiver stayed in normal monitor
+mode; the cleanup evidence specifically covers the transmitter reload, not a
+claimed second receiver reload inside this older probe.
+[Lowband evidence](../research/evidence/lowband-transmit-2026-09-05.json).
+
 ### Two-stream follow-up (2026-09-05 UTC)
 
 **MT7925 two-stream HT, VHT and HE-SU reached the other dongle**, with exact

@@ -76,6 +76,32 @@ def test_stream_suite_encodes_nss_minus_one_and_stays_bounded():
     assert p.STREAM_RATES[0][1] == p.STREAM_RATES[-1][1] == 0x4B
 
 
+@pytest.mark.parametrize("channel", [1, 6, 11])
+def test_lowband_suite_has_no_vht_and_keeps_packet_ceiling(channel):
+    rates = p.suite_rates("lowband", channel)
+    assert len(rates) * 10 <= 60
+    assert {code >> 6 & 15 for _, code in rates} == {1, 2, 8}
+    assert rates[0][1] == rates[-1][1] == 0x4B
+    assert dict(rates)["ht8_2ss"] == 0x488
+
+
+@pytest.mark.parametrize(
+    ("suite", "channel"),
+    [
+        ("baseline", 1),
+        ("streams", 6),
+        ("spatial", 11),
+        ("lowband", 36),
+        ("lowband", 149),
+        ("lowband", True),
+        ("baseline", 37),
+    ],
+)
+def test_rate_suite_geometry_rejected_before_usb(suite, channel):
+    with pytest.raises(ValueError, match=r"bounded|lowband"):
+        p.suite_rates(suite, channel)
+
+
 @pytest.mark.parametrize("category", [0, 3, 4, 5, 6])
 def test_receive_query_shape(category):
     assert request(category) == bytes((category, 0, 0, 0))
