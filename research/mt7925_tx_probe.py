@@ -101,7 +101,7 @@ def tx_status(raw, *, include_timing=False):
                 "power_raw": words[1] & 255,
                 "ack_error_bits": (words[0] >> 16) & 7,
                 "error_bits_16_22": (words[0] >> 16) & 127,
-                "tx_count_format0": (words[5] >> 25) & 31,
+                "tx_count_format0": (words[5] >> 25) & 31 if (words[0] >> 23) & 3 == 0 else None,
                 "pid": words[3] >> 24,
             }
         )
@@ -115,6 +115,15 @@ def tx_status(raw, *, include_timing=False):
                 rate_stbc=bool(words[3] & (1 << 7)),
                 front_time_raw_format0=(words[5] & 0x1FFFFFF)
                 if records[-1]["format"] == 0
+                else None,
+                mpdu_counters_format1_hypothesis={
+                    name: {"count": words[index] >> 24, "bytes": words[index] & 0xFFFFFF}
+                    for name, index in (("tx", 5), ("fail", 6), ("retry", 7))
+                }
+                if records[-1]["format"] == 1
+                else None,
+                format1_words5_7_raw=[hex(w) for w in words[5:8]]
+                if records[-1]["format"] == 1
                 else None,
             )
     return records

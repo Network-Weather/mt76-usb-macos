@@ -153,6 +153,12 @@ TABLE_SPATIAL_RATES = tuple(
     )
 )
 TABLE_SPATIAL_SPE = (None, 0, None, 1, 24, None)
+STATUS_FORMAT_RATES = (
+    ("ht8_format0_before", 0x488),
+    ("ht8_format1", 0x488),
+    ("ht8_format0_after", 0x488),
+)
+STATUS_FORMATS = (0, 1, 0)
 HE_TABLE_SPATIAL_RATES = tuple(
     (name.replace("ht0", "he0"), 0x200) for name, _ in TABLE_SPATIAL_RATES
 )
@@ -196,6 +202,7 @@ def suite_rates(suite, channel):
             "bandwidth",
             "table-spatial",
             "he-table-spatial",
+            "tx-status-format",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -217,6 +224,7 @@ def suite_rates(suite, channel):
         "bandwidth": WIDTH_RATES,
         "table-spatial": TABLE_SPATIAL_RATES,
         "he-table-spatial": HE_TABLE_SPATIAL_RATES,
+        "tx-status-format": STATUS_FORMAT_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -225,9 +233,17 @@ def suite_rates(suite, channel):
     return suites[suite]
 
 
-def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None, *, width_mhz=20):
+def descriptor(
+    dev, frame, seq, code, fixed_bw=False, spe_idx=None, *, width_mhz=20, status_format=0
+):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
+    if (
+        type(status_format) is not int
+        or status_format not in (0, 1)
+        or (status_format and (dev.CHIP != m.CHIP_MT7925 or code != 0x488 or width_mhz != 20))
+    ):
+        raise ValueError("alternate status format requires MT7925 HT8/20MHz")
     if type(width_mhz) is not int or width_mhz not in (20, 40):
         raise ValueError("bounded20/40MHz transmit only")
     if width_mhz == 40 and (dev.CHIP != m.CHIP_MT7925 or code not in (0x488, 0x600)):
@@ -240,6 +256,9 @@ def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None, *, width_mhz
         raise ValueError("spatial experiment is Connac2 OFDM6 with SPE 0/1/24 only")
     if dev.CHIP == m.CHIP_MT7925:
         data = bytearray(c3.build_txwi(frame, seq, disable_mat=True))
+        if status_format:
+            word = struct.unpack_from("<I", data, 20)[0]
+            struct.pack_into("<I", data, 20, word | (1 << 8))
         if fixed_bw or width_mhz == 40:
             # connac3_mac.h: FIXED_BW bit25, BW bits24:22 codes0=20/1=40MHz.
             word = struct.unpack_from("<I", data, 24)[0]
@@ -487,6 +506,7 @@ def main():
             "bandwidth",
             "table-spatial",
             "he-table-spatial",
+            "tx-status-format",
         ),
         default="baseline",
     )
@@ -509,6 +529,8 @@ def main():
         p.error("timing padding requires explicit --tx-timing")
     if args.suite == "timing-burst" and not args.tx_timing:
         p.error("timing-burst requires explicit --tx-timing")
+    if args.suite == "tx-status-format" and not args.tx_timing:
+        p.error("tx-status-format requires explicit --tx-timing for format-aware telemetry")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
     if (
@@ -523,6 +545,7 @@ def main():
             "bandwidth",
             "table-spatial",
             "he-table-spatial",
+            "tx-status-format",
         )
         and args.transmitter != "mt7925"
     ):
@@ -545,6 +568,7 @@ def main():
         "fixed_bw": args.fixed_bw or args.suite == "bandwidth",
         "suite": args.suite,
         "tx_timing": args.tx_timing,
+        "requested_status_formats": STATUS_FORMATS if args.suite == "tx-status-format" else None,
         "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
         "table_spatial_codes": TABLE_SPATIAL_SPE
@@ -688,6 +712,9 @@ def main():
                                     args.fixed_bw or args.suite == "bandwidth",
                                     spe,
                                     width_mhz=tx_width,
+                                    status_format=STATUS_FORMATS[phase]
+                                    if args.suite == "tx-status-format"
+                                    else 0,
                                 )
                                 + frame
                             )

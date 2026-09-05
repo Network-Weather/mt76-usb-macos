@@ -25,6 +25,10 @@ fixed-rate programming, TX power changes, ACK requests or new firmware command
 are added. Noise/RCPI fields are deliberately not called measurements from these
 no-ACK transmissions.
 
+Later research adds optional bandwidth/format diagnostics below. Format0's
+default output remains unchanged; `tx_count_format0` now returns unknown for
+other formats instead of applying the format0 mask indiscriminately.
+
 ## Rate and128-byte length controls
 
 Both fresh channel6/20MHz runs send24 no-ACK Probe Requests at50ms spacing:
@@ -126,6 +130,51 @@ remainder total end-to-end queue delay. No external interference source was
 introduced or inferred.
 
 [Sanitized burst controls and analysis](../research/evidence/tx-status-burst-timing-2026-09-05.json).
+
+## Selectable status format1: confirmed switch, rejected counter interpretation
+
+The pinned Connac3 header defines TXD word5 bit8 as TX_STATUS_FMT. The vendor
+[Connac3 TXD header](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic/nic_connac3x_tx.h)
+independently names the same bit. `--suite tx-status-format --channel 6
+--transmitter mt7925 --per-phase 4 --tx-timing --acknowledge-experimental-transmit`
+sends12 constant HT8/2SS/20MHz no-ACK probes, requesting formats0/1/0 in three
+phases. Only TXD5 changes0x403→0x503→0x403. Power and50ms pacing are unchanged.
+
+Two fresh runs, with65- and193-byte MAC frames, each receive **4/4 in every
+phase** and12 matched statuses. The requested0/1/0 format is reflected exactly
+in the statuses. All packets decode independently as HT MCS8/NSS2,20MHz, GI0,
+no LDPC/STBC. Both alive checks and transmitter normal reload pass.
+
+However, the shared header's `MT_TXS5/6/7_F1_MPDU_*` interpretation is **not
+validated on this path**. Its high8/low24 split reports TX-count130 and retry-
+count255 for every format1 record; alleged TX-byte counts rise from52458 to57605
+for identical65-byte probes, and53237 to58298 for identical193-byte probes.
+Alleged failed bytes are roughly28KB despite all controlled frames arriving.
+These are not promoted to transmission, failure, retry or byte measurements.
+
+Instead, DW5 resembles the format0 layout: bit31=1, bits29:25=1, and its low25
+bits advance continuously through the format switch. Using those low25 bits
+as a **front-time candidate**, the same timing combination across all12 records
+in each run gives:
+
+| MAC length | `32*(DW5_low25 + delay) - timestamp` range | Spread |
+|---|---|---|
+| 65 | 136468..136491 | **23µs** |
+| 193 | 132482..132508 | **26µs** |
+
+This is consistent with the earlier32µs clock relation and a common timing
+layout despite the format flag. It does not prove the full format1 ABI or a
+particular hardware/firmware remapping cause. DW6/7 are not labeled calibrated
+noise or ACK signal; these remain no-ACK probes. The parser exposes explicitly
+named `mpdu_counters_format1_hypothesis` and raw words5..7 for opt-in research,
+while leaving format0-only interpreted fields null on format1. The existing
+CCK timing analyzer still rejects non-format0 inputs.
+
+The pinned MT7925 driver accepts status formats0/1 but does not consume these
+F1 counter definitions in `mt7925_mac_add_txs_skb`; this finding is not presented
+as a Linux counter bug. The useful result is a selectable diagnostic report
+and a demonstrated reason not to import a shared-header layout as measured fact.
+[Sanitized format/length controls](../research/evidence/tx-status-format-2026-09-05.json).
 
 ## Reproduce
 

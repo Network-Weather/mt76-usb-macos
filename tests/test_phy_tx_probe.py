@@ -33,6 +33,32 @@ def test_rate_allowlist():
         p.descriptor(dev, b"", 0, 0xFFFF)
 
 
+def test_alternate_status_format_changes_only_word5_bit8():
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925)
+    frame = p.c3.controlled_frame(0)
+    baseline = p.descriptor(dev, frame, 0, 0x488)
+    alternate = p.descriptor(dev, frame, 0, 0x488, status_format=1)
+    assert baseline[:20] == alternate[:20]
+    assert baseline[24:] == alternate[24:]
+    assert struct.unpack_from("<I", alternate, 20)[0] == 0x503
+    assert p.STATUS_FORMATS == (0, 1, 0)
+    assert {code for _, code in p.suite_rates("tx-status-format", 6)} == {0x488}
+
+
+@pytest.mark.parametrize(
+    ("chip", "code", "fmt"),
+    [
+        (m.CHIP_MT7921, 0x488, 1),
+        (m.CHIP_MT7925, 0x80, 1),
+        (m.CHIP_MT7925, 0x488, 2),
+        (m.CHIP_MT7925, 0x488, True),
+    ],
+)
+def test_alternate_status_format_is_bounded(chip, code, fmt):
+    with pytest.raises(ValueError, match="status format"):
+        p.descriptor(SimpleNamespace(CHIP=chip), b"", 0, code, status_format=fmt)
+
+
 @pytest.mark.parametrize(
     ("suite", "code", "ltf"), [("table-spatial", 0x80, 0), ("he-table-spatial", 0x200, 1)]
 )
