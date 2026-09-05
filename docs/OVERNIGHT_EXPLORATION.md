@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**RF-init RMAC bit0 is not sufficient for normal CFO/SNR:**
+[One-bit and combined RXV controls](LEGACY_ICS.md#rf-init-rmac-bit0-does-not-fill-normal-p-rxv2)
+receive24/24 exact packets and24/24 own ICS headers across two complete runs;
+all CFO/SNR fields remain−1/63. A failed3/4 prerequisite is retained separately.
+All28 TX statuses and candidate/RXV/ICS restorations plus reloads pass. The
+next source-derived target is RF-init's five fields at820e7050, not a sweep.
+
 **Normal RXV START does not fill CFO/SNR; source quiesce is reversible:**
 [Pinned old-chip ROM mapping and controls](LEGACY_ICS.md#normal-rxv-start-is-insufficient-quiesce-is-a-separate-operation)
 resolve820e3014 bits8/7/4/2/0. Both activated START windows retain all-one

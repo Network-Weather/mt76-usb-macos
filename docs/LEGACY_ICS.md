@@ -284,3 +284,36 @@ quiescence. The first experiment receives19/20 ordinary packets; the corrected
 one16/16 outside intentional quiescence. All44 submissions across these three
 attempts have TX status. USB leading-record counts are not lossless RF-delivery
 statistics. [Complete sanitized attempts and historical-label correction](../research/evidence/legacy-normal-rxv-2026-09-05.json).
+
+## RF-init RMAC bit0 does not fill normal P-RXV2
+
+RF initialization calls `0094387c(0,band)` at `00933294/009332a6`.
+This writes abstract key12038a. Live domain18 slot02014f4c points through
+020138dc to ROM mapper008270aa, table0084abd4; entry0084acb4 points to
+0084b104, offset604, count13. Field index10 is bit0, hence band0 register
+**820e5604 bit0**. Adjacent RX-path fields12038b/12038c are bits21:20 and26;
+their normal values already match the traced RX-start values3/1.
+
+The [candidate probe](../research/legacy_prxv2_probe.py) pins firmware, mapper
+and wrapper hashes, verifies field descriptors, and changes only bit0. This
+is a source-derived candidate, **not an established P-RXV2 enable bit**.
+Two completed baseline/candidate/restored runs each receive12/12 exact
+good-FCS HT8 packets and12/12 matching own ICS headers. The first clears bit0
+alone; the second also enables RX reporting and RXV START. Both observe
+24f00903 →24f00902 →24f00903; the combined run observes RXV91 →1 after the
+traced quiesce/resume handshake. Every P-RXV2 CFO/SNR value remains−1/63.
+Thus neither this bit alone nor this tested combination recovers normal-mode
+CFO/SNR. Eight candidate-window packets provide the controlled negative.
+
+An earlier attempt receives3/4 normal prerequisites and skips the candidate
+clear. Its unchanged baseline/restoration writes still occurred; it is not a
+zero-MMIO-write run. All28 submissions across the three attempts have TX
+status;27 ordinary packets and27 own ICS headers are observed. Candidate,
+optional RXV and ICS masks restore successfully, and both radios reload on
+every exit. [All sanitized attempts](../research/evidence/legacy-prxv2-candidate-2026-09-05.json).
+
+The RF-init patch callback `e027c732(3)` updates a software bitset and invokes
+a common callback with operation6 and value2; it is not a direct P-RXV2
+register setter. Another traced setup wrapper0094be50 selects fields40080..84
+at820e7050. Their normal values differ from the RF-init arguments; live RF-mode
+comparison is the next test, before considering any direct activation.
