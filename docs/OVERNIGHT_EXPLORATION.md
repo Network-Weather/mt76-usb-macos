@@ -5,6 +5,16 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Normal RXV START does not fill CFO/SNR; source quiesce is reversible:**
+[Pinned old-chip ROM mapping and controls](LEGACY_ICS.md#normal-rxv-start-is-insufficient-quiesce-is-a-separate-operation)
+resolve820e3014 bits8/7/4/2/0. Both activated START windows retain all-one
+CFO/SNR while normal packets arrive. The actual quiesce routine clears both
+start bits and handshakes bit2: ordinary delivery stops, but4/4 newly submitted
+headers still appear in ICS; normal RX resume restores delivery and all masks.
+The initial argument0-as-STOP interpretation was wrong and is explicitly
+corrected; its failed masked cleanup needed reload. A repeat failed the normal
+prerequisite and made no RXV writes. All radios reloaded successfully.
+
 **Staged RF entry brackets availability without overclaiming causality:**
 [Two20-frame runs](LEGACY_ICS.md#staged-entry-brackets-stream-availability-not-the-filling-bit)
 receive8/8 normal controls, then7/8 RF START headers with populated CFO/SNR.

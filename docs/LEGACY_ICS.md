@@ -226,3 +226,61 @@ single vector-enable write. RF initialization`00933114` independently calls
 `(band<<16)+680/681`; **these are field indices, not register masks**. Resolving
 their old-chip ROM descriptors is the next narrow target. No old-chip register
 address is inferred from the newer radio's similarly named controls.
+
+## Normal RXV START is insufficient; quiesce is a separate operation
+
+The older radio's live ROM resolves the control without a cross-chip guess:
+domain0 slot`02014f04` → descriptor`020138d4` → mapper`0082a322`;
+table`0084b7a4`, entry`0084b944`, bit-pair table`0084bb0c`, register offset14,
+band0 base`820e3000`. Thus the five keys680..684 map to
+**820e3014 bits8,7,4,2,0**, respectively: TX-report enable, RX-report enable,
+RXV START, quiesce request and ordinary RX START. The mapped names for bits0/4
+also agree with the pinned mt76 MT7615 definitions, but that different chip's
+register recipe is not used as old-chip address evidence.
+
+Live slot`008226a8` points to`0082a3f4`, which clears key683, then selects
+key682 for argument1 or key684 for argument0. **Argument0 does not mean STOP.**
+An initial interpretation and experiment labeled it `rxv_stopped`; the retained
+evidence explicitly corrects that label. START stuck at1 after that attempt,
+and normal reload restored the original state. No successful masked cleanup is
+claimed for it.
+
+The separate disable caller`0094a950` reaches live slot`00822a58` →
+**0082a452**. This routine clears keys684/682, writes1 to683 and waits for683
+to clear, bounded by1000 iterations. Its companion ordinary-RX selection then
+resumes delivery. The480-byte ROM window at`0082a320` hashes to
+`1e4fb6f19419b2281f039ee6e8fdfed49feadbff1bbe1ea3341258b582706bb4`.
+The [normal RXV probe](../research/legacy_rxv_control_probe.py) verifies that
+hash, the live pointers and exact bit descriptors before any control writes.
+Only RX reporting is enabled; TX reporting is refused. Full normal reload is
+still mandatory on every exit, even when masked restoration succeeds.
+
+Two activated attempts establish a useful negative: RX-report enable0x81 and
+RXV START0x91 preserve ordinary HT packet reception, but **all eight own packets
+in the two START windows retain CFO−1/SNR63** at P-RXV2 offset104. These controls
+alone do not enable RF-mode CFO/SNR filling. No new ordinary RX-vector packet
+type appears.
+
+The corrected quiesce run separately establishes a packet-path control:
+
+| Phase | 820e3014 | Exact normal good-FCS | Own ICS headers |
+| --- | --- | --- | --- |
+| Baseline ICS | 1 | 4/4 | 4/4 |
+| RX report only | 81 | 4/4 | 4/4 |
+| RXV START | 91 | 4/4 | 4/4 |
+| Quiesced | 80 | 0/4 | 4/4 |
+| Ordinary RX resumed, report off | 1 | 4/4 | 4/4 |
+
+The quiesced headers have sequences first submitted **after** quiescence, so
+they are not merely pre-quiescence leftovers. ICS continues receiving current
+diagnostics while ordinary full-packet delivery is suppressed; this is not a
+physical RF shutdown. All20 ICS fields remain all-one. Final quiesce reads0,
+ordinary RX resume reads1, and all five owned bits match their original values
+before reload. ICS masks and both-radio reloads also pass.
+
+A fresh repeat receives only2/4 required normal prerequisites (but4/4 ICS
+headers) and correctly skips all RXV writes; it is not a repeat validation of
+quiescence. The first experiment receives19/20 ordinary packets; the corrected
+one16/16 outside intentional quiescence. All44 submissions across these three
+attempts have TX status. USB leading-record counts are not lossless RF-delivery
+statistics. [Complete sanitized attempts and historical-label correction](../research/evidence/legacy-normal-rxv-2026-09-05.json).

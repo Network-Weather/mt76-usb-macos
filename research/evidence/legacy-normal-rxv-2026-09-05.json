@@ -1,0 +1,2348 @@
+{
+  "date": "2026-09-05",
+  "method": "Pinned MT7961 normal-mode RX-report and RXV-start controls; corrected quiesce sequence; no ambient bytes",
+  "historical_correction": "First run's rxv_stopped/rxv_stop labels were an incorrect hypothesis: that code writes ordinary RX_START bit0, not STOP. Full ROM caller tracing identifies the separate quiesce routine; later runs use it. Failed prerequisite attempt makes no RXV control writes.",
+  "runs": [
+    {
+      "date_utc": "2026-09-05T22:01:40.444307+00:00",
+      "max_submissions": 20,
+      "channel": 6,
+      "phases": [
+        {
+          "elapsed_seconds": 0.6000215830281377,
+          "attempts": 600,
+          "submitted_sequences": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "exact_good_phy": {
+            "0": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "1": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "2": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "3": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 110,
+            "12": 34
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 34,
+            "ics_type12_valid": 34,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 3
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 0,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 1,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 2,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 3,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                12,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "normal_ics",
+          "rxv_after_control": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "rxv_after_capture": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6003357500303537,
+          "attempts": 528,
+          "submitted_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_phy": {
+            "4": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "5": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "6": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "7": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 4,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 5,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 6,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 7,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 35,
+            "12": 35
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 35,
+            "ics_type12_valid": 35,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 2
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 4,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 5,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 6,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 7,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "rx_report_only",
+          "rxv_after_control": {
+            "raw": "0x81",
+            "owned_mask": "0x81"
+          },
+          "rxv_after_capture": {
+            "raw": "0x81",
+            "owned_mask": "0x81"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6033068329561502,
+          "attempts": 516,
+          "submitted_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_phy": {
+            "8": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "9": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "10": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "11": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 8,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 9,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 10,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 11,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 35,
+            "12": 35
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 35,
+            "ics_type12_valid": 35,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 4
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 8,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                17,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 9,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 10,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                17,
+                20
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 11,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                18
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "rxv_started",
+          "rxv_after_control": {
+            "raw": "0x91",
+            "owned_mask": "0x91"
+          },
+          "rxv_after_capture": {
+            "raw": "0x91",
+            "owned_mask": "0x91"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6037080830428749,
+          "attempts": 519,
+          "submitted_sequences": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "exact_good_phy": {
+            "12": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "13": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "14": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "15": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 12,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 13,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 14,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 15,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 35,
+            "12": 35
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 35,
+            "ics_type12_valid": 35,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 4
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 12,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                17,
+                20
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 13,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                16,
+                18
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 14,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                18,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 15,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                18
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "rxv_stopped",
+          "rxv_after_control": {
+            "raw": "0x91",
+            "owned_mask": "0x91"
+          },
+          "rxv_after_capture": {
+            "raw": "0x91",
+            "owned_mask": "0x91"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6001057499088347,
+          "attempts": 510,
+          "submitted_sequences": [
+            16,
+            17,
+            18,
+            19
+          ],
+          "exact_good_phy": {
+            "16": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "17": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "18": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 16,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 17,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 18,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 19,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 30,
+            "12": 30
+          },
+          "in_memory_matching": {
+            "normal_retained": 3,
+            "good_complete_normal": 3,
+            "ics_retained": 30,
+            "ics_type12_valid": 30,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 3,
+              "mac_header24": 3,
+              "timestamp4": 3,
+              "prxv8": 3
+            },
+            "records_with_signature_match": {
+              "mac_header24": 3
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 3
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 3,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 16,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                18,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 17,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                18
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 18,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                16,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "report_off",
+          "rxv_after_control": {
+            "raw": "0x11",
+            "owned_mask": "0x11"
+          },
+          "rxv_after_capture": {
+            "raw": "0x11",
+            "owned_mask": "0x11"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        }
+      ],
+      "verified_ics": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "verified_rxv": {
+        "base": "0x82a320",
+        "bytes": 480,
+        "sha256": "1e4fb6f19419b2281f039ee6e8fdfed49feadbff1bbe1ea3341258b582706bb4",
+        "field_bits": [
+          8,
+          7,
+          4,
+          2,
+          0
+        ]
+      },
+      "original_rxv": {
+        "raw": "0x1",
+        "owned_mask": "0x1"
+      },
+      "rxv_stop": {
+        "raw": "0x11",
+        "owned_mask": "0x11"
+      },
+      "rxv_report_off": {
+        "raw": "0x11",
+        "owned_mask": "0x11"
+      },
+      "rxv_mask_restored": false,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ],
+      "rxv_after_reload": {
+        "raw": "0x1",
+        "owned_mask": "0x1"
+      }
+    },
+    {
+      "date_utc": "2026-09-05T22:04:16.625411+00:00",
+      "max_submissions": 20,
+      "channel": 6,
+      "phases": [
+        {
+          "elapsed_seconds": 0.601782790850848,
+          "attempts": 564,
+          "submitted_sequences": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "exact_good_phy": {
+            "0": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "1": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "2": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "3": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 113,
+            "12": 36
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 36,
+            "ics_type12_valid": 36,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 4
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 0,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 1,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                12,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 2,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 3,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                12,
+                20
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "normal_ics",
+          "rxv_after_control": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "rxv_after_capture": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6008412919472903,
+          "attempts": 519,
+          "submitted_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_phy": {
+            "4": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "5": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "6": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "7": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 4,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 5,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 6,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 7,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 50,
+            "12": 50
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 50,
+            "ics_type12_valid": 50,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 3
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 4,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 5,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 6,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                20
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 7,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "rx_report_only",
+          "rxv_after_control": {
+            "raw": "0x81",
+            "owned_mask": "0x81"
+          },
+          "rxv_after_capture": {
+            "raw": "0x81",
+            "owned_mask": "0x81"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6000721659511328,
+          "attempts": 495,
+          "submitted_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_phy": {
+            "8": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "9": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "10": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "11": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 8,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 9,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 10,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 11,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 42,
+            "12": 41
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 41,
+            "ics_type12_valid": 41,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 4
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 8,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 9,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                18
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 10,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                17,
+                20
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 11,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                18,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "rxv_started",
+          "rxv_after_control": {
+            "raw": "0x91",
+            "owned_mask": "0x91"
+          },
+          "rxv_after_capture": {
+            "raw": "0x91",
+            "owned_mask": "0x91"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6018023749347776,
+          "attempts": 432,
+          "submitted_sequences": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "exact_good_phy": {},
+          "tx_status": [
+            {
+              "sequence": 12,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 13,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 14,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 15,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "12": 32
+          },
+          "in_memory_matching": {
+            "normal_retained": 0,
+            "good_complete_normal": 0,
+            "ics_retained": 32,
+            "ics_type12_valid": 32,
+            "distinct_nonzero_signatures": {},
+            "records_with_signature_match": {},
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 0,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 12,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                18,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 13,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                17,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 14,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                16,
+                19
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 15,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                18
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "quiesced",
+          "rxv_after_control": {
+            "raw": "0x80",
+            "owned_mask": "0x80"
+          },
+          "rxv_after_capture": {
+            "raw": "0x80",
+            "owned_mask": "0x80"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.6031207910273224,
+          "attempts": 426,
+          "submitted_sequences": [
+            16,
+            17,
+            18,
+            19
+          ],
+          "exact_good_phy": {
+            "16": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "17": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "18": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "19": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 16,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 17,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 18,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 19,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 32,
+            "12": 32
+          },
+          "in_memory_matching": {
+            "normal_retained": 4,
+            "good_complete_normal": 4,
+            "ics_retained": 32,
+            "ics_type12_valid": 32,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 4,
+              "mac_header24": 4,
+              "timestamp4": 4,
+              "prxv8": 4
+            },
+            "records_with_signature_match": {
+              "mac_header24": 4
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 4
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 4,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 16,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 17,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 18,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                15,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 19,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                12,
+                21
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            }
+          ],
+          "stage": "rx_resumed_report_off",
+          "rxv_after_control": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "rxv_after_capture": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        }
+      ],
+      "verified_ics": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "verified_rxv": {
+        "base": "0x82a320",
+        "bytes": 480,
+        "sha256": "1e4fb6f19419b2281f039ee6e8fdfed49feadbff1bbe1ea3341258b582706bb4",
+        "field_bits": [
+          8,
+          7,
+          4,
+          2,
+          0
+        ]
+      },
+      "original_rxv": {
+        "raw": "0x1",
+        "owned_mask": "0x1"
+      },
+      "rxv_quiesce": {
+        "raw": "0x0",
+        "owned_mask": "0x0"
+      },
+      "rxv_report_off": {
+        "raw": "0x1",
+        "owned_mask": "0x1"
+      },
+      "rxv_mask_restored": true,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ],
+      "rxv_after_reload": {
+        "raw": "0x1",
+        "owned_mask": "0x1"
+      }
+    },
+    {
+      "date_utc": "2026-09-05T22:04:53.814699+00:00",
+      "max_submissions": 20,
+      "channel": 6,
+      "phases": [
+        {
+          "elapsed_seconds": 0.601384999928996,
+          "attempts": 657,
+          "submitted_sequences": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "exact_good_phy": {
+            "1": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            },
+            "2": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3
+            }
+          ],
+          "receiver_packet_types": {
+            "2": 122,
+            "12": 35
+          },
+          "in_memory_matching": {
+            "normal_retained": 2,
+            "good_complete_normal": 2,
+            "ics_retained": 35,
+            "ics_type12_valid": 35,
+            "distinct_nonzero_signatures": {
+              "fixed_rxd24": 2,
+              "mac_header24": 2,
+              "timestamp4": 2,
+              "prxv8": 2
+            },
+            "records_with_signature_match": {
+              "mac_header24": 2
+            },
+            "unique_timestamp_plus_second_signature": {},
+            "offset_match_counts": [
+              {
+                "signature": "mac_header24",
+                "offset": 120,
+                "matches": 2
+              }
+            ],
+            "header_paired_field_hypotheses": {
+              "unique_header_pairs": 2,
+              "vector_candidates": [],
+              "clock_candidates": [],
+              "crxv_at24_word_agreement": []
+            },
+            "scope": "in-memory equality candidates, no identifiers/bytes/timestamps exported"
+          },
+          "known_header_field_hypotheses": [
+            {
+              "sequence": 0,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                17,
+                25
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": 1673,
+                "snr_bits": 17
+              }
+            },
+            {
+              "sequence": 1,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                14,
+                22
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 2,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                13,
+                20
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": -1,
+                "snr_bits": 63
+              }
+            },
+            {
+              "sequence": 3,
+              "pairing": "exact submitted MAC header, not a full-payload/FCS verdict",
+              "source_crxv_at16_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0
+              },
+              "rcpi_bytes_at40": [
+                18,
+                25
+              ],
+              "source_prxv2_at104_hypothesis": {
+                "cfo_signed20": 2244,
+                "snr_bits": 15
+              }
+            }
+          ],
+          "stage": "normal_ics",
+          "rxv_after_control": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "rxv_after_capture": {
+            "raw": "0x1",
+            "owned_mask": "0x1"
+          },
+          "ics_masks": {
+            "0x820e50d0": 1,
+            "0x820e705c": 16777216,
+            "0x820e0004": 516,
+            "0x820e7000": 0
+          }
+        }
+      ],
+      "verified_ics": {
+        "code_windows": [
+          {
+            "address": "0x922ce4",
+            "bytes": 264,
+            "sha256": "cecd96d129e9f8aad976d02b514221c6a827f6307dfb61f74823ecf7ee71a043"
+          },
+          {
+            "address": "0x96966c",
+            "bytes": 72,
+            "sha256": "420cd8569ea94754005f63cff51f9820f27532f5066b93780aeb6ce66110c097"
+          },
+          {
+            "address": "0x93a3ec",
+            "bytes": 72,
+            "sha256": "0a6b5a5bf1d4d4d624f9e7a90d260056a68876b8cf4bb68a169efe1515fa2dd3"
+          },
+          {
+            "address": "0x9369f8",
+            "bytes": 120,
+            "sha256": "44189697bbf47f7f75721622821279f58e8b769aa76f46d07e6818c4beeb4699"
+          }
+        ],
+        "command_record": {
+          "0x2026114": "0x46",
+          "0x2026338": "0x93",
+          "0x202633c": "0x922ce6"
+        }
+      },
+      "verified_rxv": {
+        "base": "0x82a320",
+        "bytes": 480,
+        "sha256": "1e4fb6f19419b2281f039ee6e8fdfed49feadbff1bbe1ea3341258b582706bb4",
+        "field_bits": [
+          8,
+          7,
+          4,
+          2,
+          0
+        ]
+      },
+      "original_rxv": {
+        "raw": "0x1",
+        "owned_mask": "0x1"
+      },
+      "error_type": "ValueError",
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ],
+      "rxv_after_reload": {
+        "raw": "0x1",
+        "owned_mask": "0x1"
+      }
+    }
+  ]
+}
