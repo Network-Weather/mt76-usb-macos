@@ -53,6 +53,8 @@ def test_own_field_match_requires_two_sequences_and_two_lengths():
     struct.pack_into("<I", raw, 272, 5)
     struct.pack_into("<I", raw, 96, 70)
     assert p.own_field_match(raw, packets) is None
+    assert p.own_sequence_observation(raw, packets)["offset96_u16"] == 70
+    assert p.own_sequence_observation(raw, {}) is None
 
 
 def test_prepared_packet_cap():
@@ -64,6 +66,9 @@ def test_bounded_rate_patterns():
     assert [p.planned_rate(i, "fixed") for i in range(4)] == [0, 0, 0, 0]
     assert [p.planned_rate(i, "blocks") for i in range(4)] == [0, 0, 1, 1]
     assert [p.planned_rate(i, "alternating") for i in range(4)] == [0, 1, 0, 1]
+    assert [p.planned_rate(i, "ht-he") for i in range(4)] == [0x488, 0x600, 0x488, 0x600]
+    assert [p.planned_rate(i, "ht-he-blocks") for i in range(4)] == [0x488, 0x488, 0x600, 0x600]
+    assert [p.planned_rate(i, "cck-ht-he") for i in range(4)] == [0, 1, 0x488, 0x600]
     with pytest.raises(ValueError, match="CCK1/2"):
         p.planned_rate(0, "sweep")
 

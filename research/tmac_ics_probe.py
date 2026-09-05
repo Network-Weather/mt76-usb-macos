@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-"""Three four-packet CCK1/2 phases with TMAC ICS off/on/off; no ambient export.
+"""Three four-packet CCK or qualified HT/HE phases with TMAC ICS off/on/off.
 
 Optional independent rate or zero/negative-four power differentials only.
 Opaque records stay local in memory; output is matched metadata/hypotheses.
@@ -56,6 +56,12 @@ def prepared_packet(dev, sequence, nonce, power_differential=False):
 
 
 def planned_rate(sequence, pattern):
+    if pattern == "cck-ht-he":
+        return (0, 1, 0x488, 0x600)[sequence % 4]
+    if pattern == "ht-he":
+        return 0x488 if sequence % 2 == 0 else 0x600
+    if pattern == "ht-he-blocks":
+        return 0x488 if sequence % 4 < 2 else 0x600
     if pattern not in ("fixed", "blocks", "alternating"):
         raise ValueError("bounded CCK1/2 patterns only")
     return (
@@ -122,6 +128,48 @@ def own_field_match(raw, packets):
         "matched_frame_bytes_with_fcs": size,
         "power_raw_candidate": (struct.unpack_from("<I", raw, 24)[0] >> 16) & 255,
         "rate_raw_candidate": struct.unpack_from("<I", raw, 88)[0] & 0x3FFF,
+    }
+
+
+def own_sequence_observation(raw, packets):
+    """Only four previously identified field locations, paired by two sequences.
+
+    Retains format counterexamples without weakening the strict length matcher.
+    No extra record words or clock origins are exported.
+    """
+    shape = mac.aggregate_shape(raw)
+    if shape != {"type": 12, "bytes": 288, "frame_count": 2}:
+        return None
+    sequence = struct.unpack_from("<I", raw, 124)[0] >> 20
+    if sequence not in packets or sequence != struct.unpack_from("<I", raw, 272)[0] & 0xFFF:
+        return None
+    size = len(packets[sequence][0])
+    txv0, txv1, txv2 = struct.unpack_from("<3I", raw, 24)
+    alternate_txv2 = struct.unpack_from("<I", raw, 88)[0]
+    return {
+        "sequence": sequence,
+        "pairing": "two candidate sequence copies, length not required",
+        "frame_bytes_without_fcs": size,
+        "offset48_u16": struct.unpack_from("<H", raw, 48)[0],
+        "offset96_u16": struct.unpack_from("<H", raw, 96)[0],
+        "offset88_low14": struct.unpack_from("<I", raw, 88)[0] & 0x3FFF,
+        "offset24_bits23_16": (struct.unpack_from("<I", raw, 24)[0] >> 16) & 255,
+        "source_txv_at24_hypothesis": {
+            "mode": (txv0 >> 12) & 15,
+            "bandwidth_code": (txv0 >> 8) & 7,
+            "stbc": (txv0 >> 6) & 3,
+            "power_raw": (txv0 >> 16) & 255,
+            "spatial_index": txv0 & 31,
+            "gi": (txv1 >> 26) & 3,
+            "rate_index": txv2 & 127,
+            "ldpc": (txv2 >> 7) & 1,
+            "nsts_raw": (txv2 >> 28) & 15,
+        },
+        "source_txv2_at88_hypothesis": {
+            "rate_index": alternate_txv2 & 127,
+            "ldpc": (alternate_txv2 >> 7) & 1,
+            "nsts_raw": (alternate_txv2 >> 28) & 15,
+        },
     }
 
 
@@ -299,6 +347,12 @@ def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
             for _, raw in records
             if (match := own_field_match(raw, {i: packets[i] for i in submitted})) is not None
         ],
+        "known_sequence_field_observations": [
+            observation
+            for _, raw in records
+            if (observation := own_sequence_observation(raw, {i: packets[i] for i in submitted}))
+            is not None
+        ],
         "leading_packet_types": [
             {"endpoint": ep, "type": kind, "count": n} for (ep, kind), n in sorted(types.items())
         ],
@@ -318,7 +372,9 @@ def main():
     parser.add_argument("--sequence-base", type=int, choices=(0, 8), default=0)
     parser.add_argument("--power-differential", action="store_true")
     parser.add_argument(
-        "--rate-pattern", choices=("fixed", "blocks", "alternating"), default="fixed"
+        "--rate-pattern",
+        choices=("fixed", "blocks", "alternating", "ht-he", "ht-he-blocks", "cck-ht-he"),
+        default="fixed",
     )
     args = parser.parse_args()
     if not (args.activate_tmac_ics and args.acknowledge_experimental_transmit):

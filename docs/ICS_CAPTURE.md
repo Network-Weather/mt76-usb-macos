@@ -246,6 +246,9 @@ subrecord boundaries, validity/version fields and rate/power fields are still
 open. In particular,288/2 is not a proven144-byte subrecord stride. This is a
 concrete starting map for further own-frame experiments and maintainer notes,
 not a general decoder for ambient traffic.
+The later [HT/HE controls](#hthe-counterexamples-and-split-tx-vector-fields)
+explicitly disprove treating both CCK length fields or its low14 rate value as
+universal across PHY modes. The strict CCK matcher rejects those cases.
 
 An intermediate sequence-base32 attempt failed the existing packet builder's
 0–19 bound before any packet or ICS command was sent; both reloads passed.
@@ -331,3 +334,61 @@ change too and are retained as raw control readbacks only; no counter semantics
 or wholesale-register restoration is inferred. These filter operations are not
 read-only and may affect diagnostic history, but do not suppress the tested RF
 transmissions. [Five-run filter evidence](../research/evidence/tmac-ics-filters-2026-09-05.json).
+
+## HT/HE counterexamples and split TX-vector fields
+
+Four more fresh-boot twelve-packet off/on/off tests cover HT MCS8 and HE-SU MCS0
+at two streams/20MHz, then mix in CCK1/2. The second radio independently receives
+**48/48 exact good-FCS packets** and reports the expected modes, MCS and stream
+counts. Every enabled phase still emits four288-byte/frame-count2 aggregates;
+off phases emit none. Both sequence candidates and relative-clock delta matches
+persist, with successful control restoration and both-radio reload throughout.
+
+But the CCK-derived length/rate equivalences **do not generalize**. Grouping
+HT/HE independently of65/193-byte frame length gives these sequence-paired reads:
+
+| Mode / MAC bytes | Offset48 low16 | Offset96 low16 | Offset88 low14 | TXS rate code |
+| --- | --- | --- | --- | --- |
+| HT8 /65 | 48 | 69 | 8 | `488` |
+| HT8 /193 | 105 | 197 | 8 | `488` |
+| HE2SS MCS0 /65 | 46 | 78 | 0 | `600` |
+| HE2SS MCS0 /193 | 85 | 202 | 0 | `600` |
+
+HT's offset96 still equals MAC+FCS. Offset48 instead matches a legacy L-SIG
+protection-length model: using the existing HT8 BCC/20MHz data-symbol model
+(48/124µs) and40µs HT preamble gives`3*((40+data_us-20)/4)-3` =48/105.
+That is a model-consistent **L-SIG-length candidate**, not a measured PPDU
+duration or a proven universal field definition. HE offset96 is neither MAC
+length nor simply MAC+4; padding/delimiter/FEC interpretation remains unresolved.
+Retain46/78 and85/202 as observed values rather than forcing a byte-count fit.
+
+The pinned source's
+[Connac3 TX-vector macros](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/chips/cmm_asic_connac3x.h)
+provide a better partial interpretation. Applying **TXV0 masks at offset24**
+gives mode0/0/2/8 for CCK1/CCK2/HT/HE and power36; the mode result repeats in
+two mixed-mode boots. Applying **TXV2 masks at offset88** gives:
+
+| PHY | Low7 rate/MCS index | Bits31:28 NSTS raw | Independently decoded streams |
+| --- | --- | --- | --- |
+| CCK1 | 0 | 0 | 1 |
+| CCK2 | 1 | 0 | 1 |
+| HT MCS8 | 8 | 1 | 2 |
+| HE-SU MCS0 | 0 | 1 | 2 |
+
+This explains why low14 matched the full TXS code only for the simple CCK
+controls: it is a rate/index-like location without TXS's packed mode/NSS bits.
+The source-style NSTS field is consistent with streams minus one in these
+non-STBC cases. Other modes, DCM/ER flags, NSTS values and coding remain untested.
+
+Crucially, treating offset24 as the beginning of a **contiguous three-word
+`TX_VECTOR_BBP_LATCH` fails**: the third word at32 reports rate/NSTS zero even
+for CCK2 and two-stream HT/HE. Only the source-style masks at the noncontiguous
+offset88 agree. This is evidence for matching individual serialized fields,
+not permission to cast the aggregate to the public structure. Default-zero
+GI/LDPC/STBC/width interpretations have not yet been varied or qualified.
+
+The broader observation reducer requires both sequence copies to identify a
+submitted synthetic packet, and exports only the few previously located fields
+and source-defined mask hypotheses. It does not relax the strict two-length
+matching rule or export opaque record words/clock origins.
+[Four PHY-format controls](../research/evidence/tmac-ics-phy-formats-2026-09-05.json).

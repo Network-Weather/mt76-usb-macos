@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**ICS fields are PHY-format dependent; source-style TX-vector masks help:**
+[Four CCK/HT/HE controls](ICS_CAPTURE.md#hthe-counterexamples-and-split-tx-vector-fields)
+receive48/48 independently. Shape/sequences/clocks persist, but CCK length/rate
+equivalences fail HT/HE: HT offset48 matches an L-SIG-length model, HE length
+fields remain unresolved. TXV0 mode/power masks at24 and TXV2 rate/NSTS masks
+at88 match known PHYs; a contiguous three-word cast at24 fails. No generic
+decoder/calibrated-duration claim; all control restores and reloads pass.
+
 **TMAC diagnostic filtering is traffic-class selective:**
 [Five bounded filter controls](ICS_CAPTURE.md#tmac-filters-select-traffic-classes-not-smaller-subrecords)
 map the highest request bit to hardware bit12. It suppresses probe reports but
