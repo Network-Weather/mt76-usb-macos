@@ -82,23 +82,24 @@ strings come from `wifi/core/wificore/rlm/rdm_phy.c`, alongside `rlm_phy.c`, `cn
 and a `hal_cal_flow.c` reached through a build path naming the project
 `wifi_mobile_ram_ccn16`.
 
-**The code regions are Tensilica Xtensa LX**, 32-bit little-endian, with Code Density, the
-Windowed ABI, and vendor TIE extensions. Verified here by decoding the entry point: region 0
-begins `46 00 09`, which as a little-endian 24-bit word is `0x090046` -- `op0 = 6`, `n = 0`,
-`imm18 = 9217`, so `j PC + 4 + 9217` = `j 0x00917405`, an ordinary unconditional jump.
-
-A first signature sweep wrongly concluded no ISA matched, because it scanned on 2-byte
-alignment. Xtensa instructions are 2 or 3 bytes and **byte**-aligned, so an aligned scan
-cannot see them; the density figures it produced were meaningless for every candidate.
+**Correction, 2026-09-05: the inspected MT7961 code is Andes NDS32**, with
+little-endian data and big-endian 16/32-bit instructions. Our earlier Xtensa
+identification was wrong: one plausible three-byte decode was not ISA evidence.
+Stock Ghidra 12.1.3 `NDS32:LE:32:default` decodes startup as `sethi a0,0x915`,
+`ori a0,a0,0xb34`, `jr5 a0`, transferring to 0x00915b34. Independently located
+spectrum, IPI and MIB handlers decode into compact, coherent control flow with
+matching NDS32 prologues/returns. The Xtensa interpretation instead produces
+implausible register operations and sprawling false function bodies.
+See [the reproducible correction](NDS32_RECON.md), including remaining EX9 limits.
 
 Direct string cross-referencing does not work: of 874 words in r1 pointing inside r1's own
 declared address range, only 8 land on a string start. Recovering call sites will not be as
 simple as following pointers.
 
-Disassembly proper is not attempted here. Roughly a quarter of instructions use undocumented
-MediaTek TIE encodings that stock Ghidra, Capstone and LLVM mis-decode, so it needs the
-vendor-specific processor definition described in
-[RELATED_WORK.md](../RELATED_WORK.md#mediatek-connac2-re).
+The frequent compressed instructions are NDS32 `ex9.it` table references, not
+established proprietary Xtensa TIE operations. Their instruction table and the
+global-pointer value must be resolved before treating decompilation as complete.
+Earlier instruction/function counts from the Xtensa import are not valid evidence.
 
 ## What the dispatch tables say, without disassembling anything
 
@@ -624,7 +625,7 @@ is the cheapest evidence that something is there; none has been sent to hardware
    offset 27 remains zero on this firmware; an enable or different numbering may exist.
 
 Out of reach for now: anything needing the MT7925's dispatch tables, and anything needing
-real disassembly of the Xtensa code regions.
+real disassembly of the NDS32 code regions, including EX9 table resolution.
 
 ## Scope boundaries
 

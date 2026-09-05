@@ -137,20 +137,19 @@ Wi-Fi raises it too; ED time is not a direct non-Wi-Fi interference figure. See
 
 [germiBest/mediatek-connac2-re](https://github.com/germiBest/mediatek-connac2-re), Apache-2.0.
 A Ghidra processor extension and Kaitai parsers for the connac2 Wi-Fi MCU firmware, covering
-the same MT7921/MT7961 images this project loads. It establishes that the MCU is Tensilica
-Xtensa LX with vendor TIE extensions, ships the `Xtensa:LE:32:MTK` language definition needed
-to disassemble it (stock Ghidra, Capstone and LLVM mis-decode the TIE encodings), and
-documents the image's region map, command dispatch tables and ROM layout. Its findings
-distinguish claims read byte-exact from the image from those inferred, which makes them
-checkable rather than merely assertable.
+the same MT7921/MT7961 images this project loads. It proposes a Tensilica Xtensa
+interpretation and supplies a processor definition, along with container/table work.
+**Our adoption of that ISA claim was incorrect.** The 2026-09-05
+[NDS32 cross-check](docs/NDS32_RECON.md) produces coherent startup and multiple
+independently located handlers with stock Ghidra. The container and dispatch-table
+observations remain separately checkable; they do not depend on the ISA claim.
 
 **Read-only reference, like wifikit and wifit3.** Nothing from it is translated into this
 repository. Where its findings inform work here they are re-derived from the firmware images
 directly and the cross-check recorded, as in
 [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md); its region map, module descriptor and
-dispatch-table entries were each confirmed independently before use. Should this project ever
-need actual disassembly, the extension is the tool to reach for and its license terms apply
-to anything derived from it.
+dispatch-table entries were each confirmed independently before use. Do not use its
+Xtensa extension as the MT7961 disassembly baseline. No extension code is incorporated.
 
 ## Selected downstream and backport projects
 
