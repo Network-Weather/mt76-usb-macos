@@ -5,6 +5,12 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Read-only thermal telemetry:** [MT7925 UNI35 analog-die queries](THERMAL_TELEMETRY.md)
+return45/45°C around raw ADC68, then45/47°C with the strict reproducer. The
+existing MT7961 path returns32°C. Digital-die sensor0 gives no result, including
+bounded two-endpoint polling between positive analog controls; sensor absence
+is not inferred. No protection/throttle/power changes and all reloads pass.
+
 **NAV, per-subchannel ED and idle-slot measurements:** [source-selected UNI queries](SUBCHANNEL_MEASUREMENTS.md)
 expose live NAV time and multiple ED values at80/160MHz. Source/ROM mapping
 corrects the earlier tentative names:17 primary CCA,18 secondary CCA,19 CCA+NAV+TX.

@@ -1,0 +1,183 @@
+{
+  "scope": "Read-only thermal temperature/ADC queries; no protection/throttle/power settings, no TX",
+  "mt7925_firmware_ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+  "mt7961_firmware_ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+  "trials": [
+    {
+      "date_utc": "2026-09-05T17:48:22.621184+00:00",
+      "scope": "source-defined temperature/ADC reads only; no thermal controls, no TX",
+      "radios": [
+        {
+          "chip": "mt7921",
+          "samples": [
+            {
+              "temperature_c": 32
+            },
+            {
+              "temperature_c": 32
+            },
+            {
+              "temperature_c": 32
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "chip": "mt7925",
+          "samples": [
+            {
+              "action": 0,
+              "band": 0,
+              "request_hex": "000000000000080000000000",
+              "reply_length": 32,
+              "category": 0,
+              "sensor_result_raw_u32": 45
+            },
+            {
+              "action": 1,
+              "band": 0,
+              "request_hex": "000000000000080000010000",
+              "reply_length": 32,
+              "category": 0,
+              "sensor_result_raw_u32": 68
+            },
+            {
+              "action": 0,
+              "band": 0,
+              "request_hex": "000000000000080000000000",
+              "reply_length": 32,
+              "category": 0,
+              "sensor_result_raw_u32": 45
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T17:50:16.799575+00:00",
+      "scope": "source-defined temperature/ADC reads only; no thermal controls, no TX",
+      "radios": [
+        {
+          "chip": "mt7925",
+          "samples": [
+            {
+              "tag": 0,
+              "action": 0,
+              "band_or_sensor_index": 0,
+              "request_hex": "000000000000080000000000",
+              "reply_length": 32,
+              "category": 0,
+              "sensor_result_raw_u32": 45
+            },
+            {
+              "tag": 12,
+              "action": 0,
+              "band_or_sensor_index": 0,
+              "request_hex": "000000000c00080000000000",
+              "error_type": "McuError"
+            },
+            {
+              "tag": 12,
+              "action": 1,
+              "band_or_sensor_index": 0,
+              "request_hex": "000000000c00080000010000",
+              "error_type": "McuError"
+            },
+            {
+              "tag": 0,
+              "action": 0,
+              "band_or_sensor_index": 0,
+              "request_hex": "000000000000080000000000",
+              "reply_length": 32,
+              "category": 0,
+              "sensor_result_raw_u32": 45
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T17:51:12.781913+00:00",
+      "scope": "ADIe/DDIE temperature query with bounded two-endpoint event polling; no thermal controls",
+      "queries": [
+        {
+          "tag": 0,
+          "sequence": 13,
+          "events": [
+            {
+              "ep": 132,
+              "eid": 53,
+              "sequence": 13,
+              "body_bytes": 16,
+              "tag": 0,
+              "tlv_length": 12,
+              "category": 0,
+              "sensor_result_raw_u32": 45
+            }
+          ]
+        },
+        {
+          "tag": 12,
+          "sequence": 14,
+          "events": []
+        },
+        {
+          "tag": 0,
+          "sequence": 15,
+          "events": [
+            {
+              "ep": 132,
+              "eid": 53,
+              "sequence": 15,
+              "body_bytes": 16,
+              "tag": 0,
+              "tlv_length": 12,
+              "category": 0,
+              "sensor_result_raw_u32": 45
+            }
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T17:52:15.904225+00:00",
+      "scope": "MT7925 analog-die temperature/ADC queries only, no thermal controls or TX",
+      "samples": [
+        {
+          "action": 0,
+          "band": 0,
+          "event_tag": 0,
+          "sensor_result_raw_u32": 45,
+          "reported_temperature_c": 45
+        },
+        {
+          "action": 1,
+          "band": 0,
+          "event_tag": 0,
+          "sensor_result_raw_u32": 68,
+          "units": "raw ADC code; conversion not calibrated"
+        },
+        {
+          "action": 0,
+          "band": 0,
+          "event_tag": 0,
+          "sensor_result_raw_u32": 47,
+          "reported_temperature_c": 47
+        }
+      ],
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}
