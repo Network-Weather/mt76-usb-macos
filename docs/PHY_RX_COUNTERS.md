@@ -1,6 +1,7 @@
 # MT7961 PHY detection and decoding counters
 
-**Ten PHY counters are reachable through CE1 GET41.** Controlled HT and HE
+**Ten PHY counters are reachable through CE1 GET41, and their normal monitor-mode
+accumulation can now be enabled with the exact firmware control.** Controlled HT and HE
 receptions produce nonzero detection/receive-ready counts; a busier window also
 produced PHY-header and FCS errors. These complement MAC delivery counts and the
 finite RX-vector log. They do not by themselves classify non-Wi-Fi interference,
@@ -77,10 +78,48 @@ register comparison; its read effects are recorded rather than hidden inside
 the standard counter-query path. In a third controlled run, normal monitor-mode
 reads before and after4/4 exact HT receipts stayed at PD0/MDRDY0 and FCS errors2.
 After entering RF RX, the same physical registers and GET41 agreed at PD7/MDRDY7,
-FCS errors1, across repeated reads. **Normal-mode accumulation is not established**;
+FCS errors1, across repeated reads. **Unmodified normal-mode accumulation failed**;
 the physical addresses alone are not a working always-on survey API. The next
 discrimination is the firmware's counter enable/reset sequence, not another
 uncontrolled idle observation.
+
+## Normal monitor-mode enable/freeze control
+
+The initial normal-mode negative was an enable-state issue, not an inaccessible
+counter bank. The reset call chain is now fully traced:
+`SET91 → 0x009311c2 → 0x00964cba → 0x00943ed0 → 0x00968b1e` for band0.
+`0x00968b1e..0x00968b3a` changes only bits11:9 of **`0x83082004`**:
+argument0 clears mask`0xe00`; argument1 replaces it with`0xa00`.
+The band1 sibling at`0x00968b3c` uses`0x83092004`, not tested here.
+The band0 operation independently agrees with `mt7915_mac_cca_stats_reset` and
+`MT_WF_PHY_RX_CTRL1_STSCNT_EN` in mt76 pin
+`c5a3bd91aa735b669618610d5f0ebfa5786845a6`. We do not assume sibling register
+maps generally transfer; the MT7961 firmware trace establishes this one.
+
+`research/normal_phy_counter_probe.py --acknowledge-experimental-transmit
+--enable-counters` uses **normal monitor mode only**. It brackets the exact
+clear→enable sequence with baseline and restored-mask phases, four synthetic
+HT/MCS8/NSS2 frames per phase,12 submissions maximum. Each phase has a one-second/
+512-transfer receive ceiling. All writes preserve bits outside`0xe00`; the
+original masked bits are restored before both radios are normally reloaded.
+This resets statistics and requires exclusive ownership, not concurrent use
+alongside another statistics collector.
+
+In the first live run the original bits were0. All three phases independently
+received **4/4 exact frames**. Baseline PD/MDRDY stayed0/0; enable read back
+`0xa00`, reset the fields, then PD/MDRDY reached7/7. Restoring the original0
+froze PD/MDRDY at7/7 despite four further exact receptions. Thus ordinary packet
+delivery continues while counter accumulation is enabled or frozen. The seven
+counts include ambient activity and are not seven synthetic deliveries.
+Original-bit restoration and both-radio reload/alive checks passed.
+A second fresh-boot run independently reproduced the same0→7→7 pattern, with
+4/4 exact HT receipts in each phase and successful restoration/cleanup.
+[Sanitized normal-mode evidence](../research/evidence/normal-phy-counters-2026-09-05.json).
+
+This establishes a useful normal-survey primitive. It does not yet establish
+long-run overflow behavior, multi-band operation, an error classifier, or absence
+of interaction with other CCA/statistics consumers. The earlier normal-mode
+negative remains above as the control that led to this enable sequence.
 
 Public-source pin: Motorola gen4m
 `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`, `include/rftest.h` and
