@@ -5,6 +5,12 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**The vendor noise-average getter is not a measurement on these images:**
+[Exact GET_NOISE queries](NOISE_AVERAGE_GETTER.md) find MT7925's QUERY branch
+explicitly zeroing the reply data, with no PHY read. Twelve queries across two
+6→36→6 runs return zeros; live code hashes match. MT7961 returns query ID0 and
+fails correlation. No noise/gain setters; both radios remain alive and reload.
+
 **Firmware-timed noise events now work:**
 [UNI36/tag2](MT7925_NOISE_HISTOGRAM.md#one-shot-firmware-event-now-works) resets
 and starts both control indices, then emits two11-bin arrays in512–515ms.
