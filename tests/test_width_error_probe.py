@@ -56,3 +56,9 @@ def test_secondary_control_holds_receiver_fixed_across_width_alternation():
     assert p.SECONDARY_CHANNELS == (6, 10, 10, 10, 10, 6)
     assert [width for _, _, width in p.SECONDARY_PLAN] == [20, 20, 40, 20, 40, 20]
     assert {rate for _, rate, _ in p.SECONDARY_PLAN} == {0x488}
+
+
+def test_receive_path_control_is_bounded_and_bracketed():
+    assert len(p.RXPATH_PLAN) * 4 == 16
+    assert [width for _, _, width in p.RXPATH_PLAN] == [20, 40, 40, 20]
+    assert {rate for _, rate, _ in p.RXPATH_PLAN} == {0x488}

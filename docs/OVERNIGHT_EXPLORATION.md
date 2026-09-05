@@ -5,6 +5,18 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**HT40 payload transmission demonstrated:** [receive-path controls](PHY_TRANSMIT.md#ht40-payloads-received-before-the-extra-receive-path-command)
+receive exact HT8/2SS/40MHz frames2/4 then4/4. Adding Linux's source-shaped
+SET_RX_PATH command removes wide PD/MDRDY in12/12 windows across three runs,
+while narrow after-controls stay4/4. Initialization dependence remains unresolved;
+no descriptor/power change explains the breakthrough.5GHz tests fail their
+narrow controls and cannot qualify wide behavior. Both radios reload normally.
+
+**Ignored sniffer FCS byte explained in firmware:** [the tag1 trace](ERROR_FRAME_CAPTURE.md#firmware-explains-the-ignored-sniffer-error-byte)
+reads channel fields but never TLV+12, the advertised drop-error byte. A bounded
+live pointer/code-hash check matches the pinned firmware; only hashes/pointers
+are exported. This complements the verified MAC-filter workaround for maintainers.
+
 **Wide TX has an independent secondary-channel RF signature:**
 [fixed-secondary width reversals](PHY_TRANSMIT.md#secondary-channel-detections-follow-the-tx-bandwidth-setting)
 produce OFDM detections in16/16 wide windows and0/16 narrow windows, with the

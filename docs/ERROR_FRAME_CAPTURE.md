@@ -23,6 +23,28 @@ that byte between0/1 at the same channel6/20MHz. Reads immediately after
 the sniffer command show it does **not** toggle RFCR bit1 in these trials.
 The two source controls must not be assumed to be equivalent.
 
+### Firmware explains the ignored sniffer error byte
+
+In the pinned MT7961 image, runtime table`0x02026478` contains
+`{UNI24, 0x00923d54}`. The dispatcher walks bounded TLVs and calls
+`0x00923ca0` for tag1, or`0x00923c8c` for tag0. The configuration handler
+reads AID at TLV+4, band at+6, width at+7, primary at+8, secondary offset at+9,
+and centers at+10/+11. It passes scalar channel parameters to`0x00963f6c`
+and optionally applies AID controls through`0x0094a796`; it **never loads
+TLV+12**, the source-defined `fgDropFcsErrorFrame` byte. There is no forwarding
+of the original TLV pointer to the channel helper. This explains the live
+drop_err0/1 negative without assuming all firmware revisions behave identically.
+
+[`mt7961_sniffer_trace.py`](../research/mt7961_sniffer_trace.py) verifies the
+live dispatcher record and the exact272-byte handler/dispatcher window against
+the pinned plain RAM image, exporting hashes rather than instructions. The
+window SHA256 is`501bf565dce49cbf8baeb5f1c363c7431021054fe48c247644f42a9e1b65f14f`.
+Both the original field layout and ignored-byte interpretation can be checked
+against the [public sniffer TLV definition](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic_uni_cmd_event.h#L2946).
+No code bytes or vendor implementation are republished. This is a concrete
+maintainer pointer, not a tested Linux patch or a request to change defaults.
+[Live hash/pointer evidence](../research/evidence/width-rxpath-and-sniffer-2026-09-05.json).
+
 ## Factorial control and same-rate reversal
 
 MT7925 sends four65-byte synthetic no-ACK Probe Requests per phase. HT8

@@ -54,6 +54,12 @@ SECONDARY_PLAN = (
     ("ht20_primary_after", 0x488, 20),
 )
 SECONDARY_CHANNELS = (6, 10, 10, 10, 10, 6)
+RXPATH_PLAN = (
+    ("ht20_before", 0x488, 20),
+    ("ht40_before_rxpath", 0x488, 40),
+    ("ht40_after_rxpath", 0x488, 40),
+    ("ht20_after", 0x488, 20),
+)
 
 
 def main():
@@ -61,7 +67,9 @@ def main():
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--enable-error-capture", action="store_true")
     parser.add_argument("--enable-counters", action="store_true")
-    parser.add_argument("--suite", choices=("width", "frequency", "secondary"), default="width")
+    parser.add_argument(
+        "--suite", choices=("width", "frequency", "secondary", "rxpath"), default="width"
+    )
     args = parser.parse_args()
     if not all(
         (args.acknowledge_experimental_transmit, args.enable_error_capture, args.enable_counters)
@@ -71,7 +79,9 @@ def main():
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "scope": "bounded no-ACK MT7925 probes with TX configured primary6/center8/40MHz; MT7961 FCS filter open and known PHY counter enable; no power changes",
         "suite": args.suite,
-        "maximum_submissions": 28 if args.suite == "width" else 24,
+        "maximum_submissions": {"width": 28, "frequency": 24, "secondary": 24, "rxpath": 16}[
+            args.suite
+        ],
         "submitted": 0,
         "phases": [],
     }
@@ -112,13 +122,16 @@ def main():
             if out["enabled_counter_bits"] != 0xA00:
                 raise ValueError("PHY counter enable readback failed")
             decode = m.decoder_for(rx)
-            plan = {"width": PLAN, "frequency": FREQUENCY_PLAN, "secondary": SECONDARY_PLAN}[
-                args.suite
-            ]
+            plan = {
+                "width": PLAN,
+                "frequency": FREQUENCY_PLAN,
+                "secondary": SECONDARY_PLAN,
+                "rxpath": RXPATH_PLAN,
+            }[args.suite]
             previous_rx_channel = None
             for phase, (name, code, width) in enumerate(plan):
                 channels = SECONDARY_CHANNELS if args.suite == "secondary" else RX_CHANNELS
-                rx_channel = channels[phase] if args.suite != "width" else 6
+                rx_channel = channels[phase] if args.suite in ("frequency", "secondary") else 6
                 retune = args.suite == "frequency" or (
                     args.suite == "secondary" and rx_channel != previous_rx_channel
                 )
@@ -129,11 +142,23 @@ def main():
                     if rfcr_word(rx) & 2 or rx.rr(CONTROL) & MASK != 0xA00:
                         raise ValueError("receiver control changed on retune")
                 previous_rx_channel = rx_channel
+                if args.suite == "rxpath" and phase == 2:
+                    rx.set_chan_info(
+                        control_ch=6,
+                        center_ch=8,
+                        bw=m.WIDTH_TO_CMD_CBW[40],
+                        band=0,
+                        cmd_ext=m.MCU_EXT_CMD_SET_RX_PATH,
+                    )
+                    time.sleep(0.05)
+                    out["rxpath_sent"] = True
+                    if rfcr_word(rx) & 2 or rx.rr(CONTROL) & MASK != 0xA00:
+                        raise ValueError("receiver control changed after RX_PATH")
                 he = code == 0x600
                 p.program_rate(tx, code, ltf=int(he), ldpc=int(he))
                 current = {
                     "rx_channel": rx_channel,
-                    "rx_width_mhz": 40 if args.suite == "width" else 20,
+                    "rx_width_mhz": 20 if args.suite in ("frequency", "secondary") else 40,
                     "receiver_retuned": retune,
                     "name": name,
                     "rate_code": code,

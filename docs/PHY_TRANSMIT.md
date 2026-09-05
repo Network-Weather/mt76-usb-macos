@@ -7,6 +7,11 @@ redacted observations are in [evidence](../research/evidence/phy-transmit-2026-0
 
 ## New on-air capabilities
 
+**Later width breakthrough:** MT7925 HT8/2SS/40MHz is independently received
+2/4 then4/4 with exact payloads and40MHz RX metadata. See the
+[receive-path controls](#ht40-payloads-received-before-the-extra-receive-path-command).
+This is bounded format validation, not stable wideband operation or throughput.
+
 The second dongle matched each received probe's complete bytes, with valid FCS,
 and reported its PHY independently. Channel 36, 20 MHz, one stream:
 
@@ -61,6 +66,9 @@ aggregation or sustained throughput test was performed.
 [Sanitized high-MCS controls](../research/evidence/high-mcs-2026-09-05.json).
 
 ### First40MHz control: status width works, independent reception does not
+
+Historical negative: later receive-path controls below receive HT40 payloads.
+HE40 remains without an independently decoded payload.
 
 The later stable channel6 HT8/HE2SS narrow controls justified one bounded width
 test. `--suite bandwidth --transmitter mt7925 --channel 6 --per-phase 4
@@ -182,6 +190,45 @@ encoding intentionally uses bandwidth0 for both20 and40MHz, with secondary
 channel offset distinguishing40; changing it to the80MHz enum is not a fix.
 [Pinned sniffer encoding](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7921/mcu.c#L1181).
 [Sanitized four-run evidence](../research/evidence/width-frequency-controls-2026-09-05.json).
+
+#### HT40 payloads received before the extra receive-path command
+
+The pinned [Linux startup path](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7921/main.c#L226)
+sends EXT`0x4e` SET_RX_PATH in addition to ordinary channel switching. Our
+normal monitor initialization does not. `width_error_probe.py --suite rxpath`
+tests that difference with16 no-ACK HT8 frames: HT20, HT40, the source-shaped
+receive-path request at primary6/center8/40MHz, HT40 again, then HT20.
+The request uses RX antenna mask3 rather than CHANNEL_SWITCH's stream count2;
+this distinction follows the [request builder](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7921/mcu.c#L885).
+No power, calibration or RF-test changes are made.
+
+| Fresh run | Exact HT20 before | Exact HT40 before RX_PATH | Exact HT40 after RX_PATH | Exact HT20 after |
+| --- | --- | --- | --- | --- |
+| Prototype | 3/4 | 0/4 | 0/4 | 4/4 |
+| Published reproducer | 3/4 | **2/4** | 0/4 | 4/4 |
+| Fresh repeat | 3/4 | **4/4** | 0/4 | 4/4 |
+
+All six good wide receipts independently report **HT/MCS8/NSS2/40MHz/GI0/BCC**,
+match the complete fresh-nonce synthetic frame and have no FCS error. Their TX
+statuses report code`0x488`, width1, count1, no errors. This establishes that
+the existing fixed-width descriptor can produce decodable HT40 packets;
+no descriptor change was needed for the breakthrough. Reliability across
+initialization states remains unresolved, and prior negative runs are retained.
+
+Before RX_PATH, OFDM PD/MDRDY increments occur in3/4,3/4,4/4 wide windows.
+After RX_PATH, **all12 wide windows have zero PD/MDRDY**, while all narrow
+after-controls arrive. The known filter/counter bits remain intact. That
+repeatable transition argues against treating the extra startup command as a
+wide-reception fix; it does not establish a Linux regression or silicon defect.
+All16 statuses and both normal firmware reloads succeed in each run.
+
+A separate channel36/center38/40MHz28-frame test has no good narrow or wide
+receipts and zero OFDM PD throughout. A12-frame follow-up holds RX36/20MHz
+and sends only HT8/20 while changing TX channel context20/40/20; its narrow
+controls also fail. **These5GHz runs are not usable width comparisons.** The
+subsequent2.4GHz runs above retain positive controls, so firmware-alive status
+is not being substituted for RF health. No power increase or calibration write
+was attempted. [Sanitized evidence and sniffer code-hash provenance](../research/evidence/width-rxpath-and-sniffer-2026-09-05.json).
 
 ### HE extended-range SU is received, but not yet a robust link
 
