@@ -73,6 +73,10 @@ The same pinned tree's `include/nic/nic_rx.h` retains20-byte TMRI/TMRR report
 structures with32-bit ToA/ToD, validity/status bits, and (for TMRR) a transmitter
 address. Their legacy packet header does not match a normal Connac3 RXD, so they
 are not applied to arbitrary USB records. No such report has been validated.
+A later [CSI provenance trace](STATION_CSI.md#csi-input-comes-from-the-internal-timing-report-path)
+does identify the firmware's type4 timing-report branch as the CSI entry's
+input. Its field positions differ from these legacy structures; this is an
+internal path identification, not a host timing report or ranging measurement.
 
 `nic_connac3x_tx.h` names management type1 as timing measurement in TXD DW1
 bits24:21. However the inspected `nic/nic_txd_v3.c` management constructor

@@ -568,9 +568,9 @@ For its **internal input descriptor**, define:
 After a preceding readiness check, the helper accepts `flags` bit9 or values8/5
 of that nibble (`0xe0060cc6..cde`); otherwise it logs and returns zero through
 `0xe0060cfe -> 0xe0060cae`. Values8/5 correspond to beacon/probe-response
-subtypes, but **the descriptor is not identified as the host's normal RXD** and
-bit9 is not yet assigned a semantic name. In particular, calling it U2M would
-currently be a hypothesis. The probe-response-shaped branch has an additional
+subtypes. The follow-up below identifies the input as an internal **packet-type4
+timing report, not the host's normal RXD**. Bit9 is still not assigned a semantic
+name; calling it U2M would be a hypothesis. The probe-response-shaped branch has an additional
 earlier check through `0xe00607a4` and rejection value0x10003.
 
 The unusual Andes `bfoz ...,2,5` is not an invalid high/low interval: primary
@@ -594,3 +594,50 @@ invokes other capture helpers, so it is not described as a universal rejection.
 These concrete pointers are useful follow-up targets, not yet a validated
 recipe for data/control-frame CSI. A fixed debug-argument window at0x022857f4
 read all zero, so it supplied no string names. [Sanitized pointer/ROM evidence](../research/evidence/csi-receive-gate-2026-09-05.json).
+
+## CSI input comes from the internal timing-report path
+
+The receive-side gate's descriptor provenance is now traced to hardware packet
+type4, named`PKT_TYPE_RX_TMR` in the pinned [mt76 packet-type enum](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac.h#L9).
+This is a concrete connection between CSI and the internal timing-report path,
+**not a demonstrated FTM/ranging interface or a type4 USB capture**.
+
+The chain preserves the input pointer in the outer receive object at`+0x0c`:
+
+| Firmware site | Provenance fact |
+| --- | --- |
+| `e0098ac4`, call at`e0098ac8` | Receive handler first classifies the outer object through`e0086284`. |
+| `e0086286..6298` | Loads`input = *(outer+0x0c)`, passes input and`outer+0x34` to`e0079f48`. |
+| `e0079f62` | Valid-input branch calls`e008187e` with those arguments. |
+| `e0081880..1886` | Stores`load_u32(input) >> 27` into the outer object's kind byte. This identifies the actual packet-type bits, not just a coincidental enum value. |
+| `e0098ae0`, `e0098c66..6c` | Reads that kind byte; type4 routes to`e0086156`. Type2 follows a separate ordinary-frame branch. |
+| `e008615a..6162` | Reloads the input pointer from outer+0x0c and calls CSI entry`e0061392`. |
+| `e006139e`, `e00613c6..ca` | Preserves that pointer across metadata extraction, then passes it to eligibility helper`e0060c8c`. |
+
+The preliminary metadata helper`e0060d00` reads from input and writes the CSI
+state at`0x0225d994`; it does not rewrite the input header. Among its operations:
+input+2 bit10 goes to state+0x17c, input+6 bits15:14 go to state+0x100,
+and two bytes at input+0x0c plus four at input+0x10 are copied to state+0x119,
+the previously identified transmitter-address field. No live packet buffer or
+address field was read for this follow-up.
+
+Consequently, the gate's unnamed flag is **input DW0 bit25**, its later flag10
+is **DW0 bit26**, and its subtype-shaped nibble is **DW1 bits25:22**. These
+are locations in this timing-report format. Do not map them through normal
+Connac3 RXD definitions, or through the older20-byte TMRI/TMRR structures in
+`nic_rx.h`, whose field positions differ. The flag semantics and other timing
+fields remain unresolved. Ordinary Data/QoS reception alone therefore cannot
+be taken as proof that the corresponding eligible timing report reached CSI.
+
+[`mt7925_csi_input_trace.py`](../research/mt7925_csi_input_trace.py) checks the
+pinned RAM image hash before opening USB, then reads only nine fixed instruction
+windows (608 bytes including12 bytes of overlap) and the4096-byte instruction
+table:1176 aligned reads.
+The first nine-window version and the expanded ten-window verification both
+match every retained loaded-code hash; normal reload/alive checks pass.
+This corroborates bytes and instruction-table identity, not runtime branch
+coverage. The existing experimental Andes annotations remain annotations;
+unsupported compressed prologues are skipped explicitly, not invented.
+[Sanitized verification](../research/evidence/csi-input-provenance-2026-09-05.json)
+exports only hashes, fixed addresses, sizes and checks. No CSI activation, TX,
+new register write, packet-buffer access or firmware patch occurs.

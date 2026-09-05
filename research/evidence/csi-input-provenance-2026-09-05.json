@@ -1,0 +1,181 @@
+{
+  "scope": "Fixed code and instruction-table hash verification only; no live packet-buffer reads or code bytes exported.",
+  "trials": [
+    {
+      "date_utc": "2026-09-05T18:53:57.527847+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "maximum_word_reads": 1152,
+      "trace": [
+        {
+          "name": "eligibility",
+          "address": "0xe0060c8c",
+          "bytes": 128,
+          "sha256": "9cc36b006cf15b8c5198be1d8c45bfc1607f6515d23230da6118728111492b4f",
+          "expected_sha256": "9cc36b006cf15b8c5198be1d8c45bfc1607f6515d23230da6118728111492b4f",
+          "matches": true
+        },
+        {
+          "name": "csi_entry",
+          "address": "0xe0061390",
+          "bytes": 64,
+          "sha256": "961bb5be6343fd7ad509645cf76acf65ed92bc3d321c7fba71ac069b38134532",
+          "expected_sha256": "961bb5be6343fd7ad509645cf76acf65ed92bc3d321c7fba71ac069b38134532",
+          "matches": true
+        },
+        {
+          "name": "csi_wrapper",
+          "address": "0xe0086154",
+          "bytes": 44,
+          "sha256": "7fb218f2e4f7374a5a2952f494438df5ad914374b67dc63216850af754bc0d6a",
+          "expected_sha256": "7fb218f2e4f7374a5a2952f494438df5ad914374b67dc63216850af754bc0d6a",
+          "matches": true
+        },
+        {
+          "name": "rfb_classifier",
+          "address": "0xe0086284",
+          "bytes": 48,
+          "sha256": "fe48b2015c71a8a6d40183ae59f8de9e06adb6e9e1b53d638cfb10780e315c19",
+          "expected_sha256": "fe48b2015c71a8a6d40183ae59f8de9e06adb6e9e1b53d638cfb10780e315c19",
+          "matches": true
+        },
+        {
+          "name": "kind_wrapper",
+          "address": "0xe0079f48",
+          "bytes": 60,
+          "sha256": "78174ce65de5fe0986d7eb573176192c74bae29b9a8cc446d43f551ae8735ace",
+          "expected_sha256": "78174ce65de5fe0986d7eb573176192c74bae29b9a8cc446d43f551ae8735ace",
+          "matches": true
+        },
+        {
+          "name": "kind_extract",
+          "address": "0xe008187c",
+          "bytes": 84,
+          "sha256": "b338a592e4d59d33d2159424e2b4019ae5ebeb4056b8c795d158a0e954223e3c",
+          "expected_sha256": "b338a592e4d59d33d2159424e2b4019ae5ebeb4056b8c795d158a0e954223e3c",
+          "matches": true
+        },
+        {
+          "name": "rx_dispatch_entry",
+          "address": "0xe0098ac4",
+          "bytes": 40,
+          "sha256": "0d24b302b94ac33ac56e0d1e5b56581a8dc43eb1b139d3f600b7a29e93815943",
+          "expected_sha256": "0d24b302b94ac33ac56e0d1e5b56581a8dc43eb1b139d3f600b7a29e93815943",
+          "matches": true
+        },
+        {
+          "name": "rx_dispatch_tmr",
+          "address": "0xe0098c4c",
+          "bytes": 44,
+          "sha256": "a169aeff9b5e0c4956af2b39c1d0b75eaba92c209b28bf24a3c0922d29d8e19a",
+          "expected_sha256": "a169aeff9b5e0c4956af2b39c1d0b75eaba92c209b28bf24a3c0922d29d8e19a",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T18:55:27.760339+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "maximum_word_reads": 1176,
+      "trace": [
+        {
+          "name": "input_metadata",
+          "address": "0xe0060d00",
+          "bytes": 96,
+          "sha256": "2e09895b3f90ecf125750055f1d9b0759dc3058183165051e5642012fbe84e9d",
+          "expected_sha256": "2e09895b3f90ecf125750055f1d9b0759dc3058183165051e5642012fbe84e9d",
+          "matches": true
+        },
+        {
+          "name": "eligibility",
+          "address": "0xe0060c8c",
+          "bytes": 128,
+          "sha256": "9cc36b006cf15b8c5198be1d8c45bfc1607f6515d23230da6118728111492b4f",
+          "expected_sha256": "9cc36b006cf15b8c5198be1d8c45bfc1607f6515d23230da6118728111492b4f",
+          "matches": true
+        },
+        {
+          "name": "csi_entry",
+          "address": "0xe0061390",
+          "bytes": 64,
+          "sha256": "961bb5be6343fd7ad509645cf76acf65ed92bc3d321c7fba71ac069b38134532",
+          "expected_sha256": "961bb5be6343fd7ad509645cf76acf65ed92bc3d321c7fba71ac069b38134532",
+          "matches": true
+        },
+        {
+          "name": "csi_wrapper",
+          "address": "0xe0086154",
+          "bytes": 44,
+          "sha256": "7fb218f2e4f7374a5a2952f494438df5ad914374b67dc63216850af754bc0d6a",
+          "expected_sha256": "7fb218f2e4f7374a5a2952f494438df5ad914374b67dc63216850af754bc0d6a",
+          "matches": true
+        },
+        {
+          "name": "rfb_classifier",
+          "address": "0xe0086284",
+          "bytes": 48,
+          "sha256": "fe48b2015c71a8a6d40183ae59f8de9e06adb6e9e1b53d638cfb10780e315c19",
+          "expected_sha256": "fe48b2015c71a8a6d40183ae59f8de9e06adb6e9e1b53d638cfb10780e315c19",
+          "matches": true
+        },
+        {
+          "name": "kind_wrapper",
+          "address": "0xe0079f48",
+          "bytes": 60,
+          "sha256": "78174ce65de5fe0986d7eb573176192c74bae29b9a8cc446d43f551ae8735ace",
+          "expected_sha256": "78174ce65de5fe0986d7eb573176192c74bae29b9a8cc446d43f551ae8735ace",
+          "matches": true
+        },
+        {
+          "name": "kind_extract",
+          "address": "0xe008187c",
+          "bytes": 84,
+          "sha256": "b338a592e4d59d33d2159424e2b4019ae5ebeb4056b8c795d158a0e954223e3c",
+          "expected_sha256": "b338a592e4d59d33d2159424e2b4019ae5ebeb4056b8c795d158a0e954223e3c",
+          "matches": true
+        },
+        {
+          "name": "rx_dispatch_entry",
+          "address": "0xe0098ac4",
+          "bytes": 40,
+          "sha256": "0d24b302b94ac33ac56e0d1e5b56581a8dc43eb1b139d3f600b7a29e93815943",
+          "expected_sha256": "0d24b302b94ac33ac56e0d1e5b56581a8dc43eb1b139d3f600b7a29e93815943",
+          "matches": true
+        },
+        {
+          "name": "rx_dispatch_tmr",
+          "address": "0xe0098c4c",
+          "bytes": 44,
+          "sha256": "a169aeff9b5e0c4956af2b39c1d0b75eaba92c209b28bf24a3c0922d29d8e19a",
+          "expected_sha256": "a169aeff9b5e0c4956af2b39c1d0b75eaba92c209b28bf24a3c0922d29d8e19a",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**CSI input is an internal timing report:** [the provenance trace](STATION_CSI.md#csi-input-comes-from-the-internal-timing-report-path)
+follows packet-type bits31:27 through the firmware classifier and type4 branch
+into the CSI entry. The gate is not parsing a normal RXD: its unnamed flags are
+DW0 bits25/26 and subtype-shaped nibble DW1 bits25:22. Fixed live code/table
+hashes match the retained image. No packet-buffer reads or new ranging claim;
+this gives a precise next target for the unresolved data/control-frame gate.
+
 **TX width and duration counters validated:** [bounded controls](TX_AIRTIME_COUNTERS.md)
 map nine source-named UNI fields through live firmware/ROM. Short/long/short
 reversals repeat303–304 additional MAC2PHY ticks for four packets, matching
