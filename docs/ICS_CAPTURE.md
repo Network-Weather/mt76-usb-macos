@@ -2,7 +2,8 @@
 
 UNI0x49 reaches a distinct MAC/PHY sniffer state machine on the pinned firmware.
 This is a concrete capture lead, **not yet a working raw-PHY capture result**.
-No ICS command has been sent at this checkpoint. The read-only
+The later [bounded activation checks](#bounded-activation-checks) program the
+ring and triggers but produce no capture events. The initial read-only
 [`ics_trace_probe.py`](../research/ics_trace_probe.py) verifies fixed loaded-code,
 instruction-table and ROM hashes, exact field metadata, and idle controls.
 Normal monitor setup is the only mode change; normal firmware reload follows.
@@ -108,3 +109,49 @@ These are static control-flow inferences corroborated by selected live hashes
 and metadata, not a full execution trace. Experimental Andes decoding caveats
 still apply. Firmware RAM SHA-256 is
 `23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120`.
+
+## Bounded activation checks
+
+[`ics_control_probe.py`](../research/ics_control_probe.py) uses the exact92-byte
+request, PHY module3, action1/0, condition0=3, band0, conditions2–5 zero.
+Zero source selector takes the traced no-partition-write branch; it is **not**
+a qualified capture-source selection. Condition6 is5000 for the short check,
+or500 for a750ms observation window. No TX, raw sample reads, filter sweep,
+host-memory pointer, or NVM operation. Event collection retains lengths only.
+
+Both fresh-boot runs program the predicted registers:
+
+| Control | Before | During | After firmware stop |
+| --- | --- | --- | --- |
+| `82023090` | `400` | `403` | `401` |
+| `82024090` | `400` | `403` | **`403`** |
+| Ring start, both (`…3098` / `…4098`) | `100000` | `0` | `0` |
+| Ring end, both (`…309c` / `…409c`) | `11fffc` | `ffc` | `ffc` |
+| Count, both (`…30a4` / `…40a4`) | `13fffc` | `0` | `0` |
+| Write head, both (`…30b4` / `…40b4`) | `0` | `0` | `0` |
+
+Host start-to-stop intervals are121ms and769ms. Neither sees an EID30 event.
+The first misses a start ACK in its short collection but sees the expected
+hardware transition and stop ACK; the longer run receives both ACKs, status0.
+Triggers remain set and heads remain zero: **armed/programmed is not complete**.
+The longer window is designed to cross one500-unit timer period by analogy
+with the working histogram timer, but no event proves callback execution here.
+
+The stop asymmetry is real, not just a disassembly concern: band0's stop branch
+clears index0 only, while start configures/triggers both. The probe therefore
+clears bit1 at both control addresses after issuing stop, then disables/restores
+the engine and thirteen traced PHY/MAC/engine masks. Every readback passes in
+both runs. Remaining mode bit0 and a software classification flag survive this
+partial restoration; **normal reload is mandatory**, and returns all observed
+state/trigger/cursor fields to baseline in both runs. Do not describe firmware
+stop alone as cleanup or promote this into a production acquisition API.
+
+Follow-up static details corroborate the setup: `e00b4082` supplies start0 for
+mode2; `e00b40dc→e00b40d4` supplies end0x1000−4. ROM setters use field keys
+`6d0020`/`6d0040` (plus index domain stride), while count setter uses`6d0080`.
+Mode setter `00836de2` writes key`6d000c`; setup also writes`6d0002`,
+`6d0006` and`6d00e6`. `e00b42be` always returns class0, whose fixed jump
+entry`0221b770→e00b1cb8` performs no extra class-specific setter.
+The shared MAC helper `0083238c` toggles bit24 of`820e705c` (band1`820f705c`).
+These facts narrow the missing capture-source/completion question without
+claiming a working sampler. [Two-run evidence](../research/evidence/ics-control-2026-09-05.json).
