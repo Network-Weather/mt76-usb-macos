@@ -9,7 +9,7 @@ from research import phy_tx_probe as p
 from research.rx_stat_query import request
 
 
-@pytest.mark.parametrize(("name", "code"), p.RATES)
+@pytest.mark.parametrize(("name", "code"), p.RATES + p.STREAM_RATES)
 def test_inline_connac2_vs_table_connac3(name, code):
     frame = p.c3.controlled_frame(7)
     c2 = SimpleNamespace(CHIP=m.CHIP_MT7921)
@@ -31,6 +31,14 @@ def test_rate_allowlist():
         p.program_rate(dev, 0xFFFF)
     with pytest.raises(ValueError, match="outside bounded experiment"):
         p.descriptor(dev, b"", 0, 0xFFFF)
+
+
+def test_stream_suite_encodes_nss_minus_one_and_stays_bounded():
+    assert len(p.STREAM_RATES) == 6
+    assert dict(p.STREAM_RATES)["ht8_2ss"] == 0x488
+    assert dict(p.STREAM_RATES)["vht0_2ss"] == 0x500
+    assert dict(p.STREAM_RATES)["he0_2ss"] == 0x600
+    assert p.STREAM_RATES[0][1] == p.STREAM_RATES[-1][1] == 0x4B
 
 
 @pytest.mark.parametrize("category", [0, 3, 4, 5, 6])

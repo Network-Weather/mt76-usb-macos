@@ -248,6 +248,19 @@ These narrow the hardware questions without promoting idle registers to working
 measurements. Next bounded surface: spatial-stream and bandwidth transmit controls
 with independent second-radio decoding; keep capture-clock/legacy-route leads open.
 
+## Two-stream transmit capability and an RF-performance caveat
+
+MT7925 transmitted independently decoded HT MCS8, VHT MCS0 and HE-SU MCS0 at
+two streams/20 MHz: 6/6 each, then 4/4 each with fresh per-run payload nonces.
+This establishes an HE transmit case beyond the earlier one-stream negative.
+However one-stream controls are now weak/absent and MT7961 TX has no independent
+decode. Normal-mode exit and forced WFSYS reset/reload did not restore that
+control; alive checks alone are insufficient RF recovery evidence. See
+[PHY_TRANSMIT](PHY_TRANSMIT.md#two-stream-follow-up-2026-09-05-utc) for the exact
+counts and limitations. Wider-band TX tests are deferred until controls recover.
+Next independent lead: whether bounded live instruction reads can expose the
+MT7925's loaded code despite its encrypted firmware container.
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 

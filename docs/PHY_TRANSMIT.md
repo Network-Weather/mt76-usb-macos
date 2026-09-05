@@ -31,6 +31,43 @@ succeeded on all three runs.
 
 ## Protocol pointers and reproduction
 
+### Two-stream follow-up (2026-09-05 UTC)
+
+**MT7925 two-stream HT, VHT and HE-SU reached the other dongle**, with exact
+complete-frame matches, valid FCS and independent PHY metadata on channel 36,
+20 MHz. The first run received 6/6 of each; a second run used a fresh per-run
+vendor-IE nonce and received 4/4 of each, ruling out old buffered probes matching.
+
+| Requested setting | Rate code | Independent MT7961 PHY report |
+|---|---|---|
+| HT MCS 8, 2 streams | 0x488 | HT, MCS 8, NSS 2, 20 MHz, GI 0, no LDPC |
+| VHT MCS 0, 2 streams | 0x500 | VHT, MCS 0, NSS 2, 20 MHz, GI 0, no LDPC |
+| HE-SU MCS 0, 2 streams | 0x600 | HE-SU, MCS 0, NSS 2, 20 MHz, GI 0, no LDPC |
+
+Source: `mt7915_mac_write_txwi_tm` at c5a3bd91 derives HT NSS from MCS/8 and
+encodes NSS-1 in the rate field; the shared connac headers define the bit ranges.
+The MT7925 fixed-rate-table mechanism is unchanged. Run `phy_tx_probe.py` with
+`--suite streams`; the six phases and 60-packet ceiling remain bounded.
+
+**Controls are currently poor, so this is capability evidence, not a link-quality
+or throughput result.** The fresh-nonce run received only 1/4 OFDM before, 1/4
+HT0 and 0/4 OFDM after. Its reported signal values were around -103 to -98.5,
+far weaker than earlier experiments (units remain device-reported, uncalibrated).
+Both directions' one-stream controls failed on channel 149 in this follow-up.
+MT7961 TX was not independently received in the initial and repeated stream runs.
+MT7925 still received 173–288 ambient frames during the later MT7961 TX runs, so
+its receiver was not simply silent. No ambient frames/identifiers were retained.
+
+An explicit MT7961 test-mode exit and a forced whole-WFSYS reset were tried;
+both reloaded successfully, but neither restored the reverse-direction control.
+The forced reset changed firmware state from 3 to 0 before successful reload.
+The cause of this RF-performance change is unresolved; **alive/reload success
+does not prove restored RF performance**. Wider-band tests are deferred while
+the baseline link is unreliable. No physical power-cycle or antenna adjustment
+was performed. [Sanitized runs](../research/evidence/spatial-stream-transmit-2026-09-05.json).
+
+### Initial one-stream method
+
 All rate/descriptor facts come from mt76 baseline `c5a3bd91`:
 
 - `mt76.h`, `enum mt76_phy_type`: HT=2, VHT=4, HE-SU=8.
