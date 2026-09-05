@@ -5,6 +5,9 @@ Pinned station RAM firmware SHA256
 2026-09-05. This is a research interface, not a networking-driver API.
 No ROM bytes or ambient packet content are distributed.
 
+Follow-up [independent LTF validation](HE_LTF_RX_ORIGIN.md) now verifies the
+training-field codes too, and identifies an upstream HE-vector pointer issue.
+
 ## Recovered path
 
 The live CID/handler table at`0x0221c08c` contains CID`0x40` then handler
@@ -138,6 +141,10 @@ decoded here. The requested pair and observed GI must not be confused with a
 verified LTF duration. No production RX decoder changed. Both radios remain
 alive and transmitter reload passes; raw RSSI remains uncalibrated.
 
+This limitation describes the initial trials above. The later
+[Group5-origin control](HE_LTF_RX_ORIGIN.md) enables the report, corrects the
+field origin using the vendor header, and independently verifies LTF codes0/1/2.
+
 [Sanitized HE table evidence](../research/evidence/he-table-transmit-2026-09-05.json).
 
 ## HE STBC unlocked by changing LTF alone
@@ -159,5 +166,9 @@ unreceived; poor ordinary one-stream controls prevent a comparative coding-gain
 claim. Group5 presence is now checked explicitly and isfalse in every matched
 HE frame here, so the LTF duration still has no independent RX evidence.
 Both alive checks and transmitter normal reload pass in both runs.
+
+Those STBC trials used default Group5-off reception. The subsequent
+[HE table LTF validation](HE_LTF_RX_ORIGIN.md) is separate evidence for decoded
+training-field codes, not a retroactive field observation on these STBC frames.
 
 [Sanitized HE-STBC evidence](../research/evidence/he-stbc-transmit-2026-09-05.json).

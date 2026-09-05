@@ -11,10 +11,18 @@ short GI and with LDPC coding. A corrected UNI40 request also works, but exposes
 post-write validation and an apparently uninitialized configuration byte; the
 on-air probes retain our deterministic direct-table path.
 The same mapping now produces independently received HE GI1/GI2 and LDPC.
-GI-only HE requests failed; paired GI/LTF settings work. LTF itself remains
-unverified because full-group5 LTF metadata is unavailable.
+GI-only HE requests failed; paired GI/LTF settings work. LTF was initially
+unverified because full-group5 LTF metadata was unavailable.
 Changing only LTF0→1 also unlocks **HE STBC**, independently received3/4 then2/4,
 with HE2SS controls4/4 before/after both runs. DCM remains unreceived; no gain claim.
+
+**Validated HE-LTF readout and a maintainer pointer:** enabling the already tested
+Group5 report and following the vendor header yields LTF codes0/1/2 matching
+**48/48** independently received controlled frames. The source-derived location
+used by current MT7921's reassigned radiotap pointer instead mostly yields3.
+[HE_LTF_RX_ORIGIN](HE_LTF_RX_ORIGIN.md) records current upstream source pointers,
+the small reproducer and sanitized evidence. No Linux implementation or external
+maintainer message was sent; this is the concrete documentation gift.
 
 **New STBC transmit format:** [MT7925 HT0/STBC](PHY_TRANSMIT.md) is independently
 received as NSS1/NSTS2/STBC=true, four exact frames and then one on a fresh repeat.

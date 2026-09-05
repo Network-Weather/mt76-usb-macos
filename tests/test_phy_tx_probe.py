@@ -272,7 +272,9 @@ def test_he_ltf_full_group5_position_and_bounds(optional):
     raw = bytearray(offset + 48)
     struct.pack_into("<II", raw, 0, len(raw), flags)
     struct.pack_into("<I", raw, offset + 8, 2 << 17)
+    struct.pack_into("<I", raw, offset - 24, 1 << 17)
     assert p.he_ltf_raw(raw) == 2
+    assert p.he_ltf_raw(raw, vendor=True) == 1
     assert p.he_ltf_raw(raw[:-1]) is None
     struct.pack_into("<I", raw, 4, flags & ~p.legacy_rx.MT_RXD1_NORMAL_GROUP_5)
     assert p.he_ltf_raw(raw) is None
@@ -280,6 +282,35 @@ def test_he_ltf_full_group5_position_and_bounds(optional):
 
 def test_he_ltf_short_record_is_unknown():
     assert p.he_ltf_raw(bytes(23)) is None
+
+
+@pytest.mark.parametrize("value", [0, 0x3080, 0x803080])
+def test_receiver_g5_only_reads_traced_descriptor_control(value):
+    reads = []
+
+    def read(address):
+        reads.append(address)
+        return value
+
+    assert p.receiver_g5_word(SimpleNamespace(CHIP=m.CHIP_MT7921, rr=read)) == value
+    assert reads == [0x820E7000]
+
+
+@pytest.mark.parametrize("value", [True, -1, 0xFFFFFFFF, None])
+def test_receiver_g5_rejects_bad_word(value):
+    with pytest.raises(ValueError, match="descriptor control"):
+        p.receiver_g5_word(SimpleNamespace(CHIP=m.CHIP_MT7921, rr=lambda _: value))
+
+
+def test_receiver_g5_rejects_other_chip_before_read():
+    with pytest.raises(ValueError, match="MT7961"):
+        p.receiver_g5_word(SimpleNamespace(CHIP=m.CHIP_MT7925))
+
+
+def test_he_g5_cycle_keeps_identical_rate_and_three_bounded_phases():
+    assert p.suite_rates("he-g5-cycle", 6) == p.HE_G5_RATES
+    assert len(p.HE_G5_RATES) == 3
+    assert {code for _, code in p.HE_G5_RATES} == {0x600}
 
 
 def test_he_coding_ltf_changes_only_training_setting_from_old_suite():

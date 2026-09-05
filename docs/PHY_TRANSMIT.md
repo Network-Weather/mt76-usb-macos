@@ -167,8 +167,9 @@ the hardware write, and an apparently uninitialized low-nibble field. The same
 trace unlocks independently received short-GI and LDPC HT transmission through
 the existing deterministic direct-table route.
 Subsequent HE tests independently receive GI1/GI2 when paired with the
-corresponding LTF codes, and receive HE LDPC. The receiver does not export
-full-group5 LTF metadata, so actual LTF duration is not independently claimed.
+corresponding LTF codes, and receive HE LDPC. Initial default-receiver trials
+lacked full-group5 LTF metadata. A later [Group5-origin control](HE_LTF_RX_ORIGIN.md)
+independently verifies the LTF codes on48/48 frames using the correct field origin.
 
 [Sanitized evidence](../research/evidence/spatial-path-controls-2026-09-05.json)
 contains all three trials. No power increase, calibration writes, association,

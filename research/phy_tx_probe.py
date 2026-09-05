@@ -33,6 +33,7 @@ import mt7921u as m
 import rxd as legacy_rx
 from research import mt7925_tx_probe as c3
 from research.dual_radio_probe import fixed_rate_txwi, tx_status_records
+from research.rx_vector_probe import DMA_DCR0, G5_ENABLE
 
 # mt76 c5a3bd91: mt76.h enum mt76_phy_type; connac2/3_mac.h
 # MT_TX_RATE_MODE bits 9:6, IDX bits 5:0, NSS bits starting at 10.
@@ -115,6 +116,7 @@ HE_TABLE_RATES = tuple(
 HE_TABLE_OPTIONS = ((0, 0), (1, 0), (2, 0), (0, 0), (0, 1), (0, 0))
 HE_TABLE_LTF = (0, 1, 2, 1, 0, 0)
 HE_CODING_LTF = (1, 1, 1, 1, 1)
+HE_G5_RATES = (("he2_g5_off_before", 0x600), ("he2_g5_on", 0x600), ("he2_g5_off_after", 0x600))
 ALLOWED_RATE_CODES = {
     rate
     for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES + HE_CODING_RATES
@@ -143,6 +145,7 @@ def suite_rates(suite, channel):
             "ht-table",
             "he-table",
             "he-coding-ltf",
+            "he-g5-cycle",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -159,6 +162,7 @@ def suite_rates(suite, channel):
         "ht-table": HT_TABLE_RATES,
         "he-table": HE_TABLE_RATES,
         "he-coding-ltf": HE_CODING_RATES,
+        "he-g5-cycle": HE_G5_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -222,11 +226,14 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0):
     raise RuntimeError("rate table busy")
 
 
-def he_ltf_raw(raw):
-    """Connac2 full-group5 LTF field; called only for independently matched HE.
+def he_ltf_raw(raw, *, vendor=False):
+    """Two source-defined LTF locations, called only for independently matched HE.
 
     mt7921/mac.c selects group5 after six skipped words; connac2 HE radiotap
-    reads rxv[2] bits18:17. Missing/truncated group5 is unknown, never zero.
+    then reads rxv[2], meaning Group5 word8. Pinned gen4m nic_connac2x_rx.h
+    HAL_MAC_CONNAC2X_RX_VT_GET_LTF instead reads Group5 word0. Keep both as
+    explicit alternatives; controlled reception validates the vendor origin.
+    Missing/truncated group5 is unknown, never zero.
     """
     if len(raw) < 24:
         return None
@@ -243,10 +250,19 @@ def he_ltf_raw(raw):
     ):
         if flags & flag:
             offset += length
-    offset += 8 + 24
-    if offset + 48 > size:
+    offset += 8
+    if offset + 72 > size:
         return None
-    return (struct.unpack_from("<I", raw, offset + 8)[0] >> 17) & 3
+    return (struct.unpack_from("<I", raw, offset + (0 if vendor else 32))[0] >> 17) & 3
+
+
+def receiver_g5_word(dev):
+    if dev.CHIP != m.CHIP_MT7921:
+        raise ValueError("Group5 experiment receiver must be MT7961")
+    value = dev.rr(DMA_DCR0)
+    if type(value) is not int or not 0 <= value < 0xFFFFFFFF:
+        raise ValueError("invalid receiver DMA descriptor control")
+    return value
 
 
 def timing_padding(length):
@@ -278,6 +294,8 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
             raw = bytes(dev.rx_read(timeout=100))
         except usb.core.USBTimeoutError:
             continue
+        if marker is not None and marker in raw:
+            counts["own_nonce_usb_records"] += 1
         d = decode(raw)
         if not d:
             continue
@@ -325,7 +343,8 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
             )
         }
         if dev.CHIP == m.CHIP_MT7921 and phy.get("mode_name") == "HE-SU":
-            fields["he_ltf_size_raw"] = he_ltf_raw(raw)
+            fields["he_ltf_mt76_pointer_raw"] = he_ltf_raw(raw)
+            fields["he_ltf_vendor_word0_raw"] = he_ltf_raw(raw, vendor=True)
             fields["he_ltf_group5_present"] = bool(
                 struct.unpack_from("<I", raw, 4)[0] & legacy_rx.MT_RXD1_NORMAL_GROUP_5
             )
@@ -355,6 +374,11 @@ def main():
     p.add_argument("--acknowledge-experimental-transmit", action="store_true")
     p.add_argument("--fixed-bw", action="store_true", help="connac3 explicit 20 MHz TXD flag")
     p.add_argument(
+        "--receiver-g5",
+        action="store_true",
+        help="temporarily enable MT7961 Group5 for HE table/coding checks; restore and reload receiver",
+    )
+    p.add_argument(
         "--tx-timing",
         action="store_true",
         help="raw Connac3 TXS timing fields; no unit or ranging claim",
@@ -381,10 +405,18 @@ def main():
             "ht-table",
             "he-table",
             "he-coding-ltf",
+            "he-g5-cycle",
         ),
         default="baseline",
     )
     args = p.parse_args()
+    if args.receiver_g5 and (
+        args.transmitter != "mt7925"
+        or args.suite not in ("he-table", "he-coding-ltf", "he-g5-cycle")
+    ):
+        p.error("receiver Group5 is restricted to MT7925 HE table/coding experiments")
+    if args.suite == "he-g5-cycle" and not args.receiver_g5:
+        p.error("he-g5-cycle requires explicit --receiver-g5")
     if not args.acknowledge_experimental_transmit:
         p.error("explicit transmit acknowledgment required")
     if args.fixed_bw and args.transmitter != "mt7925":
@@ -423,6 +455,7 @@ def main():
             args.suite
         ),
         "submitted": 0,
+        "receiver_g5": args.receiver_g5,
         "table_ltf": {"he-table": HE_TABLE_LTF, "he-coding-ltf": HE_CODING_LTF}.get(args.suite),
         "firmware_sha256": {},
     }
@@ -453,7 +486,26 @@ def main():
             boot(i)
             out["firmware_sha256"][dev.CHIP] = [hashlib.sha256(b).hexdigest() for b in images[i]]
         tx = radios[tx_index]
+        original_receiver_g5 = None
         try:
+            if args.receiver_g5:
+                original_receiver_g5 = receiver_g5_word(radios[0])
+                if args.suite == "he-g5-cycle" and original_receiver_g5 & G5_ENABLE:
+                    raise ValueError("Group5 cycle requires an initially disabled report bit")
+                initial = (
+                    original_receiver_g5
+                    if args.suite == "he-g5-cycle"
+                    else original_receiver_g5 | G5_ENABLE
+                )
+                radios[0].wr(DMA_DCR0, initial)
+                enabled = receiver_g5_word(radios[0])
+                out["receiver_g5_register"] = {
+                    "before": hex(original_receiver_g5),
+                    "enabled": hex(enabled),
+                }
+                if enabled != initial:
+                    raise RuntimeError("receiver Group5 write not verified")
+                out["receiver_g5_phase_values"] = []
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
                 stop = threading.Event()
                 ready = [threading.Event(), threading.Event()]
@@ -477,6 +529,17 @@ def main():
                     time.sleep(0.3)
                     submission_origin = time.monotonic()
                     for phase, (_, code) in enumerate(rates):
+                        if args.suite == "he-g5-cycle":
+                            target = (
+                                original_receiver_g5 | G5_ENABLE
+                                if phase == 1
+                                else original_receiver_g5
+                            )
+                            radios[0].wr(DMA_DCR0, target)
+                            observed = receiver_g5_word(radios[0])
+                            out["receiver_g5_phase_values"].append(hex(observed))
+                            if observed != target:
+                                raise RuntimeError("Group5 cycle write not verified")
                         options = {"ht-table": HT_TABLE_OPTIONS, "he-table": HE_TABLE_OPTIONS}.get(
                             args.suite
                         )
@@ -517,16 +580,36 @@ def main():
         except Exception as exc:
             out["error_type"] = type(exc).__name__
         finally:
+            if original_receiver_g5 is not None:
+                try:
+                    radios[0].wr(DMA_DCR0, original_receiver_g5)
+                    out["receiver_g5_restored"] = (
+                        receiver_g5_word(radios[0]) == original_receiver_g5
+                    )
+                except Exception as exc:
+                    out["receiver_g5_restore_error_type"] = type(exc).__name__
             try:
                 boot(tx_index)
                 out["cleanup_reload_alive"] = tx.alive()
             except Exception as exc:
                 out["cleanup_error_type"] = type(exc).__name__
+            if args.receiver_g5:
+                try:
+                    boot(0)
+                    out["cleanup_receiver_reload_alive"] = radios[0].alive()
+                except Exception as exc:
+                    out["cleanup_receiver_error_type"] = type(exc).__name__
     print(json.dumps(out, indent=2, sort_keys=True))
     return int(
         "error_type" in out
         or not out.get("cleanup_reload_alive")
         or not all(out.get("alive_after", [False]))
+        or (
+            args.receiver_g5
+            and (
+                not out.get("receiver_g5_restored") or not out.get("cleanup_receiver_reload_alive")
+            )
+        )
     )
 
 
