@@ -57,6 +57,8 @@ int mt7921_usb_vendor_req(mt7921_usb_t *usb, uint8_t req, uint8_t req_type,
 
 /* Register access */
 uint32_t mt7921_rr(mt7921_usb_t *usb, uint32_t addr);
+/* Unlike the legacy sentinel API, distinguishes a failed read from all-one data. */
+int mt7921_rr_checked(mt7921_usb_t *usb, uint32_t addr, uint32_t *value);
 int mt7921_wr(mt7921_usb_t *usb, uint32_t addr, uint32_t val);
 uint32_t mt7921_rmw(mt7921_usb_t *usb, uint32_t addr, uint32_t mask, uint32_t val);
 

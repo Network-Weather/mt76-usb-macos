@@ -33,6 +33,7 @@ def native(tmp_path_factory):
         "mt7921_dev.c",
         "mt7921_mcu.c",
         "mt7921_usb.c",
+        "mt7921_radio.c",
     ]
     subprocess.run(  # noqa: S603 -- fixed local source list, no external input
         [
@@ -60,6 +61,30 @@ def native(tmp_path_factory):
     lib = ct.CDLL(str(out))
     lib.parity_rx.argtypes = [ct.c_char_p, ct.c_uint, ct.c_int, ct.POINTER(ct.c_uint)]
     lib.parity_rx.restype = ct.c_int
+    lib.mt_mib_request.argtypes = [
+        ct.c_int,
+        ct.c_uint8,
+        ct.POINTER(ct.c_uint32),
+        ct.c_size_t,
+        ct.c_void_p,
+        ct.c_size_t,
+    ]
+    lib.mt_mib_parse.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.POINTER(ct.c_uint32),
+        ct.c_size_t,
+        ct.POINTER(ct.c_uint64),
+    ]
+    lib.mt_mib_delta.argtypes = [
+        ct.c_uint64,
+        ct.c_uint64,
+        ct.c_uint,
+        ct.c_uint64,
+        ct.POINTER(ct.c_uint64),
+    ]
+    lib.mt_mib_delta.restype = ct.c_bool
     return lib
 
 
@@ -128,3 +153,69 @@ def test_rx_bounds_and_absence(native, c3):
     fixture = rx_fixture(c3, 0)
     assert native.parity_rx(fixture, len(fixture), chip, output) == 0
     assert tuple(output[:2]) == (0, 0)
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+def test_mib_shared_bytes(native, chip):
+    from research import mt7925_mib_characterize as mib
+    from scripts import mcu_stats
+
+    offsets = (ct.c_uint32 * 2)(19, 20) if chip else (ct.c_uint32 * 1)(11)
+    output = ct.create_string_buffer(256)
+    count = len(offsets)
+    result = native.mt_mib_request(chip, 0, offsets, count, output, len(output))
+    reference = (
+        mib.build_request(0, tuple(offsets)) if chip else mcu_stats.build_mib_request(0, [11])
+    )
+    assert output.raw[:result] == reference
+    body = (
+        bytes(12) + struct.pack("<HHIQHHIQ", 0, 8, 19, 0x100000002, 0, 16, 20, 500)
+        if chip
+        else bytes(28) + struct.pack("<I", 0xFFFFFFFE) + bytes(8)
+    )
+    values = (ct.c_uint64 * count)()
+    assert native.mt_mib_parse(chip, body, len(body), offsets, count, values) == 0
+    assert list(values) == (
+        [mib.parse_counter(body, o) for o in offsets]
+        if chip
+        else [mcu_stats.parse_mt7921_value(body)]
+    )
+    # Missing/truncated entries never become zeros or partial success.
+    for length in range(len(body) if chip else 32):
+        values[0] = 123
+        assert native.mt_mib_parse(chip, body, length, offsets, count, values) == -1
+        assert values[0] == 123
+    if chip:
+        duplicate = body + body[12:28]
+        assert native.mt_mib_parse(chip, duplicate, len(duplicate), offsets, count, values) == -1
+        for tag, length, offset in ((1, 8, 19), (0, 7, 19), (0, 8, 21)):
+            bad = struct.pack("<HHIQ", tag, length, offset, 33)
+            assert native.mt_mib_parse(chip, bad, len(bad), offsets, 1, values) == -1
+    assert native.mt_mib_request(chip, 0, offsets, count, output, 1) == -1
+    assert native.mt_mib_request(chip, 2, offsets, count, output, 256) == -1
+    assert native.mt_mib_request(chip, 0, offsets, 0, output, 256) == -1
+    duplicate = (ct.c_uint32 * 2)(11, 11)
+    assert native.mt_mib_request(chip, 0, duplicate, 2, output, 256) == -1
+
+
+def test_mib_wrap_reset(native):
+    value = ct.c_uint64()
+    assert native.mt_mib_delta(0xFFFFFFF0, 16, 32, 100, ct.byref(value))
+    assert value.value == 32
+    assert native.mt_mib_delta(0xFFFFFFFFFFFFFFF0, 16, 64, 100, ct.byref(value))
+    assert value.value == 32
+    assert not native.mt_mib_delta(10000, 10, 32, 100, ct.byref(value))
+    assert not native.mt_mib_delta(1, 10000, 64, 100, ct.byref(value))
+    assert not native.mt_mib_delta(0x100000000, 1, 32, 100, ct.byref(value))
+
+
+@pytest.mark.parametrize("fail", range(7))
+@pytest.mark.parametrize("enabled", [0, 1])
+def test_g5_restores_after_fault(native, fail, enabled):
+    assert native.parity_g5_fault(fail, enabled) == 0
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("mode", range(4))
+def test_mcu_stale_timeout_error_and_truncation(native, chip, mode):
+    assert native.parity_mcu_fault(chip, mode) == 0

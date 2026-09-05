@@ -299,6 +299,12 @@ int mt7921_usb_vendor_req(mt7921_usb_t *usb, uint8_t req, uint8_t req_type,
 }
 
 uint32_t mt7921_rr(mt7921_usb_t *usb, uint32_t addr) {
+    uint32_t val;
+    return mt7921_rr_checked(usb, addr, &val) ? 0xFFFFFFFFU : val;
+}
+
+int mt7921_rr_checked(mt7921_usb_t *usb, uint32_t addr, uint32_t *value) {
+    if (!value) return -1;
     uint32_t val = 0;
     int ret = mt7921_usb_vendor_req(usb,
                                     MT_VEND_READ_EXT,
@@ -308,8 +314,9 @@ uint32_t mt7921_rr(mt7921_usb_t *usb, uint32_t addr) {
                                     &val,
                                     4,
                                     VEND_TIMEOUT_MS);
-    if (ret != 4) return 0xFFFFFFFFU;
-    return CFSwapInt32LittleToHost(val);
+    if (ret != 4) return -1;
+    *value = CFSwapInt32LittleToHost(val);
+    return 0;
 }
 
 int mt7921_wr(mt7921_usb_t *usb, uint32_t addr, uint32_t val) {

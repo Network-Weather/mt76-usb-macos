@@ -7,8 +7,9 @@ A userspace monitor-mode driver and hardware smoke validator for the MediaTek MT
 C acquisition parity is in progress. Hardware timestamps and raw Group-3/5 export
 are implemented and cross-checked against Python on synthetic bytes for all 32
 group masks on both chips, including malformed DMA/group lengths. They are not yet
-hardware-qualified in this port. MCU occupancy queries, reversible
-experimental Group-5 control, MT7925 controlled TX, the measured OFDM/power controls,
+hardware-qualified in this port. MCU occupancy queries and reversible experimental
+Group-5 control are implemented with offline wire and fault-injection tests.
+MT7925 controlled TX, the measured OFDM/power controls,
 and per-chip TX-status decoding are **planned**, not implemented here yet.
 See the [C parity sprint checklist](../TODO.md#c-parity-sprint-r30).
 Passing the existing C tests is not evidence that those features were ported.
