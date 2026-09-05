@@ -87,6 +87,15 @@ It does not rule out every receive-vector mechanism. The finite RF-test log and
 MT7961's independently validated Group5 DMA bit remain separate working paths.
 [Sanitized report-switch evidence](../research/evidence/rxv-report-switch-2026-09-05.json).
 
+`--both-endpoints` then repeated this control while alternating bounded reads
+from the two bulk-IN endpoints resolved from each device's USB descriptors,
+packet`0x84` and command-response`0x85`. MT7925 received43/43/43 good-FCS frames;
+MT7961 received42/45/46. Every transfer came from`0x84`, none from`0x85`, with
+unchanged group masks and no new record type. OFF/reload cleanup passed again.
+This closes the simple alternate-existing-endpoint hypothesis for the tested
+configuration, not firmware routing configurations that were never enabled.
+[Dual-endpoint evidence](../research/evidence/rxv-report-endpoints-2026-09-05.json).
+
 Next: trace actual band-config handlers and reply construction, compare reported
 thresholds with source-identified physical fields, and identify the reporting
 switch's routing/enable dependencies. Matching literal−69 in unrelated rate-

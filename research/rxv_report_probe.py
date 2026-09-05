@@ -32,19 +32,25 @@ def request(enabled):
     return struct.pack("<4xHHBB2x", 1, 8, int(enabled), 0)
 
 
-def receive(dev):
+def receive(dev, both_endpoints=False):
     counts = collections.Counter()
     groups = collections.Counter()
     other_sizes = collections.Counter()
+    endpoints = collections.Counter()
     decoder = m.decoder_for(dev)
     started = time.monotonic()
     transfers = 0
+    reads = 0
+    selected = (dev.ep_in_pkt_rx, dev.ep_in_cmd_resp) if both_endpoints else (dev.ep_in_pkt_rx,)
     while time.monotonic() - started < 1 and transfers < 512:
+        endpoint = selected[reads % len(selected)]
+        reads += 1
         try:
-            raw = bytes(dev.rx_read(timeout=50))
+            raw = bytes(dev.bulk_in(endpoint, 4096, 20 if both_endpoints else 50))
         except usb.core.USBTimeoutError:
             continue
         transfers += 1
+        endpoints[f"{endpoint:02x}"] += 1
         packet = decoder(raw)
         if not packet:
             counts["short"] += 1
@@ -63,6 +69,7 @@ def receive(dev):
         "elapsed_seconds": time.monotonic() - started,
         "limit_reached": transfers == 512,
         "packet_types": dict(counts),
+        "endpoint_transfers": dict(endpoints),
         "frame_group_masks": dict(groups),
         "non_frame_sizes": [
             {"type": k[0], "size": k[1], "count": v} for k, v in other_sizes.items()
@@ -74,6 +81,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chip", choices=("mt7961", "mt7925"), required=True)
     parser.add_argument("--enable-reporting", action="store_true")
+    parser.add_argument(
+        "--both-endpoints",
+        action="store_true",
+        help="also inspect the descriptor-resolved command-response IN endpoint",
+    )
     args = parser.parse_args()
     if not args.enable_reporting:
         parser.error("explicit receive-report configuration opt-in required")
@@ -82,6 +94,7 @@ def main():
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "chip": args.chip,
         "channel": 1,
+        "both_endpoints": args.both_endpoints,
         "rows": [],
     }
     uid = "0e8d:7961" if args.chip == "mt7961" else "0846:9072"
@@ -113,7 +126,7 @@ def main():
                 row["reply"] = control(enabled)
                 if row["reply"].get("command_result_status") not in (None, 0):
                     raise RuntimeError("report command refused")
-                row["window"] = receive(dev)
+                row["window"] = receive(dev, args.both_endpoints)
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
