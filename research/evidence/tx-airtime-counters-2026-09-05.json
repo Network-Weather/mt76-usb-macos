@@ -1,0 +1,3482 @@
+{
+  "scope": "Source-mapped MT7925 UNI TX counter controls. Twenty bounded no-ACK synthetic packets per trial; raw counters are not independent RF success or calibrated airtime.",
+  "mapping": {
+    "date_utc": "2026-09-05T18:41:02.999313+00:00",
+    "scope": "source-named TX bandwidth, duration, abort and success counter translation/ROM data only; no counter reads",
+    "entries": [
+      {
+        "wire_offset": 22,
+        "translation_address": "0x224c24c",
+        "internal_id": 28,
+        "key": "0x1d0580",
+        "table_entry": "0x84d8fc",
+        "field_table": "0x855654",
+        "register": "0x820ed6ec",
+        "low_bit": 0,
+        "high_bit": 31
+      },
+      {
+        "wire_offset": 23,
+        "translation_address": "0x224c24e",
+        "internal_id": 29,
+        "key": "0x1d05a0",
+        "table_entry": "0x84d904",
+        "field_table": "0x855650",
+        "register": "0x820ed6f0",
+        "low_bit": 0,
+        "high_bit": 31
+      },
+      {
+        "wire_offset": 24,
+        "translation_address": "0x224c250",
+        "internal_id": 30,
+        "key": "0x1d05c0",
+        "table_entry": "0x84d90c",
+        "field_table": "0x85564c",
+        "register": "0x820ed6f4",
+        "low_bit": 0,
+        "high_bit": 31
+      },
+      {
+        "wire_offset": 25,
+        "translation_address": "0x224c252",
+        "internal_id": 31,
+        "key": "0x1d05e0",
+        "table_entry": "0x84d914",
+        "field_table": "0x855648",
+        "register": "0x820ed6f8",
+        "low_bit": 0,
+        "high_bit": 31
+      },
+      {
+        "wire_offset": 28,
+        "translation_address": "0x224c258",
+        "internal_id": 6,
+        "key": "0x1d02c0",
+        "table_entry": "0x84d84c",
+        "field_table": "0x855738",
+        "register": "0x820ed050",
+        "low_bit": 0,
+        "high_bit": 23
+      },
+      {
+        "wire_offset": 31,
+        "translation_address": "0x224c25e",
+        "internal_id": 3,
+        "key": "0x1d0260",
+        "table_entry": "0x84d834",
+        "field_table": "0x855748",
+        "register": "0x820ed040",
+        "low_bit": 0,
+        "high_bit": 23
+      },
+      {
+        "wire_offset": 53,
+        "translation_address": "0x224c28a",
+        "internal_id": 256
+      },
+      {
+        "wire_offset": 54,
+        "translation_address": "0x224c28c",
+        "internal_id": 257
+      },
+      {
+        "wire_offset": 55,
+        "translation_address": "0x224c28e",
+        "internal_id": 258
+      },
+      {
+        "wire_offset": 56,
+        "translation_address": "0x224c290",
+        "internal_id": 259
+      },
+      {
+        "wire_offset": 85,
+        "translation_address": "0x224c2ca",
+        "internal_id": 24,
+        "key": "0x1d0500",
+        "table_entry": "0x84d8dc",
+        "field_table": "0x855664",
+        "register": "0x820ed6d0",
+        "low_bit": 0,
+        "high_bit": 31
+      },
+      {
+        "wire_offset": 86,
+        "translation_address": "0x224c2cc",
+        "internal_id": 38,
+        "key": "0x1d06c0",
+        "table_entry": "0x84d94c",
+        "field_table": "0x85562c",
+        "register": "0x820ed718",
+        "low_bit": 0,
+        "high_bit": 31
+      },
+      {
+        "wire_offset": 87,
+        "translation_address": "0x224c2ce",
+        "internal_id": 39,
+        "key": "0x1d06e0",
+        "table_entry": "0x84d954",
+        "field_table": "0x855628",
+        "register": "0x820ed71c",
+        "low_bit": 0,
+        "high_bit": 31
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "trials": [
+    {
+      "date_utc": "2026-09-05T18:42:17.339750+00:00",
+      "transmitter": "mt7925",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "kind": "probe",
+          "rate_code": 1160,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 0,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 0,
+              "31": 0,
+              "85": 0,
+              "86": 0,
+              "87": 0
+            },
+            "host_monotonic_s": 1893798.3387367707
+          },
+          "windows": [
+            {
+              "sequence": 0,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1893798.9708936245
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "kind": "probe",
+          "rate_code": 1160,
+          "padding_bytes": 128,
+          "before": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1893798.9731327705
+          },
+          "windows": [
+            {
+              "sequence": 4,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 8,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1012,
+              "31": 1040,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1893799.6081070206
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 656,
+            "31": 672,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "kind": "probe",
+          "rate_code": 1160,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 8,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1012,
+              "31": 1040,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1893799.610459354
+          },
+          "windows": [
+            {
+              "sequence": 8,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 12,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1368,
+              "31": 1408,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1893800.2407839997
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "kind": "probe",
+          "rate_code": 1160,
+          "padding_bytes": 128,
+          "before": {
+            "values": {
+              "22": 12,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1368,
+              "31": 1408,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1893800.2430568745
+          },
+          "windows": [
+            {
+              "sequence": 12,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 16,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 2023,
+              "31": 2079,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1893800.878311312
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 655,
+            "31": 671,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "kind": "probe",
+          "rate_code": 1160,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 16,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 2023,
+              "31": 2079,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1893800.880591541
+          },
+          "windows": [
+            {
+              "sequence": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 20,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 2379,
+              "31": 2447,
+              "85": 20,
+              "86": 20,
+              "87": 0
+            },
+            "host_monotonic_s": 1893801.5162252286
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T18:49:32.147667+00:00",
+      "transmitter": "mt7925",
+      "suite": "length",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 0,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 0,
+              "31": 0,
+              "85": 0,
+              "86": 0,
+              "87": 0
+            },
+            "host_monotonic_s": 1894233.1426355415
+          },
+          "windows": [
+            {
+              "sequence": 0,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 851143,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 30452,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 90,
+                  "timestamp_raw": 1011357,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 35375,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1169891,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 40416,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1330212,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 45426,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1894233.780035062
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 193,
+          "padding_bytes": 128,
+          "before": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1894233.782305812
+          },
+          "windows": [
+            {
+              "sequence": 4,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 9,
+                  "timestamp_raw": 1490629,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 50436,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 37,
+                  "timestamp_raw": 1649175,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 55362,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 1805215,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 60270,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 116,
+                  "timestamp_raw": 1967977,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 65246,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 8,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1012,
+              "31": 1040,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1894234.419924437
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 656,
+            "31": 672,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 8,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1012,
+              "31": 1040,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1894234.4222420205
+          },
+          "windows": [
+            {
+              "sequence": 8,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 2130560,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 70437,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 2288938,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 75386,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 36,
+                  "timestamp_raw": 2445242,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 80238,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 2601683,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 85159,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 12,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1368,
+              "31": 1408,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1894235.053554291
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 193,
+          "padding_bytes": 128,
+          "before": {
+            "values": {
+              "22": 12,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 1368,
+              "31": 1408,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1894235.055796979
+          },
+          "windows": [
+            {
+              "sequence": 12,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 2764011,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 90232,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 2924193,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 95238,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 257,
+                  "timestamp_raw": 3094344,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 100304,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 3245964,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 105293,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 16,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 2023,
+              "31": 2079,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1894235.6978953956
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 655,
+            "31": 671,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 16,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 2023,
+              "31": 2079,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1894235.700134604
+          },
+          "windows": [
+            {
+              "sequence": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3408373,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 110368,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 51,
+                  "timestamp_raw": 3571226,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 115410,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3726877,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 120321,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 3887699,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 125346,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 20,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 2379,
+              "31": 2447,
+              "85": 20,
+              "86": 20,
+              "87": 0
+            },
+            "host_monotonic_s": 1894236.3395021874
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T18:50:12.936512+00:00",
+      "transmitter": "mt7925",
+      "suite": "width",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 0,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 0,
+              "31": 0,
+              "85": 0,
+              "86": 0,
+              "87": 0
+            },
+            "host_monotonic_s": 1894273.9533876246
+          },
+          "windows": [
+            {
+              "sequence": 0,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 41,
+                  "timestamp_raw": 862437,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 31043,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1017791,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 35935,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 9,
+                  "timestamp_raw": 1175500,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 40858,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 1331722,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 45745,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1894274.5788721875
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 40,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1894274.5808772496
+          },
+          "windows": [
+            {
+              "sequence": 4,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 23,
+                  "timestamp_raw": 1489039,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 50641,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 1641465,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 55424,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 40
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 1801140,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 60415,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 40
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 41,
+                  "timestamp_raw": 1960176,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 65346,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 4,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 620,
+              "31": 640,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1894275.211115062
+          },
+          "delta": {
+            "22": 0,
+            "23": 4,
+            "24": 0,
+            "25": 0,
+            "28": 264,
+            "31": 272,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 4,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 620,
+              "31": 640,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1894275.2132325205
+          },
+          "windows": [
+            {
+              "sequence": 8,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 221,
+                  "timestamp_raw": 2127776,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 70405,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 2283163,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 75476,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 2443895,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 80501,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 2606430,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 85580,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 8,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 976,
+              "31": 1008,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1894275.858780562
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 40,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 8,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 976,
+              "31": 1008,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1894275.8613602915
+          },
+          "windows": [
+            {
+              "sequence": 12,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 2769429,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 90674,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 2929673,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 95682,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 72,
+                  "timestamp_raw": 3086519,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 100513,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 65,
+                  "timestamp_raw": 3243318,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 105420,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 8,
+              "23": 8,
+              "24": 0,
+              "25": 0,
+              "28": 1240,
+              "31": 1280,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1894276.491580687
+          },
+          "delta": {
+            "22": 0,
+            "23": 4,
+            "24": 0,
+            "25": 0,
+            "28": 264,
+            "31": 272,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 8,
+              "23": 8,
+              "24": 0,
+              "25": 0,
+              "28": 1240,
+              "31": 1280,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1894276.4938560415
+          },
+          "windows": [
+            {
+              "sequence": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 7,
+                  "timestamp_raw": 3401796,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 110432,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 47,
+                  "timestamp_raw": 3561353,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 115378,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3715349,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 120233,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 3875413,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 125233,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 12,
+              "23": 8,
+              "24": 0,
+              "25": 0,
+              "28": 1595,
+              "31": 1647,
+              "85": 20,
+              "86": 20,
+              "87": 0
+            },
+            "host_monotonic_s": 1894277.126504333
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 355,
+            "31": 367,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T18:50:46.114322+00:00",
+      "transmitter": "mt7925",
+      "suite": "width",
+      "maximum_submissions": 20,
+      "submitted": 20,
+      "phases": [
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 0,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 0,
+              "31": 0,
+              "85": 0,
+              "86": 0,
+              "87": 0
+            },
+            "host_monotonic_s": 1894307.1464098955
+          },
+          "windows": [
+            {
+              "sequence": 0,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 0,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 852232,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 30771,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 1,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 1,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 1011559,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 35749,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 2,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 2,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 1165942,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 40574,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 3,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 3,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 1328363,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 45648,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1894307.7860227912
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 40,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 4,
+              "23": 0,
+              "24": 0,
+              "25": 0,
+              "28": 356,
+              "31": 368,
+              "85": 4,
+              "86": 4,
+              "87": 0
+            },
+            "host_monotonic_s": 1894307.7882005828
+          },
+          "windows": [
+            {
+              "sequence": 4,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 40
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 4,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 1493933,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 50823,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 5,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 5,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 114,
+                  "timestamp_raw": 1657671,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 55829,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 6,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 40
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 6,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1815255,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 60865,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 7,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 40
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 7,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 1972876,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 65791,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 4,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 620,
+              "31": 640,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1894308.4231002706
+          },
+          "delta": {
+            "22": 0,
+            "23": 4,
+            "24": 0,
+            "25": 0,
+            "28": 264,
+            "31": 272,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 4,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 620,
+              "31": 640,
+              "85": 8,
+              "86": 8,
+              "87": 0
+            },
+            "host_monotonic_s": 1894308.4252853745
+          },
+          "windows": [
+            {
+              "sequence": 8,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 8,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 2130952,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 70731,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 9,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 9,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 2283767,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 75505,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 10,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 10,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 19,
+                  "timestamp_raw": 2445413,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 80542,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 11,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 11,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 7,
+                  "timestamp_raw": 2607799,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 85629,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 8,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 976,
+              "31": 1008,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1894309.0651665
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 40,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 8,
+              "23": 4,
+              "24": 0,
+              "25": 0,
+              "28": 976,
+              "31": 1008,
+              "85": 12,
+              "86": 12,
+              "87": 0
+            },
+            "host_monotonic_s": 1894309.0673493955
+          },
+          "windows": [
+            {
+              "sequence": 12,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 12,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 2,
+                  "timestamp_raw": 2773055,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 90797,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 13,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 13,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 18,
+                  "timestamp_raw": 2932524,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 95765,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 14,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 14,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 30,
+                  "timestamp_raw": 3093255,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 100775,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 15,
+              "exact_good": false,
+              "good_phy": [],
+              "tx_status": [
+                {
+                  "sequence": 15,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 1,
+                  "tx_delay_raw": 6,
+                  "timestamp_raw": 3250469,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 105712,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 8,
+              "23": 8,
+              "24": 0,
+              "25": 0,
+              "28": 1240,
+              "31": 1280,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1894309.7020143745
+          },
+          "delta": {
+            "22": 0,
+            "23": 4,
+            "24": 0,
+            "25": 0,
+            "28": 264,
+            "31": 272,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        },
+        {
+          "rate_code": 1160,
+          "tx_width_mhz": 20,
+          "frame_bytes_without_fcs": 65,
+          "padding_bytes": 0,
+          "before": {
+            "values": {
+              "22": 8,
+              "23": 8,
+              "24": 0,
+              "25": 0,
+              "28": 1240,
+              "31": 1280,
+              "85": 16,
+              "86": 16,
+              "87": 0
+            },
+            "host_monotonic_s": 1894309.7043522703
+          },
+          "windows": [
+            {
+              "sequence": 16,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 16,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 4,
+                  "timestamp_raw": 3410224,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 110707,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 17,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 17,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 3,
+                  "timestamp_raw": 3562780,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 115476,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 18,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 18,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 5,
+                  "timestamp_raw": 3718879,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 120352,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            },
+            {
+              "sequence": 19,
+              "exact_good": true,
+              "good_phy": [
+                {
+                  "mode_name": "HT",
+                  "mcs": 8,
+                  "nss": 2,
+                  "bw_mhz": 20
+                }
+              ],
+              "tx_status": [
+                {
+                  "sequence": 19,
+                  "format": 0,
+                  "rate_raw": 1160,
+                  "power_raw": 36,
+                  "ack_error_bits": 0,
+                  "error_bits_16_22": 0,
+                  "tx_count_format0": 1,
+                  "pid": 3,
+                  "bandwidth_raw": 0,
+                  "tx_delay_raw": 65,
+                  "timestamp_raw": 3877799,
+                  "rate_stbc": false,
+                  "front_time_raw_format0": 125258,
+                  "mpdu_counters_format1_hypothesis": null,
+                  "format1_words5_7_raw": null
+                }
+              ],
+              "transfer_limit_reached": false
+            }
+          ],
+          "after": {
+            "values": {
+              "22": 12,
+              "23": 8,
+              "24": 0,
+              "25": 0,
+              "28": 1596,
+              "31": 1648,
+              "85": 20,
+              "86": 20,
+              "87": 0
+            },
+            "host_monotonic_s": 1894310.3288853331
+          },
+          "delta": {
+            "22": 4,
+            "23": 0,
+            "24": 0,
+            "25": 0,
+            "28": 356,
+            "31": 368,
+            "85": 4,
+            "86": 4,
+            "87": 0
+          }
+        }
+      ],
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    }
+  ]
+}

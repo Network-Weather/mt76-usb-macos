@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**TX width and duration counters validated:** [bounded controls](TX_AIRTIME_COUNTERS.md)
+map nine source-named UNI fields through live firmware/ROM. Short/long/short
+reversals repeat303–304 additional MAC2PHY ticks for four packets, matching
+the304us data-symbol difference.20/40 reversals move all four packets between
+the corresponding width counters and reduce duration. Later wide reception
+still fails while identical transmitter counts continue; this is not RF-success
+proof. No direct consuming reads or enable writes; all radios reload normally.
+
 **Ordinary Data and QoS Data transmission demonstrated:**
 [bounded synthetic frame controls](DATA_FRAME_TRANSMIT.md) receive4/4 of each
 class in two fresh MT7925→MT7961 HT8 runs. No association/IP/ACK/BA setup.
