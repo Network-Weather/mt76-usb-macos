@@ -6,6 +6,9 @@ UNI08/tag1/length8, RX-enable byte and TX-enable byte, from pinned gen4m.
 Explicitly enables RX reporting only; no TX, EDCCA changes, RF mode or raw export.
 Each window is one second/512 transfers. OFF and full firmware reload on exit.
 An ACK alone is not evidence that the requested reporting mode works.
+Optional MT7925 --start-control changes/restores only ARB0x3014 bit4, a
+ROM-mapped field matching the upstream mt7615 RXV_START bit. Experimental:
+the live clear readback failed, so normal firmware reload was required.
 """
 
 import argparse
@@ -38,7 +41,20 @@ def report_register(dev):
         "raw": hex(word),
         "rx_bit7": (word >> 7) & 1,
         "tx_bit8": (word >> 8) & 1,
+        "start_candidate_bit4": (word >> 4) & 1,
     }
+
+
+def set_start(dev, enabled):
+    if type(enabled) is not bool:
+        raise ValueError("boolean start control only")
+    before = report_register(dev)
+    word = int(before["raw"], 16)
+    dev.wr(0x820E3014, (word & ~0x10) | (0x10 if enabled else 0))
+    after = report_register(dev)
+    if after["start_candidate_bit4"] != int(enabled):
+        raise RuntimeError("RX-vector start bit readback failed")
+    return after
 
 
 def request(enabled):
@@ -98,6 +114,11 @@ def main():
     parser.add_argument("--enable-reporting", action="store_true")
     parser.add_argument("--registers", action="store_true", help="MT7925 exact report-bit readback")
     parser.add_argument(
+        "--start-control",
+        action="store_true",
+        help="experimental MT7925 RX-vector start control; clear may fail, requiring reload",
+    )
+    parser.add_argument(
         "--both-endpoints",
         action="store_true",
         help="also inspect the descriptor-resolved command-response IN endpoint",
@@ -105,6 +126,8 @@ def main():
     args = parser.parse_args()
     if not args.enable_reporting:
         parser.error("explicit receive-report configuration opt-in required")
+    if args.start_control:
+        args.registers = True
     if args.registers and args.chip != "mt7925":
         parser.error("register cross-check is MT7925-only")
     out = {
@@ -113,11 +136,13 @@ def main():
         "chip": args.chip,
         "channel": 1,
         "both_endpoints": args.both_endpoints,
+        "start_control": args.start_control,
         "rows": [],
     }
     uid = "0e8d:7961" if args.chip == "mt7961" else "0846:9072"
     with m.open_device(uid) as dev:
         images = m.load_firmware(dev.CHIP, m.firmware_dir())
+        restore_start = None
 
         def boot():
             with contextlib.redirect_stdout(sys.stderr):
@@ -140,12 +165,28 @@ def main():
             boot()
             if args.registers:
                 out["hardware_initial"] = report_register(dev)
-            for enabled in (False, True, False):
+            if args.start_control:
+                if out["hardware_initial"]["start_candidate_bit4"]:
+                    raise ValueError("start already active; exclusive idle control required")
+                restore_start = False
+            phases = ((False, False), (True, False), (False, False))
+            if args.start_control:
+                phases = (
+                    (False, False),
+                    (True, False),
+                    (True, True),
+                    (True, False),
+                    (False, False),
+                )
+            for enabled, start in phases:
                 row = {"rx_report_requested": enabled}
                 out["rows"].append(row)
                 row["reply"] = control(enabled)
                 if row["reply"].get("command_result_status") not in (None, 0):
                     raise RuntimeError("report command refused")
+                if args.start_control:
+                    row["start_requested"] = start
+                    set_start(dev, start)
                 if args.registers:
                     row["hardware_before"] = report_register(dev)
                 row["window"] = receive(dev, args.both_endpoints)
@@ -155,6 +196,11 @@ def main():
         except Exception as exc:
             out["error_type"] = type(exc).__name__
         finally:
+            if restore_start is not None:
+                try:
+                    out["restore_start"] = set_start(dev, restore_start)
+                except Exception as exc:
+                    out["restore_start_error_type"] = type(exc).__name__
             try:
                 out["cleanup_off"] = control(False)
             except Exception as exc:
@@ -167,7 +213,11 @@ def main():
             except Exception as exc:
                 out["cleanup_error_type"] = type(exc).__name__
     print(json.dumps(out, indent=2))
-    return int("error_type" in out or not out.get("cleanup_reload_alive"))
+    return int(
+        "error_type" in out
+        or "restore_start_error_type" in out
+        or not out.get("cleanup_reload_alive")
+    )
 
 
 if __name__ == "__main__":

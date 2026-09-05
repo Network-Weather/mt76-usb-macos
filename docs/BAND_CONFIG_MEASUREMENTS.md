@@ -188,3 +188,34 @@ surface, not a new RF measurement or a reason to alter timeout settings.
 Next: resolve the separate RX-vector start bit and routing dependencies. Matching
 literal−69 in unrelated rate-selection routines is not sufficient EDCCA provenance;
 those candidates were rejected before the actual dispatcher was found.
+
+### Start-bit control: still no stream, masked-clear recovery fails
+
+The same ROM descriptor maps keys`0x622/623/624` to bits4/2/0 of`0x820e3014`.
+Pinned mt76's **mt7615** driver names bits4/7/8 RXV_START/RXV_R_EN/RXV_T_EN and
+sets them together for test reception. Its register offset differs; the MT7925
+address/field mapping above comes from MT7925 ROM, while the start-bit meaning
+remains a cross-chip hypothesis. A candidate MT7925 routine at`0xe0060404`
+uses similar low keys but domain`0x34`, not domain0; it is **not** additional
+proof of this start sequence.
+
+One explicit `--start-control` experiment at11:47:51 UTC changed only bit4
+directly, alongside the previously validated RX-only UNI control. It requested
+five phases (off, report-only, report+start, report-only, off), but **did not
+complete the A/B/A sequence**:
+
+- First three hardware states were`0x1`, `0x81`, `0x91`, each stable across its
+  one-second window. Good-FCS counts45/46/39, all normal packets on0x84, unchanged
+  group mask0x17, no new records on either endpoint. TX reporting stayed off.
+- The fourth phase's clear-bit4 readback failed and aborted the experiment.
+  The cleanup masked-clear attempt also failed. The exact failed readback word
+  was not retained, so no particular sticky-register value is asserted.
+- Firmware OFF still ACKed0. **Full normal reload recovered** to`0x1`, with
+  RX/TX reporting and bit4 all clear and the alive check passing. The process
+  correctly returned failure despite successful reload.
+
+This is a negative with a recovery limitation, not a working report-start API
+or a proven reversible masked toggle. The script's opt-in remains research-only
+for reproducing the failure; ordinary report controls never write bit4. No
+repeat is planned without a source-grounded stop/routing path.
+[Start-control evidence](../research/evidence/rxv-start-control-2026-09-05.json).

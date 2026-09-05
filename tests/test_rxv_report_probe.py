@@ -28,7 +28,49 @@ def test_traced_register_reads_only_and_extracts_rx_tx():
         "raw": "0x80",
         "rx_bit7": 1,
         "tx_bit8": 0,
+        "start_candidate_bit4": 0,
     }
+
+
+def test_start_control_changes_only_bit4():
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+        value = 0xABCD0081
+
+        def rr(self, address):
+            assert address == 0x820E3014
+            return self.value
+
+        def wr(self, address, value):
+            assert address == 0x820E3014
+            assert (value ^ self.value) & ~0x10 == 0
+            self.value = value
+
+    dev = Device()
+    assert p.set_start(dev, True)["start_candidate_bit4"] == 1
+    assert dev.value == 0xABCD0091
+    assert p.set_start(dev, False)["start_candidate_bit4"] == 0
+    assert dev.value == 0xABCD0081
+
+
+@pytest.mark.parametrize("enabled", [0, 1, None])
+def test_start_control_rejects_non_boolean_before_io(enabled):
+    with pytest.raises(ValueError, match="boolean"):
+        p.set_start(object(), enabled)
+
+
+def test_start_control_rejects_bad_readback():
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+
+        def rr(self, _):
+            return 1
+
+        def wr(self, *_):
+            pass
+
+    with pytest.raises(RuntimeError, match="readback"):
+        p.set_start(Device(), True)
 
 
 def test_report_register_rejects_other_chip_before_read():
