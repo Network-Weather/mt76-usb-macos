@@ -205,6 +205,16 @@ def test_timing_padding_is_bounded(length):
         p.timing_padding(length)
 
 
+def test_timing_burst_is_at_most_ten_unpaced_frames_with_bracketing_controls():
+    rates = p.suite_rates("timing-burst", 6)
+    assert len(rates) == 3
+    assert {rate for _, rate in rates} == {0}
+    assert [p.phase_gap("timing-burst", i) for i in range(3)] == [0.05, 0, 0.05]
+    assert p.phase_gap("cck", 1) == 0.05
+    with pytest.raises(ValueError, match="three-phase"):
+        p.phase_gap("timing-burst", 3)
+
+
 @pytest.mark.parametrize(
     ("suite", "channel"),
     [

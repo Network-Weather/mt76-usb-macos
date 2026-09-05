@@ -53,7 +53,7 @@ def analyze(trial, frame_bytes=None):
     if (
         trial.get("tool") != "phy_tx_probe"
         or trial.get("transmitter") != "mt7925"
-        or trial.get("suite") != "cck"
+        or trial.get("suite") not in ("cck", "timing-burst")
         or trial.get("tx_timing") is not True
     ):
         raise ValueError("bounded MT7925 CCK timing trial required")
@@ -102,7 +102,7 @@ def analyze(trial, frame_bytes=None):
         )
         group["delay"].append(row["tx_delay_raw"])
         group["offset"].append(value)
-    return {
+    result = {
         "frame_bytes_without_fcs": size,
         "statuses": count,
         "timestamp_ticks_per_host_second_fit": slope(host, stamps),
@@ -125,6 +125,43 @@ def analyze(trial, frame_bytes=None):
         },
         "calibrated_clock_or_contention_measurement": False,
     }
+    if trial["suite"] == "timing-burst":
+        n = trial["per_phase"]
+        if type(n) is not int or not 1 <= n <= 10 or count != 3 * n:
+            raise ValueError("bounded three-phase burst geometry required")
+        submitted = trial["host_submissions"]
+        if len(submitted) != count or [r["sequence"] for r in submitted] != list(range(count)):
+            raise ValueError("complete host submission sequence required")
+        for row in submitted:
+            if any(
+                type(row[k]) not in (int, float) or not math.isfinite(row[k]) or row[k] < 0
+                for k in ("start_seconds", "call_seconds")
+            ):
+                raise ValueError("valid host submission timing required")
+        if any(b["start_seconds"] <= a["start_seconds"] for a, b in itertools.pairwise(submitted)):
+            raise ValueError("forward host submissions required")
+        first, last = n, 2 * n - 1
+        result["burst"] = {
+            "packets": n,
+            "host_submission_window_us": 1e6
+            * (
+                submitted[last]["start_seconds"]
+                + submitted[last]["call_seconds"]
+                - submitted[first]["start_seconds"]
+            ),
+            "front_through_last_delay_span_ticks": front[last]
+            + rows[last]["tx_delay_raw"]
+            - front[first],
+            "timestamp_span_ticks": stamps[last] - stamps[first],
+            "per_frame_delay_ticks": [r["tx_delay_raw"] for r in rows[first : last + 1]],
+            "front_step_minus_previous_delay_ticks": [
+                front[i + 1] - front[i] - rows[i]["tx_delay_raw"] for i in range(first, last)
+            ],
+            "sum_modeled_airtime_us": sum(
+                ppdu_airtime_us(r["rate_raw"], size) for r in rows[first : last + 1]
+            ),
+        }
+    return result
 
 
 def main():

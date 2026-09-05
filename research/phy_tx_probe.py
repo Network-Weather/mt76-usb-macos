@@ -99,6 +99,7 @@ HE_CODING_RATES = (
     ("he0_2ss_after", 0x600),
 )
 CONNAC3_CODING_CODES = {0x4480, 0x210, 0x4600}
+TIMING_BURST_RATES = (("cck1_paced_before", 0), ("cck1_burst", 0), ("cck1_paced_after", 0))
 ALLOWED_RATE_CODES = {
     rate
     for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES + HE_CODING_RATES
@@ -115,7 +116,9 @@ SPATIAL_RATES = tuple(
 def suite_rates(suite, channel):
     if type(channel) is not int or channel not in (1, 6, 11, 36, 149):
         raise ValueError("only bounded non-DFS test channels")
-    if (channel <= 11) != (suite in ("lowband", "cck", "preamble", "stbc", "he-coding")):
+    if (channel <= 11) != (
+        suite in ("lowband", "cck", "preamble", "stbc", "he-coding", "timing-burst")
+    ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
     suites = {
         "baseline": RATES,
@@ -126,6 +129,7 @@ def suite_rates(suite, channel):
         "preamble": PREAMBLE_RATES,
         "stbc": STBC_RATES,
         "he-coding": HE_CODING_RATES,
+        "timing-burst": TIMING_BURST_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -181,6 +185,14 @@ def timing_padding(length):
     if type(length) is not int or length not in (0, 128):
         raise ValueError("timing padding must be0 or128 bytes")
     return b"\xdd\x7e\x02NW\x02" + bytes(122) if length else b""
+
+
+def phase_gap(suite, phase):
+    if suite == "timing-burst":
+        if type(phase) is not int or not 0 <= phase < 3:
+            raise ValueError("bounded three-phase timing control required")
+        return (0.05, 0, 0.05)[phase]
+    return 0.05
 
 
 def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_timing=False):
@@ -291,6 +303,7 @@ def main():
             "preamble",
             "stbc",
             "he-coding",
+            "timing-burst",
         ),
         default="baseline",
     )
@@ -303,6 +316,8 @@ def main():
         p.error("TX timing currently supports only the Connac3 transmitter")
     if args.timing_padding and not args.tx_timing:
         p.error("timing padding requires explicit --tx-timing")
+    if args.suite == "timing-burst" and not args.tx_timing:
+        p.error("timing-burst requires explicit --tx-timing")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
     if args.suite in ("stbc", "he-coding") and args.transmitter != "mt7925":
@@ -317,7 +332,8 @@ def main():
         "transmitter": args.transmitter,
         "channel": args.channel,
         "per_phase": args.per_phase,
-        "gap_s": 0.05,
+        "gap_s": None if args.suite == "timing-burst" else 0.05,
+        "phase_gap_seconds": [phase_gap(args.suite, i) for i in range(len(rates))],
         "fixed_bw": args.fixed_bw,
         "suite": args.suite,
         "tx_timing": args.tx_timing,
@@ -326,6 +342,8 @@ def main():
         "submitted": 0,
         "firmware_sha256": {},
     }
+    if args.tx_timing:
+        out["host_submissions"] = []
     tx_index = int(args.transmitter == "mt7925")
     # A fresh private-use vendor IE prevents a previous run's buffered probe
     # from matching this run. Never output the nonce, ambient frames, or headers.
@@ -373,6 +391,7 @@ def main():
                     if not all(event.wait(5) for event in ready):
                         raise RuntimeError("capture not ready")
                     time.sleep(0.3)
+                    submission_origin = time.monotonic()
                     for phase, (_, code) in enumerate(rates):
                         program_rate(tx, code)
                         for seq in range(phase * args.per_phase, (phase + 1) * args.per_phase):
@@ -383,9 +402,20 @@ def main():
                             body = descriptor(tx, frame, seq, code, args.fixed_bw, spe) + frame
                             wire = struct.pack("<I", len(body)) + body
                             wire += bytes((-len(wire)) % 4 + 4)
+                            before_submit = time.monotonic()
                             tx.bulk_out(tx.ep_out_ac_be, wire, 1000)
                             out["submitted"] += 1
-                            time.sleep(0.05)
+                            if args.tx_timing:
+                                out["host_submissions"].append(
+                                    {
+                                        "sequence": seq,
+                                        "start_seconds": before_submit - submission_origin,
+                                        "call_seconds": time.monotonic() - before_submit,
+                                    }
+                                )
+                            gap = phase_gap(args.suite, phase)
+                            if gap:
+                                time.sleep(gap)
                         time.sleep(0.15)
                     time.sleep(0.5)
                 finally:

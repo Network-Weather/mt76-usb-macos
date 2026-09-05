@@ -15,6 +15,10 @@ live timestamp/front-time/delay values. Across48 no-ACK packets at five rates
 and two lengths, a1µs/32µs clock model plus nominal packet airtime leaves a
 per-boot offset with29–32µs spread. This is a promising delay observation, not
 yet calibrated contention time or interference attribution.
+Two subsequent eight-frame burst controls receive8/8 before/during/after;
+every next front-time equals previous front+delay. Since all host submissions
+finish in1.3–1.6ms while service spans17–22ms, these fields do not include all
+earlier FIFO waiting. The evidence supports a serial service-boundary reading.
 
 **Spatial-reuse queries:** [UNI25 capability/indicator replies](SPATIAL_REUSE.md)
 work on MT7925 through unsolicited sequence-zero events. Two fresh-band controls

@@ -87,9 +87,45 @@ The minimum raw delays also grow with the packet-length model:
 Multiplying these minima by32 tracks airtime within quantization and small
 overhead; delay is therefore **not pure backoff or contention**. One short CCK2
 packet reports delay249, roughly8ms under this model, while its airtime is468µs.
-Such excess could be useful as a queued/access-delay observation, but does not
+Such excess could be useful as a service/access-delay observation, but does not
 identify Wi-Fi contention, non-Wi-Fi interference, host scheduling, or an AP.
 Further controlled perturbation and CCA correlation are needed.
+
+## Burst control: front time follows serial service, not host enqueue
+
+A follow-up changes only pacing: eight CCK1 packets50ms apart, **eight unpaced
+packets**, then eight at50ms again. All frames are193 bytes, no-ACK, channel6/20,
+with no aggregation, rate change, EDCA/CCA modification or power increase.
+`--suite timing-burst --per-phase 8 --tx-timing --timing-padding 128` is bounded
+to at most ten unpaced frames per invocation. Host bulk-call timings are retained
+only with the timing opt-in.
+
+Both fresh runs receive **8/8 in each of all three phases**, and each produces
+24 unique single-attempt error-free statuses. Both alive checks and transmitter
+reload pass. The joint clock/airtime relation still has31/28µs offset spread.
+
+| Burst observation | First | Fresh repeat |
+|---|---|---|
+| Host submission window, eight frames | 1.624ms | 1.254ms |
+| Front through last delay span | 703 ticks ≈22.496ms | 533 ticks ≈17.056ms |
+| Sum of modeled packet airtimes | 14.144ms | 14.144ms |
+| `next_front − front − delay` | **0 for all7 links** | **0 for all7 links** |
+
+For the first burst, delays are55,57,301,60,58,57,59,56 ticks. For the repeat,
+they are127,64,57,57,57,57,56,58. They do **not** grow cumulatively for frames
+already submitted by the host. Instead each next front-time equals the previous
+front-time plus its delay exactly, in both runs. Host submission finishes before
+most of these successive front-times are reached.
+
+This strongly supports a **head-of-line/service-boundary interpretation**:
+the delay includes each frame's own service/access/on-air interval, not all
+earlier FIFO waiting since USB submission. It does not identify the exact
+internal queue, prove an interrupt/completion boundary, or separate contention
+from other hardware delays. In particular, do not subtract airtime and label the
+remainder total end-to-end queue delay. No external interference source was
+introduced or inferred.
+
+[Sanitized burst controls and analysis](../research/evidence/tx-status-burst-timing-2026-09-05.json).
 
 ## Reproduce
 
