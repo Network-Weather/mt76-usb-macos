@@ -1,8 +1,80 @@
-# TODO: current sprint
+# TODO: next sprint and prior backlog
 
-Sprint started 2026-09-01; refocused 2026-09-03 after 0.2.0. Items come from [ROADMAP.md](ROADMAP.md); each names its roadmap
-item. Strike through when merged. Hardware items need the reference adapter attached and at
-least two APs on one SSID.
+Next sprint selected 2026-09-04: C acquisition parity (R30). Items come from
+[ROADMAP.md](ROADMAP.md); check off only against the stated evidence. This is the
+implementation plan, not a claim that the ports below have landed.
+
+## C parity sprint (R30)
+
+Reference: Python driver and research tooling on `main` at `6081908`. C currently
+covers the established capture baseline, not the newer research features. Work in
+small, regularly committed slices; keep existing CLI behavior and passive defaults.
+
+- [ ] **1. Define the parity contract and shared fixtures.** Inventory each in-scope
+  Python helper, intended C entry point, input/output units, chip support, and evidence
+  status. Add sanitized synthetic byte fixtures consumed by Python and C for RX groups,
+  MCU requests/replies, TX descriptors, and TX status. Separate implemented,
+  offline-tested, hardware-confirmed, and not-tested states. No real network identifiers,
+  raw ambient captures, or firmware in fixtures.
+- [ ] **2. RX timestamps and extended vectors.** Export Group-2 hardware timestamps
+  with presence flags and documented wrap/clock semantics, plus bounded Group-3/5 data
+  for both chips, matching `research/rx_vector_probe.py` and the Python decoders.
+  Preserve chip-specific group lengths and descriptor-declared DMA bounds. Keep raw
+  words and exploratory interpretations clearly separate; absence is not a zero
+  measurement. Do not manufacture a 64-bit TSFT or label candidates as calibrated SNR.
+  *Acceptance:* shared fixtures cover missing/truncated groups, G5 without G3, timestamp
+  wrap values, both descriptor layouts, and unchanged frame slicing/radiotap behavior.
+- [ ] **3. MCU channel-occupancy acquisition.** Port the MT7921 EXT MIB path and MT7925
+  atomic UNI batches, with pure request/reply helpers and explicit offset/value output.
+  Validate lengths, echoed offsets, duplicate/missing entries, wrong-sequence replies,
+  timeouts, and counter reset/wrap handling. Report the actual counter sampling window
+  and MCU-induced frame drops; don't silently compare different time/bandwidth scopes.
+  *Acceptance:* offline malformed/stale-reply tests and repeated C reads on both chips,
+  with primary-20-MHz scope. Offset 20 remains ED-active, never non-Wi-Fi time.
+- [ ] **4. Reversible experimental receive reporting.** Provide explicit opt-in MT7921
+  Group-5 enable/restore with readback, saved prior bit state, and restoration on normal
+  and error exits. Do not change the default: upstream disables this feature for hardware
+  issues. *Acceptance:* fault-injection coverage plus baseline/enabled/restored captures;
+  short success does not establish soak safety, and buffered transition records are allowed.
+- [ ] **5. Controlled TX and per-chip TX status.** Port the measured connac2 OFDM path,
+  connac3 descriptor geometry and fixed-rate table setup, DIS_MAT source preservation,
+  candidate attenuation controls, and both TX-status record layouts. Keep the old API's
+  behavior explicit; do not silently enable MT7925 injection through an existing call.
+  Constrain new CLI operations to the measured frame/rate/channel/power-code combinations,
+  bounded counts, pacing, timeouts, explicit TX acknowledgement, and firmware cleanup.
+  *Acceptance:* byte-level golden tests, invalid-input rejection before USB writes,
+  bounded table polling, format-aware TX-status parsing, and independent receive from
+  the other dongle. USB completion or no-ACK TX status alone is not delivery evidence.
+  Raw signed power fields are not calibrated dBm; no new band or rate claims by inference.
+- [ ] **6. Hardware qualification and handoff.** Run existing offline gates and C
+  sanitizer tests, then C passive capture regressions on both reference adapters.
+  Cross-check new C telemetry against the reference semantics and independently validate
+  transmitted rate/frame contents with the other receiver, including restoration and
+  alive checks. Record commands, firmware hashes, counts, failures, and untested cases
+  in `docs/TESTING.md`. Update `c/README.md` with an honest parity matrix and usage.
+  Do not mark the sprint done based only on existing C tests passing.
+
+### Sprint boundaries
+
+- C owns chipset acquisition, transport, bounded binary decoding, and controlled radio
+  primitives. Generic IE/MLO parsing, clock fitting, BlockAck delivery analysis, experiment
+  orchestration, and topology inference may stay in Python/downstream consumers. The C
+  output must expose the metadata needed by them; copying every script is not parity.
+- Keep working behavior intact and use additive, explicit experimental APIs. A passive
+  command must never begin transmitting as a consequence of this port.
+- R21 is a deferred iPad survey spike, not work to execute now. Proper networking-driver
+  and baseline-connectivity work are durable non-goals.
+- R31 is a possible documentation/pointers package for Linux maintainers after this
+  sprint, not an upstream implementation obligation or permission to send messages.
+- The older open items below are retained backlog, not competing sprint priorities.
+  A human-driven roaming test is not a prerequisite for these C ports.
+
+## Prior sprint record and carried backlog
+
+The following record started 2026-09-01 and was refocused 2026-09-03 after 0.2.0.
+Historical PR/review instructions below describe that earlier workflow; they are not
+the active merge gate for R30. Items requiring a forced roam still need an operator
+and a multi-AP environment. They are not silently marked complete by this replan.
 
 ## Fix the occupancy comparison before PR #25 lands
 
@@ -59,7 +131,7 @@ published in `docs/TESTING.md` are wrong until step 4 replaces them.
 
 ## Measure before building
 
-- [ ] **R14/R15 hypothesis check, second attempt.** This is the next thing to do and it needs
+- [ ] **R14/R15 hypothesis check, second attempt.** This is deferred from the C sprint and needs
   a person: nothing else on this list is blocked. The first attempt (2026-09-02) locked one
   radio to one channel and saw none of five roams of an MLO client; the network's own
   management log did. Both named causes are fixed: ~~Multi-Link element parsing, so every link

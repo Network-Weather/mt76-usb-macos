@@ -19,6 +19,15 @@ and write radiotap pcap; the MT7925U also captures 160 MHz. Wider
 claims require wider evidence. The current sprint is in [TODO.md](TODO.md); measured
 negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
+## Priority decision, 2026-09-04
+
+The next sprint is **R30: C acquisition parity with the Python research baseline**.
+This is an instrument for network interrogation and bounded radio experiments, not
+baseline connectivity. A proper networking driver is a durable non-goal, not a
+deferred implementation project. R21 is a deferred iPad survey test spike; no iPad
+implementation is part of this sprint. R31 is a prospective documentation handoff
+to Linux maintainers, not a commitment to write their implementation or contact them.
+
 ## Decision rules
 
 - Prefer passive capture correctness, observability, and interoperability over new active
@@ -34,11 +43,12 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
   [RELATED_WORK.md](RELATED_WORK.md#what-this-project-can-learn-from-the-ecosystem) as an
   investigation queue, not inherited capability. Reimplement independently, preserve license
   boundaries, and require local evidence.
-- The Python code stays the reference implementation. Other-language implementations (a Swift
-  package for app embedding, a C library) live in sibling repositories and prove themselves against
-  this repository's protocol document (R19), recorded USB corpus (R20), and conformance suite
-  (R23). SwiftPM requires `Package.swift` at a repository root, so a Swift package cannot live in
-  a subdirectory here. Wireshark needs no native code: extcap is a separate process (R6).
+- The Python code stays the reference implementation; the native C acquisition implementation
+  lives in [`c/`](c/README.md) in this repository. Keep the chipset primitives in parity, not
+  every Python analysis script. Other implementations prove themselves against the protocol
+  document (R19), recorded USB corpus (R20), and conformance suite (R23) as those land.
+  A future standalone app-embedding package may live in a sibling repository. Wireshark needs
+  no native code: extcap is a separate process (R6).
 
 ## Track A: roaming and steering instrument
 
@@ -268,6 +278,49 @@ cover multi-subframe inputs, and the capture output behavior is documented.
 
 ## Track C: researcher reference and discoverability
 
+### R30. C acquisition parity (next sprint)
+
+Port the measured chipset primitives from the Python research baseline on `main`
+(`6081908`) into the existing C implementation. The old capture baseline and passing
+C tests do not imply parity with the 2026-09-04 experiments.
+
+Scope: bounded RX timestamp and extended-vector extraction; MT7921 EXT and MT7925
+UNI MIB queries; explicit, reversible experimental Group-5 reporting on MT7921;
+controlled transmit descriptors, MT7925 rate-table setup, and per-chip TX-status
+decoding. Preserve the narrow, opt-in transmit envelope and do not promote unknown
+vector fields to calibrated SNR, noise, or absolute transmit power.
+
+Done when the [sprint acceptance checklist](TODO.md#c-parity-sprint-r30) passes:
+shared synthetic byte fixtures, malformed-input and timeout tests, existing capture
+regression checks, and dated C hardware evidence on both reference dongles. Each
+capability must distinguish implemented, offline-tested, hardware-confirmed, and
+not-tested status. No firmware or ambient traffic is committed.
+
+Generic IE parsing, clock fitting, BlockAck delivery analysis, and survey/topology
+inference remain Python/downstream concerns. C supplies the acquisition primitives
+those analyses need, not a second implementation of the whole research toolkit.
+
+### R31. Linux maintainer evidence handoff (proposed, after R30)
+
+Prepare a short, useful documentation package, not an unsolicited driver rewrite.
+Lead with the MCU survey-counter findings in [MT7925_MIB.md](docs/MT7925_MIB.md)
+and the MT7921 path in [FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md). Include exact
+command layouts, offset semantics and confidence, firmware hashes, pinned mt76
+files/symbols, minimal reproduction commands, and links to redacted evidence.
+
+Secondary pointers: [RX vectors and clocks](docs/RADIO_OBSERVABILITY.md),
+[controlled MT7925 transmission](docs/MT7925_TRANSMIT.md), and
+[primary-channel capture limits](docs/CHANNEL_GEOMETRY.md). Clearly distinguish
+mechanisms already derived from Linux from observations made with this instrument.
+Do not claim that current Linux lacks a feature without checking the current path.
+Retain the upstream Group-5 hardware-issue warning and all measurement caveats.
+
+Done when a maintainer can identify the relevant source path and reproduce a
+specific observation without reading our full research history. List remaining
+Linux-side validation questions; implementing a patch, obtaining adoption, and
+doing outreach are not completion requirements. Sending the package is a separate
+decision, not authorized by this roadmap entry.
+
 ### ~~R26. C driver: MT7925 support~~ (landed 2026-09-03)
 
 `c/` still matches only `0e8d:7961` on interface 3 and decodes connac2. Port the Python port:
@@ -358,14 +411,26 @@ not proof of compatibility.
 Each newly claimed model needs captured descriptors, an explicit capability record, firmware
 provenance, offline fixtures, and tri-band/bandwidth hardware results appropriate to that model.
 
-### R21. iPad
+### R21. iPad survey test spike (deferred; not this sprint)
 
 Third-party USB drivers exist on iPadOS 16 and later for M-series iPads through DriverKit
 ([WWDC22 session 110373](https://developer.apple.com/videos/play/wwdc2022/110373/)), distributed
-through the App Store and enabled by the user in Settings. That is a C++ driver extension, not
-Python, so an iPad path is a from-scratch port tested against the R20 corpus. No path for
-iPhone was found. Entitlement availability and whether an iPad USB-C port can power the
-reference adapter are unverified. Not planned until Track A has a Mac result worth porting.
+through the App Store and enabled by the user in Settings. A future spike would replace
+the macOS IOKit transport with a C++ USBDriverKit extension, reusing portable C protocol
+and decoder code where practical. It is not a from-scratch rewrite of our chipset knowledge
+and does not require a system networking interface. No supported direct raw-USB path for
+these stock dongles in an ordinary iPhone app was found.
+
+Bound the first test to one M-series iPad and one reference dongle: establish entitlement
+and installation feasibility, claim the USB interface, boot pinned firmware, tune one
+channel, deliver capture metadata to a foreground app, and stop/reconnect cleanly. Record
+power/hub requirements, capture/drop rates, battery/thermal behavior, and the practicality
+of a short walk. Unsupported or entitlement-blocked results are valid spike outcomes.
+
+Entitlements, hardware availability, and USB power remain unverified. Schedule explicitly
+after C acquisition parity; no iPad code, entitlement application, purchase, or hardware
+test is being started by this roadmap decision. This is a survey spike, not connectivity
+or an iPhone workaround project.
 
 ### Gated optional track: transmit
 
@@ -408,7 +473,10 @@ Every release that changes hardware behavior should include:
 ## Durable non-goals and physical limits
 
 - This is not a macOS Wi-Fi client, replacement system driver, AP, or general-purpose security
-  suite.
+  suite. A proper networking driver (including an Ethernet-style DriverKit facade), managed
+  association/authentication, routing/NAT, and baseline Internet connectivity are explicitly
+  out of scope, not deferred roadmap work. Instrument-only USBDriverKit transport for R21
+  does not change that boundary.
 - One radio cannot capture multiple channels simultaneously.
 - MT7921U 160/320 MHz capture is not promised; firmware/hardware capability is a real boundary.
 - CI cannot establish RF correctness because hosted macOS runners do not have the adapter.

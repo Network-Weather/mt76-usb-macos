@@ -2,6 +2,19 @@
 
 A userspace monitor-mode driver and hardware smoke validator for the MediaTek MT7921AU (USB `0e8d:7961`, e.g. ALFA AWUS036AXML) and MT7925U (e.g. Netgear Nighthawk A9000, `0846:9072`) on macOS, implemented in pure C (C11) with **zero external dependencies**. The chip is selected from the adapter's USB id (`mt7921_chip.c`), and everything chip-specific reads a profile from it.
 
+## Research parity status (2026-09-04)
+
+C covers the established capture baseline, not all subsequent Python research.
+Hardware timestamps/extended-vector export, MCU occupancy queries, reversible
+experimental Group-5 control, MT7925 controlled TX, the measured OFDM/power controls,
+and per-chip TX-status decoding are **planned**, not implemented here yet.
+See the [C parity sprint checklist](../TODO.md#c-parity-sprint-r30).
+Passing the existing C tests is not evidence that those features were ported.
+
+The project remains an interrogation/capture instrument with explicitly gated radio
+experiments, not a system networking driver or baseline Internet connection. The
+deferred iPad survey spike is a separate transport experiment, not part of this port.
+
 ## Design & Zero Dependencies
 
 Unlike Python implementations that rely on `pyusb` and dynamic links to Homebrew `libusb-1.0.dylib`, this C driver communicates directly with the macOS kernel USB stack using native Apple system frameworks:

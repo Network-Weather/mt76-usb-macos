@@ -59,6 +59,10 @@ radiotap. That is a plain userspace USB job, and on macOS nothing is holding the
 This project does not try to expose a CoreWLAN or BSD network interface. For passive
 capture, libusb access to the otherwise-unclaimed device is enough.
 
+The next sprint is [C acquisition parity](TODO.md#c-parity-sprint-r30) with the recent
+Python research. A future iPad survey spike is deferred in [ROADMAP.md](ROADMAP.md);
+proper networking-driver and baseline-connectivity work are explicitly out of scope.
+
 ## Requirements
 
 - A USB device whose ID is in `mt7921u.SUPPORTED_DEVICES`: `0e8d:7961` (MT7921AU, for
