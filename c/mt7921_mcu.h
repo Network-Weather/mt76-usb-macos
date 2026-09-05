@@ -56,6 +56,9 @@ typedef struct {
     /* From the NIC capability reply (MT7925 element list): 0 when not reported. */
     uint8_t phy_nss;
     bool has_6ghz;
+    /* Injectable transport for offline stale-reply/timeout tests; initialized to
+     * native USB functions. Callers must retain single-reader ownership. */
+    int (*read_bulk)(mt7921_usb_t *, uint8_t, void *, uint32_t *, uint32_t);
 } mt7921_mcu_t;
 
 void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb);

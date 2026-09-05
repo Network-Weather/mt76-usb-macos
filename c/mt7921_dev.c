@@ -149,6 +149,10 @@ static int wfsys_reset(mt7921_dev_t *dev) {
 int mt7921_bringup(mt7921_dev_t *dev, const uint8_t *patch_blob, size_t patch_len,
                    const uint8_t *ram_blob, size_t ram_len,
                    void (*log_fn)(const char *fmt, ...)) {
+    dev->tuned = false;
+    dev->experimental_rates = 0;
+    dev->experimental_tx_count = 0;
+    dev->experimental_last_tx_us = 0;
     if (log_fn) log_fn("resetting USB device\n");
     mt7921_usb_reset(&dev->usb);
     usleep(500000);
@@ -213,7 +217,7 @@ int mt7921_bringup(mt7921_dev_t *dev, const uint8_t *patch_blob, size_t patch_le
         return -1;
     }
     if (log_fn) log_fn("efuse pushed\n");
-
+    dev->experimental_tx_dirty = false;
     return 0;
 }
 
@@ -319,6 +323,8 @@ int mt7921_set_chan_info(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_c
 
 int mt7921_tune(mt7921_dev_t *dev, const char *band_name, uint8_t control_ch, uint8_t center_ch,
                 uint16_t width_mhz) {
+    if (!dev || !band_name) return -1;
+    dev->tuned = false;
     /* Width maps to two enums: CMD_CBW_* for CHANNEL_SWITCH and the sniffer TLV's own table,
      * in which 40 MHz is encoded as 20 with the offset carried by sco (mcu_config_sniffer
      * ch_width[] on both chips). */
@@ -341,7 +347,15 @@ int mt7921_tune(mt7921_dev_t *dev, const char *band_name, uint8_t control_ch, ui
         int ret = mt7921_set_chan_info(dev, control_ch, center_ch, cbw, band);
         if (ret != 0) return ret;
     }
-    return mt7921_config_sniffer(dev, control_ch, center_ch, band_name, sniffer_bw);
+    int ret = mt7921_config_sniffer(dev, control_ch, center_ch, band_name, sniffer_bw);
+    if (!ret) {
+        dev->tuned = true;
+        dev->tuned_band = band;
+        dev->tuned_control = control_ch;
+        dev->tuned_center = center_ch;
+        dev->tuned_width = width_mhz;
+    }
+    return ret;
 }
 
 int mt7921_rx_read(mt7921_dev_t *dev, void *buf, uint32_t *len, uint32_t timeout_ms) {
@@ -391,7 +405,7 @@ int mt7921_build_probe_request(uint8_t *buf, size_t max_len, const uint8_t src_m
 }
 
 int mt7921_build_txwi(uint8_t *txwi_out, const uint8_t *frame, size_t frame_len, uint16_t seq, uint8_t pid) {
-    if (!txwi_out || !frame || frame_len < 24) return -1;
+    if (!txwi_out || !frame || frame_len < 24 || frame_len > UINT16_MAX - MT_SDIO_TXD_SIZE) return -1;
 
     uint16_t fc = (uint16_t)(frame[0] | ((uint16_t)frame[1] << 8));
     uint32_t fc_type = (fc >> 2) & 0x3;
@@ -441,6 +455,7 @@ int mt7921_build_txwi(uint8_t *txwi_out, const uint8_t *frame, size_t frame_len,
 
 int mt7921_inject(mt7921_dev_t *dev, const uint8_t *frame, size_t frame_len, uint8_t ep, uint16_t seq, uint8_t pid) {
     if (!dev || !frame || frame_len < 24) return -1;
+    if (dev->usb.chip != MT_CHIP_MT7921) return MT7921_ERR_UNSUPPORTED;
     if (ep == 0) ep = MT_ROLE_AC_BE;
 
     uint8_t txwi[MT_SDIO_TXD_SIZE];

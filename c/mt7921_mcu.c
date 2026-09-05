@@ -8,11 +8,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <time.h>
 
 static uint64_t current_time_ms(void) {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (uint64_t)tv.tv_sec * 1000ULL + (uint64_t)tv.tv_usec / 1000ULL;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000ULL + (uint64_t)ts.tv_nsec / 1000000ULL;
 }
 
 static inline uint16_t mcu_read_be16(const void *p) {
@@ -40,6 +41,7 @@ void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb) {
     if (!mcu->prof) mcu->prof = mt7921_chip_profile(MT_CHIP_MT7921);
     mcu->msg_seq = 0;
     mcu->evt_ep4 = false;
+    mcu->read_bulk = mt7921_bulk_in;
 }
 
 const uint8_t *mt7921_mcu_reply_body(const mt7921_mcu_t *mcu, const uint8_t *resp, uint32_t resp_len,
@@ -262,7 +264,12 @@ int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
     uint8_t raw[4096];
     while (current_time_ms() < deadline) {
         uint32_t read_len = sizeof(raw);
-        int ret = mt7921_bulk_in(mcu->usb, ep, raw, &read_len, timeout_ms);
+        uint64_t now = current_time_ms();
+        if (now >= deadline) break;
+        uint32_t remaining = (uint32_t)(deadline - now);
+        uint32_t wait_ms = remaining < timeout_ms ? remaining : timeout_ms;
+        int ret = mcu->read_bulk(mcu->usb, ep, raw, &read_len, wait_ms);
+        if (ret == MT7921_ERR_IO) return ret;
         if (ret != 0) {
             usleep(5000);
             continue;
@@ -277,6 +284,9 @@ int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
 
         bool is_frame = (pkt_type == PKT_TYPE_NORMAL) ||
                         (pkt_type == PKT_TYPE_RX_EVENT && pkt_flag == PKT_FLAG_NORMAL_MCU);
+        if (mcu->prof->chip == MT_CHIP_MT7925 &&
+            (((rxd0 >> 16) & C3_RXD0_SW_PKT_TYPE_MAP) == C3_RXD0_SW_PKT_TYPE_FRAME))
+            is_frame = true;
 
         if (is_frame || pkt_type != PKT_TYPE_RX_EVENT) {
             if (is_frame) mcu->dropped_frames++;
@@ -287,9 +297,9 @@ int mt7921_mcu_wait(mt7921_mcu_t *mcu, uint8_t seq, uint8_t cid,
         uint8_t rseq = raw[mcu->prof->rxd_seq_offset];
         if (rseq == seq) {
             if (resp_buf && resp_len) {
-                uint32_t copy_len = (*resp_len < read_len) ? *resp_len : read_len;
-                memcpy(resp_buf, raw, copy_len);
-                *resp_len = copy_len;
+                if (*resp_len < read_len) return -1; /* never accept a truncated reply */
+                memcpy(resp_buf, raw, read_len);
+                *resp_len = read_len;
             }
             return 0;
         }

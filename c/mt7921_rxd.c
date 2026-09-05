@@ -300,6 +300,40 @@ static inline uint32_t rxd_read_le32(const void *p) {
     return CFSwapInt32LittleToHost(val);
 }
 
+int mt7921_rxd_groups(const uint8_t *buf, uint32_t len, bool c3,
+                     mt7921_rxd_frame_t *out) {
+    /* mt7921/mac.c and mt7925/mac.c *_mac_fill_rx at c5a3bd91:
+     * fixed RXD, Group 4, 1, 2, 3, 5. Group 5 is relative to Group 3. */
+    uint32_t off = c3 ? 32 : 24;
+    if (!buf || !out || len < off) return -1;
+    uint32_t end = rxd_read_le32(buf) & 0xffff;
+    if (end < off) return -1;
+    if (end < len) len = end;
+    uint32_t mask = (rxd_read_le32(buf + 4) >> (c3 ? 16 : 11)) & 31;
+    if ((mask & 16) && !(mask & 4)) return -1;
+    out->group_mask = (uint8_t)mask;
+    const uint8_t bits[] = {8, 1, 2, 4, 16};
+    const uint32_t sizes[] = {16, 16, c3 ? 16 : 8, c3 ? 16 : 8, c3 ? 96 : 72};
+    for (unsigned i = 0; i < 5; i++) {
+        if (!(mask & bits[i])) continue;
+        if (off > len || sizes[i] > len - off) return -1;
+        if (bits[i] == 8) out->fc_rxd = (uint16_t)rxd_read_le32(buf + off);
+        if (bits[i] == 2) {
+            out->has_timestamp = true;
+            out->timestamp = rxd_read_le32(buf + off);
+        }
+        if (bits[i] == 4 || bits[i] == 16) {
+            uint32_t *words = bits[i] == 4 ? out->g3 : out->g5;
+            for (uint32_t j = 0; j < sizes[i] / 4; j++)
+                words[j] = rxd_read_le32(buf + off + 4 * j);
+            if (bits[i] == 4) out->g3_words = (uint8_t)(sizes[i] / 4);
+            else out->g5_words = (uint8_t)(sizes[i] / 4);
+        }
+        off += sizes[i];
+    }
+    return (int)off;
+}
+
 int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *out) {
     if (!buf || buf_len < 24 || !out) return -1;
     memset(out, 0, sizeof(*out));
@@ -339,39 +373,13 @@ int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *
     }
 
     uint32_t remove_pad = (rxd2 >> 14) & 0x3;
-    uint32_t off = 24;
-    bool have_rxv_group3 = false;
-    uint32_t rxv_group3[2] = {0};
-    bool have_rxv_group5 = false;
-    uint32_t rxv_group5 = 0;
-
-    if (rxd1 & MT_RXD1_NORMAL_GROUP_4) {
-        if (off + 16 > buf_len) return -1;
-        out->fc_rxd = (uint16_t)(rxd_read_le32(buf + off) & 0xFFFF);
-        off += 16;
-    }
-    if (rxd1 & MT_RXD1_NORMAL_GROUP_1) {
-        off += 16;
-    }
-    if (rxd1 & MT_RXD1_NORMAL_GROUP_2) {
-        off += 8;
-    }
-    if (rxd1 & MT_RXD1_NORMAL_GROUP_3) {
-        if (off + 8 <= buf_len) {
-            have_rxv_group3 = true;
-            rxv_group3[0] = rxd_read_le32(buf + off);
-            rxv_group3[1] = rxd_read_le32(buf + off + 4);
-        }
-        off += 8;
-        if (rxd1 & MT_RXD1_NORMAL_GROUP_5) {
-            off += 24;
-            if (off + 4 <= buf_len) {
-                have_rxv_group5 = true;
-                rxv_group5 = rxd_read_le32(buf + off);
-            }
-            off += 48;
-        }
-    }
+    int group_end = mt7921_rxd_groups(buf, buf_len, false, out);
+    if (group_end < 0) return -1;
+    uint32_t off = (uint32_t)group_end;
+    bool have_rxv_group3 = out->g3_words != 0;
+    const uint32_t *rxv_group3 = out->g3;
+    bool have_rxv_group5 = out->g5_words != 0;
+    uint32_t rxv_group5 = out->g5[6];
 
     uint32_t rcpi_word = have_rxv_group5 ? rxv_group5 : (have_rxv_group3 ? rxv_group3[1] : 0);
     if (have_rxv_group5 || have_rxv_group3) {

@@ -2,6 +2,32 @@
 
 A userspace monitor-mode driver and hardware smoke validator for the MediaTek MT7921AU (USB `0e8d:7961`, e.g. ALFA AWUS036AXML) and MT7925U (e.g. Netgear Nighthawk A9000, `0846:9072`) on macOS, implemented in pure C (C11) with **zero external dependencies**. The chip is selected from the adapter's USB id (`mt7921_chip.c`), and everything chip-specific reads a profile from it.
 
+## Research parity status (2026-09-04)
+
+C acquisition parity is implemented and hardware-qualified for the measured
+instrument subset. [Dated results](../docs/TESTING.md#native-c-acquisition-parity-2026-09-04)
+include 554 offline tests, both 43-channel capture sweeps, tri-band timestamp/MIB
+checks, a G5 restore cycle and interrupted-run cleanup, and 319/320 independent
+byte-exact controlled TX observations. This is not a general TX API or an
+exhaustive channel/rate/power qualification.
+
+| Capability | Implementation / offline evidence | C hardware evidence this sprint |
+|---|---|---|
+| Timestamps and raw G3/G5 | Both chips; all 32 group masks and malformed bounds | Tri-band, every sampled frame timestamped; MT7925 G5 present |
+| MCU occupancy | MT7921 one-entry EXT, MT7925 atomic UNI; strict reply tests | Both chips on 2.4/5/6 GHz; MCU frame drops explicitly counted |
+| Experimental G5 control | MT7921 only; injectable restoration failures | Enable/restore and SIGTERM cleanup; no soak guarantee |
+| OFDM6 TX and attenuation | Both chips; byte parity with Python | MT7961 ch149, MT7925 ch36; independent rate/byte checks |
+| OFDM54, DIS_MAT, deeper attenuation | MT7925 only; table/descriptor/status tests | OFDM54 ch149; source preserved; -32 tested with OFDM6 |
+| Legacy CCK1 | Existing API maintained; new builder byte parity | Prior baseline, not rerun through new probe CLI |
+See the [C parity sprint checklist](../TODO.md#c-parity-sprint-r30).
+The [port contract and verification method](../docs/C_PARITY.md) map each Python
+primitive to its native C API and state the measurement/cleanup limitations.
+Passing the existing C tests is not evidence that those features were ported.
+
+The project remains an interrogation/capture instrument with explicitly gated radio
+experiments, not a system networking driver or baseline Internet connection. The
+deferred iPad survey spike is a separate transport experiment, not part of this port.
+
 ## Design & Zero Dependencies
 
 Unlike Python implementations that rely on `pyusb` and dynamic links to Homebrew `libusb-1.0.dylib`, this C driver communicates directly with the macOS kernel USB stack using native Apple system frameworks:
@@ -37,7 +63,16 @@ Generic 802.11 Information Element (IE) parsing intentionally does not belong in
 - `mt7921_dev.h` / `mt7921_dev.c`: WFSYS reset (profile-driven), DMA engine initialization, device bringup orchestration, monitor mode filters (CE or UNI), `mt7921_tune` for 2.4 GHz, 5 GHz, and 6 GHz at 20/40/80/160 MHz, 802.11 probe request generation, Connac2 TXWI descriptor framing, and packet injection.
 - `mt7921_rxd.h` / `mt7921_rxd.c`: Connac2 RX descriptor decoding, P-RXV hardware PHY telemetry decoding (`mt7921_decode_rxv`), the shared rate arithmetic (`mt7921_phy_fill_rate`, HT through EHT), the per-chip decoder selector, 802.11 frame extraction, RCPI-to-RSSI translation, frame family classification, and radiotap pcap writing with rate and MCS metadata.
 - `mt7921_smoke.c`: Standalone CLI validator mimicking `scripts/hardware_smoke.py`. Emits structured, redacted JSON telemetry to stdout conforming to `docs/hardware-smoke.schema.json`.
+- `mt7921_radio.h` / `mt7921_radio.c`: Bounded MIB wire helpers and timed samples,
+  reversible Group-5 guards, experimental Probe Request descriptors/submission,
+  MT7925 volatile rate-table setup, and TX-status parsing. The register boundary
+  is injectable for offline failure and cleanup tests.
+- `mt76_radio_probe.c`: Native redacted NDJSON acquisition/experiment CLI. It is
+  separate from the existing smoke schema and never enables TX implicitly.
 - `test_rxd.c`: Offline unit test suite validating connac2 and connac3 descriptor parsing, frame extraction, radiotap output, RAM firmware bounds checks, probe request framing, TXWI descriptor layout, the chip table and profiles, and the MT7925 MCU TXD builders without hardware.
+
+The frame/device structs have grown for parity metadata and experimental state.
+Rebuild embedding consumers; this source library does not promise a stable binary ABI.
 
 ## Building
 
@@ -50,6 +85,25 @@ Run offline unit tests:
 ```bash
 make test
 ```
+
+The bounded native research CLI emits redacted NDJSON and is passive unless
+`--transmit` and `--acknowledge-experimental-transmit` are both supplied:
+
+```bash
+./mt76_radio_probe --usb-id 0846:9072 --fw ../firmware --mib --seconds 6
+./mt76_radio_probe --usb-id 0e8d:7961 --fw ../firmware --mib --g5-cycle --seconds 3
+./mt76_radio_probe --usb-id 0846:9072 --fw ../firmware --channel 36 --seconds 6 \
+  --transmit 20 --rate ofdm6 --power-code -8 --acknowledge-experimental-transmit
+```
+
+This experiment uses 20 MHz only, on 2.4 GHz channel 6, 5 GHz 36/149, or passive
+6 GHz 37. OFDM TX is limited to 5 GHz 36/149; CCK1 to MT7921 on channel 6 with
+zero power offset. MT7921 supports OFDM6 and offsets 0/-8/-16; MT7925 supports
+OFDM6/54 and 0/-8/-16/-32. At most 60 writes per boot, paced at least 50 ms apart.
+The CLI reloads firmware after TX/table experiments, including failures, and
+restores Group-5 on normal/error/signal exits. SIGKILL, host crash, and unplug can
+prevent cleanup; restart/reload before reuse. It does not enforce a regulatory domain.
+The older smoke/injection API remains MT7921-only and unchanged in rate.
 
 ## Running Hardware Smoke Test
 
