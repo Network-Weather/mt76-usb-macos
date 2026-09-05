@@ -967,6 +967,10 @@ Five same-primary/narrow control phases each receive 12/12 byte-exact frames;
 two other-primary phases each receive 0/12. Both radios remain responsive.
 This must not be generalized to all PHY formats or interpreted as no RF energy:
 an 80 MHz capture is not four independent 20 MHz capture radios.
+The reverse direction gives `12,12,0,12,11,0,12`, preserving one unexplained
+control miss. In total both observers decode 119/120 matching-primary controls
+and 0/48 other-primary probes in the same span. Firmware cleanup and all alive
+checks pass.
 
 ## Previously observed, not rerun in the current validation
 

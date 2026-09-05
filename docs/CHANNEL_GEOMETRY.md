@@ -74,3 +74,22 @@ For Network Weather, survey and topology-inference records need the configured
 inside the same span cannot safely imply a dead node, packet loss, or an absent
 backhaul. The existing channel-149 missing-QoS observation is still unexplained;
 this experiment does not retroactively assign it a cause.
+
+## Reverse direction: MT7961 observer, MT7925 transmitter
+
+The [reverse-direction evidence](../research/evidence/channel-geometry-mt7921-2026-09-04.json)
+uses the same seven phases. Independent byte-exact receive counts are
+`12, 12, 0, 12, 11, 0, 12` out of 12 submitted per phase. The one missing frame
+in phase 4 is unexplained; the same-primary control is strong but not perfect.
+Same-primary median RSSI is -49 to -52. Every phase returns 12 TX status records,
+raw OFDM rate `0x4b`, power 26, zero error bits. All alive checks pass, as does
+the MT7925 firmware reload and both radios' return to 36/20 MHz.
+
+Thus both chipsets show the same tested primary dependence. Across both runs,
+119/120 matching-primary control frames are decoded, versus 0/48 other-primary
+frames. The MT7925 rate-table entry also survives the channel retunes in this
+experiment; it does not need to be reprogrammed for every phase.
+
+This result motivates primary-aware coverage accounting, not a change to the
+driver's supported 80 MHz wide-PPDU receive capability. It remains a test of
+20 MHz OFDM probes, not every waveform an 80 MHz receiver can decode.
