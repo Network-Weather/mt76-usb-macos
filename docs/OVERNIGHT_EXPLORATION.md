@@ -20,6 +20,11 @@ acknowledges stop/start and maximum-chain tags with status zero. Both band
 selectors were tested; no CSI sample events were seen. MT7961's legacy CE 0x4c
 route returns the source-defined command-not-found event. No-ACK silence and
 transfer-limited windows are explicitly separated from negative results.
+Follow-up loaded-code tracing identifies both the control and report constructors.
+ROM-derived MMIO controls now show that stop/start/stop really changes the selected
+band's hardware at `0x820e5060` / `0x820f5060`, leaving the other band unchanged.
+Reload restores the baseline. Zero USB RAM snapshots do not negate that result;
+CSI events are still absent, and no sample/calibration capability is claimed.
 
 **Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
 Startup exposes the EX9 table, and a GP candidate recovers meaningful string

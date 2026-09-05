@@ -99,3 +99,18 @@ def test_fixed_configuration_snapshot_never_reads_sample_or_mac_buffers():
     assert rows[1]["auxiliary_raw"] == [24, 25, 26, 27]
     with pytest.raises(ValueError, match="MT7925 only"):
         p.control_snapshot(SimpleNamespace(CHIP=m.CHIP_MT7921))
+
+
+def test_hardware_snapshot_reads_only_rom_derived_band_registers():
+    addresses = []
+
+    def read(address):
+        addresses.append(address)
+        return 0x20000001 if address == 0x820E5060 else 1
+
+    rows = p.hardware_snapshot(SimpleNamespace(CHIP=m.CHIP_MT7925, rr=read))
+    assert addresses == [0x820E5060, 0x820F5060]
+    assert [row["enable_bit29"] for row in rows] == [True, False]
+    assert rows[0]["value"] == "0x20000001"
+    with pytest.raises(ValueError, match="MT7925 only"):
+        p.hardware_snapshot(SimpleNamespace(CHIP=m.CHIP_MT7921))

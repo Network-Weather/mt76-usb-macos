@@ -27,6 +27,25 @@ import usb.core
 import mt7921u as m
 
 
+def hardware_snapshot(dev):
+    """ROM 0x0084581e: band-specific enable bit; never write MMIO here."""
+    if dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("hardware snapshot is MT7925 only")
+    rows = []
+    for band in (0, 1):
+        address = 0x820E5060 + (band << 16)
+        value = dev.rr(address)
+        rows.append(
+            {
+                "band": band,
+                "address": hex(address),
+                "value": hex(value),
+                "enable_bit29": bool(value & (1 << 29)),
+            }
+        )
+    return rows
+
+
 def control_snapshot(dev):
     """Pinned loaded handler e003d404: two 14-byte configuration records.
 
@@ -138,6 +157,7 @@ def main():
     parser.add_argument(
         "--state", action="store_true", help="read fixed firmware CSI configuration"
     )
+    parser.add_argument("--hardware", action="store_true", help="read ROM-derived CSI MMIO")
     args = parser.parse_args()
     if args.ack and args.chip != "mt7925":
         parser.error("ACK variant applies to MT7925 UNI only")
@@ -145,6 +165,8 @@ def main():
         parser.error("chain variant applies to MT7925 UNI only")
     if args.state and args.chip != "mt7925":
         parser.error("state snapshots apply to MT7925 only")
+    if args.hardware and args.chip != "mt7925":
+        parser.error("hardware snapshots apply to MT7925 only")
     uid = "0846:9072" if args.chip == "mt7925" else "0e8d:7961"
     out = {
         "tool": "csi_control_probe",
@@ -152,6 +174,7 @@ def main():
         "band": args.band,
         "chains": args.chains,
         "state_snapshots": args.state,
+        "hardware_snapshots": args.hardware,
         "uni_option": (7 if args.ack else 6) if args.chip == "mt7925" else None,
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "phases": [],
@@ -178,6 +201,8 @@ def main():
             dev.tune("5GHz", 36, 36, 20)
             if args.state:
                 out["control_before"] = control_snapshot(dev)
+            if args.hardware:
+                out["hardware_before"] = hardware_snapshot(dev)
             for name, start in (("stop_before", False), ("start", True), ("stop_after", False)):
                 if start and args.chains is not None:
                     dev.mcu_uni(
@@ -189,10 +214,14 @@ def main():
                     )
                     if args.state:
                         out["phases"][-1]["control_after"] = control_snapshot(dev)
+                    if args.hardware:
+                        out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
                 seq = send(start)
                 out["phases"].append({"name": name, "request_sequence": seq, **collect(dev, seq)})
                 if args.state:
                     out["phases"][-1]["control_after"] = control_snapshot(dev)
+                if args.hardware:
+                    out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
@@ -206,6 +235,8 @@ def main():
             out["cleanup_reload_alive"] = dev.alive()
             if args.state:
                 out["control_after_cleanup"] = control_snapshot(dev)
+            if args.hardware:
+                out["hardware_after_cleanup"] = hardware_snapshot(dev)
     print(json.dumps(out, indent=2))
     return int("error_type" in out or not out.get("cleanup_reload_alive"))
 

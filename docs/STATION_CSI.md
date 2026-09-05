@@ -118,7 +118,8 @@ all zero before/after accepted stop, chain and start commands in two fresh-boot
 controls (band0/count2 and band1/count1). This **does not prove the handler is
 idle**: CPU-cache/USB visibility, alternate dispatch, or another unmet condition
 remain unresolved. The live jump table corroborates the address derivation, but
-does not by itself establish coherence of subsequent RAM reads.
+does not by itself establish coherence of subsequent RAM reads. The MMIO controls
+below subsequently establish real hardware changes despite these zero RAM reads.
 
 An independent read-path control used upstream `mt7925_mcu_regval`, UNI 0x0d
 QUERY, BASIC tag0/length12 and its 20-byte union-sized payload. EID 6 returned
@@ -138,3 +139,38 @@ contains pointers, code hashes, configuration snapshots and matched-event shapes
 not code/sample bytes. The Andes annotator now renders GP-relative word stores
 from pinned upstream operand definitions; it remains annotation-only and does
 not resolve all custom instructions. Twenty offline CSI-probe tests pass.
+
+## CSI commands demonstrably change band-specific hardware
+
+ROM callback `0x0084581e` performs a read/modify/write of bit 29 at
+**`0x820e5060 + (band << 16)`**, using the enable argument. This address was
+derived before probing. The new `--hardware` option reads only the two fixed
+registers; it never writes MMIO directly. Two independent fresh-boot runs give:
+
+| Phase | Selected band register | Other band register |
+|---|---|---|
+| normal monitor before | `0x20000000` | `0x20000000` |
+| stop before | `0x00000000` | `0x20000000` |
+| maximum-chain command | `0x00000000` | `0x20000000` |
+| start | `0xe0000000` | `0x20000000` |
+| stop after | `0x40000000` | `0x20000000` |
+| full normal reload | `0x20000000` | `0x20000000` |
+
+This pattern repeated with band0/count2 and band1/count1. Every requested command
+returned status zero; no CSI event was received and neither collection limit was
+reached. Alive and cleanup checks passed. Bit 29 alone is **not a CSI-active
+indicator**, because normal monitor setup already leaves it set. Nevertheless,
+the selected-band start/stop effects independently rule out a simple no-op ACK.
+Bits 30/31 also change; their semantics remain under investigation. STOP is not
+an exact original-register restore, which reinforces the full-reload cleanup.
+
+The preceding callback `0x0084583e` is another field-batch write, not merely a
+validator: it writes keys `0x000500e0..e3` plus band<<16 through `0x0082a21e`.
+The loaded caller tests its return value before proceeding. The batch writer
+resolves a register with `0x0082a100`, applies fields with `0x0082a142`, then
+stores the resulting word. Mapping those descriptors is the next useful lead.
+
+[Sanitized hardware evidence](../research/evidence/csi-hardware-control-2026-09-05.json)
+includes full raw register words, matched-event shapes and hashes of narrow ROM
+windows, but no firmware bytes, addresses of observed transmitters or samples.
+Twenty-one offline CSI-probe tests cover the new fixed read-only register set.
