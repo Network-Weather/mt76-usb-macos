@@ -61,3 +61,42 @@ def test_cli_requires_opt_in_before_usb(monkeypatch):
     with pytest.raises(SystemExit) as exc:
         p.main()
     assert exc.value.code == 2
+
+
+def test_bounded_geometry_controls_return_to_start():
+    assert [v[0] for v in p.PLANS["primary80"]] == [36, 40, 44, 48, 36]
+    assert [v[1] for v in p.PLANS["centers80"]] == [42, 58, 106, 155, 42]
+    assert len(p.PLANS["width"]) == 7
+    for plan in p.PLANS.values():
+        assert plan[0] == plan[-1]
+
+
+def test_source_controls_exact_read_set_and_chip_guard():
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+
+        def __init__(self):
+            self.calls = []
+
+        def rr(self, address):
+            self.calls.append(address)
+            return 0x7E25F808
+
+    dev = Device()
+    assert len(p.control_words(dev)) == 4
+    assert tuple(dev.calls) == p.CONTROL_REGISTERS
+    dev.CHIP = p.m.CHIP_MT7921
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.control_words(dev)
+
+
+@pytest.mark.parametrize("word", [None, True, -1, 0xFFFFFFFF, 0x100000000])
+def test_bad_control_word_rejected(word):
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+
+        def rr(self, _):
+            return word
+
+    with pytest.raises(ValueError, match="invalid"):
+        p.control_words(Device())

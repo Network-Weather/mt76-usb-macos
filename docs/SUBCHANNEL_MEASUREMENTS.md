@@ -101,6 +101,45 @@ in three of14 windows and matches in the other11; decoded frames differ from
 MPDU2 by up to four, retaining sequential-query/capture gaps rather than imposing
 an exact identity. Both runs receive normally and reload cleanly.
 
+## RF-center and primary-rotation follow-up
+
+Two fresh10-window80MHz primary rotations36→40→44→48→36 reproduce a broadly
+stable ED vector but different primary-ED/NAV readings. For example, first-run
+primary40 ED is1958/2049 ticks while index1 is14514/14627; primary44 ED is
+2722/2476 while index2 is11209/10852. Therefore even at80MHz these counters
+cannot yet be equated by simple index matching. The repeat shows the same
+mismatch. This does not prove the index order is wrong: primary and secondary
+ED sources/thresholds or PHY mapping may differ.
+
+A separate return-controlled center rotation42→58→106→155→42 changes the
+vectors substantially while keeping80MHz and the lowest primary per block:
+
+| Center / primary | First-window ED0…3 raw ticks |
+| --- | --- |
+| 42 / 36, before | 1959,14577,9865,40504 |
+| 58 / 52 | 5869,286,264,323 |
+| 106 / 100 | 10539,133,133,15243 |
+| 155 / 149 | 994,8607,1341,9062 |
+| 42 / 36, after | 2237,14869,10180,40931 |
+
+This demonstrates RF-center-dependent readout and a returning pattern, rather
+than a fixed vector independent of tuning. It does not distinguish external
+interference from adapter/host emissions or validate per-index RF frequencies.
+No signal-source identity, threshold sensitivity or calibration is inferred.
+
+Four source-defined MIB configuration words remain identical across all center
+steps and across the primary-rotation repeat:
+`0x820ed000=0x7e25f808`, `004=0x00f8c310`, `008=0x0000100f`,
+`010=0x3fc301cf` (abbreviated addresses retain the same base).
+They are read only; no configuration edit was used to obtain these results.
+Other PHY configuration can still change on a retune. All three follow-up runs
+pass alive and normal-reload checks. The
+[separate sanitized follow-up evidence](../research/evidence/subchannel-rotation-2026-09-05.json)
+preserves the full counter windows and control words.
+
+The same reproducer supports`--suite primary80` or`--suite centers80`, with
+optional`--read-controls`. Its default remains the original width matrix.
+
 ## Idle slots: usable at shorter cadence
 
 The old3–6 second dwells always added65,535. The newly resolved16-bit field

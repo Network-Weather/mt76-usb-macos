@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 """Passive MT7925 NAV/subchannel MIB characterization, not calibrated occupancy.
 
-Only source-named, ROM-mapped UNI offsets; no TX or direct register reads.
+Only source-named, ROM-mapped UNI offsets; no TX or direct counter reads.
+Optional reads of four source-defined MIB configuration words, never writes.
 Normal firmware reload on exit. Width-invalid fields retained as raw evidence.
 """
 
@@ -47,6 +48,34 @@ OFFSETS = (
     102,
 )
 
+PLANS = {
+    "width": (
+        (36, 36, 20),
+        (36, 38, 40),
+        (36, 42, 80),
+        (48, 42, 80),
+        (36, 50, 160),
+        (64, 50, 160),
+        (36, 36, 20),
+    ),
+    "primary80": tuple((primary, 42, 80) for primary in (36, 40, 44, 48, 36)),
+    "centers80": ((36, 42, 80), (52, 58, 80), (100, 106, 80), (149, 155, 80), (36, 42, 80)),
+}
+CONTROL_REGISTERS = (0x820ED000, 0x820ED004, 0x820ED008, 0x820ED010)
+
+
+def control_words(dev):
+    """Read four source-defined configuration words, not any counter values."""
+    if dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("MT7925-only MIB control words")
+    result = {}
+    for address in CONTROL_REGISTERS:
+        word = dev.rr(address)
+        if type(word) is not int or not 0 <= word < 0xFFFFFFFF:
+            raise ValueError("invalid MIB control word")
+        result[hex(address)] = hex(word)
+    return result
+
 
 def width_summary(delta, width):
     """Retain index labels, not unverified physical channel assignments or units."""
@@ -68,12 +97,20 @@ def width_summary(delta, width):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--acknowledge-consuming-counters", action="store_true")
+    parser.add_argument("--suite", choices=tuple(PLANS), default="width")
+    parser.add_argument(
+        "--read-controls",
+        action="store_true",
+        help="read four MIB configuration words; no direct counter reads",
+    )
     args = parser.parse_args()
     if not args.acknowledge_consuming_counters:
         parser.error("exclusive counter ownership and consuming-read acknowledgment required")
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "scope": "passive source/ROM-mapped MIB subchannel counters; offset94 excluded because translation=ffff; no raw register reads",
+        "scope": "passive source/ROM-mapped MIB subchannel counters; offset94 excluded because translation=ffff; no direct counter reads",
+        "suite": args.suite,
+        "read_controls": args.read_controls,
         "windows": [],
         "idle_cadence": [],
     }
@@ -112,19 +149,14 @@ def main():
             dev.bringup(*images, log=lambda *_: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            for control, center, width in (
-                (36, 36, 20),
-                (36, 38, 40),
-                (36, 42, 80),
-                (48, 42, 80),
-                (36, 50, 160),
-                (64, 50, 160),
-                (36, 36, 20),
-            ):
+            for control, center, width in PLANS[args.suite]:
                 dev.tune("5GHz", control, center, width)
                 collect(0.2)
+                controls = control_words(dev) if args.read_controls else None
                 for _ in range(2):
                     row = {"control": control, "center": center, "width": width, "before": sample()}
+                    if controls is not None:
+                        row["mib_control_words"] = controls
                     out["windows"].append(row)
                     row["capture"] = collect(1)
                     row["after"] = sample()
@@ -132,7 +164,7 @@ def main():
                         k: row["after"]["values"][k] - row["before"]["values"][k] for k in OFFSETS
                     }
                     row["width_summary"] = width_summary(row["delta"], width)
-            for delay in (0, 0.002, 0.01, 0.1, 0.5, 1):
+            for delay in (0, 0.002, 0.01, 0.1, 0.5, 1) if args.suite == "width" else ():
                 row = {"delay_requested": delay, "before": sample((7,))}
                 out["idle_cadence"].append(row)
                 time.sleep(delay)
