@@ -93,3 +93,41 @@ stimulus is a better next discriminator than another passive wait.
 [Five-run sanitized evidence](../research/evidence/legacy-ics-2026-09-05.json).
 Compare [MT7925 ICS](ICS_CAPTURE.md) and the older
 [finite RF-test receive-vector log](RX_VECTOR_LOG.md), which is a separate path.
+
+## Known HT stimulus qualifies simultaneous Group5 reception
+
+[`legacy_ics_own_probe.py`](../research/legacy_ics_own_probe.py) sends sixteen
+synthetic no-ACK HT MCS8/two-stream/20MHz frames from MT7925 to MT7961 on channel6:
+four with ICS off, eight on, four off. Payloads alternate65/193 bytes and contain
+a per-run nonce. Host submission gaps are at least35ms, each600ms phase stops
+submitting after400ms and caps bulk-read attempts at1536. Both radios reload;
+the legacy receiver's four masks are restored. No positive power changes,
+association, NAV reservation, raw ambient export or unbounded transmission.
+
+Three fresh-boot runs—default Group5, Group5 enabled, Group5 enabled again—receive
+**48/48 exact full-payload good-FCS packets**, with48 matching TX statuses.
+Every enabled-phase own packet has a corresponding unique header-matched ICS
+record,24/24. The two Group5 runs establish **16/16 exact copies of the complete
+72-byte C-RXV at aggregate offset16**, independently paired by header120 and
+known full-payload receipt. RCPI40 and clocks12/92/164 repeat, with relative clock
+residuals within one tick. The default-Group5 run retains two non-own diagnostics
+in its post-stop window; the two Group5 runs have none. No own packet from an
+off phase has a matched diagnostic in any of these runs.
+
+Thus simultaneous Group5+ICS reception does work for this controlled HT traffic.
+The earlier passive windows remain real counterexamples to assuming it will
+immediately work for arbitrary ambient traffic; this is not evidence that a
+particular initial HT frame is a formal prerequisite or a complete explanation
+of the passive misses. Group5 phases also contain ambient diagnostics, so their
+total aggregate counts are not synthetic delivery counts.
+
+One source-inspired extra-vector hypothesis fails cleanly. The RF-test log
+writer copies18+2+4+20 words, and its CFO/SNR calculation uses words20/21. After
+finding18 C-RXV words in ICS, placing the presumed later P-RXV2 at104/108 looked
+plausible. But applying those masks returns **signed20=−1 and SNR bits63 on all
+24 own packets**, with or without Group5. These all-one fields are not usable
+CFO/SNR measurements, and the placement is rejected. The RF-test vector's
+contiguity must not be imposed on the differently serialized ICS aggregate.
+Only identified source masks were exported, never arbitrary words.
+
+[Three controlled HT runs](../research/evidence/legacy-ics-own-ht-2026-09-05.json).

@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Known HT traffic qualifies legacy Group5 plus ICS coexistence:**
+[Three bounded controls](LEGACY_ICS.md#known-ht-stimulus-qualifies-simultaneous-group5-reception)
+receive48/48 exact packets. Two Group5 runs prove16/16 full72-byte C-RXV copies
+at ICS offset16, paired by known payload/header. Earlier passive misses remain
+unexplained, not universal incompatibility. A guessed extra CFO/SNR placement
+at104/108 returns all-one fields on24/24 own packets and is rejected. All cleanup
+passes; no raw vectors or ambient exports.
+
 **Legacy CE93 opens RMAC diagnostics on MT7961 too:**
 [Pinned handler and live controls](LEGACY_ICS.md) produce272-byte/count3 records
 alongside normal CCK RX. Two runs give37 unique-header pairs: header120, RCPI40,
