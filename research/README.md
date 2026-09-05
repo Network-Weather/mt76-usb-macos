@@ -27,6 +27,7 @@ whether a wider receive configuration observes independent narrower channels.
 
 | script | question | state |
 |---|---|---|
+| [`legacy_rx_stats_probe.py`](legacy_rx_stats_probe.py) | Does CE 0xc8 expose richer RX statistics? | **live block found** — candidate little-endian layout, source-field correlations and counter-draining read effects; [ledger](../docs/OVERNIGHT_EXPLORATION.md#legacy-ce-0xc8-exposes-a-richer-live-block-with-read-side-effects) |
 | [`icap_capture_probe.py`](icap_capture_probe.py) | Can bounded on-chip ICAP collect samples? | **in progress** — start changes status but candidate node 0 did not complete; [continuation ledger](../docs/OVERNIGHT_EXPLORATION.md) |
 | [`icap_status_probe.py`](icap_status_probe.py) | Does station mode entry unlock ICAP status? | **yes after mode 2** — matched 68-byte status event; no IQ capture or spectrum measurement yet |
 | [`station_testmode_probe.py`](station_testmode_probe.py) | Are station-specific test queries reachable? | **yes on MT7961 after idle RF-test mode entry**; [details and limits](../docs/STATION_TESTMODE.md) |

@@ -75,6 +75,49 @@ python research/station_testmode_probe.py --chip mt7925 --test-mode --engineerin
 - Continue bounded independently observed transmit capabilities where source-backed
   descriptor fields offer a useful new measurement control.
 
+## Legacy CE 0xc8 exposes a richer live block, with read side effects
+
+`research/legacy_rx_stats_probe.py` queries CE 0xc8 with two little-endian u32s:
+sequence 1..5 and count 72. Normal mode and activated RF RX both return matched
+EID 0x45 / 300-byte bodies. Normal-mode statistics stay zero; live RX changes
+many fields. Three fresh-boot runs established the reply shape; the final run
+added RX-stop controls. All reload/alive checks passed. No transmission was used.
+
+The pinned public header expects eight header bytes and big-endian statistics.
+**That interpretation does not fit this firmware.** Observed replies fit a
+12-byte header followed by 72 little-endian u32 words. Header words 0/1 echo
+sequence/count; word 2 is initially 100 in normal mode and 2 in RF RX, then 0.
+Its meaning is not established (`candidate_status_u32` in evidence). Initial
+responses contain no statistics; later RF RX responses populate the block.
+
+Interpreting the subsequent words with source-derived field positions yields
+coherent counters and sign-extended signal values. Strong cross-checks:
+
+| Candidate index / source name | First stopped query | Second stopped query |
+|---|---:|---:|
+| 0 / MAC_FCS_Err | 16 | 0 |
+| 1 / MAC_Mdrdy | 125 | 0 |
+| 3 / FCSErr_OFDM | 59 | 59 |
+| 5 / OFDM_PD | 526 | 526 |
+| 15 / PhyMdrdyOFDM | 461 | 461 |
+| 16 / DriverRxCount | 353 | 353 |
+| 17,18 / RCPI | 30,27 | 30,27 |
+| 20,21 / RSSI signed candidates | -93,-95 | -93,-95 |
+| 49 / SNR0 | 17 | 17 |
+
+Index 16 exactly matches scalar selector 34's stopped value (353). Index 0
+matches scalar selector 35 immediately before the first stopped query (16);
+selector 35 reads 0 after the richer queries. Thus **the richer query drains at
+least some counters**, while other fields are cumulative or last-sample values.
+Do not mix this command into acquisition without accounting for its read effects.
+No calibrated RSSI/SNR/frequency-offset units, non-Wi-Fi discrimination, packet
+attribution, or validity of every source-derived field name is claimed.
+
+[Sanitized evidence](../research/evidence/legacy-rx-stats-2026-09-05.json) retains
+the candidate 66-word prefix and control observations. The tool retains both
+layout hypotheses; the candidate interpretation does not silently replace the
+reference format. Validation checkpoint: 618 Python tests passed.
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 
