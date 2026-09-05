@@ -123,3 +123,35 @@ def test_candidate_beacon_selector_has_exact_packed_vendor_layout():
         assert struct.unpack("<B3xHHBI2x", data) == (band, 2, 11, 0, 0x20)
     with pytest.raises(ValueError, match="band must"):
         p.beacon_selector_request(2)
+
+
+def test_receive_width_control_preserves_primary36_geometry():
+    assert [p.receive_center(w) for w in (20, 80, 160)] == [36, 42, 50]
+    for invalid in (True, 40, 320, "80"):
+        with pytest.raises(ValueError, match="receive widths"):
+            p.receive_center(invalid)
+
+
+def test_only_two_bounded_frame_selectors():
+    assert struct.unpack("<B3xHHBI2x", p.frame_selector_request(0, 0x22)) == (0, 2, 11, 0, 0x22)
+    assert p.frame_selector_request(1, 0x20) == p.beacon_selector_request(1)
+    for invalid in (True, 0, 0x21, 0x3F, 0xFF):
+        with pytest.raises(ValueError, match="selector candidates"):
+            p.frame_selector_request(0, invalid)
+
+
+def test_normal_frame_shape_contains_only_type_and_phy():
+    decoded = {
+        "frame": b"\x88\x00PRIVATE_PAYLOAD",
+        "fcs_err": False,
+        "phy": {"mode": 8, "bw_mhz": 80, "nss": 2},
+    }
+    assert p.frame_shape(decoded) == {
+        "fc_type_subtype": 0x88,
+        "phy_mode_raw": 8,
+        "bw_mhz": 80,
+        "nss": 2,
+    }
+    assert p.frame_shape({**decoded, "fcs_err": True}) is None
+    assert p.frame_shape({"frame": b"x"}) is None
+    assert p.frame_shape(None) is None

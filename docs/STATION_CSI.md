@@ -298,3 +298,55 @@ word, TSF-low32 or normal RX descriptor timestamp in either run.
 [Sanitized correlation evidence](../research/evidence/csi-correlation-2026-09-05.json).
 Two additional tests verify the counting/pairing logic, reject bad FCS/nonbeacons,
 and ensure none of the transient identifiers or correlation values are exported.
+
+## Tag25 comes from the MCU general-purpose timer
+
+Following the actual store resolves the pairing field without guessing from its
+values. Loaded routine `0xe006117a` calls the pointer at `0x00828418`, then stores
+the return value at report-state offset0x164 (`0xe0061190`). The report builder
+copies that word into tag25 at `0xe009e670..680`.
+
+The live pointer is ROM **`0x0080e3fa`**, a wrapper supplying argument4 to
+**`0x0081497e`**. That routine's argument4 branch reads **`0x81060068`** directly.
+Pinned upstream `mt7925/pci.c` labels the enclosing `0x81060000` block
+**WF_MCU_GPT**. Thus tag25 is a snapshot of an MCU general-purpose counter taken
+during CSI handling, **not** a copied over-air TSF or the normal RXD timestamp.
+Its relation to the exact RF arrival instant is still unmeasured.
+
+A separate normal-mode, read-only timing control compared the register against
+host monotonic time over approximately 108, 256 and 108 ms. Modulo-u32 increments
+were 108646, 255624 and 108314; estimated rates were 1,002,339, 999,958 and
+1,000,153 increments/s. USB read latencies were about0.7ms. This supports a
+**nominal microsecond counter**, not precision clock calibration. At that nominal
+rate a 32-bit value wraps in about71.6minutes; wrap/reset handling must be explicit.
+
+Tag23 follows a different path: `0xe0060c08` calls `0xe00acabc`, which reads
+bits15:0 of `0x83080d10` (band0) or `0x83090d10` (band1). It is not substituted
+for the timer or given an unsupported semantic name.
+
+[Sanitized timer-source evidence](../research/evidence/csi-timer-source-2026-09-05.json)
+contains callback pointers, code-window hashes and timing deltas, never raw ROM.
+No timer writes, CSI-buffer reads, host-memory DMA or clock configuration occurred.
+
+## Receive-width controls and the initial QoS-data candidate
+
+Passive primary36 runs at 80 MHz (center42) and 160 MHz (center50) both preserve
+the beacon CSI readout. They yielded 112/98 validated reports and 56/49 exact
+RX0/RX1 pairs, respectively, without reaching transfer limits. All CSI sources
+were also heard as beacon transmitters; normal reload/alive checks passed.
+CBW changes to raw2/raw3 while DBW remains raw0 and data-count remains64. This
+distinguishes configured channel width from the narrow beacon's data width; it
+**does not establish 80/160-MHz packet CSI**. I/Q remained nonzero and distinct,
+and the same 36-byte zero-tail rule held.
+
+The corresponding QoS-data FC[7:2] candidate, **0x22**, is separately available as
+`--qos-data-selector` (mutually exclusive with `--beacon-selector`). Two 80-MHz
+runs acknowledged the controls and read back the predicted repeated selector,
+`0xe08a28a2`, but returned no CSI events. In the follow-up START window, normal
+receive decoding saw 58 good-FCS beacons and two legacy non-QoS data frames,
+**no good-FCS QoS data**. That is an insufficient-stimulus result, not proof of
+unsupported QoS/wider-PHY CSI. Further traffic-selective experiments remain open.
+
+`good_fcs_frame_classes` exports only type/subtype and PHY-class counts to make
+such negative controls interpretable. It does not export payloads or identities.
+[Sanitized width/selector evidence](../research/evidence/csi-width-controls-2026-09-05.json).

@@ -1,6 +1,6 @@
 # research
 
-Open questions and the experiments that probed them. Fresh as of 2026-09-04.
+Open questions and the experiments that probed them. Updated 2026-09-05.
 
 Everything here touches hardware, answers a question that is **not yet settled**, and is not
 part of the supported surface. Scripts in [`../scripts/`](../scripts/mib_survey.py) are diagnostics that
@@ -27,6 +27,9 @@ whether a wider receive configuration observes independent narrower channels.
 
 | script | question | state |
 |---|---|---|
+| [`csi_control_probe.py`](csi_control_probe.py) | Can station CSI capture yield live coefficients? | **yes on MT7925** — ROM-derived frame selection yields 64 I/64 Q reports with two receiver-chain indices; aggregate-only output; [protocol, evidence and limits](../docs/STATION_CSI.md) |
+| [`csi_event_summary.py`](csi_event_summary.py) / [`csi_correlation.py`](csi_correlation.py) | Are CSI dimensions valid and reports pairable? | **bounded validation** — strict nested lengths and zero tail; source coincidence and TA+tag25 receiver pairing, no identifiers or arrays exported |
+| [`beamforming_read_probe.py`](beamforming_read_probe.py) | Are PFMU tag/profile reads reachable? | **yes on MT7925 UNI0x33** — unsolicited sequence-zero replies; profile data is not automatically live CSI; [details](../docs/BEAMFORMING_PROFILES.md) |
 | [`firmware_fields.py`](firmware_fields.py) | Which registers do the real IPI/ICAP field keys address? | **ROM-derived maps recovered** — bounded resolver and command/register controls; [details](../docs/FIRMWARE_FIELD_MAPS.md) |
 | [`ipi_register_probe.py`](ipi_register_probe.py) | Does the exact firmware-derived IPI init write stick? | **negative in RF RX** — one masked volatile write reads zero, restore/reload pass; opt-in direct write only |
 | [`ipi_compact_probe.py`](ipi_compact_probe.py) | Does the firmware's compact setter layout activate IPI? | **not by itself** — normal/RF RX layout controls still zero; actual dispatcher and field-access leads recovered |
@@ -35,7 +38,7 @@ whether a wider receive configuration observes independent narrower channels.
 | [`icap_status_probe.py`](icap_status_probe.py) | Does station mode entry unlock ICAP status? | **yes after mode 2** — matched 68-byte status event; no IQ capture or spectrum measurement yet |
 | [`station_testmode_probe.py`](station_testmode_probe.py) | Are station-specific test queries reachable? | **yes on MT7961 after idle RF-test mode entry**; [details and limits](../docs/STATION_TESTMODE.md) |
 | [`testmode_receiver_probe.py`](testmode_receiver_probe.py) | Can the RF-test receiver sample live activity? | **yes with explicit RX path** — changing counters/signal words; stop freezes them; [controlled comparisons](../docs/STATION_TESTMODE.md#rx-path-activation-follow-up); signal units and probe-specific effects unvalidated |
-| [`phy_tx_probe.py`](phy_tx_probe.py) | Can either chip transmit HT/VHT/HE with the existing injection path? | **new measured capabilities** — HT/VHT both directions, HE-SU from MT7961; [evidence](../docs/PHY_TRANSMIT.md) |
+| [`phy_tx_probe.py`](phy_tx_probe.py) | Can either chip transmit HT/VHT/HE with the existing injection path? | **new measured capabilities** — HT/VHT both directions, HE-SU from MT7961 and two-stream HE from MT7925; current RF-performance caveat remains; [evidence](../docs/PHY_TRANSMIT.md) |
 | [`rx_stat_query.py`](rx_stat_query.py) | Does the station firmware accept the AP-driver EXT 0xa4 receive-stat queries? | **negative on MT7961** — all five tested categories refused; station testmode is a separate lead |
 | [`channel_geometry_probe.py`](channel_geometry_probe.py) | Does 80 MHz capture observe independent 20 MHz traffic on other primaries? | **partly answered** — both radios receive primary-matched probes but not the tested other-primary probes in the same span |
 | [`mt7925_tx_probe.py`](mt7925_tx_probe.py) | Can connac3 transmit controlled probes and preserve their addresses? | **partly answered** — DIS_MAT preserves frame bytes; 5 GHz OFDM and relative attenuation measured; production API unchanged |
