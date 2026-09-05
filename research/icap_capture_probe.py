@@ -36,7 +36,7 @@ def capture_request(samples=256, trigger=True, trigger_event=0, node=0):
         raise ValueError("bounded sample count and boolean trigger required")
     if trigger_event not in (0, 0xFFFFFFFF):
         raise ValueError("only baseline or firmware-derived no-event-gate candidate")
-    if node not in (0, 0x49):
+    if node not in (0, 0x49, 0x00110000):
         raise ValueError("only baseline or source-derived node candidate")
     words = [0] * 20
     words[0] = int(trigger)
@@ -46,6 +46,8 @@ def capture_request(samples=256, trigger=True, trigger_event=0, node=0):
     words[5] = samples
     # Firmware 0x0096c562: event -1 clears bit 19 rather than selecting an event.
     # Node 0x49 is the pinned QA mapping for node 8, not validated for MT7961.
+    # 0x00110000: firmware-recognized packed class 0x11, format/group 0, selector 0.
+    # 0x96c4d2 halves its stop count; 0x96c4f0 routes class into PHY selector.
     # ring=0, architecture=0; no EMI addresses.
     return struct.pack("<B3xI20I", 1, 11, *words)
 
@@ -115,11 +117,16 @@ def collect(dev, seconds, seq):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--samples", type=int, choices=(64, 256), default=256)
-    p.add_argument("--node", type=lambda value: int(value, 0), choices=(0, 0x49), default=0)
+    p.add_argument(
+        "--node", type=lambda value: int(value, 0), choices=(0, 0x49, 0x00110000), default=0
+    )
     p.add_argument(
         "--no-event-gate", action="store_true", help="firmware-derived event -1 candidate"
     )
     p.add_argument("--prepare-rx", action="store_true")
+    p.add_argument(
+        "--icap-rx", action="store_true", help="activate bounded RX after ICAP-mode entry"
+    )
     p.add_argument(
         "--icap-channel", action="store_true", help="explicit ICAP channel-switch preparation"
     )
@@ -134,6 +141,7 @@ def main():
         "node_candidate": args.node,
         "architecture": 0,
         "prepare_rx": args.prepare_rx,
+        "icap_rx": args.icap_rx,
         "icap_channel": args.icap_channel,
         "retrieve": args.retrieve,
         "register_checks": args.registers,
@@ -169,6 +177,12 @@ def main():
             if args.icap_channel:
                 for selector, value in ((104, 0), (106, 3 << 16), (18, 5180000), (15, 0), (1, 13)):
                     dev.mcu_cmd_word(m.MCU_CE_CMD(1), channel_request(selector, value), wait=False)
+                    time.sleep(0.1)
+            if args.icap_rx:
+                # Original MtkICAPtool starts RX after entering ICAP mode.
+                # Earlier --prepare-rx ran before mode entry, which can stop it.
+                for selector, value in ((104, 0), (106, 3 << 16), (18, 5180000), (15, 0), (1, 2)):
+                    dev.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(selector, value), wait=False)
                     time.sleep(0.1)
             ext(status_request(), query=True)
             out["before"] = collect(dev, 0.3, dev.msg_seq)

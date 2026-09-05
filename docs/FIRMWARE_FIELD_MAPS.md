@@ -76,3 +76,34 @@ Other start-path words change too: 0x80021098 becomes 0, 0x8002109c becomes
 0xfffc, and 0x800210a4 becomes 64. Their roles and the validity of that setup
 remain under investigation. No data retrieval was attempted. All reloads passed.
 [Live comparison evidence](../research/evidence/field-register-controls-2026-09-05.json).
+
+## Activation controls and remaining limits
+
+Further [activation evidence](../research/evidence/field-activation-controls-2026-09-05.json)
+isolates these issues without claiming working samples:
+
+- The PHY USB window does work: ICAP changes 0x83080004/8 from 0x3800 to 0x3840,
+  0x830a1000 from 0 to 0x04010100, and the selector registers exactly as the
+  disassembly predicts. A blanket “0x83 registers are inaccessible” explanation
+  does not fit these controls; individual sub-block gating remains possible.
+- A single direct masked IPI initialization at 0x830af04c, mask 0x1ef/value 0x121,
+  also reads back zero in activated RF RX. Its counters and firmware GET remain
+  zero after 0.5 seconds. The original word was restored and reload/alive passed.
+  This reproduces only the three firmware initialization fields, not an arbitrary
+  register sweep. No additional gating writes were guessed.
+- On-chip capture wrappers 0x0096be4e/5c intentionally select start 0/end 0xfffc
+  for this caller: a 64-KiB device-buffer range, not supplied host DMA addresses.
+- Packed node 0x00110000 uses class 0x11, group/format 0 and selector 0. Firmware
+  0x0096c4d2 halves the stop count for classes 0x11, 0x14, 0x21. With 64 requested
+  samples, hardware 0x800210a4 becomes 32 and 0x830ad440 becomes 0x80000011.
+  Those predictions hold, but capture still stays active; no data is retrieved.
+- Starting RX after ICAP-mode entry, as the original phone tool does, also leaves
+  capture incomplete with this node. A separate identical-settings scalar control
+  sees RXOK 0→2 in mode 1 but 0→0 in mode 2 over 0.5 seconds. Ambient exposure was
+  low, so this is not proof that mode-2 RX cannot work. Neither mode entry nor
+  configuration acknowledgment alone proves an active sampling clock.
+
+[`ipi_register_probe.py`](../research/ipi_register_probe.py) preserves the exact
+reversible write experiment behind `--direct-init`. All runs stop/reload cleanly.
+The legacy CE ICAP-start route remains a separate lead; it was not executed here
+because its buffer/architecture defaults have not yet been traced on this image.

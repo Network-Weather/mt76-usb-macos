@@ -239,6 +239,15 @@ Three short post-start polls remain incomplete. All firmware reloads pass.
 [Command/register evidence](../research/evidence/field-register-controls-2026-09-05.json).
 Next: trace capture setup and IPI access gating from these concrete locations.
 
+Follow-up controls confirm the PHY USB window changes as predicted, while one
+exact reversible IPI initialization write still reads back zero. A packed ICAP
+node predicts both mux and stop-count changes correctly but still does not finish.
+Starting RX after ICAP mode does not resolve that in this run. Details and dated
+evidence are in [the field-map activation section](FIRMWARE_FIELD_MAPS.md#activation-controls-and-remaining-limits).
+These narrow the hardware questions without promoting idle registers to working
+measurements. Next bounded surface: spatial-stream and bandwidth transmit controls
+with independent second-radio decoding; keep capture-clock/legacy-route leads open.
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 

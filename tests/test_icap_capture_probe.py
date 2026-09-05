@@ -49,11 +49,12 @@ def test_no_event_gate_changes_only_event_word():
         capture_request(trigger_event=1)
 
 
-def test_candidate_node_changes_only_node_word():
+@pytest.mark.parametrize("node", [0x49, 0x00110000])
+def test_candidate_node_changes_only_node_word(node):
     baseline = capture_request(64)
-    candidate = capture_request(64, node=0x49)
+    candidate = capture_request(64, node=node)
     assert candidate[:20] == baseline[:20]
-    assert candidate[20:24] == struct.pack("<I", 0x49)
+    assert candidate[20:24] == struct.pack("<I", node)
     assert candidate[24:] == baseline[24:]
     with pytest.raises(ValueError, match="node candidate"):
         capture_request(node=8)

@@ -13,6 +13,15 @@ IPI_CONTROL = 0x830AF04C
 IPI_COUNTERS = tuple(0x830AF0A8 + 4 * i for i in range(12))
 ICAP_CONTROL = 0x80021090
 ICAP_REGISTERS = (ICAP_CONTROL, 0x80021098, 0x8002109C, 0x800210A4, 0x800210B4)
+ICAP_PHY_REGISTERS = (
+    0x83080004,
+    0x83080008,
+    0x830A1000,
+    0x830A1004,
+    0x830A3008,
+    0x830AD440,
+    0x830AD448,
+)
 KEYS = (
     0x260000,
     0x260001,
@@ -73,4 +82,8 @@ def ipi_snapshot(dev):
 
 def icap_snapshot(dev):
     words = {hex(address): dev.rr(address) for address in ICAP_REGISTERS}
-    return {"registers_raw": words, "active_bit": (words[hex(ICAP_CONTROL)] >> 1) & 1}
+    return {
+        "registers_raw": words,
+        "phy_registers_raw": {hex(address): dev.rr(address) for address in ICAP_PHY_REGISTERS},
+        "active_bit": (words[hex(ICAP_CONTROL)] >> 1) & 1,
+    }
