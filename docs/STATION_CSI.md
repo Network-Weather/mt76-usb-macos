@@ -271,6 +271,48 @@ value ranges and transient I/Q digest cardinality (never digests themselves).
 Thirty-one targeted CSI tests cover command bounds, event separation, privacy,
 malformed payloads and the narrow tail rule. Production Python/C APIs are unchanged.
 
+### Signal metadata: shared SNR encoding, per-index RSSI
+
+Helper`0xe00ac9a0` reads seven words beginning at band0 PHY`0x83080cb0`.
+In`0xe0060b88`, stack+12 is word2 (`0x83080cb8`). ROM slot`0x829488` points
+to`0x8457e2`, which shifts that word right23. The caller shifts a further2,
+adds16 at`0xe0060bc2..bca`, and stores CSI state+`0x156`. The nonzero path is:
+
+```text
+tag3 = (PHY[0x83080cb8] >> 25) + 16     # encoding, not calibrated dB
+```
+
+State+`0x108` comes from word3 (`0x83080cbc`) bit22 via ROM slot`0x829410`
+→`0x845620`. If set, the builder zeros state+`0x156` at`0xe009e406..418`.
+Tag3 exports that halfword at`0xe009e4ae..4be`. **Zero must not become −16** or
+be treated as a valid zero-SNR observation; the flag's meaning is not established.
+
+The summary adds `snr_pinned_encoding_minus16` only for report version22 and
+values16..143. This removes the proven offset but remains a seven-bit firmware
+field, **not calibrated SNR in dB**. Do not subtract16 from the MT7961 RF-statistics
+SNR: that different firmware path has no such offset.
+
+RSSI tag2 selects a signed byte from CSI state+`0x151..154` by RX index at
+`0xe009e456..49e`. Those four bytes are copied from receive-vector input+`0x24..27`
+at`0xe0060c62..82`. SNR is not indexed this way: both receiver reports use the
+same state+`0x156`. ROM`0x8457b4` supplies fallback RSSI state+`0x155`, not the
+per-index source on the observed RX0/1 path.
+
+Two fresh channel36 passive runs at11:52:56 and11:53:03 UTC each produced116
+valid START reports and58 exact TA+GPT RX0/RX1 pairs. Every pair had equal SNR;
+58/57 had different RSSI. RX1−RX0 differences ranged−5..−1 and−6..0; offset-
+removed SNR fields ranged4..9 and5..9. No invalid reports or transfer ceilings.
+Each STOP window contained one residual pair: STOP does not retroactively drain
+queued reports. Both reloads passed. Only aggregates are published, not identities,
+pair keys or coefficients. [Signal-pair evidence](../research/evidence/csi-signal-metadata-2026-09-05.json).
+
+A separate normal-reception control **without CSI activation** sampled only the
+above SNR/type fields40 times on channel36 and40 times on channel1. All were
+zero despite40 good-FCS host frames per channel; reload passed. This is **not**
+a validated standalone normal-mode SNR register API. Never convert those idle
+fields to a fabricated tag3 value16 and claim a measurement.
+[Normal-field control](../research/evidence/csi-signal-normal-control-2026-09-05.json).
+
 ## Passive source coincidence and a receiver-pair key
 
 `--correlate` compares identifiers only transiently within each bounded receive

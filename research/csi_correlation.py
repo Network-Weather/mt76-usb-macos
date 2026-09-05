@@ -16,6 +16,7 @@ class CsiCorrelation:
         self.frame_keys = collections.defaultdict(set)
         self.report_keys = collections.defaultdict(collections.Counter)
         self.groups = collections.defaultdict(lambda: collections.defaultdict(collections.Counter))
+        self.signal_pairs = collections.defaultdict(list)
         self.invalid = 0
 
     def add_frame(self, decoded):
@@ -42,6 +43,11 @@ class CsiCorrelation:
         ta = bytes(fields[10][:6])
         rx = struct.unpack("<I", fields[18])[0] & 65535
         self.reports[ta] += 1
+        if len(fields.get(25, b"")) == 4:
+            rssi = struct.unpack("<I", fields[2])[0] & 255
+            self.signal_pairs[(ta, bytes(fields[25]))].append(
+                (rx, rssi - 256 if rssi >= 128 else rssi, struct.unpack("<I", fields[3])[0])
+            )
         for tags in ((17,), (23,), (25,), (23, 25)):
             if any(len(fields.get(tag, b"")) != 4 for tag in tags):
                 continue
@@ -53,6 +59,12 @@ class CsiCorrelation:
 
     def export(self):
         shared = self.beacons.keys() & self.reports.keys()
+        pairs = [
+            sorted(rows)
+            for rows in self.signal_pairs.values()
+            if len(rows) == 2 and {r[0] for r in rows} == {0, 1}
+        ]
+        differences = [rows[1][1] - rows[0][1] for rows in pairs]
         return {
             "beacons": sum(self.beacons.values()),
             "beacon_transmitters": len(self.beacons),
@@ -61,6 +73,13 @@ class CsiCorrelation:
             "shared_transmitters": len(shared),
             "reports_from_heard_beacon_transmitters": sum(self.reports[ta] for ta in shared),
             "invalid_csi_events": self.invalid,
+            "paired_signal_metadata": {
+                "exact_rx0_rx1_pairs": len(pairs),
+                "equal_snr_raw": sum(rows[0][2] == rows[1][2] for rows in pairs),
+                "different_rssi_raw": sum(rows[0][1] != rows[1][1] for rows in pairs),
+                "rx1_minus_rx0_rssi_raw_min": min(differences) if differences else None,
+                "rx1_minus_rx0_rssi_raw_max": max(differences) if differences else None,
+            },
             "candidate_pair_keys": {
                 label: {
                     "groups": len(groups),

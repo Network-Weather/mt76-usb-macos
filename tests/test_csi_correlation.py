@@ -4,12 +4,14 @@ import struct
 from research.csi_correlation import CsiCorrelation
 
 
-def report(rx, stamp):
+def report(rx, stamp, rssi=-90, snr=23):
     fields = {
         tag: struct.pack("<I", 0) for tag in (0, 1, 2, 3, 4, 5, 8, 9, 12, 17, 18, 20, 21, 23, 25)
     }
     fields.update(
         {
+            2: struct.pack("<I", rssi & 0xFFFFFFFF),
+            3: struct.pack("<I", snr),
             5: struct.pack("<I", 1),
             6: bytes(2),
             7: bytes(2),
@@ -61,3 +63,19 @@ def test_nonbeacons_bad_fcs_truncation_and_bad_csi_do_not_match():
     assert out["beacons"] == out["shared_transmitters"] == 0
     assert out["invalid_csi_events"] == 1
     assert out["candidate_pair_keys"]["tag23"]["singleton_groups"] == 1
+
+
+def test_paired_signal_metadata_excludes_duplicate_and_incomplete_pairs():
+    correlation = CsiCorrelation()
+    correlation.add_csi(report(0, 10, -92))
+    correlation.add_csi(report(1, 10, -87))
+    out = correlation.export()["paired_signal_metadata"]
+    assert out == {
+        "exact_rx0_rx1_pairs": 1,
+        "equal_snr_raw": 1,
+        "different_rssi_raw": 1,
+        "rx1_minus_rx0_rssi_raw_min": 5,
+        "rx1_minus_rx0_rssi_raw_max": 5,
+    }
+    correlation.add_csi(report(1, 10, -87))
+    assert correlation.export()["paired_signal_metadata"]["exact_rx0_rx1_pairs"] == 0

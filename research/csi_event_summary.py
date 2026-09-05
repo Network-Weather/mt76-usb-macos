@@ -10,6 +10,17 @@ import hashlib
 import struct
 
 
+def snr_field_without_offset(version, value):
+    """Pinned report22: (PHY0x83080cb8 >>25)+16, unless a type bit forces0.
+
+    This removes a proven encoding offset; it does not calibrate SNR units.
+    Zero is not minus16: it may be the firmware's explicit zeroing path.
+    """
+    if type(version) is int and version == 22 and type(value) is int and 16 <= value <= 143:
+        return value - 16
+    return None
+
+
 def parse_tlvs(body):
     """Private in-memory data for validation; callers must not serialize this."""
     if not 8 <= len(body) <= 8192:
@@ -110,6 +121,9 @@ class CsiSummary:
             "segment_raw": words[20],
             "remain_last_raw": words[21],
         }
+        snr = snr_field_without_offset(words[0], words[3])
+        if snr is not None:
+            values["snr_pinned_encoding_minus16"] = snr
         for name, value in values.items():
             self.metadata[name][value] += 1
         iq = fields[6] + fields[7]

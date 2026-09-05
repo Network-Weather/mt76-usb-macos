@@ -3,7 +3,7 @@ import struct
 
 import pytest
 
-from research.csi_event_summary import CsiSummary, parse_fields
+from research.csi_event_summary import CsiSummary, parse_fields, snr_field_without_offset
 
 
 def body(iq=(1, -2), override=None):
@@ -38,6 +38,24 @@ def test_valid_aggregate_has_no_samples_addresses_unknown_data_or_fingerprints()
     assert out["metadata_counts"]["rssi_raw_signed_byte"] == [{"value": -70, "count": 3}]
     for forbidden in ("SECRET", "hidden", "fingerprint", "samples", "aucbody"):
         assert forbidden not in str(out)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [(16, 0), (20, 4), (25, 9), (143, 127), (0, None), (15, None), (144, None), (True, None)],
+)
+def test_pinned_snr_offset_only_not_calibrated_units(value, expected):
+    assert snr_field_without_offset(22, value) == expected
+    assert snr_field_without_offset(21, value) is None
+
+
+def test_summary_only_decodes_pinned_nonzero_snr():
+    summary = CsiSummary()
+    summary.add(body(override={0: struct.pack("<I", 22), 3: struct.pack("<I", 23)}))
+    summary.add(body(override={0: struct.pack("<I", 22), 3: bytes(4)}))
+    assert summary.export()["metadata_counts"]["snr_pinned_encoding_minus16"] == [
+        {"value": 7, "count": 1}
+    ]
 
 
 @pytest.mark.parametrize(
