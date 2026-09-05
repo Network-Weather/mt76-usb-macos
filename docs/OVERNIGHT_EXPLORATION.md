@@ -15,6 +15,12 @@ read controls. Its 30-slot dispatcher is now identified as UNI 0x33 beamforming:
 [PFMU tag and profile-data reads work](BEAMFORMING_PROFILES.md), with correctly
 predicted unsolicited sequence-zero events. This is not yet usable CSI.
 
+**Separate CSI control lead:** [MT7925 station UNI 0x4a](STATION_CSI.md)
+acknowledges stop/start and maximum-chain tags with status zero. Both band
+selectors were tested; no CSI sample events were seen. MT7961's legacy CE 0x4c
+route returns the source-defined command-not-found event. No-ACK silence and
+transfer-limited windows are explicitly separated from negative results.
+
 **Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
 Startup exposes the EX9 table, and a GP candidate recovers meaningful string
 references. Internal dispatch tags also must not be equated directly to wire IDs.
