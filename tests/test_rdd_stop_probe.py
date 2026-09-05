@@ -114,3 +114,18 @@ def test_receive_start_never_on_legacy(chip):
 
     with pytest.raises(ValueError, match="MT7925"):
         r.start(Device(), {"events": [{"command_result_status": 0}]})
+
+
+def test_new_chip_state_exact_byte_offsets_and_chip_guard():
+    from research import rdd_receive_probe as r
+
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+
+        def rr(self, address):
+            return {0x022303B0: 0x11223301, 0x02221CCC: 0xAABB00CC}[address]
+
+    assert r.state(Device()) == {"host_enabled_byte": 1, "prerequisite_byte_02221ccd": 0}
+    Device.CHIP = p.m.CHIP_MT7921
+    with pytest.raises(ValueError, match="MT7925-only"):
+        r.state(Device())

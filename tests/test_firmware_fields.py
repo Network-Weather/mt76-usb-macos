@@ -6,6 +6,7 @@ from research.firmware_fields import (
     IPI_CONTROL,
     icap_snapshot,
     ipi_snapshot,
+    rdd_snapshot,
     resolve_field,
 )
 
@@ -22,6 +23,47 @@ def test_key_field_index_is_not_bit_number():
 def test_full_word_mask():
     words = {0x84D560: 0x84D648, 0x84D564: 0x00010098, 0x84D648: 0x1F00}
     assert resolve_field(words.__getitem__, 0x5A0040)["mask"] == "0xffffffff"
+
+
+def test_rdd_phy_and_capture_domains_have_independent_tables():
+    words = {
+        0x84CB90: 0x84CBBC,
+        0x84CB94: 0x00012004,
+        0x84CBBC: 0x0806,
+        0x84CA04: 0x84CAB0,
+        0x84CA08: 0x0001500C,
+        0x84CAB0: 0x1F00,
+    }
+    mode = resolve_field(words.__getitem__, 0x240020)
+    assert mode["register"] == "0x83082004"
+    assert mode["mask"] == "0x1c0"
+    begin = resolve_field(words.__getitem__, 0x270080)
+    assert begin["register"] == "0x830a500c"
+    assert begin["mask"] == "0xffffffff"
+
+
+def test_rdd_snapshot_is_chip_guarded_and_fixed_read_only():
+    class Device:
+        CHIP = "mt7921"
+
+        def rr(self, address):
+            assert address in (
+                0x83082004,
+                0x83080038,
+                0x83080014,
+                0x830A5000,
+                0x830A5008,
+                0x830A500C,
+                0x830A5010,
+                0x830A5014,
+                0x830A2030,
+            )
+            return 0x140 if address == 0x83082004 else 0
+
+    assert rdd_snapshot(Device())["detector_mode_bits8_6"] == 5
+    Device.CHIP = "mt7925"
+    with pytest.raises(ValueError, match="MT7961-only"):
+        rdd_snapshot(Device())
 
 
 @pytest.mark.parametrize("key", [True, -1, 0x5AFFFF, 0x260003])

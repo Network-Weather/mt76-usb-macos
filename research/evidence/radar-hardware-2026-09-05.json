@@ -1,0 +1,546 @@
+{
+  "scope": "ROM-derived RDD fields, bounded source-defined STOP/START/STOP and fixed hardware/state readback; no direct writes, TX or raw capture-buffer data",
+  "runs": [
+    {
+      "tool": "mt7961_rdd_field_mapping",
+      "fields": [
+        {
+          "key": "0x240020",
+          "table_entry": "0x84cb90",
+          "field_table": "0x84cbbc",
+          "register": "0x83082004",
+          "field_index": 0,
+          "field_count": 1,
+          "low_bit": 6,
+          "high_bit": 8,
+          "mask": "0x1c0"
+        },
+        {
+          "key": "0x240040",
+          "table_entry": "0x84cb98",
+          "field_table": "0x84cbb8",
+          "register": "0x83080038",
+          "field_index": 0,
+          "field_count": 2,
+          "low_bit": 2,
+          "high_bit": 2,
+          "mask": "0x4"
+        },
+        {
+          "key": "0x240041",
+          "table_entry": "0x84cb98",
+          "field_table": "0x84cbb8",
+          "register": "0x83080038",
+          "field_index": 1,
+          "field_count": 2,
+          "low_bit": 3,
+          "high_bit": 3,
+          "mask": "0x8"
+        },
+        {
+          "key": "0x240060",
+          "table_entry": "0x84cba0",
+          "field_table": "0x84cbb4",
+          "register": "0x83080014",
+          "field_index": 0,
+          "field_count": 1,
+          "low_bit": 13,
+          "high_bit": 13,
+          "mask": "0x2000"
+        },
+        {
+          "key": "0x270000",
+          "table_entry": "0x84c9e4",
+          "field_table": "0x84cac0",
+          "register": "0x830a5000",
+          "field_index": 0,
+          "field_count": 1,
+          "low_bit": 0,
+          "high_bit": 0,
+          "mask": "0x1"
+        },
+        {
+          "key": "0x270020",
+          "table_entry": "0x84c9ec",
+          "field_table": "0x84cabc",
+          "register": "0x830a5008",
+          "field_index": 0,
+          "field_count": 1,
+          "low_bit": 0,
+          "high_bit": 0,
+          "mask": "0x1"
+        },
+        {
+          "key": "0x270080",
+          "table_entry": "0x84ca04",
+          "field_table": "0x84cab0",
+          "register": "0x830a500c",
+          "field_index": 0,
+          "field_count": 1,
+          "low_bit": 0,
+          "high_bit": 31,
+          "mask": "0xffffffff"
+        },
+        {
+          "key": "0x2700e0",
+          "table_entry": "0x84ca1c",
+          "field_table": "0x84caa4",
+          "register": "0x830a5010",
+          "field_index": 0,
+          "field_count": 1,
+          "low_bit": 0,
+          "high_bit": 31,
+          "mask": "0xffffffff"
+        },
+        {
+          "key": "0x2701a0",
+          "table_entry": "0x84ca4c",
+          "field_table": "0x84ca84",
+          "register": "0x830a5014",
+          "field_index": 0,
+          "field_count": 1,
+          "low_bit": 0,
+          "high_bit": 31,
+          "mask": "0xffffffff"
+        },
+        {
+          "key": "0x270200",
+          "table_entry": "0x84ca64",
+          "field_table": "0x84ca78",
+          "register": "0x830a2030",
+          "field_index": 0,
+          "field_count": 2,
+          "low_bit": 28,
+          "high_bit": 29,
+          "mask": "0x30000000"
+        },
+        {
+          "key": "0x270201",
+          "table_entry": "0x84ca64",
+          "field_table": "0x84ca78",
+          "register": "0x830a2030",
+          "field_index": 1,
+          "field_count": 2,
+          "low_bit": 27,
+          "high_bit": 27,
+          "mask": "0x8000000"
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_rdd_state_probe",
+      "chip": "mt7961",
+      "channel": 36,
+      "date_utc": "2026-09-05T15:08:39.303989+00:00",
+      "rows": [
+        {
+          "requested_enabled": false,
+          "before": {
+            "address": "0x2037214",
+            "raw": "0x0",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 0
+          },
+          "after": {
+            "address": "0x2037214",
+            "raw": "0x0",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 0
+          },
+          "allocation_checked": null,
+          "receive": {
+            "events": [],
+            "good_fcs_frames_by_phy_mode": {},
+            "endpoint_transfers": {},
+            "transfers": 0,
+            "transfer_limit_reached": false,
+            "endpoint_timeout_ms": 1,
+            "elapsed_seconds": 1.0001219999976456
+          },
+          "hardware_before": {
+            "registers_raw": {
+              "0x83082004": "0x0",
+              "0x83080038": "0x0",
+              "0x83080014": "0x0",
+              "0x830a5000": "0x80",
+              "0x830a5008": "0xf0",
+              "0x830a500c": "0x0",
+              "0x830a5010": "0x0",
+              "0x830a5014": "0x0",
+              "0x830a2030": "0xa00"
+            },
+            "detector_mode_bits8_6": 0,
+            "capture_field_270000": 0,
+            "capture_field_270020": 0,
+            "buffer_begin": "0x0",
+            "buffer_end": "0x0",
+            "producer_word": "0x0"
+          },
+          "hardware_after": {
+            "registers_raw": {
+              "0x83082004": "0x0",
+              "0x83080038": "0x0",
+              "0x83080014": "0x0",
+              "0x830a5000": "0x80",
+              "0x830a5008": "0xf0",
+              "0x830a500c": "0x0",
+              "0x830a5010": "0x0",
+              "0x830a5014": "0x0",
+              "0x830a2030": "0xa00"
+            },
+            "detector_mode_bits8_6": 0,
+            "capture_field_270000": 0,
+            "capture_field_270020": 0,
+            "buffer_begin": "0x0",
+            "buffer_end": "0x0",
+            "producer_word": "0x0"
+          }
+        },
+        {
+          "requested_enabled": true,
+          "before": {
+            "address": "0x2037214",
+            "raw": "0x0",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 0
+          },
+          "after": {
+            "address": "0x2037214",
+            "raw": "0x101",
+            "host_enabled_byte": 1,
+            "detector_region_byte": 1
+          },
+          "allocation_checked": {
+            "base": "0x401c00",
+            "bytes": 1024
+          },
+          "receive": {
+            "events": [],
+            "good_fcs_frames_by_phy_mode": {},
+            "endpoint_transfers": {},
+            "transfers": 0,
+            "transfer_limit_reached": false,
+            "endpoint_timeout_ms": 1,
+            "elapsed_seconds": 1.0002239169552922
+          },
+          "hardware_before": {
+            "registers_raw": {
+              "0x83082004": "0x0",
+              "0x83080038": "0x0",
+              "0x83080014": "0x0",
+              "0x830a5000": "0x80",
+              "0x830a5008": "0xf0",
+              "0x830a500c": "0x0",
+              "0x830a5010": "0x0",
+              "0x830a5014": "0x0",
+              "0x830a2030": "0xa00"
+            },
+            "detector_mode_bits8_6": 0,
+            "capture_field_270000": 0,
+            "capture_field_270020": 0,
+            "buffer_begin": "0x0",
+            "buffer_end": "0x0",
+            "producer_word": "0x0"
+          },
+          "hardware_after": {
+            "registers_raw": {
+              "0x83082004": "0x140",
+              "0x83080038": "0xc",
+              "0x83080014": "0x0",
+              "0x830a5000": "0x81",
+              "0x830a5008": "0xf9",
+              "0x830a500c": "0x401c00",
+              "0x830a5010": "0x401e00",
+              "0x830a5014": "0x401c00",
+              "0x830a2030": "0xa00"
+            },
+            "detector_mode_bits8_6": 5,
+            "capture_field_270000": 1,
+            "capture_field_270020": 1,
+            "buffer_begin": "0x401c00",
+            "buffer_end": "0x401e00",
+            "producer_word": "0x401c00"
+          }
+        },
+        {
+          "requested_enabled": false,
+          "before": {
+            "address": "0x2037214",
+            "raw": "0x101",
+            "host_enabled_byte": 1,
+            "detector_region_byte": 1
+          },
+          "after": {
+            "address": "0x2037214",
+            "raw": "0x100",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 1
+          },
+          "allocation_checked": null,
+          "receive": {
+            "events": [],
+            "good_fcs_frames_by_phy_mode": {},
+            "endpoint_transfers": {},
+            "transfers": 0,
+            "transfer_limit_reached": false,
+            "endpoint_timeout_ms": 1,
+            "elapsed_seconds": 1.001424124930054
+          },
+          "hardware_before": {
+            "registers_raw": {
+              "0x83082004": "0x140",
+              "0x83080038": "0xc",
+              "0x83080014": "0x0",
+              "0x830a5000": "0x81",
+              "0x830a5008": "0xf9",
+              "0x830a500c": "0x401c00",
+              "0x830a5010": "0x401e00",
+              "0x830a5014": "0x401c00",
+              "0x830a2030": "0xa00"
+            },
+            "detector_mode_bits8_6": 5,
+            "capture_field_270000": 1,
+            "capture_field_270020": 1,
+            "buffer_begin": "0x401c00",
+            "buffer_end": "0x401e00",
+            "producer_word": "0x401c00"
+          },
+          "hardware_after": {
+            "registers_raw": {
+              "0x83082004": "0x0",
+              "0x83080038": "0xc",
+              "0x83080014": "0x0",
+              "0x830a5000": "0x81",
+              "0x830a5008": "0xf8",
+              "0x830a500c": "0x401c00",
+              "0x830a5010": "0x401e00",
+              "0x830a5014": "0x401c00",
+              "0x830a2030": "0xa00"
+            },
+            "detector_mode_bits8_6": 0,
+            "capture_field_270000": 1,
+            "capture_field_270020": 0,
+            "buffer_begin": "0x401c00",
+            "buffer_end": "0x401e00",
+            "producer_word": "0x401c00"
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_stop": {
+        "requested_enabled": false,
+        "before": {
+          "address": "0x2037214",
+          "raw": "0x100",
+          "host_enabled_byte": 0,
+          "detector_region_byte": 1
+        },
+        "after": {
+          "address": "0x2037214",
+          "raw": "0x100",
+          "host_enabled_byte": 0,
+          "detector_region_byte": 1
+        },
+        "allocation_checked": null,
+        "receive": {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {},
+          "transfers": 0,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.0014065420255065
+        },
+        "hardware_before": {
+          "registers_raw": {
+            "0x83082004": "0x0",
+            "0x83080038": "0xc",
+            "0x83080014": "0x0",
+            "0x830a5000": "0x81",
+            "0x830a5008": "0xf8",
+            "0x830a500c": "0x401c00",
+            "0x830a5010": "0x401e00",
+            "0x830a5014": "0x401c00",
+            "0x830a2030": "0xa00"
+          },
+          "detector_mode_bits8_6": 0,
+          "capture_field_270000": 1,
+          "capture_field_270020": 0,
+          "buffer_begin": "0x401c00",
+          "buffer_end": "0x401e00",
+          "producer_word": "0x401c00"
+        },
+        "hardware_after": {
+          "registers_raw": {
+            "0x83082004": "0x0",
+            "0x83080038": "0xc",
+            "0x83080014": "0x0",
+            "0x830a5000": "0x81",
+            "0x830a5008": "0xf8",
+            "0x830a500c": "0x401c00",
+            "0x830a5010": "0x401e00",
+            "0x830a5014": "0x401c00",
+            "0x830a2030": "0xa00"
+          },
+          "detector_mode_bits8_6": 0,
+          "capture_field_270000": 1,
+          "capture_field_270020": 0,
+          "buffer_begin": "0x401c00",
+          "buffer_end": "0x401e00",
+          "producer_word": "0x401c00"
+        }
+      },
+      "cleanup_reload_alive": true,
+      "cleanup_state": {
+        "address": "0x2037214",
+        "raw": "0x0",
+        "host_enabled_byte": 0,
+        "detector_region_byte": 0
+      },
+      "cleanup_hardware": {
+        "registers_raw": {
+          "0x83082004": "0x0",
+          "0x83080038": "0x0",
+          "0x83080014": "0x0",
+          "0x830a5000": "0x80",
+          "0x830a5008": "0xf0",
+          "0x830a500c": "0x0",
+          "0x830a5010": "0x0",
+          "0x830a5014": "0x0",
+          "0x830a2030": "0xa00"
+        },
+        "detector_mode_bits8_6": 0,
+        "capture_field_270000": 0,
+        "capture_field_270020": 0,
+        "buffer_begin": "0x0",
+        "buffer_end": "0x0",
+        "producer_word": "0x0"
+      }
+    },
+    {
+      "tool": "rdd_receive_probe",
+      "chip": "mt7925",
+      "channel": 36,
+      "detector_region_raw": 1,
+      "date_utc": "2026-09-05T15:09:40.151754+00:00",
+      "rows": [
+        {
+          "events": [
+            {
+              "eid": 1,
+              "ext_eid": 0,
+              "sequence_matches": true,
+              "body_bytes": 8,
+              "candidate_rdd_event": false,
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 54
+          },
+          "endpoint_transfers": {
+            "84": 55
+          },
+          "transfers": 55,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.0010986658744514
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 62
+          },
+          "endpoint_transfers": {
+            "84": 62
+          },
+          "transfers": 62,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.000687750056386
+        },
+        {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 55
+          },
+          "endpoint_transfers": {
+            "84": 55
+          },
+          "transfers": 55,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.000700084026903
+        }
+      ],
+      "state_before": {
+        "host_enabled_byte": 0,
+        "prerequisite_byte_02221ccd": 1
+      },
+      "initial_stop": {
+        "events": [
+          {
+            "eid": 1,
+            "ext_eid": 0,
+            "sequence_matches": true,
+            "body_bytes": 8,
+            "candidate_rdd_event": false,
+            "command_result_status": 0
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 71
+        },
+        "endpoint_transfers": {
+          "84": 72
+        },
+        "transfers": 72,
+        "transfer_limit_reached": false,
+        "endpoint_timeout_ms": 1,
+        "elapsed_seconds": 1.0007952079176903
+      },
+      "state_after_initial_stop": {
+        "host_enabled_byte": 0,
+        "prerequisite_byte_02221ccd": 1
+      },
+      "state_after_start": {
+        "host_enabled_byte": 1,
+        "prerequisite_byte_02221ccd": 1
+      },
+      "alive_after": true,
+      "final_stop": {
+        "events": [
+          {
+            "eid": 1,
+            "ext_eid": 0,
+            "sequence_matches": true,
+            "body_bytes": 8,
+            "candidate_rdd_event": false,
+            "command_result_status": 0
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 58
+        },
+        "endpoint_transfers": {
+          "84": 59
+        },
+        "transfers": 59,
+        "transfer_limit_reached": false,
+        "endpoint_timeout_ms": 1,
+        "elapsed_seconds": 1.0006670840084553
+      },
+      "state_after_final_stop": {
+        "host_enabled_byte": 0,
+        "prerequisite_byte_02221ccd": 1
+      },
+      "cleanup_reload_alive": true,
+      "state_after_reload": {
+        "host_enabled_byte": 0,
+        "prerequisite_byte_02221ccd": 1
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# Station radar-detector control: transport works, pulse measurement unproven
+# Station radar detector: MT7961 hardware arming works, pulse measurement unproven
 
 On the pinned MT7925 firmware, **UNI0x19 STOP/START/STOP returns status0** in
 normal unassociated channel36/20MHz receive mode. Three post-START one-second
@@ -6,6 +6,8 @@ windows contain301 good-FCS OFDM frames and **no candidate radar events**. This
 establishes command acceptance, not hardware activation or usable pulse telemetry.
 MT7961's silent CE8F route also **executes the receiver-control handler**: a later
 firmware-derived state check follows STOP/START/STOP despite receiving no ACKs.
+Independent ROM-mapped readback subsequently confirms detector mode and capture
+gates change, with a512-byte ring installed; no producer advance is observed yet.
 No transmitted test pattern, radar emulation, threshold writes, TX queue controls,
 DFS-channel transmission or calibrated detection claim is involved.
 
@@ -103,11 +105,62 @@ the host-state byte is set before lower-level capture setup, whose errors are
 not propagated through that byte. Hardware register readback is the next check.
 [Allocation/state evidence](../research/evidence/legacy-radar-state-2026-09-05.json).
 
+## MT7961 hardware arming and STOP residue
+
+The guarded probe's `--registers` option adds nine fixed register reads, never
+direct writes. ROM callback`0x00830504` writes field key`0x240020` to5 for enabled
+and0 for disabled. The shared mapper`0x00830350` maps domain24 through table
+`0x0084cb88`/base`0x83080000`, and domain27 through table`0x0084c9e4`/base
+`0x830a0000`. Read-only metadata resolution validates eleven exact keys.
+
+| Field / register | Before | START | STOP | Reload |
+|---|---|---|---|---|
+| Detector mode,`0x83082004` bits8:6 | 0 | **5** | 0 | 0 |
+| PHY selection,`0x83080038` | 0 | `0xc` | `0xc` | 0 |
+| Capture field`0x270000`, register`0x830a5000` | `0x80` | `0x81` | `0x81` | `0x80` |
+| Capture field`0x270020`, register`0x830a5008` | `0xf0` | `0xf9` | `0xf8` | `0xf0` |
+| Buffer begin,`0x830a500c` | 0 | `0x00401c00` | retained | 0 |
+| Buffer end,`0x830a5010` | 0 | `0x00401e00` | retained | 0 |
+| Producer word,`0x830a5014` | 0 | `0x00401c00` | unchanged | 0 |
+
+The buffer-begin callback`0x008304d6` initially writes start and start+511;
+the later end callback`0x008306f8` explicitly overwrites the end register with
+start+512, matching live readback. The allocation is1KiB for two512-byte bands;
+only band0 is tested. No host DMA address or raw capture-buffer data is supplied.
+
+Registers`0x83080014` and`0x830a2030` stay0 and`0xa00`. The probe observes no
+normal frames or pulse events in the short ch36 windows. Thus it establishes
+**real hardware configuration**, not pulse sensitivity, a working sampling clock,
+or usable interference measurements. The producer does not move beyond the start
+address in this run. STOP disables detector mode and capture field270020 but is
+**not a complete register rollback**; full normal reload restores all nine reads
+exactly, and alive checks pass.
+
+## MT7925 prerequisite and host-state check
+
+The corrected [command table](COMMAND_TABLES.md) identifies UNI19 entry
+`0xe009ea2c`, tag0 callback`0xe009f098`, START helper`0xe009ea8c`, and STOP helper
+`0xe009eb62`. Tag0 sets its host-enable byte before calling the lower helper.
+The latter requires byte GP+62669=`0x02221ccd` to be nonzero, then obtains and
+checks an on-chip buffer. **No prerequisite byte or internal pointer is forced.**
+
+`rdd_receive_probe.py --enable-passive-detector --state` observes the prerequisite
+byte1 throughout. The band0 host-enable byte at GP+121776=`0x022303b0` follows
+0→1→0, and remains0 after reload. All three command ACKs are status0; no pulse
+events are observed. This rules out the first byte prerequisite being zero in
+this run; it does not prove the later buffer/hardware setup completed.
+
+The Andes inspector now annotates unsigned GP-relative byte loads/stores using
+the pinned vendor [opcode/operand definitions](https://github.com/andestech/binutils/tree/dd22be9a0ef80fde64e65e57d25f988a1ea1460f/include/opcode).
+These remain textual annotations, not new Ghidra pcode or a complete ISA decoder.
+
+[Hardware mappings and both-chip readback evidence](../research/evidence/radar-hardware-2026-09-05.json).
+
 ## What would turn this into a measurement?
 
-Trace the actual UNI handler to its detector register/state changes and event
-producer, then read back those specific fields around STOP/START/STOP. No random
-register sweep, threshold guessing or emulated radar is needed for that next
-step. Ordinary traffic and successful command ACKs are not a positive control
+Complete the newer chip's hardware map, and test whether ordinary controlled
+Wi-Fi reception coexists with the armed older-chip detector. No random register
+sweep, threshold guessing or emulated radar is needed. Ordinary traffic and
+successful command ACKs are not a positive control
 for radar sensitivity. Even real pulse reports would need separate validation
 before being labeled radar, non-Wi-Fi interference, or a calibrated power source.

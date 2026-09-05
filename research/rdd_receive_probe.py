@@ -27,6 +27,17 @@ def start_request():
     return struct.pack("<4xHHBBBB4x", 0, 12, 1, 0, 0, 1)
 
 
+def state(dev):
+    """Traced host enable at GP+121776 and prerequisite byte at GP+62669."""
+    if dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("MT7925-only traced RDD state")
+    host = dev.rr(0x022303B0)
+    gate = dev.rr(0x02221CCC)
+    if any(type(word) is not int or not 0 <= word < 0xFFFFFFFF for word in (host, gate)):
+        raise ValueError("invalid RDD state read")
+    return {"host_enabled_byte": host & 255, "prerequisite_byte_02221ccd": (gate >> 8) & 255}
+
+
 def start(dev, stop_result):
     if dev.CHIP != m.CHIP_MT7925 or dev.uni_option(0x19, False) != 7:
         raise ValueError("pinned MT7925 SET ACK7 only")
@@ -39,6 +50,9 @@ def start(dev, stop_result):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--enable-passive-detector", action="store_true")
+    parser.add_argument(
+        "--state", action="store_true", help="read traced enable/prerequisite bytes"
+    )
     args = parser.parse_args()
     if not args.enable_passive_detector:
         parser.error("explicit receiver-only detector opt-in required")
@@ -62,9 +76,15 @@ def main():
 
         try:
             boot()
+            if args.state:
+                out["state_before"] = state(dev)
             initial = stop(dev)
             out["initial_stop"] = initial
+            if args.state:
+                out["state_after_initial_stop"] = state(dev)
             out["rows"].append(start(dev, initial))
+            if args.state:
+                out["state_after_start"] = state(dev)
             for _ in range(2):
                 out["rows"].append(collect(dev))
             out["alive_after"] = dev.alive()
@@ -73,11 +93,15 @@ def main():
         finally:
             try:
                 out["final_stop"] = stop(dev)
+                if args.state:
+                    out["state_after_final_stop"] = state(dev)
             except Exception as exc:
                 out["stop_error_type"] = type(exc).__name__
             try:
                 boot()
                 out["cleanup_reload_alive"] = dev.alive()
+                if args.state:
+                    out["state_after_reload"] = state(dev)
             except Exception as exc:
                 out["cleanup_error_type"] = type(exc).__name__
     print(json.dumps(out, indent=2))

@@ -20,6 +20,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import mt7921u as m
+from research.firmware_fields import rdd_snapshot
 from research.rdd_stop_probe import collect
 
 TABLE = 0x02003000 + 174232
@@ -60,7 +61,7 @@ def request(enabled):
     return struct.pack("<BBBB4x", int(enabled), 0, 0, int(enabled))
 
 
-def control(dev, enabled):
+def control(dev, enabled, registers=False):
     payload = request(enabled)
     before = snapshot(dev)
     if enabled:
@@ -70,20 +71,25 @@ def control(dev, enabled):
             raise ValueError("exclusive inactive detector required")
     else:
         memory = None
+    hardware_before = rdd_snapshot(dev) if registers else None
     dev.mcu_cmd_word(m.MCU_CE_CMD(0x8F), payload, wait=False, timeout=1000)
     received = collect(dev)
-    return {
+    result = {
         "requested_enabled": enabled,
         "before": before,
         "after": snapshot(dev),
         "allocation_checked": memory,
         "receive": received,
     }
+    if registers:
+        result.update(hardware_before=hardware_before, hardware_after=rdd_snapshot(dev))
+    return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--enable-passive-detector", action="store_true")
+    parser.add_argument("--registers", action="store_true", help="read fixed ROM-mapped RDD fields")
     args = parser.parse_args()
     if not args.enable_passive_detector:
         parser.error("explicit receiver-only detector opt-in required")
@@ -107,19 +113,21 @@ def main():
         try:
             boot()
             for enabled in (False, True, False):
-                out["rows"].append(control(dev, enabled))
+                out["rows"].append(control(dev, enabled, args.registers))
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
         finally:
             try:
-                out["cleanup_stop"] = control(dev, False)
+                out["cleanup_stop"] = control(dev, False, args.registers)
             except Exception as exc:
                 out["stop_error_type"] = type(exc).__name__
             try:
                 boot()
                 out["cleanup_reload_alive"] = dev.alive()
                 out["cleanup_state"] = snapshot(dev)
+                if args.registers:
+                    out["cleanup_hardware"] = rdd_snapshot(dev)
             except Exception as exc:
                 out["cleanup_error_type"] = type(exc).__name__
     print(json.dumps(out, indent=2))

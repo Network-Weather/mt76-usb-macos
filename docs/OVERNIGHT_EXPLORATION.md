@@ -25,7 +25,9 @@ returns success after correcting quiet-endpoint receive throttling. Three short
 post-START windows yield no pulse reports; hardware activation remains unproven.
 MT7961 CE8F stays silent on USB, but a later traced RAM-state read follows
 STOP/START/STOP as0/0x101/0x100 and reload restores0, proving handler execution.
-Its on-chip capture buffer is allocated; lower-level hardware activation is next.
+Its on-chip capture buffer is allocated. Follow-up ROM-derived reads now confirm
+hardware detector mode0→5→0 and a512-byte capture ring installed. The producer
+does not advance in the quiet trial; no usable pulse measurement is claimed.
 
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and

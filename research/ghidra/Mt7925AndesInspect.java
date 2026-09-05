@@ -56,6 +56,15 @@ public class Mt7925AndesInspect extends GhidraScript {
         }
         // Andes binutils dd22be9a, GPTYPE_SW operand permutation. Annotation
         // only: this does not add pcode or make stock analysis understand stores.
+        if ((value & 0x307f) == 0x300b) {
+            long offset = bits(value, 14, 1) | bits(value, 8, 4) << 1
+                | bits(value, 25, 6) << 5 | bits(value, 7, 1) << 11
+                | bits(value, 17, 3) << 12 | bits(value, 15, 2) << 15
+                | bits(value, 31, 1) << 17;
+            if ((offset & (1L << 17)) != 0) offset -= 1L << 18;
+            return "nds.sbgp x" + bits(value, 20, 5) + ",gp," + offset
+                + " [annotation only]";
+        }
         if ((value & 0x707f) == 0x402b) {
             long offset = bits(value, 9, 3) << 2 | bits(value, 25, 6) << 5
                 | bits(value, 7, 1) << 11 | bits(value, 17, 3) << 12
@@ -66,12 +75,13 @@ public class Mt7925AndesInspect extends GhidraScript {
                 + " [annotation only]";
         }
         boolean add = (value & 0x307f) == 0x100b;
+        boolean byteLoad = (value & 0x307f) == 0x200b;
         boolean load = (value & 0x707f) == 0x202b;
-        if (add || load) {
+        if (add || byteLoad || load) {
             long offset = bits(value, 20, 1) << 11 | bits(value, 17, 3) << 12
                 | bits(value, 15, 2) << 15;
             int width;
-            if (add) {
+            if (add || byteLoad) {
                 offset |= bits(value, 14, 1) | bits(value, 21, 10) << 1
                     | bits(value, 31, 1) << 17;
                 width = 18;
@@ -81,7 +91,7 @@ public class Mt7925AndesInspect extends GhidraScript {
                 width = 19;
             }
             if ((offset & (1L << (width - 1))) != 0) offset -= 1L << width;
-            return (add ? "nds.addigp" : "nds.lwgp") + " x" + bits(value, 7, 5)
+            return (add ? "nds.addigp" : byteLoad ? "nds.lbugp" : "nds.lwgp") + " x" + bits(value, 7, 5)
                 + ",gp," + offset + " [annotation only]";
         }
         PseudoInstruction ins = decoder.disassemble(pc, data);
