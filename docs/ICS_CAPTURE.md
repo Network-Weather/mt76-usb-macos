@@ -285,3 +285,49 @@ or high bits have the same meaning for OFDM/HT/HE, retries or other record types
 [Sanitized power/rate controls](../research/evidence/tmac-ics-power-rate-2026-09-05.json).
 Next: trace the category controls and inner record boundaries, then test richer
 PHY formats with the same own-frame correlation and no ambient record export.
+
+## TMAC filters select traffic classes, not smaller subrecords
+
+UNI49 **action2, operation5** takes condition0 bits0–4 as the five TMAC filter
+values, condition1 as band. It first reads the existing TMAC enable bit, then
+preserves that value while setting fields`1a0761..1a0765`. The wrapper
+`e0083bd6` invokes the shared field writer with six key/value pairs, including
+preserved enable`1a0760`. ROM bit pairs map the five filters to **`820e4120`
+bits8–12**, respectively. Live field metadata and a100-byte wrapper hash match.
+
+[`tmac_ics_filter_probe.py`](../research/tmac_ics_filter_probe.py) allows only
+the tested first, highest and all-five masks, always bracketed by defaults.
+Five twelve-packet runs establish the following:
+
+| Request mask | Hardware filter bits | Observed diagnostic effect |
+| --- | --- | --- |
+| 0 | none | Four288-byte/frame-count2 reports per four submissions |
+| 1 | bit8 | Same four probe reports; no observed suppression |
+| 31 | bits8–12 | No probe reports; all four packets still independently received |
+| 16 | bit12 | No probe reports; all four packets still independently received |
+| 16, mixed frames | bit12 | Data and QoS-data reports retained; probe reports omitted |
+
+The mixed-frame result repeats on two fresh boots. Each phase sends
+probe/data/probe/QoS-data, twelve packets total; the second radio receives24/24
+across both runs. Default phases produce four reports; filtered phases produce
+two. The retained records match **the data and QoS-data sequence numbers** and
+their51/53-byte FCS-inclusive lengths through both previously mapped sequence
+and length copies. No smaller diagnostic aggregate remains for the probes.
+Restoring defaults restores reports for all four frames. Thus bit12 suppresses
+the observed probe-management diagnostics while permitting these data classes;
+it does not isolate one of the two inner records. Other management/control
+subtypes are not yet qualified, so do not generalize to every management frame.
+
+This also extends the candidate sequence/length/power/rate consistency checks
+to our synthetic data classes without decoding arbitrary ambient records.
+Only exact288-byte/frame-count2 shapes with both sequence and length copies
+matching a submitted frame are summarized. Existing source-defined payloads
+use an experimental EtherType, no IP/EAPOL/association traffic, and zero Duration.
+
+The first probe-only filter run receives10/12; all other runs receive12/12,
+58/60 overall. Each run has matched TX statuses, successful filter ACKs, restored
+five-filter/two-enable masks, and both normal reloads. Upper control-word bits
+change too and are retained as raw control readbacks only; no counter semantics
+or wholesale-register restoration is inferred. These filter operations are not
+read-only and may affect diagnostic history, but do not suppress the tested RF
+transmissions. [Five-run filter evidence](../research/evidence/tmac-ics-filters-2026-09-05.json).

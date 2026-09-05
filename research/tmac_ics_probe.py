@@ -101,6 +101,30 @@ def own_matches(raw, packets):
     return found
 
 
+def own_field_match(raw, packets):
+    """Consistency check of previously mapped candidates against known frames.
+
+    Not a general decoder: exact aggregate shape, two sequence copies and two
+    length copies must all agree with a submitted synthetic frame.
+    """
+    shape = mac.aggregate_shape(raw)
+    if shape != {"type": 12, "bytes": 288, "frame_count": 2}:
+        return None
+    sequence = struct.unpack_from("<I", raw, 124)[0] >> 20
+    if sequence != struct.unpack_from("<I", raw, 272)[0] & 0xFFF or sequence not in packets:
+        return None
+    payload = packets[sequence][0]
+    size = len(payload) + 4
+    if any(struct.unpack_from("<I", raw, a)[0] & 0xFFFF != size for a in (48, 96)):
+        return None
+    return {
+        "sequence": sequence,
+        "matched_frame_bytes_with_fcs": size,
+        "power_raw_candidate": (struct.unpack_from("<I", raw, 24)[0] >> 16) & 255,
+        "rate_raw_candidate": struct.unpack_from("<I", raw, 88)[0] & 0x3FFF,
+    }
+
+
 def candidate_fields(records, packets, statuses):
     """Local-only bytes -> differential hypotheses; never export record words.
 
@@ -270,6 +294,11 @@ def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
         "tx_status": statuses,
         "own_exact_matches_in_ics": matches,
         "differential_hypotheses": candidate_fields(records, packets, statuses),
+        "known_frame_field_matches": [
+            match
+            for _, raw in records
+            if (match := own_field_match(raw, {i: packets[i] for i in submitted})) is not None
+        ],
         "leading_packet_types": [
             {"endpoint": ep, "type": kind, "count": n} for (ep, kind), n in sorted(types.items())
         ],

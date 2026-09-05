@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**TMAC diagnostic filtering is traffic-class selective:**
+[Five bounded filter controls](ICS_CAPTURE.md#tmac-filters-select-traffic-classes-not-smaller-subrecords)
+map the highest request bit to hardware bit12. It suppresses probe reports but
+retains data/QoS reports, repeated with24/24 independent mixed-frame receptions.
+Both sequence and length copies identify the retained reports. All-five also
+suppresses probes; first-bit alone does not.58/60 receptions overall; all filter,
+enable and normal-reload cleanup passes. No smaller subrecord isolation claim.
+
 **TMAC ICS power/rate fields survive independent controls:**
 [Two negative-power and two CCK-rate runs](ICS_CAPTURE.md#power-and-rate-differentials)
 locate offset24 bits23:16 matching TXS power36/32 and offset88 low14 matching

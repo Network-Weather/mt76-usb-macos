@@ -31,6 +31,30 @@ def test_no_match_does_not_export_any_content():
     assert p.own_matches(raw, {5: (b"own synthetic", b"a" * 80)}) == []
 
 
+def test_own_field_match_requires_two_sequences_and_two_lengths():
+    raw = bytearray(288)
+    struct.pack_into("<I", raw, 0, (12 << 27) | (2 << 16) | 288)
+    struct.pack_into("<I", raw, 124, 5 << 20)
+    struct.pack_into("<I", raw, 272, 5)
+    struct.pack_into("<I", raw, 48, 69)
+    struct.pack_into("<I", raw, 96, 69)
+    struct.pack_into("<I", raw, 24, 32 << 16)
+    struct.pack_into("<I", raw, 88, 1)
+    packets = {5: (bytes(65), b"")}
+    assert p.own_field_match(raw, packets) == {
+        "sequence": 5,
+        "matched_frame_bytes_with_fcs": 69,
+        "power_raw_candidate": 32,
+        "rate_raw_candidate": 1,
+    }
+    assert p.own_field_match(raw, {}) is None
+    struct.pack_into("<I", raw, 272, 6)
+    assert p.own_field_match(raw, packets) is None
+    struct.pack_into("<I", raw, 272, 5)
+    struct.pack_into("<I", raw, 96, 70)
+    assert p.own_field_match(raw, packets) is None
+
+
 def test_prepared_packet_cap():
     with pytest.raises(ValueError, match="four"):
         p.acquire(None, None, {})
