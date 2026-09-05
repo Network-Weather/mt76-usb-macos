@@ -1,0 +1,2926 @@
+{
+  "scope": "Pinned MT7925 UNI23 diagnostic tag3 retains one command-pool object per report; basic tag0 control does not",
+  "tag_table": {
+    "table_address": "0x2215504",
+    "records": [
+      {
+        "address": "0x2215504",
+        "tag_word": "0x0",
+        "handler": "0xe00535f0"
+      },
+      {
+        "address": "0x221550c",
+        "tag_word": "0x1",
+        "handler": "0xe0053538"
+      },
+      {
+        "address": "0x2215514",
+        "tag_word": "0x8",
+        "handler": "0xe0053578"
+      },
+      {
+        "address": "0x221551c",
+        "tag_word": "0x2",
+        "handler": "0xe0053c6e"
+      },
+      {
+        "address": "0x2215524",
+        "tag_word": "0x3",
+        "handler": "0xe00535f4"
+      },
+      {
+        "address": "0x221552c",
+        "tag_word": "0x6",
+        "handler": "0xe0054090"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "runs": [
+    {
+      "date_utc": "2026-09-05T22:58:54.044699+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 4,
+          "ordinary_good_during_query": 39,
+          "attempts": 79,
+          "configured_channel": 6,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 11,
+              "center1": 11,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 6,
+          "ordinary_good_during_query": 40,
+          "attempts": 81,
+          "configured_channel": 11,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 8,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 10,
+          "ordinary_good_during_query": 13,
+          "attempts": 27,
+          "configured_channel": 6,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        }
+      ],
+      "tag_table_matches": true,
+      "error_type": "McuError",
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T22:59:48.481513+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 21,
+          "attempts": 43,
+          "configured_channel": 6
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "configured_channel": 6,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 11,
+              "center1": 11,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 4,
+          "ordinary_good_during_query": 39,
+          "attempts": 79,
+          "configured_channel": 11,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 6,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 7,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "configured_channel": 6,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        }
+      ],
+      "tag_table_matches": true,
+      "current_step": {
+        "channel": 6,
+        "tag": 0,
+        "operation": "query"
+      },
+      "error_type": "ValueError",
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T23:00:32.708667+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 11,
+              "center1": 11,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 4,
+          "ordinary_good_during_query": 29,
+          "attempts": 59,
+          "configured_channel": 11,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 6,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 7,
+          "ordinary_good_during_query": 13,
+          "attempts": 27,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "error": "no_matched_statistics_event",
+          "sequence": 8,
+          "attempts": 456,
+          "ordinary_good_during_query": 54,
+          "event_shapes": [],
+          "configured_channel": 6,
+          "requested_tag": 0
+        }
+      ],
+      "tag_table_matches": true,
+      "current_step": {
+        "channel": 6,
+        "tag": 0,
+        "operation": "query"
+      },
+      "error_type": "RuntimeError",
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T23:01:39.509021+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 3,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 4,
+          "ordinary_good_during_query": 13,
+          "attempts": 27,
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 5,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 6,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 0
+        }
+      ],
+      "suite": "basic-repeat",
+      "tag_table_matches": true,
+      "current_step": {
+        "channel": 6,
+        "tag": 0,
+        "operation": "query"
+      },
+      "thermal_command_after_statistics": {
+        "action": 0,
+        "band": 0,
+        "event_tag": 0,
+        "sensor_result_raw_u32": 45,
+        "reported_temperature_c": 45
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T23:02:03.878788+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 3,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 4,
+          "ordinary_good_during_query": 13,
+          "attempts": 27,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "error": "no_matched_statistics_event",
+          "sequence": 5,
+          "attempts": 546,
+          "ordinary_good_during_query": 45,
+          "event_shapes": [],
+          "configured_channel": 6,
+          "requested_tag": 3
+        }
+      ],
+      "suite": "diagnostic-repeat",
+      "tag_table_matches": true,
+      "current_step": {
+        "channel": 6,
+        "tag": 3,
+        "operation": "query"
+      },
+      "error_type": "RuntimeError",
+      "thermal_command_error_type": "McuError",
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T23:03:20.104091+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 11,
+          "attempts": 23,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 13,
+          "attempts": 27,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 3,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        }
+      ],
+      "suite": "diagnostic-three",
+      "tag_table_matches": true,
+      "current_step": {
+        "channel": 6,
+        "tag": 3,
+        "operation": "query"
+      },
+      "thermal_command_after_statistics": {
+        "action": 0,
+        "band": 0,
+        "event_tag": 0,
+        "sensor_result_raw_u32": 45,
+        "reported_temperature_c": 45
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T23:04:06.915340+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 11,
+          "attempts": 23,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 11,
+          "attempts": 23,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 3,
+          "ordinary_good_during_query": 15,
+          "attempts": 31,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 4,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        }
+      ],
+      "suite": "diagnostic-four",
+      "tag_table_matches": true,
+      "current_step": {
+        "channel": 6,
+        "tag": 3,
+        "operation": "query"
+      },
+      "thermal_command_error_type": "McuError",
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T23:06:00.029181+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "pool_counts_before": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 3,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "pool_counts_before": {
+            "0x222efc0": 3,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 2,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        },
+        {
+          "event": {
+            "tag": 3,
+            "tlv_bytes": 200,
+            "version": 1,
+            "channel_state": {
+              "primary": 6,
+              "center1": 6,
+              "center2": 0,
+              "width_raw": 0,
+              "secondary_offset_raw": 0
+            },
+            "cached_mac_counters": {
+              "rx_mdrdy": 0,
+              "rx_fcs_error": 0,
+              "rx_fifo_full": 0,
+              "rx_mpdu": 0,
+              "rx_length_mismatch": 0,
+              "rx_cca_primary": 0,
+              "rx_ed": 0,
+              "tx_channel_idle": 0,
+              "tx_cca_nav": 0
+            },
+            "phy_section_zero_filled": true,
+            "phy_counters_available": false,
+            "note": "RAM-cache/configuration readout; not atomic, calibrated airtime or PHY health"
+          },
+          "sequence": 3,
+          "ordinary_good_during_query": 15,
+          "attempts": 31,
+          "pool_counts_before": {
+            "0x222efc0": 2,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 1,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 3,
+          "cache_before": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_after": {
+            "rx_mdrdy": 0,
+            "rx_fcs_error": 0,
+            "rx_fifo_full": 0,
+            "rx_mpdu": 0,
+            "rx_length_mismatch": 0,
+            "rx_cca_primary": 0,
+            "rx_ed": 0,
+            "tx_channel_idle": 0,
+            "tx_cca_nav": 0
+          },
+          "cache_checks": {
+            "rx_mdrdy": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fcs_error": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_fifo_full": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_mpdu": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_length_mismatch": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_cca_primary": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "rx_ed": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_channel_idle": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            },
+            "tx_cca_nav": {
+              "endpoints_equal": true,
+              "reply_matches_both": true
+            }
+          }
+        }
+      ],
+      "suite": "diagnostic-three",
+      "tag_table_matches": true,
+      "pool_counts_initial": {
+        "0x222efc0": 4,
+        "0x222ed84": 4,
+        "0x222e238": 16
+      },
+      "current_step": {
+        "channel": 6,
+        "tag": 3,
+        "operation": "query"
+      },
+      "thermal_command_after_statistics": {
+        "action": 0,
+        "band": 0,
+        "event_tag": 0,
+        "sensor_result_raw_u32": 45,
+        "reported_temperature_c": 45
+      },
+      "pool_counts_after_thermal": {
+        "0x222efc0": 1,
+        "0x222ed84": 4,
+        "0x222e238": 16
+      },
+      "cleanup_reload_alive": true,
+      "pool_counts_after_reload": {
+        "0x222efc0": 4,
+        "0x222ed84": 4,
+        "0x222e238": 16
+      }
+    },
+    {
+      "date_utc": "2026-09-05T23:06:24.514983+00:00",
+      "transmissions": 0,
+      "queries": [
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 1,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "pool_counts_before": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 2,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "pool_counts_before": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 3,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "pool_counts_before": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 4,
+          "ordinary_good_during_query": 11,
+          "attempts": 23,
+          "pool_counts_before": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 5,
+          "ordinary_good_during_query": 12,
+          "attempts": 25,
+          "pool_counts_before": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 0
+        },
+        {
+          "event": {
+            "tag": 0,
+            "tlv_bytes": 4,
+            "counters_available": false
+          },
+          "sequence": 6,
+          "ordinary_good_during_query": 10,
+          "attempts": 21,
+          "pool_counts_before": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "pool_counts_after": {
+            "0x222efc0": 4,
+            "0x222ed84": 4,
+            "0x222e238": 16
+          },
+          "configured_channel": 6,
+          "requested_tag": 0
+        }
+      ],
+      "suite": "basic-repeat",
+      "tag_table_matches": true,
+      "pool_counts_initial": {
+        "0x222efc0": 4,
+        "0x222ed84": 4,
+        "0x222e238": 16
+      },
+      "current_step": {
+        "channel": 6,
+        "tag": 0,
+        "operation": "query"
+      },
+      "thermal_command_after_statistics": {
+        "action": 0,
+        "band": 0,
+        "event_tag": 0,
+        "sensor_result_raw_u32": 45,
+        "reported_temperature_c": 45
+      },
+      "pool_counts_after_thermal": {
+        "0x222efc0": 4,
+        "0x222ed84": 4,
+        "0x222e238": 16
+      },
+      "cleanup_reload_alive": true,
+      "pool_counts_after_reload": {
+        "0x222efc0": 4,
+        "0x222ed84": 4,
+        "0x222e238": 16
+      }
+    }
+  ],
+  "boundaries": [
+    "No TX, firmware patch, free-list mutation or hardware MIB read",
+    "MAC cache copies remain zero despite ordinary reception; not usable survey counters",
+    "Advertised PHY-error fields are zero-filled, not measurements",
+    "Observed resource depletion is live evidence; the return1 cleanup bypass is a source-supported causal explanation, not patch-validated"
+  ]
+}

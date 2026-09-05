@@ -45,6 +45,8 @@ Selected records corroborate previously working interfaces:
 | 0x4a | CSI | `e003d3f0` |
 
 The complete61 records are in [sanitized evidence](../research/evidence/mt7925-uni-dispatch-2026-09-05.json).
+The implemented [UNI23 diagnostic tag3 leaks command-pool objects](MT7925_DIAGNOSTIC_STATS.md)
+and must not be treated as a safe polling interface merely because it is registered.
 Presence is not proof every tag/action is implemented or safe. Neither presence
 nor a numeric resemblance authorizes exploratory requests with guessed payloads.
 

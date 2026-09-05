@@ -5,6 +5,16 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**New concrete firmware defect: UNI23 diagnostic reports retain command objects.**
+[Maintainer-ready reproduction and ownership trace](MT7925_DIAGNOSTIC_STATS.md)
+show free count4→3→2→1 after three reports; six basic queries keep4. Exactly
+four diagnostics leave an unrelated temperature command failing, while three
+leave it working. Result1 bypasses normal request cleanup; this is the likely
+cause, not a patch-validated fix. Reload restores counts. The diagnostic's
+channel state works, but MAC caches remain zero and PHY-error fields are never
+filled. Nine receive-only trials and the separate tag-table read are retained;
+all reloads pass. This is a hazardous research command, not a polling API.
+
 **Upper106-tone ER selector has a guarded probe, not a live capability claim:**
 [Two fresh prerequisites fail](PHY_TRANSMIT.md#upper106-tone-candidate-prerequisites-fail-before-candidate-transmission)
 at1/4 and0/4 full-band ER receipts. Neither candidate rate is programmed or
