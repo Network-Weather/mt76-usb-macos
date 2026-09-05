@@ -21,7 +21,8 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 ## Priority decision, 2026-09-04
 
-The next sprint is **R30: C acquisition parity with the Python research baseline**.
+The selected sprint is **R30: C acquisition parity with the Python research baseline**,
+now implemented and qualified on `feat/c-acquisition-parity` (not yet merged).
 This is an instrument for network interrogation and bounded radio experiments, not
 baseline connectivity. A proper networking driver is a durable non-goal, not a
 deferred implementation project. R21 is a deferred iPad survey test spike; no iPad
@@ -278,7 +279,12 @@ cover multi-subframe inputs, and the capture output behavior is documented.
 
 ## Track C: researcher reference and discoverability
 
-### R30. C acquisition parity (next sprint)
+### R30. C acquisition parity (implemented and qualified; awaiting merge)
+
+Completed 2026-09-04 on `feat/c-acquisition-parity`: [port contract](docs/C_PARITY.md),
+[acceptance evidence](docs/TESTING.md#native-c-acquisition-parity-2026-09-04).
+Keep this item unstruck until merged; completion covers the instrument primitives,
+not every Python analysis script or all possible RF configurations.
 
 Port the measured chipset primitives from the Python research baseline on `main`
 (`6081908`) into the existing C implementation. The old capture baseline and passing

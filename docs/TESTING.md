@@ -982,6 +982,112 @@ TX power byte 250, consistent with signed -6 after a 32-count reduction from 26.
 Both radios remain alive, and transmitter firmware cleanup succeeds. No decoding
 boundary or absolute sensitivity rating was established by these short probes.
 
+## Native C acquisition parity (2026-09-04)
+
+R30 implementation completed on `feat/c-acquisition-parity`; Python reference
+`6081908`. Native code checkpoints: `da3ea36` RX metadata, `44aac54` MIB/G5,
+`71253fd` TX/CLI, `7a29137` sanitizer/pair harness, `fc1c8fb` timed USB requests,
+and `8d54710` cancellation reporting. This is not a new release or networking
+driver. [The port contract](C_PARITY.md) defines the deliberately limited scope.
+
+Machine-readable, redacted [C qualification evidence](../research/evidence/c-parity-2026-09-04.json)
+retains both the incomplete initial TX observation and the interrupted-read
+reporting bug, not only successful reruns. Test host: Apple Silicon macOS 26.6.1;
+reference ALFA `0e8d:7961` and A9000 `0846:9072`, same checksum-pinned firmware as
+the earlier experiments. Firmware hashes are recorded in the evidence.
+
+### Offline gate and port equivalence
+
+Full `scripts/check.sh` passed: **554 pytest cases**, native C regression tests,
+sdist/wheel construction, lint/docs checks, and ASan/UBSan with **10,000**
+deterministic malformed-input cases. Of the pytest cases, 136 cover the compiled
+C parity/CLI and process-supervisor paths. Clang static analysis of the new radio
+module, probe CLI, and MCU module reported no warnings. The source distribution
+now includes native C and shared synthetic fixtures; it contains no firmware or
+pcaps. Tests share wire bytes, not just independently calculated expectations.
+
+### Final transport: capture, counters, and receive reporting
+
+With the timed IOKit transport (`fc1c8fb`), the existing C smoke command passed all
+43 configured channels at 0.25 s dwell on each dongle:
+
+| Radio | Frames | USB errors | Undecoded transfers | Wireshark malformed flags |
+|---|---:|---:|---:|---:|
+| MT7961 | 754 | 0 | 0 | 18: 6 zero-length Supported Rates beacons, 12 NDPA dissector exceptions |
+| MT7925 | 406 | 0 | 0 | 10: 6 zero-length Supported Rates beacons, 4 NDPA dissector exceptions |
+
+Those flags fall in the previously documented beacon/NDPA categories, not newly
+malformed radiotap headers. Do not describe the sweeps as zero-malformed captures.
+A separate three-second MT7925 `6GHz:37:47:160` capture produced **2,264 frames**,
+including **430 EHT frames**, and **zero** Wireshark malformed flags.
+
+The new C probe queried counters around two-second dwells on 2.4 GHz channel 6,
+5 GHz channel 36, and 6 GHz channel 37. MT7961 returned 144/134/101 frames with
+timestamps; MT7925 returned 116/132/177, all with timestamps and Group 5. Every
+before/after MIB read succeeded; no USB/decode errors. Two MT7961 frames and one
+MT7925 frame were consumed by MCU queries on 6 GHz and are explicitly counted.
+These were different observation windows, not simultaneous counter calibration.
+
+Final MT7961 G5 cycle on 5 GHz 36: baseline **0/115**, enabled **132/132**,
+restored **0/140** frames with Group 5. Readback/cleanup succeeded; no USB/decode
+errors. Defaults remain unchanged; this does not resolve upstream's hardware
+warning or establish long-duration safety.
+
+SIGTERM during the enabled phase initially restored the register and left the
+radio alive, but mislabeled the aborted read as an I/O error (exit 1). Fixed in
+`8d54710`; rerun captured 15 enabled-phase frames, restored G5, left the chip
+alive, and returned **130** with zero USB errors. The interrupted MIB interval is
+marked incomplete (`mib_ok: false`, no counter window), not a zero measurement.
+
+### Native controlled transmit
+
+Both transmitter and independent receiver ran C. Python only supervised the two
+processes. Each phase submitted 20 synthetic Probe Requests, no ACK, at least
+50 ms apart, and reloaded transmitter firmware afterward.
+
+| Transmitter / target | Phases (power codes) | Independent exact/rate-correct reception |
+|---|---|---:|
+| MT7925 / ch36 OFDM6, initial | 0 | 19/20; failed the strict all-frames check |
+| MT7925 / ch36 OFDM6, repeat | 0, -8, 0, -16, 0, -32, 0 | 140/140 |
+| MT7961 / ch149 OFDM6 | 0, -8, 0, -16, 0 | 100/100 |
+| MT7925 / ch149 OFDM54, timed USB transport | 0, -16, 0 | 60/60 |
+
+All **320** submitted probes produced TX status with error bits 16:22 clear;
+**319** distinct probes were independently received byte-exact, at the requested
+rate. The missing first-run observation remains unexplained. It is not evidence
+of guaranteed delivery or an estimated network packet-loss rate. Every run left
+both radios alive and completed transmitter firmware reload.
+
+Receiver mean RSSI around adjacent zero-code controls showed roughly 4/8 dB
+reductions for -8/-16 on both chips and about 15.5 dB for MT7925 -32. OFDM54's
+-16 reduction was about 8.2 dB against its two neighboring controls. MT7961 status
+power bytes were 44/36/28; MT7925 26/18/10/250. The last is exposed as signed -6,
+not 250 dBm; none of these bytes establishes absolute calibrated transmit power.
+
+### Reproduce and limits
+
+```bash
+PROJECT_PYTHON=/path/to/venv/bin/python bash scripts/check.sh
+make -C c all
+./c/mt7921_smoke --usb-id 0e8d:7961 --fw /path/to/firmware --plan all --dwell 0.25
+./c/mt7921_smoke --usb-id 0846:9072 --fw /path/to/firmware \
+  --channel 6GHz:37:47:160 --dwell 3 --pcap /tmp/c-wide.pcap
+./c/mt76_radio_probe --usb-id 0e8d:7961 --fw /path/to/firmware --mib --g5-cycle --seconds 2
+./c/mt76_radio_probe --usb-id 0846:9072 --fw /path/to/firmware \
+  --band 6GHz --channel 37 --mib --seconds 2
+/path/to/venv/bin/python scripts/c_radio_pair.py --transmitter 0846:9072 \
+  --fw /path/to/firmware --channel 36 --rate ofdm6 --powers 0,-8,0,-16,0,-32,0 \
+  --output /tmp/c-ofdm6.json --acknowledge-experimental-transmit
+```
+
+Hot-unplug, SIGKILL recovery, extended soak, sustained/high-rate TX, regulatory
+enforcement, and absolute RF calibration remain untested/unimplemented. The
+channel/rate/power cross-product is not exhaustively qualified. Existing CCK
+behavior is covered by its prior baseline and byte-parity tests; the new probe
+CLI's CCK mode was not separately requalified on air. Clock fitting, generic
+IE/MLO/BlockAck parsing, and topology analysis intentionally remain downstream;
+C now exposes the acquisition metadata they require.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;

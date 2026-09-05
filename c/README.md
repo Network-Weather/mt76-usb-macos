@@ -4,14 +4,21 @@ A userspace monitor-mode driver and hardware smoke validator for the MediaTek MT
 
 ## Research parity status (2026-09-04)
 
-C acquisition parity is in progress. Hardware timestamps and raw Group-3/5 export
-are implemented and cross-checked against Python on synthetic bytes for all 32
-group masks on both chips, including malformed DMA/group lengths. They are not yet
-hardware-qualified in this port. MCU occupancy queries and reversible experimental
-Group-5 control are implemented with offline wire and fault-injection tests.
-MT7925 controlled TX, the measured OFDM/power controls, and per-chip TX-status
-decoding are implemented and cross-checked against the Python research helpers.
-Live qualification of these new C paths is pending; these are not general TX APIs.
+C acquisition parity is implemented and hardware-qualified for the measured
+instrument subset. [Dated results](../docs/TESTING.md#native-c-acquisition-parity-2026-09-04)
+include 554 offline tests, both 43-channel capture sweeps, tri-band timestamp/MIB
+checks, a G5 restore cycle and interrupted-run cleanup, and 319/320 independent
+byte-exact controlled TX observations. This is not a general TX API or an
+exhaustive channel/rate/power qualification.
+
+| Capability | Implementation / offline evidence | C hardware evidence this sprint |
+|---|---|---|
+| Timestamps and raw G3/G5 | Both chips; all 32 group masks and malformed bounds | Tri-band, every sampled frame timestamped; MT7925 G5 present |
+| MCU occupancy | MT7921 one-entry EXT, MT7925 atomic UNI; strict reply tests | Both chips on 2.4/5/6 GHz; MCU frame drops explicitly counted |
+| Experimental G5 control | MT7921 only; injectable restoration failures | Enable/restore and SIGTERM cleanup; no soak guarantee |
+| OFDM6 TX and attenuation | Both chips; byte parity with Python | MT7961 ch149, MT7925 ch36; independent rate/byte checks |
+| OFDM54, DIS_MAT, deeper attenuation | MT7925 only; table/descriptor/status tests | OFDM54 ch149; source preserved; -32 tested with OFDM6 |
+| Legacy CCK1 | Existing API maintained; new builder byte parity | Prior baseline, not rerun through new probe CLI |
 See the [C parity sprint checklist](../TODO.md#c-parity-sprint-r30).
 The [port contract and verification method](../docs/C_PARITY.md) map each Python
 primitive to its native C API and state the measurement/cleanup limitations.
