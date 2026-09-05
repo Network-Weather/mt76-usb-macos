@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Histogram acquisition coexists with own TX, with a coverage caveat:**
+[Four quiet/TX/quiet controls](NOISE_SELF_TRANSMIT.md) independently receive78/79
+synthetic CCK1 frames. Two long bursts reduce sample totals and quiet-after
+recovers; ambient activity outweighs a short burst in the retained final
+counterexample. No high-bin pileup or calibrated correction claim. CCK payload
+length adds exactly1024 MAC2PHY ticks per128 bytes. All masks/reloads pass.
+
 **The vendor noise-average getter is not a measurement on these images:**
 [Exact GET_NOISE queries](NOISE_AVERAGE_GETTER.md) find MT7925's QUERY branch
 explicitly zeroing the reply data, with no PHY read. Twelve queries across two

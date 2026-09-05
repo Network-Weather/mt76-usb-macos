@@ -236,3 +236,8 @@ firmware-timed measurement event, **not calibrated dBm, wall-time occupancy,
 or an interference classification**.
 
 [Sanitized one-shot evidence](../research/evidence/mt7925-noise-events-2026-09-05.json).
+
+Follow-up [quiet/TX/quiet controls](NOISE_SELF_TRANSMIT.md) establish coexistence
+with independently received own transmissions. Long bursts reduce collected
+totals, while ambient variation can outweigh short bursts; there is no calibrated
+coverage correction or own-TX high-power-bin interpretation.
