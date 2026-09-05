@@ -90,3 +90,28 @@ Missing/truncated Group5 yields null, never an invented zero.
 
 [Sanitized evidence](../research/evidence/he-ltf-origin-2026-09-05.json).
 No raw vectors, ambient identifiers, payloads or firmware bytes are included.
+
+## Follow-up: more fields affected, no passive validation sample yet
+
+The same vendor header defines Group5 word12 bits5:0 as BSS color and12:6 as
+TXOP, word9 bits11:8 as spatial reuse1, and word0 bit31 as uplink. The shared
+Linux HE decoder's original Group3-relative indices14/11/2 resolve to those
+same locations. With MT7921's reassigned RCPI origin, they instead resolve to
+Group5 words20/17/8. **Word20 is outside the18-word Group5 block**; it must
+not be interpreted as an HE field. This is source-level offset arithmetic,
+not an observed Linux output or a memory-safety/exploit demonstration. The
+research extractor never follows that shifted address into frame content.
+
+`rx_vector_probe.he_fields` now recognizes the exact Connac2 two-word Group3 /
+18-word Group5 shape and uses the vendor origins for these four fields. The
+existing Connac3 layout remains separate; truncated and mixed layouts return
+unknown. This extends research extraction only, not production radiotap.
+
+A passive8-second channel6/20MHz window receives419 good-FCS frames with
+Group5 but no HE candidates. A following8-second channel36/80MHz window
+receives no frames. Consequently **no BSS-color/direction/TXOP/spatial-reuse
+measurement is validated by this trial**; do not infer zero values or feature
+absence from the empty counters. Exact register restoration, alive check and
+normal firmware reload succeed. No host transmission, BSS-color setting,
+association, identifiers or payloads are saved.
+[Sanitized passive evidence](../research/evidence/he-metadata-passive-2026-09-05.json).

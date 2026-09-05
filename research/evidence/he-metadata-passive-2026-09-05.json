@@ -1,0 +1,60 @@
+{
+  "scope": "Passive MT7961 Group5 HE metadata source follow-up; no HE validation samples",
+  "date_utc": "2026-09-05T16:29:17.529457+00:00",
+  "firmware_sha256": [
+    "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+    "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+  ],
+  "dcr0_before": "0x2773400",
+  "dcr0_enabled": "0x2f73400",
+  "alive_after": true,
+  "restored_register": true,
+  "cleanup_reload_alive": true,
+  "runs": [
+    {
+      "target": [
+        "2.4GHz",
+        6,
+        6,
+        20
+      ],
+      "elapsed_s": 8.028,
+      "packets": {
+        "NORMAL": 419,
+        "fcs_errors": 0
+      },
+      "group_masks": {
+        "17": 419
+      },
+      "he_eht_candidates": {
+        "bss_color": {},
+        "spatial_reuse": {},
+        "txop": {},
+        "uplink": {}
+      },
+      "he_eht_color_vs_beacon": {},
+      "he_eht_uplink_vs_frame_control": {}
+    },
+    {
+      "target": [
+        "5GHz",
+        36,
+        42,
+        80
+      ],
+      "elapsed_s": 8.161,
+      "packets": {
+        "timeouts": 50
+      },
+      "group_masks": {},
+      "he_eht_candidates": {
+        "bss_color": {},
+        "spatial_reuse": {},
+        "txop": {},
+        "uplink": {}
+      },
+      "he_eht_color_vs_beacon": {},
+      "he_eht_uplink_vs_frame_control": {}
+    }
+  ]
+}
