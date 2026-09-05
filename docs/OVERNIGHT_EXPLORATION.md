@@ -174,6 +174,26 @@ Both targets lie in the expected ROM range. Only four words were read; firmware
 reload/alive checks passed. This establishes a viable targeted-ROM-inspection
 route, not permission or need to dump unrelated memory. Checkpoint: 620 tests pass.
 
+## Histogram compact setter: corrected layout is not enough
+
+The actual IPI dispatcher is 0x009616d0, not the same-numbered internal table
+tag previously used as a shortcut. Its SET path passes the payload start to
+`rdmSetIpiHist` at 0x00961618. That function consumes bytes 0/1 as type/value,
+with PHY and band zero, then calls 0x0096bd20. The earlier AP-shaped request
+placed value in byte 2. Thus an important request-layout assumption was wrong.
+
+`research/ipi_compact_probe.py` compares the old and compact layouts across fresh
+boots, with type 0/value 1 and three 0.5-second-spaced ALL queries. Both normal
+monitor mode and the activated RF receiver were tested. All bins and free-run
+values remained zero for both layouts. RF-mode SET replies echoed CID 0xa3 and
+status 0, so no dispatch refusal was observed there. All cleanup checks passed.
+This corrects the layout without claiming a working histogram or noise floor.
+[Sanitized evidence](../research/evidence/ipi-compact-2026-09-05.json).
+
+The low-level routine uses abstract register-field access callbacks with selector
+keys 0x260000/1/2; the read path uses keys based on 0x13004 shifted by five.
+Resolving those callbacks is a better next step than repeating initialization.
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 
