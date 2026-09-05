@@ -80,3 +80,61 @@ The weak MT7961-to-MT7925 test link also prevents a strong controlled-stimulus
 CSI experiment for now. Nineteen offline tests cover request bounds, chip/band
 layouts, matched status versus unsolicited data, rejection events, truncation,
 ambient-frame filtering and absence of coefficient/address output.
+
+## Loaded-code follow-up: control and report routines identified
+
+The entire declared code region 3 (`0xe0026c00`, 594896 bytes) was read locally,
+SHA-256 `a4fbdb6a78bb1e8847947f22f4310005e67b21e81f3b3e1eeff9d63e58a3e2cd`.
+Its two earlier independently read PFMU windows match exactly. No code bytes are
+published. A targeted static-data search found `whCsiLoadMemory`; its reference
+at `0xe0061100` led to the CSI hardware helpers, but the symbol alone was not
+treated as evidence of a reporting interface.
+
+Independent instruction references identify the **report constructor at
+`0xe009e396`**. It emits EID 0x4a with sequence zero, builds outer TLV tag 0,
+and calls the nested-TLV builder `0xe009e222`. The observed inner tag order
+matches the public CSI enum, including I/Q tags 6/7, DBW 8, channel index 9,
+transmitter address 10, receive mode 12 and TX/RX indices 18. Report-state base
+is `0x0225d994`; the transmitter-address field is deliberately not read or saved.
+This establishes an implemented report-construction path, not its execution in
+our live runs or correctness/calibration of hypothetical samples.
+
+**Control handler `0xe003d3f0`** accepts band 0/1, walks TLVs at command-buffer
+offset 0x34, and indexes a five-entry jump table at **`0x02215558`**. A live USB
+read exactly matches all five decoded branch destinations:
+
+| Tag | Branch | Observed instruction behavior |
+|---|---|---|
+| 0 | `0xe003d466` | clears selected configuration's mode; stop helper `0xe009e2de` |
+| 1 | `0xe003d49a` | stores mode/enable=1 and band; hardware helper `0xe009e256` |
+| 2 | `0xe003d4c4` | validates index <=3, stores one selection byte, marks that index configured |
+| 3 | `0xe003d4ec` | stores chain byte and a configuration flag |
+| 4 | `0xe003d4fa` | delegates filter operation and supplied address to `0xe00611d4` |
+
+There are two **14-byte configuration records at `0x02239760` and
+`0x0223976e`**. The optional `--state` probe reads only this fixed 28-byte
+configuration array, not report/sample/address buffers. Both records remained
+all zero before/after accepted stop, chain and start commands in two fresh-boot
+controls (band0/count2 and band1/count1). This **does not prove the handler is
+idle**: CPU-cache/USB visibility, alternate dispatch, or another unmet condition
+remain unresolved. The live jump table corroborates the address derivation, but
+does not by itself establish coherence of subsequent RAM reads.
+
+An independent read-path control used upstream `mt7925_mcu_regval`, UNI 0x0d
+QUERY, BASIC tag0/length12 and its 20-byte union-sized payload. EID 6 returned
+a valid matching hardware-status register value for `0x7c0600f0` (3), but the
+four attempted CSI RAM addresses returned no valid TLV/address match. Those
+responses are **not accepted as zero CPU-memory values**. Transfers were 1548
+bytes with declared RX length 1536; only the recognized first TLV is meaningful.
+No register writes or RAM-access bypass was attempted through that API.
+
+The hardware-enable helper's field keys are `0x001302c0/2c1` plus band<<16;
+frame-selection keys are `0x001302c7/2cb` plus band<<16 minus index. Its live
+field callback at `0x02210428` points to ROM `0x0082a21e`. Further callback
+tracing is underway before naming or probing the corresponding MMIO registers.
+
+[Sanitized state/static evidence](../research/evidence/csi-code-state-2026-09-05.json)
+contains pointers, code hashes, configuration snapshots and matched-event shapes,
+not code/sample bytes. The Andes annotator now renders GP-relative word stores
+from pinned upstream operand definitions; it remains annotation-only and does
+not resolve all custom instructions. Twenty offline CSI-probe tests pass.

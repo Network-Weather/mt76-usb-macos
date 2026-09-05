@@ -27,6 +27,33 @@ import usb.core
 import mt7921u as m
 
 
+def control_snapshot(dev):
+    """Pinned loaded handler e003d404: two 14-byte configuration records.
+
+    Read only this fixed configuration array, not CSI samples or nearby MAC data.
+    Field labels remain candidate meanings until independently corroborated.
+    """
+    if dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("control snapshot is MT7925 only")
+    base = 0x02239760
+    data = b"".join(struct.pack("<I", dev.rr(address)) for address in range(base, base + 28, 4))
+    return [
+        {
+            "address": hex(base + i * 14),
+            "mode_raw": record[0],
+            "band_raw": record[1],
+            "max_chain_raw": record[2],
+            "chain_config_flag_raw": record[3],
+            "enable_raw": record[4],
+            "frame_config_mask_raw": record[5],
+            "frame_selection_raw": list(record[6:10]),
+            "auxiliary_raw": list(record[10:14]),
+        }
+        for i in range(2)
+        for record in (data[i * 14 : (i + 1) * 14],)
+    ]
+
+
 def request(chip, start, band=0):
     if type(start) is not bool:
         raise ValueError("only boolean stop/start controls")
@@ -108,17 +135,23 @@ def main():
     parser.add_argument("--ack", action="store_true", help="MT7925 diagnostic ACK envelope")
     parser.add_argument("--band", type=int, choices=(0, 1), default=0)
     parser.add_argument("--chains", type=int, choices=(1, 2))
+    parser.add_argument(
+        "--state", action="store_true", help="read fixed firmware CSI configuration"
+    )
     args = parser.parse_args()
     if args.ack and args.chip != "mt7925":
         parser.error("ACK variant applies to MT7925 UNI only")
     if args.chains is not None and args.chip != "mt7925":
         parser.error("chain variant applies to MT7925 UNI only")
+    if args.state and args.chip != "mt7925":
+        parser.error("state snapshots apply to MT7925 only")
     uid = "0846:9072" if args.chip == "mt7925" else "0e8d:7961"
     out = {
         "tool": "csi_control_probe",
         "chip": args.chip,
         "band": args.band,
         "chains": args.chains,
+        "state_snapshots": args.state,
         "uni_option": (7 if args.ack else 6) if args.chip == "mt7925" else None,
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "phases": [],
@@ -143,6 +176,8 @@ def main():
             dev.set_monitor_mode()
             dev.set_sniffer(True)
             dev.tune("5GHz", 36, 36, 20)
+            if args.state:
+                out["control_before"] = control_snapshot(dev)
             for name, start in (("stop_before", False), ("start", True), ("stop_after", False)):
                 if start and args.chains is not None:
                     dev.mcu_uni(
@@ -152,8 +187,12 @@ def main():
                     out["phases"].append(
                         {"name": "chains", "request_sequence": seq, **collect(dev, seq)}
                     )
+                    if args.state:
+                        out["phases"][-1]["control_after"] = control_snapshot(dev)
                 seq = send(start)
                 out["phases"].append({"name": name, "request_sequence": seq, **collect(dev, seq)})
+                if args.state:
+                    out["phases"][-1]["control_after"] = control_snapshot(dev)
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
@@ -165,6 +204,8 @@ def main():
             dev.uni_option = original_option
             dev.bringup(*images, log=lambda *_: None)
             out["cleanup_reload_alive"] = dev.alive()
+            if args.state:
+                out["control_after_cleanup"] = control_snapshot(dev)
     print(json.dumps(out, indent=2))
     return int("error_type" in out or not out.get("cleanup_reload_alive"))
 

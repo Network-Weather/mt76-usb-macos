@@ -23,6 +23,17 @@ public class Mt7925AndesInspect extends GhidraScript {
 
     private String describe(PseudoDisassembler decoder, Address pc, byte[] data, boolean fromTable) throws Exception {
         long value = word(data);
+        // Andes binutils dd22be9a, GPTYPE_SW operand permutation. Annotation
+        // only: this does not add pcode or make stock analysis understand stores.
+        if ((value & 0x707f) == 0x402b) {
+            long offset = bits(value, 9, 3) << 2 | bits(value, 25, 6) << 5
+                | bits(value, 7, 1) << 11 | bits(value, 17, 3) << 12
+                | bits(value, 15, 2) << 15 | bits(value, 8, 1) << 17
+                | bits(value, 31, 1) << 18;
+            if ((offset & (1L << 18)) != 0) offset -= 1L << 19;
+            return "nds.swgp x" + bits(value, 20, 5) + ",gp," + offset
+                + " [annotation only]";
+        }
         boolean add = (value & 0x307f) == 0x100b;
         boolean load = (value & 0x707f) == 0x202b;
         if (add || load) {

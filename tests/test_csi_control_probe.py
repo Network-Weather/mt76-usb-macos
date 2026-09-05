@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 import struct
+from types import SimpleNamespace
 
 import pytest
 
@@ -80,3 +81,21 @@ def test_bounded_chain_layout(chains):
 def test_reject_unbounded_or_ambiguous_chain_count(chains):
     with pytest.raises(ValueError, match="one or two"):
         p.chain_request(0, chains)
+
+
+def test_fixed_configuration_snapshot_never_reads_sample_or_mac_buffers():
+    addresses = []
+    data = bytes(range(28))
+
+    def read(address):
+        addresses.append(address)
+        return struct.unpack_from("<I", data, address - 0x02239760)[0]
+
+    rows = p.control_snapshot(SimpleNamespace(CHIP=m.CHIP_MT7925, rr=read))
+    assert addresses == list(range(0x02239760, 0x0223977C, 4))
+    assert rows[0]["frame_selection_raw"] == [6, 7, 8, 9]
+    assert rows[1]["address"] == "0x223976e"
+    assert rows[1]["mode_raw"] == 14
+    assert rows[1]["auxiliary_raw"] == [24, 25, 26, 27]
+    with pytest.raises(ValueError, match="MT7925 only"):
+        p.control_snapshot(SimpleNamespace(CHIP=m.CHIP_MT7921))
