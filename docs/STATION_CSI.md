@@ -350,3 +350,54 @@ unsupported QoS/wider-PHY CSI. Further traffic-selective experiments remain open
 `good_fcs_frame_classes` exports only type/subtype and PHY-class counts to make
 such negative controls interpretable. It does not export payloads or identities.
 [Sanitized width/selector evidence](../research/evidence/csi-width-controls-2026-09-05.json).
+
+## MT7961 UNI follow-up is also refused
+
+The earlier CE0x4c refusal did not settle whether MT7961 implemented the newer
+station UNI route. A separate fresh-boot control therefore used the already
+supported Connac2 UNI transport, CID0x4a, option7, band0/STOP tag0/length4.
+It returned a matched EID1 result with **0xc00000bb**. Frame-selection and START
+were skipped after that refusal. Normal reload/alive passed. This adds a specific
+negative for the tested UNI STOP, not a proof that no other firmware/CSI route can
+exist on MT7961. [Sanitized evidence](../research/evidence/mt7961-uni-csi-2026-09-05.json).
+
+## Working per-transmitter CSI allowlist
+
+Station UNI0x4a/tag4 accepts the public packed 16-byte command:
+`<4xHHBB6s>` = reserved band0 prefix, tag4, length12, operation, reserved,
+six-byte transmitter address. The loaded handler at `0xe003d4fa` maps operation1
+to ADD and operation0 to REMOVE. The public converter at the pinned vendor source
+does not implement this tag, so the loaded handler was checked independently.
+
+`csi_filter_probe.py` chooses one transmitter already heard as both a valid CSI
+source and a good-FCS beacon source. It requires at least two eligible sources,
+retains the selected address only in memory, and exports counts only. Two fresh
+boots reproduced this sequence (selected / other CSI reports, roughly one second
+per window, no transfer limits reached):
+
+| Phase | Run 2 | Run 3 |
+|---|---:|---:|
+| Unfiltered START | 20 / 74 | 20 / 76 |
+| ADD selected | 20 / 0 | 20 / 0 |
+| REMOVE selected, without START | 20 / 74 | 20 / 78 |
+| ADD selected again | 18 / 0 | 18 / 0 |
+| START again, without REMOVE | 18 / 78 | 18 / 78 |
+| STOP | 0 / 0 | 0 / 0 |
+
+All controls acknowledged status0, all CSI events validated, and six beacon
+transmitters remained visible throughout. Post-ACK counts match the table.
+Thus this is a **CSI-only transmitter filter**, not a normal receive filter.
+An earlier run independently reproduced ADD isolation and START restoration.
+Operationally, apply the allowlist **after START**, and reapply after restarting.
+REMOVE and full normal reload are attempted in cleanup; reload/alive passed.
+
+The loaded helper `0xe00611d4` uses a five-slot, six-byte address list at
+`0x0225d93c`: active bitmap at +0, addresses at +4, count at +0x22. ADD takes a
+free slot; REMOVE clears its active bit and decrements the count. Internal
+operation2 compares the active slots with report TA `0x0225daad`; it is not an
+extra public operation. Caller `0xe0061302` passes the count into wrapper
+`0xe00612c6`; zero count bypasses matching, explaining empty-list restoration.
+The address RAM was **not read or published**. Only single-entry behavior has
+been tested; duplicate, full-list and multi-entry semantics remain unvalidated.
+
+[Sanitized filter evidence](../research/evidence/csi-filter-2026-09-05.json).

@@ -28,6 +28,7 @@ whether a wider receive configuration observes independent narrower channels.
 | script | question | state |
 |---|---|---|
 | [`csi_control_probe.py`](csi_control_probe.py) | Can station CSI capture yield live coefficients? | **yes on MT7925** — ROM-derived frame selection yields 64 I/64 Q reports with two receiver-chain indices; aggregate-only output; [protocol, evidence and limits](../docs/STATION_CSI.md) |
+| [`csi_filter_probe.py`](csi_filter_probe.py) | Can CSI be restricted to one heard transmitter? | **yes** — tag4 ADD/REMOVE selects/restores sources independently of normal beacon reception; START clears the selection |
 | [`csi_event_summary.py`](csi_event_summary.py) / [`csi_correlation.py`](csi_correlation.py) | Are CSI dimensions valid and reports pairable? | **bounded validation** — strict nested lengths and zero tail; source coincidence and TA+tag25 receiver pairing, no identifiers or arrays exported |
 | [`beamforming_read_probe.py`](beamforming_read_probe.py) | Are PFMU tag/profile reads reachable? | **yes on MT7925 UNI0x33** — unsolicited sequence-zero replies; profile data is not automatically live CSI; [details](../docs/BEAMFORMING_PROFILES.md) |
 | [`firmware_fields.py`](firmware_fields.py) | Which registers do the real IPI/ICAP field keys address? | **ROM-derived maps recovered** — bounded resolver and command/register controls; [details](../docs/FIRMWARE_FIELD_MAPS.md) |
