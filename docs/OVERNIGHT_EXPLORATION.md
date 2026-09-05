@@ -9,6 +9,11 @@ calibrated claims by inference. Results below extend [station testmode](STATION_
 work on MT7925 through unsolicited sequence-zero events. Two fresh-band controls
 return stable configuration flags, but all eight counters remain zero despite
 normal reception. This adds a query surface, not yet OBSS activity inference.
+Following the getter into ROM subsequently unlocked three **live read-clear RMAC
+counters**: direct inter-BSS-named values match decoded frame counts in five ch36
+windows while the separate software accumulator stays zero. BSS attribution is
+not yet qualified; the useful hardware source and its read-clear hazard are now
+documented and probed without direct writes.
 
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and

@@ -6,6 +6,10 @@ This is a working configuration/statistics transport, **not yet a working OBSS
 activity measurement**: all eight reported counters stayed zero in the passive
 controls below, despite normally decoded traffic.
 
+**Follow-up unlock:** the [direct RMAC counters](#live-rmac-counters-bypass-the-idle-software-accumulator)
+are nonzero and respond to reception. The zero query results concern the separate
+software accumulator, not an absence of hardware measurements.
+
 Protocol facts follow Motorola gen4m
 [`8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/tree/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec),
 `include/nic_uni_cmd_event.h` (`WH_SR_CAP`, `WH_SR_IND`, SR command/event tags),
@@ -94,6 +98,51 @@ in total. Channel1 received437 good-FCS frames; its two CAP windows hit the
 transfer ceiling. Channel36 received only4 good-FCS frames, including two
 empty query windows, so it is a weak RF control. All reload/alive checks passed.
 [Sanitized legacy evidence](../research/evidence/legacy-spatial-reuse-2026-09-05.json).
+
+## Live RMAC counters bypass the idle software accumulator
+
+The MT7925 hardware reader `0xe0064956` calls ROM slot `0x0082981c`, whose live
+target is `0x0082b8c4`, with selectors0,1,2. ROM computes
+`((0x20839466 + selector) << 2)` for band0, resolving three registers:
+
+| Register | Bits15:0 | Bits31:16 |
+|---|---|---|
+| `0x820e5198` | non-SRG valid | SRG valid |
+| `0x820e519c` | inter-BSS PPDU | intra-BSS PPDU |
+| `0x820e51a0` | non-SRG valid PPDU | SRG valid PPDU |
+
+The second word's halves are deliberately swapped into the event structure at
+`0xe006499a..0xe006499e`; a naive six-halfword array has the wrong BSS order.
+Band1 uses base `0x820f5198` in ROM but is not live-qualified here. The two MIB
+fields use keys `0x1d0520` / `0x1d0540`; their register mapping is not yet included.
+
+`research/sr_rmac_probe.py` performs an initial read, then five100ms passive
+receive windows, each followed by two immediate three-register reads. No host
+register writes, SR setter, reset command or TX is used. Three-word reads are
+sequential, not an atomic snapshot; their measured durations are retained.
+
+On a fresh channel36 boot, firmware-named inter-BSS values were **7,14,8,8,7**,
+exactly the good-FCS normal-frame counts in those five windows. Immediate repeats
+were all zero. Non-SRG-valid values were7,11,8,7,7; the other fields were zero.
+This is strong **read-clear** evidence, not a cumulative counter. Counter fields
+must be summed across owned sampling windows, not differenced as a monotonic
+total. A firmware poller or another reader could also consume them.
+
+On channel1 the inter-BSS values were31,40,15,36,33 while decoded frame counts
+were30,41,17,35,35. Immediate repeats were2,0,0,1,0; the bus/read windows can
+contain more arriving traffic. Non-SRG-valid-PPDU also became nonzero16,16,6,10,27.
+These need not equal MPDU counts or identify specific neighbors. Both firmware
+IND queries still returned eight zeros. The final ch1 query window hit its
+transfer ceiling; the ten hardware sampling windows did not. Normal reloads and
+alive checks passed.
+
+**Useful now:** bounded live SR-related receive counters, independently of the
+idle firmware accumulator. **Not established:** correct intra/inter-BSS ownership
+for a user's network in an unassociated monitor, per-neighbor attribution,
+physical signal thresholds, non-Wi-Fi interference, or mesh topology. Names come
+from firmware packing; classification eligibility needs separate controls.
+
+[Sanitized hardware evidence](../research/evidence/spatial-reuse-rmac-2026-09-05.json).
 
 ## Live controls — 2026-09-05 UTC
 
