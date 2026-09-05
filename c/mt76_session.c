@@ -156,11 +156,11 @@ static int wait_reply(void *context, uint8_t seq, uint8_t cid, uint8_t *reply,
         if (result) continue;
         if (packet.kind == MT_PACKET_REPLY) {
             if (packet.raw[s->dev->mcu.prof->rxd_seq_offset] == seq) {
-                if (reply && (!reply_len || *reply_len < packet.len)) { fail(s); return -1; }
-                if (reply) { memcpy(reply, packet.raw, packet.len); *reply_len = packet.len; }
                 pthread_mutex_lock(&s->lock);
                 s->stats.replies_matched++;
                 pthread_mutex_unlock(&s->lock);
+                if (reply && (!reply_len || *reply_len < packet.len)) { fail(s); return -1; }
+                if (reply) { memcpy(reply, packet.raw, packet.len); *reply_len = packet.len; }
                 return 0;
             }
             pthread_mutex_lock(&s->lock);

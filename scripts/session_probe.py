@@ -85,6 +85,7 @@ def main(argv=None):
         dev.set_monitor_mode()
         dev.set_sniffer(True)
         dev.tune("5GHz", 36)
+        legacy_drops_before = dev.mcu_wait_dropped_frames
         decode = m.decoder_for(dev)
         current = 36
 
@@ -167,7 +168,9 @@ def main(argv=None):
             result["elapsed_seconds"] = round(time.monotonic() - started, 3) if started else None
             result["register_alive_after"] = dev.alive()
             result["counts"] = dict(counts)
-            result["legacy_mcu_discarded_frames"] = dev.mcu_wait_dropped_frames
+            result["legacy_mcu_discarded_frames"] = (
+                dev.mcu_wait_dropped_frames - legacy_drops_before
+            )
             if not result["register_alive_after"]:
                 exit_code = 1
             result["exit_code"] = exit_code

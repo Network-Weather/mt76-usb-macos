@@ -3,9 +3,12 @@
 
 import queue
 import struct
+import subprocess
+import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import pytest
 import usb.core
@@ -251,3 +254,66 @@ def test_classifier_dma_bounds(chip):
 def test_capacity_validation(capacity):
     with pytest.raises(ValueError, match="queue capacities"):
         AcquisitionSession(None, frame_capacity=capacity)
+
+
+def test_command_queue_full_does_not_send_or_fault(dev):
+    entered, release = threading.Event(), threading.Event()
+
+    def blocked(d):
+        entered.set()
+        release.wait(1)
+        return 7
+
+    with (
+        AcquisitionSession(dev, command_capacity=1) as session,
+        ThreadPoolExecutor(max_workers=2) as pool,
+    ):
+        first = pool.submit(session.call, blocked)
+        assert entered.wait(1)
+        second = pool.submit(session.call, lambda d: 8)
+        eventually(lambda: session.commands.qsize() == 1)
+        with pytest.raises(queue.Full):
+            session.call(lambda d: d.mcu_send(0x44))
+        assert session.state == "running"
+        release.set()
+        assert first.result() == 7
+        assert second.result() == 8
+        assert dev.dev.writes == []
+
+
+def test_failed_retune_clears_requested_channel(dev):
+    dev._capture_channel = ("5GHz", 36, 36, 20)
+
+    def retune(d):
+        d._capture_channel = ("5GHz", 149, 149, 20)
+
+    with AcquisitionSession(dev) as session:
+        assert session.snapshot()["requested_channel"] == ("5GHz", 36, 36, 20)
+        session.call(retune, retune=True)
+        assert session.snapshot()["requested_channel"] == ("5GHz", 149, 149, 20)
+        with pytest.raises(ValueError, match="synthetic"):
+            session.call(lambda d: (_ for _ in ()).throw(ValueError("synthetic")), retune=True)
+        assert session.snapshot()["requested_channel"] is None
+
+
+@pytest.mark.parametrize("value", [-1, float("nan"), float("inf")])
+def test_stop_deadline_validation(value):
+    with pytest.raises(ValueError, match="stop timeout"):
+        AcquisitionSession(None).stop(value)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        [],
+        ["--usb-id", "ffff:ffff"],
+        ["--usb-id", "0e8d:7961", "--seconds", "0"],
+        ["--usb-id", "0e8d:7961", "--hop-seconds", "-1"],
+        ["--usb-id", "0e8d:7961", "--mib-seconds", "99999"],
+    ],
+)
+def test_python_probe_invalid_arguments_refuse_before_usb(args):
+    script = Path(__file__).resolve().parents[1] / "scripts/session_probe.py"
+    result = subprocess.run([sys.executable, str(script), *args], capture_output=True, timeout=5)  # noqa: S603 -- local CLI refusal test
+    assert result.returncode == 2
+    assert not result.stdout

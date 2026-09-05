@@ -165,6 +165,8 @@ class AcquisitionSession:
         Queued packets remain readable after stop/failure. snapshot() distinguishes
         end of session from a quiet channel. Raw frames are sensitive, never logged.
         """
+        if threading.current_thread() is self.worker:
+            raise SessionError("worker callbacks cannot consume their own session queues")
         if not math.isfinite(timeout) or timeout < 0:
             raise ValueError("timeout must be nonnegative and finite")
         end = time.monotonic() + timeout
@@ -193,6 +195,8 @@ class AcquisitionSession:
             }
 
     def stop(self, timeout=2.0):
+        if not math.isfinite(timeout) or timeout < 0:
+            raise ValueError("stop timeout must be nonnegative and finite")
         if threading.current_thread() is self.worker:
             raise SessionError("worker cannot join itself")
         with self.condition:
@@ -313,7 +317,7 @@ class AcquisitionSession:
                 self._count("commands_completed")
                 active.set_result(result)
                 active = None
-        except Exception as exc:
+        except BaseException as exc:
             # Do not serialize exception text: user callbacks/USB errors may carry
             # identifiers. The original exception is returned only to the caller.
             if not self.stop_event.is_set():

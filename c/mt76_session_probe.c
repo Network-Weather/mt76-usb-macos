@@ -48,7 +48,7 @@ static int query(mt7921_dev_t *dev, void *ctx) {
 }
 typedef struct {
     uint64_t consumed, decoded, undecoded, timestamps, transitioning, off_channel, max_latency_us;
-    uint64_t queries, retunes, max_mib_us, max_retune_us;
+    uint64_t queries, retunes, max_mib_us, max_retune_us, legacy_discards;
 } counts_t;
 static void consume(const mt_session_packet_t *p, int chip, unsigned channel, counts_t *counts) {
     counts->consumed++;
@@ -79,7 +79,7 @@ static void report(const char *event, mt76_session_t *s, const counts_t *c, uint
            "\"max_delivery_latency_us\":%" PRIu64 ",\"mib_queries\":%" PRIu64 ","
            "\"max_mib_latency_us\":%" PRIu64 ",\"retunes\":%" PRIu64 ","
            "\"max_retune_latency_us\":%" PRIu64 ",\"channel_known\":%s,\"requested_control\":%u,"
-           "\"register_alive_after\":%s,\"exit_code\":%d}\n",
+           "\"legacy_mcu_discarded_frames\":%" PRIu64 ",\"register_alive_after\":%s,\"exit_code\":%d}\n",
            event, id, (mt_radio_monotonic_us() - started) / 1e6, st.state, st.epoch_ns,
            st.frames_received, st.frames_delivered, st.frames_dropped, st.frame_depth, st.frames_high_water,
            st.events_received, st.events_delivered, st.events_dropped, st.event_depth, st.events_high_water,
@@ -87,7 +87,7 @@ static void report(const char *event, mt76_session_t *s, const counts_t *c, uint
            st.unmatched_replies, st.commands_completed, c->decoded, c->undecoded, c->timestamps,
            c->transitioning, c->off_channel, c->max_latency_us, c->queries, c->max_mib_us, c->retunes,
            c->max_retune_us, st.channel_known ? "true" : "false", st.control,
-           !strcmp(event, "summary") ? (alive ? "true" : "false") : "null", result);
+           c->legacy_discards, !strcmp(event, "summary") ? (alive ? "true" : "false") : "null", result);
 }
 int main(int argc, char **argv) {
     const char *id = NULL, *dir = "firmware";
@@ -128,6 +128,7 @@ int main(int argc, char **argv) {
         goto cleanup;
     s = mt_session_start(&dev, capacity, 64);
     if (!s) goto cleanup;
+    uint32_t legacy_drops_before = dev.mcu.dropped_frames;
     uint64_t started = mt_radio_monotonic_us(), end = started + (uint64_t)seconds * 1000000;
     uint64_t next_hop = hop_seconds ? started + hop_seconds * 1000000ULL : UINT64_MAX;
     uint64_t next_mib = mib_seconds ? started + mib_seconds * 1000000ULL : UINT64_MAX;
@@ -172,7 +173,8 @@ int main(int argc, char **argv) {
     while (!mt_session_read(s, &packet, false, 0)) consume(&packet, chip, channel, &counts);
     while (!mt_session_read(s, &packet, true, 0)) {}
     bool alive = mt7921_is_alive(&dev);
-    if (!alive || dev.mcu.dropped_frames) result = 1;
+    counts.legacy_discards = dev.mcu.dropped_frames - legacy_drops_before;
+    if (!alive || counts.legacy_discards) result = 1;
     if (stopping && !result) result = 130;
     report("summary", s, &counts, started, alive, result, id);
     if (fflush(stdout) || ferror(stdout)) result = 1;
