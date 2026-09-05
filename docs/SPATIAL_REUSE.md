@@ -1,6 +1,7 @@
 # Spatial-reuse query surface
 
-MT7925 accepts read-only station UNI `0x25` capability and indicator queries.
+MT7925 accepts station UNI `0x25` capability and indicator queries without
+configuration writes. **The indicator GET itself drains a shared accumulator.**
 This is a working configuration/statistics transport, **not yet a working OBSS
 activity measurement**: all eight reported counters stayed zero in the passive
 controls below, despite normally decoded traffic.
@@ -40,8 +41,59 @@ The capability field names represent **firmware-reported flags**, not a hardware
 cross-check or a promise that the corresponding receive classification is active.
 The indicator fields are non-SRG/SRG valid counts, intra/inter-BSS PPDU counts,
 non-SRG/SRG valid PPDU counts, SR AMPDU MPDU and acknowledged MPDU counts.
-Reset/read-clear behavior, wrap handling, eligibility and association prerequisites
-remain unverified. A zero reply must not be interpreted as no neighboring BSS.
+The getter's copy-and-clear behavior is traced below; wrap handling, eligibility
+and association prerequisites remain unverified. A zero reply must not be
+interpreted as no neighboring BSS.
+
+## Firmware cache and accumulator semantics
+
+CAP handler `0xe0076354` builds tagC0/length24 and calls `0xe0076eaa`.
+That helper copies20 bytes from `0x0225faf0 + band*20`; it does **not** read
+hardware registers. A live40-byte control at this address contains two identical
+boolean-flag blocks, matching the band0 query exactly.
+
+IND handler `0xe007637e` loads the pointer at GP+112952 (`0x0222e138`), adds
+`band*20`, copies20 bytes into the event at `0xe007639e`, then zero-fills those
+same20 bytes at `0xe00763ae` before sending. The live pointer is `0x0225f828`.
+This is a **read-and-clear software accumulator**, not a fresh direct hardware
+snapshot. Exclusive ownership is needed: another reader could consume counts.
+The observation run found zero in RAM before and after, and zero in the reply;
+it therefore cross-checks the address/value, not nonzero read-clear behavior.
+Both query collection windows in that extra run hit the128-transfer ceiling;
+the valid replies still arrived, but those are shortened receive controls.
+
+[Sanitized state cross-check](../research/evidence/spatial-reuse-state-2026-09-05.json).
+
+An accumulator updater at `0xe0076f5a..0xe0076fc6` adds six16-bit and two32-bit
+values into `0x0225f828 + band*20`, after a successful call to `0xe0064956`.
+Those additions use ordinary halfword/word stores, not saturation: software
+accumulation wraps at16/32 bits. Hardware counter width/read behavior and the
+updater's scheduling prerequisites still need tracing.
+
+## MT7961 legacy getters also work
+
+`research/legacy_spatial_reuse_query_probe.py --channel 1` (or `36`) uses the
+source-defined EXT `0xa8` **SET-framed GET** subcommands15 and18. This follows
+the non-unified `priv_driver_get_sr_cap` / `priv_driver_get_sr_ind` calls;
+do not substitute a generic QUERY bit or transplant MT7925's UNI framing.
+Requests are zero-filled20-byte CAP and32-byte IND structures, band0. Only
+those two getter subcommands are allowed. No SR setter/reset is sent; getters
+may consume shared statistics, so this is not promised side-effect-free.
+
+Replies are EID `0xed`, EXT EID `0xa8`, matching request sequence, followed by
+a separate EXT command result `[0xa8, 0]`. The8-byte SR event header contains
+subevent1 for CAP or4 for IND, with the remaining bytes zero in these controls.
+CAP returns **20 boolean bytes**, not the older legacy header's12. They equal
+the MT7925 flag sequence, but the probe leaves indices raw rather than wrongly
+labeling the old header's AGG/MIB offsets8..11. IND matches the legacy24-byte
+layout: two RCPI bytes, six16-bit counters, two padding bytes, two32-bit counters.
+All RCPI/counter values were zero; no signal-unit claim follows from that.
+
+Fresh ch1/ch36 runs each returned CAP/IND/IND/CAP and eight success statuses
+in total. Channel1 received437 good-FCS frames; its two CAP windows hit the
+transfer ceiling. Channel36 received only4 good-FCS frames, including two
+empty query windows, so it is a weak RF control. All reload/alive checks passed.
+[Sanitized legacy evidence](../research/evidence/legacy-spatial-reuse-2026-09-05.json).
 
 ## Live controls — 2026-09-05 UTC
 

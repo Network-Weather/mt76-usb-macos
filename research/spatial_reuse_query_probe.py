@@ -4,7 +4,8 @@
 
 Pinned gen4m UNI25 tagsC0/CB, exact QUERY_ACK3. Replies are unsolicited EID25,
 tagsC0/C9 (request CB is NOT event C9; never send the C9 reset command).
-No SR enable, threshold, reset, TX, RF mode or direct register writes.
+No SR enable, threshold, explicit reset, TX, RF mode or direct register writes.
+IND GET itself copies then clears a shared firmware accumulator: exclusive use.
 Four half-second/128-transfer windows, then normal firmware reload.
 """
 
@@ -146,6 +147,8 @@ def main():
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "channel": args.channel,
         "uni_option": 3,
+        "indicator_get_clears_firmware_accumulator": True,
+        "capability_get_reads_cached_state": True,
         "rows": [],
     }
     with m.open_device("0846:9072") as dev:
