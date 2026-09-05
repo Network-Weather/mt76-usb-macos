@@ -62,3 +62,25 @@ def test_receive_path_control_is_bounded_and_bracketed():
     assert len(p.RXPATH_PLAN) * 4 == 16
     assert [width for _, _, width in p.RXPATH_PLAN] == [20, 40, 40, 20]
     assert {rate for _, rate, _ in p.RXPATH_PLAN} == {0x488}
+
+
+def test_error_history_has_matched_no_error_no_retune_control():
+    assert len(p.STABILITY_PLAN) == len(p.ERROR_HISTORY_PLAN) == 6
+    assert [width for _, _, width in p.STABILITY_PLAN] == [20, 40, 20, 40, 40, 20]
+    assert [width for _, _, width in p.ERROR_HISTORY_PLAN] == [20, 40, 20, 40, 40, 20]
+    assert {rate for _, rate, _ in p.STABILITY_PLAN} == {0x488}
+    assert [rate for _, rate, _ in p.ERROR_HISTORY_PLAN] == [
+        0x488,
+        0x488,
+        0x48F,
+        0x488,
+        0x488,
+        0x488,
+    ]
+
+
+@pytest.mark.parametrize("plan", p.PLANS.values())
+def test_all_suites_have_bounded_submissions_and_narrow_brackets(plan):
+    assert len(plan) * 4 <= 28
+    assert plan[0][2] == 20
+    assert plan[-1][2] == 20

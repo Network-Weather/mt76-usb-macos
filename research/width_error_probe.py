@@ -24,6 +24,7 @@ import usb.core
 import mt7921u as m
 from research import phy_tx_probe as p
 from research.error_frame_probe import failed_metadata, mac_fcs_sample, rfcr_word
+from research.mt7961_sniffer_trace import channel_state, expected_code
 from research.normal_phy_counter_probe import CONTROL, MASK, control_value
 from research.phy_stats_probe import hardware_snapshot
 
@@ -60,6 +61,35 @@ RXPATH_PLAN = (
     ("ht40_after_rxpath", 0x488, 40),
     ("ht20_after", 0x488, 20),
 )
+STABILITY_PLAN = (
+    ("ht20_before", 0x488, 20),
+    ("ht40_before", 0x488, 40),
+    ("ht20_middle", 0x488, 20),
+    ("ht40_middle", 0x488, 40),
+    ("ht40_repeat", 0x488, 40),
+    ("ht20_after", 0x488, 20),
+)
+ERROR_HISTORY_PLAN = (
+    ("ht20_before", 0x488, 20),
+    ("ht40_before_error", 0x488, 40),
+    ("ht15_error", 0x48F, 20),
+    ("ht40_after_error", 0x488, 40),
+    ("ht40_after_retune", 0x488, 40),
+    ("ht20_after", 0x488, 20),
+)
+PLANS = {
+    "width": PLAN,
+    "frequency": FREQUENCY_PLAN,
+    "secondary": SECONDARY_PLAN,
+    "rxpath": RXPATH_PLAN,
+    "stability": STABILITY_PLAN,
+    "error-history": ERROR_HISTORY_PLAN,
+    "he-early": (
+        ("he20_before", 0x600, 20),
+        ("he40_early", 0x600, 40),
+        ("he20_after", 0x600, 20),
+    ),
+}
 
 
 def main():
@@ -67,9 +97,8 @@ def main():
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--enable-error-capture", action="store_true")
     parser.add_argument("--enable-counters", action="store_true")
-    parser.add_argument(
-        "--suite", choices=("width", "frequency", "secondary", "rxpath"), default="width"
-    )
+    parser.add_argument("--read-channel-state", action="store_true")
+    parser.add_argument("--suite", choices=tuple(PLANS), default="width")
     args = parser.parse_args()
     if not all(
         (args.acknowledge_experimental_transmit, args.enable_error_capture, args.enable_counters)
@@ -79,9 +108,7 @@ def main():
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "scope": "bounded no-ACK MT7925 probes with TX configured primary6/center8/40MHz; MT7961 FCS filter open and known PHY counter enable; no power changes",
         "suite": args.suite,
-        "maximum_submissions": {"width": 28, "frequency": 24, "secondary": 24, "rxpath": 16}[
-            args.suite
-        ],
+        "maximum_submissions": len(PLANS[args.suite]) * 4,
         "submitted": 0,
         "phases": [],
     }
@@ -89,6 +116,8 @@ def main():
         radios = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
         rx, tx = radios
         images = [m.load_firmware(d.CHIP, m.firmware_dir()) for d in radios]
+        if args.read_channel_state:
+            expected_code(images[0][1])
         out["firmware_sha256"] = {
             d.CHIP: [hashlib.sha256(b).hexdigest() for b in image]
             for d, image in zip(radios, images, strict=True)
@@ -122,12 +151,7 @@ def main():
             if out["enabled_counter_bits"] != 0xA00:
                 raise ValueError("PHY counter enable readback failed")
             decode = m.decoder_for(rx)
-            plan = {
-                "width": PLAN,
-                "frequency": FREQUENCY_PLAN,
-                "secondary": SECONDARY_PLAN,
-                "rxpath": RXPATH_PLAN,
-            }[args.suite]
+            plan = PLANS[args.suite]
             previous_rx_channel = None
             for phase, (name, code, width) in enumerate(plan):
                 channels = SECONDARY_CHANNELS if args.suite == "secondary" else RX_CHANNELS
@@ -142,6 +166,12 @@ def main():
                     if rfcr_word(rx) & 2 or rx.rr(CONTROL) & MASK != 0xA00:
                         raise ValueError("receiver control changed on retune")
                 previous_rx_channel = rx_channel
+                if args.suite == "error-history" and phase == 4:
+                    rx.tune("2.4GHz", 6, 8, 40)
+                    time.sleep(0.05)
+                    out["receiver_retuned_after_error"] = True
+                    if rfcr_word(rx) & 2 or rx.rr(CONTROL) & MASK != 0xA00:
+                        raise ValueError("receiver control changed after retune")
                 if args.suite == "rxpath" and phase == 2:
                     rx.set_chan_info(
                         control_ch=6,
@@ -157,6 +187,7 @@ def main():
                 he = code == 0x600
                 p.program_rate(tx, code, ltf=int(he), ldpc=int(he))
                 current = {
+                    "host_monotonic_s": time.monotonic(),
                     "rx_channel": rx_channel,
                     "rx_width_mhz": 20 if args.suite in ("frequency", "secondary") else 40,
                     "receiver_retuned": retune,
@@ -168,6 +199,8 @@ def main():
                     "windows": [],
                 }
                 out["phases"].append(current)
+                if args.read_channel_state:
+                    current["firmware_channel_state_before"] = channel_state(rx)
                 for i in range(4):
                     sequence = 4 * phase + i
                     frame = p.c3.controlled_frame(sequence) + marker
@@ -228,6 +261,8 @@ def main():
                     row["phy_after"] = hardware_snapshot(rx)
                     row["transfer_limit_reached"] = transfers >= 256
                     time.sleep(0.05)
+                if args.read_channel_state:
+                    current["firmware_channel_state_after"] = channel_state(rx)
             out["alive_after"] = [d.alive() for d in radios]
         except Exception as exc:
             out["error_type"] = type(exc).__name__

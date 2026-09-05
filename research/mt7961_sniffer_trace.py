@@ -21,6 +21,31 @@ RAM_SHA256 = "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
 TABLE_ADDRESS = 0x02026478  # file-layout 0x0202602c + startup relocation 0x44c
 CODE_ADDRESS = 0x00923C8C
 CODE_LENGTH = 272
+CHANNEL_STATE_ADDRESSES = (0x02036714, 0x02036710, 0x02036704, 0x020366FC)
+
+
+def channel_state(dev):
+    """Four source-traced band0 RAM fields, not a physical RF-state measurement.
+
+    Firmware942274 keys0..3: u32 band base, signed byte primary, u32 SCO,
+    u32 sniffer width. Band0 byte is extracted without exporting adjacent state.
+    Caller must first verify the pinned firmware image with expected_code().
+    """
+    if dev.CHIP != m.CHIP_MT7921:
+        raise ValueError("MT7961 channel-state layout only")
+    words = [dev.rr(address) for address in CHANNEL_STATE_ADDRESSES]
+    if any(type(word) is not int or not 0 <= word < 0xFFFFFFFF for word in words):
+        raise ValueError("invalid or unmapped channel state")
+    primary = words[1] & 255
+    if primary & 128:
+        primary -= 256  # exact signed-byte getter, not an unsigned channel conversion
+    return {
+        "band_base_khz": words[0],
+        "primary_signed_byte": primary,
+        "secondary_offset": words[2],
+        "sniffer_width_code": words[3],
+        "physical_rf_state_verified": False,
+    }
 
 
 def expected_code(ram):

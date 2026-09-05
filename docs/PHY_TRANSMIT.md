@@ -221,6 +221,8 @@ after-controls arrive. The known filter/counter bits remain intact. That
 repeatable transition argues against treating the extra startup command as a
 wide-reception fix; it does not establish a Linux regression or silicon defect.
 All16 statuses and both normal firmware reloads succeed in each run.
+**Causality qualification:** matched no-command controls below also lose wide
+reception over time. The RX_PATH sequence alone does not isolate the cause.
 
 A separate channel36/center38/40MHz28-frame test has no good narrow or wide
 receipts and zero OFDM PD throughout. A12-frame follow-up holds RX36/20MHz
@@ -229,6 +231,73 @@ controls also fail. **These5GHz runs are not usable width comparisons.** The
 subsequent2.4GHz runs above retain positive controls, so firmware-alive status
 is not being substituted for RF health. No power increase or calibration write
 was attempted. [Sanitized evidence and sniffer code-hash provenance](../research/evidence/width-rxpath-and-sniffer-2026-09-05.json).
+
+#### Wide reception also declines without a receiver command
+
+A24-frame history control receives HT40 **4/4** before four HT15 failed
+frames, then0/4 wide frames after them and0/4 after an ordinary same-channel
+receiver retune. Narrow controls remain3/4 and4/4. This initially makes failed
+reception history another candidate, but it is not an isolated causal result.
+
+The matched `--suite stability` has neither high-rate errors nor receiver
+commands: HT20 / HT40 / HT20 / HT40 / HT40 / HT20, four frames each.
+Two fresh runs receive **3/4/4/2/1/4** and **3/2/4/2/1/4**. Thus wide
+reception can degrade while rate code, coding, channel geometry, filter and
+receiver configuration are held constant. These additional exact40MHz receipts
+strengthen format validation but weaken any attribution of instability solely
+to RX_PATH or the prior error phase. The `--suite error-history` reproducer
+preserves the failed-frame/retune sequence separately.
+
+Two20-frame restart controls have early narrow and wide controls, a3-second
+quiet gap, four more wide attempts, then reload just one radio before another
+wide phase and a final narrow phase:
+
+| Reloaded radio | Early HT20 / HT40 | HT40 after quiet gap | HT40 after one-radio reload | Final HT20 |
+| --- | --- | --- | --- | --- |
+| MT7925 transmitter only | 3/3 | 0/4 | 1/4 | 4/4 |
+| MT7961 receiver only | 3/3 | 0/4 | 0/4 | 4/4 |
+
+Both quiet-gap wide phases have zero OFDM PD/MDRDY. Transmitter reload restores
+two PD detections, one MDRDY and one exact wide payload; receiver reload restores
+none in its trial. These small, sequential trials do not prove a specific chip,
+timer, thermal effect or PLL defect. No sustained-width or throughput claim is
+made. Both radios pass final restoration/reload checks throughout.
+[Sanitized stability/history/restart evidence](../research/evidence/width-stability-2026-09-05.json).
+
+#### Firmware channel-state readback and early HE40 control
+
+Following MT7961 sniffer config`0x00923ca0 → 0x00963f6c → 0x00942672`
+reaches channel-state accessors`0x0094251a/0x0094252e` and switch`0x00942274`.
+Its jump table at`0x0094229c` selects cases for keys0..3; word reads at
+`0x009424c0` use band index times4, while key1 uses a signed-byte load.
+With runtime GP`0x02003000`, these are four narrowly scoped band0 RAM fields:
+
+| Key | Band0 address | Representation | Observed meaning |
+| --- | --- | --- | --- |
+| 0 | `0x02036714` | u32 | band frequency base,2407000kHz here |
+| 1 | `0x02036710` | signed byte | primary channel6/10 here |
+| 2 | `0x02036704` | u32 | secondary offset0/1/3 |
+| 3 | `0x020366fc` | u32 | sniffer width code0 for both20/40MHz |
+
+A passive20 →40-above →40-below →20 control reads
+`(2407000,6,0,0) → (2407000,6,1,0) → (2407000,10,3,0) → (2407000,6,0,0)`.
+Each immediate sample matches a0.5s delayed sample. Firmware helper`0x00941e90`
+computes primary+2 for offset1 and primary−2 for offset3, consistent with both
+wide cases centered on8. These are **software channel-state fields**, not proof
+of actual LO frequency, RF width, or successful hardware application. Optional
+`--read-channel-state` verifies the pinned image and reads only these fields,
+never adjacent band/peer state. The signed-byte semantics are preserved explicitly.
+
+`--suite he-early` moves HE40 into the second four-frame phase after fresh boot,
+with HE20 controls before/after; all three use GI0/LTF1/LDPC1/NSS2. Two12-frame
+runs receive **2/0/2** and **2/0/3** good payloads. Early wide windows now show
+OFDM PD/MDRDY and a MAC FCS sample`[1,0]` in3/4 then1/4 cases, unlike the
+older late-suite all-zero result. No failed USB metadata or exact HE40 payload
+arrives. The second run keeps `(2407000,6,1,0)` before/after every phase.
+Thus HE40 remains unvalidated, but is not merely a silent command acceptance;
+the receiver observes packet/error activity in some controlled windows.
+Counters are not authenticated packet identities. All statuses and cleanup
+checks pass. [Sanitized channel-state and HE evidence](../research/evidence/width-channel-state-he-2026-09-05.json).
 
 ### HE extended-range SU is received, but not yet a robust link
 

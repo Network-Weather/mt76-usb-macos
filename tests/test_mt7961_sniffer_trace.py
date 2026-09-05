@@ -56,3 +56,38 @@ def test_wrong_table_refused_before_instruction_reads():
 def test_unpinned_image_refused():
     with pytest.raises(ValueError, match="pinned MT7961"):
         p.expected_code(b"unrecognized firmware")
+
+
+def test_channel_state_only_exports_selected_band0_fields():
+    dev = Device()
+    values = dict(zip(p.CHANNEL_STATE_ADDRESSES, (2407000, 0xABCDEF06, 1, 0), strict=True))
+    dev.rr = values.__getitem__
+    result = p.channel_state(dev)
+    assert result == {
+        "band_base_khz": 2407000,
+        "primary_signed_byte": 6,
+        "secondary_offset": 1,
+        "sniffer_width_code": 0,
+        "physical_rf_state_verified": False,
+    }
+
+
+def test_channel_state_preserves_signed_getter_semantics():
+    dev = Device()
+    dev.rr = lambda address: 200 if address == p.CHANNEL_STATE_ADDRESSES[1] else 0
+    assert p.channel_state(dev)["primary_signed_byte"] == -56
+
+
+def test_unmapped_channel_state_refused():
+    dev = Device()
+    dev.rr = lambda address: 0xFFFFFFFF
+    with pytest.raises(ValueError, match="unmapped channel state"):
+        p.channel_state(dev)
+
+
+def test_wrong_channel_state_chip_refused_without_reads():
+    dev = Device()
+    dev.CHIP = p.m.CHIP_MT7925
+    with pytest.raises(ValueError, match="MT7961 channel-state"):
+        p.channel_state(dev)
+    assert not dev.reads

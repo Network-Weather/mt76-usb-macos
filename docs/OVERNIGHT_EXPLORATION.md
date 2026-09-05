@@ -11,6 +11,15 @@ SET_RX_PATH command removes wide PD/MDRDY in12/12 windows across three runs,
 while narrow after-controls stay4/4. Initialization dependence remains unresolved;
 no descriptor/power change explains the breakthrough.5GHz tests fail their
 narrow controls and cannot qualify wide behavior. Both radios reload normally.
+Matched [stability controls](PHY_TRANSMIT.md#wide-reception-also-declines-without-a-receiver-command)
+also lose wide reception without RX_PATH or high-rate errors. A quiet gap causes
+the same loss; transmitter-only reload yields1/4 wide receipts, receiver-only
+reload0/4 in small sequential trials. Do not attribute the failure solely to
+RX_PATH. Additional exact wide receipts confirm the format, not robustness.
+Source-traced receiver RAM fields now read back primary, secondary offset and
+sniffer width through20/40-above/40-below/20 controls. Early HE40 still has no
+exact payload, but3/4 then1/4 windows produce PD/MDRDY plus MAC FCS errors;
+the receiver's firmware state remains40-above. Software state is not RF proof.
 
 **Ignored sniffer FCS byte explained in firmware:** [the tag1 trace](ERROR_FRAME_CAPTURE.md#firmware-explains-the-ignored-sniffer-error-byte)
 reads channel fields but never TLV+12, the advertised drop-error byte. A bounded
