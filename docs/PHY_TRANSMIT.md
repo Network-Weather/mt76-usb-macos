@@ -115,3 +115,19 @@ provide wrappers, but not the complete statistics selectors. MT7925 testmode
 requires special UNI option bytes 0x02 (query) / 0x06 (set); the current generic
 Python UNI helper does not implement that special case. Do not mistake a generic
 ACK or a malformed request for a working statistics interface.
+
+## Die-temperature control after the RF change
+
+Three read-only observations after fresh normal boots returned **28 C on MT7961**
+and **42 C on MT7925**, each stable across the three queries. These observations
+do not point to current extreme die heating, but do not establish the earlier
+one-stream/TX performance change's cause or exclude past/localized thermal issues.
+No TX was performed; reload/alive checks passed on both devices.
+[Evidence](../research/evidence/die-temperature-control-2026-09-05.json).
+
+Queries match `mt7921_mcu_get_temperature` / `mt7925_mcu_get_temperature` in
+mt76 `c5a3bd91`: MT7961 EXT 0x2c with eight zero bytes; MT7925 UNI 0x35 QUERY
+with reserved4 + tag0/length8 + zero4. MT7925 returned EID 0x35 with matching
+sequences, a 16-byte body, tag0/length12, category0, temperature u32 at body+12.
+The production MT7925 temperature method remains explicitly unported; this is
+a research validation of the upstream request, not a claim of API parity.

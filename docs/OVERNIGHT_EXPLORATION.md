@@ -8,11 +8,12 @@ calibrated claims by inference. Results below extend [station testmode](STATION_
 **New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
 despite the encrypted container. Repeated entry reads establish RV32 startup, and
 a bounded instruction-table read supports an experimental Andes-style expansion.
-This does not yet establish a new measurement command or a complete decoder.
+This does not establish a complete decoder.
 Follow-up ROM startup establishes MT7925 GP `0x02212800`, corroborated by live
 registration-table pointers; decryption occurs between the pre-start and running
-read controls. One internal dispatcher constructs `0xc00000bb`, but its wire
-command mapping is not established and has not been guessed into a probe.
+read controls. Its 30-slot dispatcher is now identified as UNI 0x33 beamforming:
+[PFMU tag and profile-data reads work](BEAMFORMING_PROFILES.md), with correctly
+predicted unsolicited sequence-zero events. This is not yet usable CSI.
 
 **Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
 Startup exposes the EX9 table, and a GP candidate recovers meaningful string

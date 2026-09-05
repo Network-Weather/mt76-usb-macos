@@ -126,10 +126,9 @@ Remaining entries were zero. Independent ROM callback operand reads at
 GP−41124 yielded `64,4,128`, coherent nonzero values where an earlier GP guess
 returned zeros. Registration stores plus live pointers are the stronger GP check.
 
-**This does not identify the rejected UNI 0x32/0x46 path.** The table's keys are
-not established wire CIDs or TLV tags. Its key-8 handler expects a much larger
-request, copying 268 bytes from buffer+`0x40`; it is not justified to relabel it
-as the public eight-byte RX-statistics query. No new requests were sent from
-these inferences. Next: trace this module's caller/registration context and the
-actual measurement handlers, retaining the distinction between internal keys
-and host commands.
+**This does not identify the rejected UNI 0x32/0x46 path.** The table was
+subsequently identified as the [UNI 0x33 beamforming TLV dispatcher](BEAMFORMING_PROFILES.md),
+through matching layouts and actual read replies, not numeric IDs alone.
+Its key-8 handler copies 268 bytes from buffer+`0x40` because it is a profile
+write, not the public eight-byte RX-statistics query. Only the independently
+validated read tags 5/7 were exercised; no profile writes or sounding commands.

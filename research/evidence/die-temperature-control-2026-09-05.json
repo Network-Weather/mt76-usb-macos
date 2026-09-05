@@ -1,0 +1,28 @@
+{
+  "tool": "die_temperature_control",
+  "context": "Normal fresh boots after the RF-performance change; no TX",
+  "source_pin": "mt76 c5a3bd91aa735b669618610d5f0ebfa5786845a6",
+  "rows": [
+    {
+      "usb_id": "0e8d:7961",
+      "request": "EXT 0x2c, eight zero bytes, normal SET envelope",
+      "temperature_c_observations": [28, 28, 28],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "usb_id": "0846:9072",
+      "request": "UNI 0x35 QUERY, reserved4 + TLV tag0 length8 + zero4",
+      "eid": 53,
+      "body_bytes": 16,
+      "tlv_tag": 0,
+      "tlv_length": 12,
+      "category": 0,
+      "request_sequences": [13, 14, 15],
+      "temperature_c_observations": [42, 42, 42],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ],
+  "limitation": "Does not establish the earlier RF change's cause or exclude past/localized thermal issues"
+}
