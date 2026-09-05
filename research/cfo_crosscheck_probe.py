@@ -55,11 +55,11 @@ def snapshot(dev):
 
 
 def compare(before, after, stats):
-    """Nonzero status or changing cache is not a valid exact-match experiment."""
+    """Wrong band or changing cache is not a valid band0 exact-match experiment."""
     words = stats.get("candidate_prefix_words_le", [])
     out = {
         "body_bytes": stats.get("body_bytes"),
-        "candidate_status_u32": stats.get("candidate_status_u32"),
+        "reported_band_u32": stats.get("reported_band_u32"),
         "cached_fields_stable": before == after,
         "cached_measurement_nonzero": bool(before["raw_signed20"] or before["firmware_snr_field"]),
     }
@@ -67,7 +67,7 @@ def compare(before, after, stats):
         raise ValueError("expected measured 300-byte statistics layout")
     out["frequency_offset_word19_u32"] = words[19]
     out["snr_word49_u32"] = words[49]
-    if out["candidate_status_u32"] == 0 and out["cached_fields_stable"]:
+    if out["reported_band_u32"] == 0 and out["cached_fields_stable"]:
         out["frequency_offset_exact_match"] = words[19] == before["firmware_frequency_offset_u32"]
         out["snr_exact_match"] = words[49] == before["firmware_snr_field"]
     return out

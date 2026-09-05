@@ -59,16 +59,16 @@ def test_snapshot_reads_only_three_identified_words():
     assert tuple(dev.addresses) == VECTOR_ADDRESSES
 
 
-def test_comparison_excludes_nonzero_status_or_changed_cache():
+def test_comparison_excludes_wrong_band_or_changed_cache():
     fields = decode_cached_fields(*encode(-23948, snr=27))
     words = [0] * 66
     words[19], words[49] = 4294938857, 27
-    stats = {"body_bytes": 300, "candidate_status_u32": 0, "candidate_prefix_words_le": words}
+    stats = {"body_bytes": 300, "reported_band_u32": 0, "candidate_prefix_words_le": words}
     assert compare(fields, fields, stats)["frequency_offset_exact_match"] is True
     assert compare(fields, fields, stats)["snr_exact_match"] is True
-    for status in (2, 100, None):
+    for band in (1, 2, 100, None):
         assert "frequency_offset_exact_match" not in compare(
-            fields, fields, stats | {"candidate_status_u32": status}
+            fields, fields, stats | {"reported_band_u32": band}
         )
     assert "frequency_offset_exact_match" not in compare(
         fields, fields | {"raw_signed20": 0}, stats

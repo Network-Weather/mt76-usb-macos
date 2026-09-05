@@ -110,6 +110,13 @@ python research/station_testmode_probe.py --chip mt7925 --test-mode --engineerin
 
 ## Legacy CE 0xc8 exposes a richer live block, with read side effects
 
+**Later correction:** the initial eight-byte request below omitted an explicit
+band word read by this pinned firmware. The current probe sends12 bytes and calls
+the reply's third word `reported_band_u32`, not status. See the
+[dispatcher trace and corrected request](FREQUENCY_OFFSET.md#complete-ce-0xc8-request-and-the-apparent-status-correction).
+The historical observations below preserve the original experiment; values2/100
+are now identified as invalid band arguments, not status codes.
+
 `research/legacy_rx_stats_probe.py` queries CE 0xc8 with two little-endian u32s:
 sequence 1..5 and count 72. Normal mode and activated RF RX both return matched
 EID 0x45 / 300-byte bodies. Normal-mode statistics stay zero; live RX changes
@@ -149,7 +156,8 @@ attribution, or validity of every source-derived field name is claimed.
 Follow-up: [frequency-offset provenance](FREQUENCY_OFFSET.md) now traces word19's
 signed20 assembly and integer conversion, plus word49's direct six-bit SNR export.
 Two fresh boots exactly match nonzero cached-vector inputs to returned values;
-a third zero-cache control and status2/zero replies establish important limits.
+a third zero-cache control establishes an important limit. Subsequent dispatcher
+tracing corrected the apparent-status interpretation and incomplete request.
 
 [Sanitized evidence](../research/evidence/legacy-rx-stats-2026-09-05.json) retains
 the candidate 66-word prefix and control observations. The tool retains both

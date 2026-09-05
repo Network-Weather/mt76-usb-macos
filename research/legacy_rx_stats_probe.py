@@ -4,9 +4,11 @@
 
 Protocol facts: Motorola gen4m 8fddb9d7 wsys_cmd_handler_fw.h,
 nic_cmd_event.h, gl_qa_agent.c and nicCmdEventQueryRxStatistics.
-Eight-byte request, 72 requested words. The reference expects an eight-byte
-header and big-endian words; measured firmware instead fits a twelve-byte
-header and little-endian words. Both hypotheses are retained, not conflated.
+The older reference has an eight-byte request/header and big-endian words.
+Pinned firmware 0x933cee instead reads a twelve-byte request with an explicit
+band at offset8 and returns that band, not a status, in a twelve-byte header.
+The old eight-byte request omitted a field read by firmware. Always supply it.
+The historical big-endian hypothesis remains separately labeled for comparison.
 No TX, IQ, ambient frames, explicit counter reset, or nonvolatile writes.
 Queries may themselves drain counters; cumulative semantics are not assumed.
 """
@@ -27,10 +29,13 @@ from research.icap_status_probe import event_summary
 from research.testmode_receiver_probe import read_stats, rx_setting
 
 
-def request(sequence):
-    if not 1 <= sequence <= 5:
+def request(sequence, band=0):
+    if type(sequence) is not int or not 1 <= sequence <= 5:
         raise ValueError("only five bounded observation sequences")
-    return struct.pack("<II", sequence, 72)
+    if type(band) is not int or band not in (0, 1):
+        raise ValueError("only band zero or one")
+    # Legacy-format flag0: handler takes band from the extra word, not header byte2.
+    return struct.pack("<HBBII", sequence, 0, 0, 72, band)
 
 
 def summarize(body, sequence):
@@ -40,18 +45,20 @@ def summarize(body, sequence):
     echoed, count = struct.unpack_from("<II", body)
     out.update(echoed_sequence=echoed, reported_count=count)
     # MT7961 hardware returns 300 bytes, four more than the documented array.
-    # Retain only the source-defined prefix; do not interpret the extra word.
+    # Retain only the source-defined statistics prefix.
     if echoed == sequence and count == 72 and len(body) in (296, 300):
-        out["uninterpreted_tail_bytes"] = len(body) - (8 + 66 * 4)
+        out["uninterpreted_tail_bytes"] = len(body) - ((12 if len(body) == 300 else 8) + 66 * 4)
         out["prefix_words_be"] = list(struct.unpack_from(">66I", body, 8))
         if len(body) == 300:
-            out["candidate_status_u32"] = struct.unpack_from("<I", body, 8)[0]
+            out["reported_band_u32"] = struct.unpack_from("<I", body, 8)[0]
             out["candidate_prefix_words_le"] = list(struct.unpack_from("<66I", body, 12))
     return out
 
 
-def query(dev, sequence):
-    dev.mcu_cmd_word(m.MCU_CE_CMD(0xC8) | m.MCU_CMD_FIELD_QUERY, request(sequence), wait=False)
+def query(dev, sequence, band=0):
+    dev.mcu_cmd_word(
+        m.MCU_CE_CMD(0xC8) | m.MCU_CMD_FIELD_QUERY, request(sequence, band), wait=False
+    )
     seq = dev.msg_seq
     events = []
     deadline = time.monotonic() + 1.5
