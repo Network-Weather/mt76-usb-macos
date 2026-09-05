@@ -468,3 +468,43 @@ for every frame class. The currently established readout remains beacon CSI.
 The probe now accepts only named beacon/data/QoS/BlockAck/RTS selectors and two
 previously tested passive primaries. Primary149 supports only20/80 here; invalid
 geometry is rejected before device access. [Sanitized evidence](../research/evidence/csi-other-frame-controls-2026-09-05.json).
+
+## Receive-side eligibility gate, beyond the frame selector
+
+The loaded receive entry `0xe0061392` calls `0xe0060c8c` before constructing
+report metadata, and aborts when that helper returns zero. This explains why
+programming a matching hardware frame selector need not produce an event.
+For its **internal input descriptor**, define:
+
+- `flags = load_u16(input + 2)`;
+- `subtype_shaped = (load_u16(input + 6) >> 6) & 0xf`.
+
+After a preceding readiness check, the helper accepts `flags` bit9 or values8/5
+of that nibble (`0xe0060cc6..cde`); otherwise it logs and returns zero through
+`0xe0060cfe -> 0xe0060cae`. Values8/5 correspond to beacon/probe-response
+subtypes, but **the descriptor is not identified as the host's normal RXD** and
+bit9 is not yet assigned a semantic name. In particular, calling it U2M would
+currently be a hypothesis. The probe-response-shaped branch has an additional
+earlier check through `0xe00607a4` and rejection value0x10003.
+
+The unusual Andes `bfoz ...,2,5` is not an invalid high/low interval: primary
+[Andes QEMU helper, pinned32902627](https://github.com/andestech/qemu/blob/32902627f26c5d760cd4efab499b989d566822f9/target/riscv/andes_helper.c#L20)
+defines the reversed-endpoint case as depositing the low input bits into that
+bit range. Here it computes `(value & 0xf) << 2`, making compared constants32/20
+equivalent to nibble8/5. This interpretation is separate from merely displaying
+the instruction operands; no pcode or firmware patch was applied.
+
+The preceding readiness callback is loaded from `0x008293b8` and resolves to
+ROM `0x0082b4cc`. With argument1=0 it polls field key0x1302c3 (plus band domain),
+up to101 reads, for value1. Its other branch writes1 to the same field. The
+ROM field-table word at `0x0084bdf4` is0x1c1c1d1d, identifying field3 as
+**bit28 of 0x820e5060** (band1 +0x10000); field2 is bit29. Thus bit28 is a
+firmware-polled readiness/acknowledgment flag, **not proof that a host CSI report
+was delivered**. No host writes to that flag were performed.
+
+A later gate at `0xe0061302` additionally checks descriptor flag10 and a
+subtype13-shaped case before the immediate report path. Its alternate path
+invokes other capture helpers, so it is not described as a universal rejection.
+These concrete pointers are useful follow-up targets, not yet a validated
+recipe for data/control-frame CSI. A fixed debug-argument window at0x022857f4
+read all zero, so it supplied no string names. [Sanitized pointer/ROM evidence](../research/evidence/csi-receive-gate-2026-09-05.json).
