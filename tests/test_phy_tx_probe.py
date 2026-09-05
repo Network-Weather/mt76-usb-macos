@@ -33,18 +33,25 @@ def test_rate_allowlist():
         p.descriptor(dev, b"", 0, 0xFFFF)
 
 
-def test_table_spatial_control_changes_only_source_defined_selection_and_index():
+@pytest.mark.parametrize(
+    ("suite", "code", "ltf"), [("table-spatial", 0x80, 0), ("he-table-spatial", 0x200, 1)]
+)
+def test_table_spatial_control_changes_only_source_defined_selection_and_index(suite, code, ltf):
     assert p.TABLE_SPATIAL_SPE == (None, 0, None, 1, 24, None)
-    rates = p.suite_rates("table-spatial", 6)
+    rates = p.suite_rates(suite, 6)
     assert len(rates) * 10 <= 60
-    assert {code for _, code in rates} == {0x80}
+    assert {rate for _, rate in rates} == {code}
     for spe, expected in ((None, 0x40), (0, 0), (1, 0x80), (24, 0xC00)):
         writes = []
         dev = SimpleNamespace(
             CHIP=m.CHIP_MT7925, wr=lambda a, v, target=writes: target.append((a, v)), rr=lambda _: 0
         )
-        p.program_rate(dev, 0x80, spe_idx=spe)
-        assert writes == [(p.c3.ITDR0, 0x80), (p.c3.ITDR1, expected), (p.c3.ITCR, 0x80010012)]
+        p.program_rate(dev, code, spe_idx=spe, ltf=ltf)
+        assert writes == [
+            (p.c3.ITDR0, code),
+            (p.c3.ITDR1, expected | (ltf << 16)),
+            (p.c3.ITCR, 0x80010012),
+        ]
 
 
 @pytest.mark.parametrize(

@@ -153,6 +153,9 @@ TABLE_SPATIAL_RATES = tuple(
     )
 )
 TABLE_SPATIAL_SPE = (None, 0, None, 1, 24, None)
+HE_TABLE_SPATIAL_RATES = tuple(
+    (name.replace("ht0", "he0"), 0x200) for name, _ in TABLE_SPATIAL_RATES
+)
 CONNAC3_CODING_CODES.update((0x240, 0x250))
 ALLOWED_RATE_CODES = {
     rate
@@ -192,6 +195,7 @@ def suite_rates(suite, channel):
             "he-er",
             "bandwidth",
             "table-spatial",
+            "he-table-spatial",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -212,6 +216,7 @@ def suite_rates(suite, channel):
         "he-er": HE_ER_RATES,
         "bandwidth": WIDTH_RATES,
         "table-spatial": TABLE_SPATIAL_RATES,
+        "he-table-spatial": HE_TABLE_SPATIAL_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -257,14 +262,14 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0, spe_idx=None):
         raise ValueError("rate outside bounded experiment")
     if spe_idx is not None and (
         dev.CHIP != m.CHIP_MT7925
-        or code != 0x80
+        or code not in (0x80, 0x200)
         or type(spe_idx) is not int
         or spe_idx not in (0, 1, 24)
         or gi
         or ldpc
-        or ltf
+        or ltf != int(code == 0x200)
     ):
-        raise ValueError("table spatial experiment is MT7925 HT0 SPE0/1/24 only")
+        raise ValueError("table spatial experiment is MT7925 HT0/HE0 SPE0/1/24 only")
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
     allowed = {
@@ -481,13 +486,15 @@ def main():
             "he-er",
             "bandwidth",
             "table-spatial",
+            "he-table-spatial",
         ),
         default="baseline",
     )
     args = p.parse_args()
     if args.receiver_g5 and (
         args.transmitter != "mt7925"
-        or args.suite not in ("he-table", "he-coding-ltf", "he-g5-cycle", "he-er")
+        or args.suite
+        not in ("he-table", "he-coding-ltf", "he-g5-cycle", "he-er", "he-table-spatial")
     ):
         p.error("receiver Group5 is restricted to MT7925 HE table/coding experiments")
     if args.suite == "he-g5-cycle" and not args.receiver_g5:
@@ -515,6 +522,7 @@ def main():
             "he-er",
             "bandwidth",
             "table-spatial",
+            "he-table-spatial",
         )
         and args.transmitter != "mt7925"
     ):
@@ -539,7 +547,9 @@ def main():
         "tx_timing": args.tx_timing,
         "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
-        "table_spatial_codes": TABLE_SPATIAL_SPE if args.suite == "table-spatial" else None,
+        "table_spatial_codes": TABLE_SPATIAL_SPE
+        if args.suite in ("table-spatial", "he-table-spatial")
+        else None,
         "table_gi_ldpc": {
             "ht-table": HT_TABLE_OPTIONS,
             "he-table": HE_TABLE_OPTIONS,
@@ -548,6 +558,7 @@ def main():
         "submitted": 0,
         "receiver_g5": args.receiver_g5,
         "table_ltf": {
+            "he-table-spatial": (1,) * 6,
             "bandwidth": WIDTH_LTF,
             "he-table": HE_TABLE_LTF,
             "he-coding-ltf": HE_CODING_LTF,
@@ -649,6 +660,7 @@ def main():
                         }.get(args.suite)
                         gi, ldpc = options[phase] if options else (0, 0)
                         ltfs = {
+                            "he-table-spatial": (1,) * 6,
                             "bandwidth": WIDTH_LTF,
                             "he-table": HE_TABLE_LTF,
                             "he-coding-ltf": HE_CODING_LTF,
@@ -656,7 +668,9 @@ def main():
                         }.get(args.suite)
                         ltf = ltfs[phase] if ltfs else 0
                         table_spe = (
-                            TABLE_SPATIAL_SPE[phase] if args.suite == "table-spatial" else None
+                            TABLE_SPATIAL_SPE[phase]
+                            if args.suite in ("table-spatial", "he-table-spatial")
+                            else None
                         )
                         program_rate(tx, code, gi=gi, ldpc=ldpc, ltf=ltf, spe_idx=table_spe)
                         for seq in range(phase * args.per_phase, (phase + 1) * args.per_phase):

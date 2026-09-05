@@ -210,3 +210,21 @@ does **not** establish restored RF health, a calibrated gain or a physical
 antenna fault. The phase ordering and small sample also limit comparisons.
 Both radios answer afterward and the transmitter reloads successfully.
 [Sanitized spatial-table evidence](../research/evidence/table-spatial-transmit-2026-09-05.json).
+
+### HE does not inherit the HT duplicate-path result
+
+`--suite he-table-spatial` repeats the six phases with HE-SU MCS0/NSS1,
+rate0x200, LTF1/GI0/BCC. Every other bound remains the same. Two fresh runs
+both receive **0/0/3/3/0/1**: WTBL-before, explicit0, WTBL-middle, explicit1,
+explicit24, WTBL-after. Thus explicit1 produces independently received HE1SS,
+but explicit24 does not inherit its HT success. All24 statuses still arrive
+with raw power36. Successful status alone is not emission/format evidence.
+
+The second run enables receiver Group5 and all seven receipts report the
+validated LTF1 field, GI0, HE-SU MCS0/NSS1/NSTS1,20MHz, no LDPC/DCM/STBC.
+The shifted Linux-pointer candidate again reports2/3, not the actual LTF code.
+Both alive checks and transmitter reload pass; the Group5 run additionally
+restores the exact descriptor register and reloads the receiver. Weak WTBL
+controls and small samples prevent a reliability/gain claim. No further SPE
+index sweep, power change or physical antenna diagnosis follows from this.
+[Sanitized HE spatial evidence](../research/evidence/he-table-spatial-transmit-2026-09-05.json).
