@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Per-rate power reports work, but MT7925 inactive-width rows retain history:**
+[both source-defined report interfaces](TXPOWER_TABLE_STATE.md) answer26
+controlled queries. Reversed order shows HT40 retaining26 from5GHz when current
+HT20 is36 on2.4GHz, then retaining36 when returning to5GHz/20. These are table
+states, not a current all-width RF power plan. MT7961 exposes distinct user,
+EEPROM-derived and MAC curves. Existing USB reset also returns success on both;
+it was already part of normal reload, not a newly tested recovery mechanism.
+
 **Negative power offsets expose a two-stream observation boundary:**
 [HT8 follow-up controls](PHY_TRANSMIT.md#negative-power-offsets-expose-a-two-stream-reception-boundary)
 extend the earlier OFDM power mechanism to the currently weak channel6 link.
