@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Firmware-timed noise events now work:**
+[UNI36/tag2](MT7925_NOISE_HISTOGRAM.md#one-shot-firmware-event-now-works) resets
+and starts both control indices, then emits two11-bin arrays in512–515ms.
+Three fresh boots on6→36→6 reproduce channel-dependent distributions and exact
+event/stopped-register agreement. Both controls stop automatically; all four
+masked restorations and normal reloads pass. No TX or calibrated dBm claim.
+
 **Rejected engineering/statistics/RTT requests have no dispatcher entries:**
 The [live61-entry UNI table](MT7925_UNI_DISPATCH.md) lacks0x32/0x46/0x5d, and
 the verified dispatcher miss path emits`0xc00000bb`. Working MIB, power, CSI,

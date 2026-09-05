@@ -1,0 +1,701 @@
+{
+  "scope": "One source/firmware-traced UNI36 tag2 activation per fresh boot, no TX; only measurement arrays and fixed-state hashes/readbacks exported. Both shared histogram histories reset irrecoverably; volatile masks restored and normal firmware reloaded.",
+  "runs": [
+    {
+      "date_utc": "2026-09-05T20:00:30.420279+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "channel": 6,
+      "request_hex": "0000000002000400",
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe002ef70",
+          "bytes": 304,
+          "sha256": "d9da311547531deb7a5bbe345bc02f65969f98bd7c65b6c9d365283c434b935a",
+          "expected_sha256": "d9da311547531deb7a5bbe345bc02f65969f98bd7c65b6c9d365283c434b935a",
+          "matches": true
+        }
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0,
+        "0x83092004": 0,
+        "0x83098230": 0
+      },
+      "request_sequence": 1,
+      "collection": {
+        "matching_acknowledgments": [
+          {
+            "cid": 54,
+            "status": 0
+          }
+        ],
+        "noise_events": [
+          {
+            "event_id": 54,
+            "sequence": 0,
+            "body_bytes": 96,
+            "tag": 2,
+            "tag_length": 92,
+            "timer_index0": [
+              28,
+              4,
+              11,
+              26,
+              10,
+              2,
+              31,
+              51805,
+              1984,
+              0,
+              0
+            ],
+            "timer_index1": [
+              22,
+              2,
+              3,
+              56,
+              0,
+              27,
+              53602,
+              6,
+              182,
+              1,
+              0
+            ],
+            "host_elapsed_seconds": 0.5148563331458718,
+            "endpoint": 132
+          }
+        ],
+        "transfers_attempted": 409
+      },
+      "after_event_controls": {
+        "0x83082004": 0,
+        "0x83092004": 0
+      },
+      "after_event_banks": {
+        "ordinary_getter": [
+          317,
+          3,
+          12,
+          24,
+          6,
+          2,
+          15,
+          51541,
+          1981,
+          0,
+          0
+        ],
+        "timer_getter": [
+          28,
+          4,
+          11,
+          26,
+          10,
+          2,
+          31,
+          51805,
+          1984,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          63581
+        ],
+        "timer_index1": [
+          22,
+          2,
+          3,
+          56,
+          0,
+          27,
+          53602,
+          6,
+          182,
+          1,
+          0
+        ]
+      },
+      "after_event_banks_repeat": {
+        "ordinary_getter": [
+          317,
+          3,
+          12,
+          24,
+          6,
+          2,
+          15,
+          51541,
+          1981,
+          0,
+          0
+        ],
+        "timer_getter": [
+          28,
+          4,
+          11,
+          26,
+          10,
+          2,
+          31,
+          51805,
+          1984,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          63581
+        ],
+        "timer_index1": [
+          22,
+          2,
+          3,
+          56,
+          0,
+          27,
+          53602,
+          6,
+          182,
+          1,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true,
+        "0x83092004": true,
+        "0x83098230": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T20:00:55.802519+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "channel": 36,
+      "request_hex": "0000000002000400",
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe002ef70",
+          "bytes": 304,
+          "sha256": "d9da311547531deb7a5bbe345bc02f65969f98bd7c65b6c9d365283c434b935a",
+          "expected_sha256": "d9da311547531deb7a5bbe345bc02f65969f98bd7c65b6c9d365283c434b935a",
+          "matches": true
+        }
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0,
+        "0x83092004": 0,
+        "0x83098230": 0
+      },
+      "request_sequence": 1,
+      "collection": {
+        "matching_acknowledgments": [
+          {
+            "cid": 54,
+            "status": 0
+          }
+        ],
+        "noise_events": [
+          {
+            "event_id": 54,
+            "sequence": 0,
+            "body_bytes": 96,
+            "tag": 2,
+            "tag_length": 92,
+            "timer_index0": [
+              60571,
+              440,
+              4,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              61009,
+              6,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "host_elapsed_seconds": 0.5116824579890817,
+            "endpoint": 132
+          }
+        ],
+        "transfers_attempted": 517
+      },
+      "after_event_controls": {
+        "0x83082004": 0,
+        "0x83092004": 0
+      },
+      "after_event_banks": {
+        "ordinary_getter": [
+          60584,
+          427,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          60571,
+          440,
+          4,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          63640
+        ],
+        "timer_index1": [
+          61009,
+          6,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after_event_banks_repeat": {
+        "ordinary_getter": [
+          60584,
+          427,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          60571,
+          440,
+          4,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          63640
+        ],
+        "timer_index1": [
+          61009,
+          6,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true,
+        "0x83092004": true,
+        "0x83098230": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T20:01:01.659260+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "channel": 6,
+      "request_hex": "0000000002000400",
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe002ef70",
+          "bytes": 304,
+          "sha256": "d9da311547531deb7a5bbe345bc02f65969f98bd7c65b6c9d365283c434b935a",
+          "expected_sha256": "d9da311547531deb7a5bbe345bc02f65969f98bd7c65b6c9d365283c434b935a",
+          "matches": true
+        }
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0,
+        "0x83092004": 0,
+        "0x83098230": 0
+      },
+      "request_sequence": 1,
+      "collection": {
+        "matching_acknowledgments": [
+          {
+            "cid": 54,
+            "status": 0
+          }
+        ],
+        "noise_events": [
+          {
+            "event_id": 54,
+            "sequence": 0,
+            "body_bytes": 96,
+            "tag": 2,
+            "tag_length": 92,
+            "timer_index0": [
+              22,
+              3,
+              11,
+              34,
+              3,
+              0,
+              43,
+              49162,
+              1379,
+              0,
+              16
+            ],
+            "timer_index1": [
+              31,
+              5,
+              6,
+              30,
+              0,
+              129,
+              49823,
+              471,
+              161,
+              1,
+              16
+            ],
+            "host_elapsed_seconds": 0.5122172078117728,
+            "endpoint": 132
+          }
+        ],
+        "transfers_attempted": 437
+      },
+      "after_event_controls": {
+        "0x83082004": 0,
+        "0x83092004": 0
+      },
+      "after_event_banks": {
+        "ordinary_getter": [
+          336,
+          3,
+          10,
+          28,
+          3,
+          0,
+          32,
+          48886,
+          1375,
+          0,
+          0
+        ],
+        "timer_getter": [
+          22,
+          3,
+          11,
+          34,
+          3,
+          0,
+          43,
+          49162,
+          1379,
+          0,
+          16
+        ],
+        "ordinary_index1": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          63517
+        ],
+        "timer_index1": [
+          31,
+          5,
+          6,
+          30,
+          0,
+          129,
+          49823,
+          471,
+          161,
+          1,
+          16
+        ]
+      },
+      "after_event_banks_repeat": {
+        "ordinary_getter": [
+          336,
+          3,
+          10,
+          28,
+          3,
+          0,
+          32,
+          48886,
+          1375,
+          0,
+          0
+        ],
+        "timer_getter": [
+          22,
+          3,
+          11,
+          34,
+          3,
+          0,
+          43,
+          49162,
+          1379,
+          0,
+          16
+        ],
+        "ordinary_index1": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          63517
+        ],
+        "timer_index1": [
+          31,
+          5,
+          6,
+          30,
+          0,
+          129,
+          49823,
+          471,
+          161,
+          1,
+          16
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true,
+        "0x83092004": true,
+        "0x83098230": true
+      },
+      "cleanup_reload_alive": true
+    }
+  ]
+}

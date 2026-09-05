@@ -58,9 +58,9 @@ instruction offsets must not be mistaken for decimal offsets.
 
 This identifies the noise initializer's tag2 position. Its handler ignores the
 other request fields and enters a timer-driven reset/enable path; it is **not a
-read-only getter**. This trace alone is not a live host-event demonstration;
-see [the histogram notes](MT7925_NOISE_HISTOGRAM.md) for validated direct-control
-measurements and the bounded activation/cleanup considerations.
+read-only getter**. The subsequent [one-shot histogram test](MT7925_NOISE_HISTOGRAM.md#one-shot-firmware-event-now-works)
+validates the request and two-array event on three fresh boots, with explicit
+two-control activation, restoration and normal reload.
 
 [`mt7925_uni_dispatch_probe.py`](../research/mt7925_uni_dispatch_probe.py) makes
 1224 aligned reads at most:1100 code/table-hash reads plus two count reads and

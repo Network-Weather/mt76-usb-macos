@@ -19,9 +19,10 @@ Pinned MT7925 RAM SHA-256:
 Source [UNI command/event enums](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic_uni_cmd_event.h#L227)
 name ID0x36 NOISE_FLOOR. A bounded live command-table read at `0221c04c`
 locates handler `e0053786`. It tests an internal-buffer u16 at+0x34 for2, then
-calls initializer `e00532bc`. **A validated host request layout has not been
-established; no UNI36 request was sent.** Internal-buffer offsets must not be
-copied blindly into a host TLV.
+calls initializer `e00532bc`. The later [dispatcher trace](MT7925_UNI_DISPATCH.md)
+places +0x34 at the first TLV after the standard header and four reserved bytes.
+The initial direct-control experiments sent no UNI36; the later one-shot test
+below validates that host request and its asynchronous measurement event.
 
 Initializer `e00532bc` registers callback `e0054194` on timer state `0224c3e8`,
 calls wrapper `e0078ffe` four times, and arms a timer with argument500 (time unit
@@ -36,8 +37,8 @@ ordinary histogram helper `e005ae5e`:
 | 1 enable | Set `83082004` bits2:0 to5; preserve other bits |
 | 2 stop/read | Clear those three bits, copy requested u32 bins from `83088600`, copy ten threshold labels |
 
-Firmware adds `index << 16` to these addresses. Only index0 controls are written; the
-reproducer reads exactly eleven counters and never exposes an arbitrary count.
+Firmware adds `index << 16` to these addresses. The direct-control reproducer
+writes only index0 and reads eleven counters, never an arbitrary count.
 **MT7925's enable helper does not write `83088234`**, unlike MT7961's helper.
 No sibling-chip option bits were added to the test.
 
@@ -48,8 +49,8 @@ older engine, but are not a demonstrated conversion from bins to received dBm.
 The timer callback uses a different getter: `e007900c` → `e005af12` stops both
 control indices and reads eleven words each from **`83001000` and `83011000`**. Result
 formatter `e0054118` constructs EID0x36 with tag2/length92 and two44-byte arrays.
-This is an event-producing lead, not merely firmware log output. No live event
-or two-control activation is claimed. The initial test independently reads only
+This is an event-producing path, not merely firmware log output. The later
+one-shot test validates it. The initial test independently reads only
 the **index0** view at `83001000` alongside `83088600`.
 
 ## Bounded passive controls
@@ -92,8 +93,8 @@ live evidence of measurement behavior.
 
 [Sanitized evidence](../research/evidence/mt7925-noise-histogram-2026-09-05.json).
 Next: distinguish environmental power from receiver configuration/gain effects,
-resolve the relationship between the two views, and establish a safe host-event
-request if useful. Do not infer a −65dBm home noise floor from bin7 dominance.
+resolve the relationship between the two views. The host-event request is now
+validated below. Do not infer a −65dBm home noise floor from bin7 dominance.
 
 ## Four-view comparison: counter indices are not interchangeable with controls
 
@@ -189,3 +190,49 @@ limitations must not be hidden by reporting just the requested sleep duration.
 [Histogram/MIB evidence](../research/evidence/mt7925-histogram-mib-2026-09-05.json).
 The operational result remains a normalized distribution of **collected** power
 samples, with wall-time coverage and physical power scale explicitly unqualified.
+
+## One-shot firmware event now works
+
+The pinned normal UNI dispatcher passes its original outer object to the noise
+handler. The request is **UNI0x36, SET/ACK option7, payload
+`00 00 00 00 02 00 04 00`**: four reserved bytes and tag2/length4. No duration,
+selector or host-buffer address is supplied. This operation resets and enables
+both control indices; the firmware timer subsequently stops them.
+
+[`mt7925_noise_event_probe.py`](../research/mt7925_noise_event_probe.py) sends
+one activation after fresh normal monitor bringup and code/dispatch verification.
+It requires `--activate-noise-histogram`, refuses pre-enabled controls, and polls
+both endpoints with a three-second/2048-transfer bound. Only the matching status
+and strictly shaped histogram event are exported; ambient frames are discarded.
+
+The acknowledgment is CID0x36/status0. The asynchronous event is **EID0x36,
+sequence0**, on endpoint0x84, with a96-byte body: four reserved bytes,
+tag2/length92, then two arrays of eleven little-endian u32 counters. Header44
+plus body96 gives a140-byte declared event; USB padding is excluded.
+The arrays match `83001000` and `83011000` exactly, respectively.
+
+| Fresh boot / channel | Host command-to-event ms | Samples in each event array |
+| --- | --- | --- |
+| 20:00:30 / 6 | 514.856 | 53,901 |
+| 20:00:55 / 36 | 511.682 | 61,016 |
+| 20:01:01 / 6 return | 512.217 | 50,673 |
+
+Times are UTC on2026-09-05. All three events have equal totals between arrays;
+channel6 concentrates in timer0 bin7 and timer1 bin6, while36 concentrates in
+bin0. Both controls are stopped by event receipt, and all four register views
+repeat exactly50ms later. Delay is consistent with timer argument500 meaning
+approximately500ms, but host delivery is not an exact exposure timestamp.
+
+Enabling control1 makes ordinary bank `83098600` accumulate, mostly in bin10,
+with a different total (about63,600). The event **does not contain that bank**.
+Helper/control indices must not be interchanged with raw timer-view indices or
+assumed physical antenna labels.
+
+All four volatile masks (`83082004`/`83092004` low3 and
+`83088230`/`83098230` bit29) are restored with readback verification; normal
+reload and alive checks pass. Shared histogram histories are irrecoverably reset.
+No TX, NVM, host-memory DMA, or power/gain override. This is a working
+firmware-timed measurement event, **not calibrated dBm, wall-time occupancy,
+or an interference classification**.
+
+[Sanitized one-shot evidence](../research/evidence/mt7925-noise-events-2026-09-05.json).
