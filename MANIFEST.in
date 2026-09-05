@@ -6,10 +6,15 @@ include NOTICE.md
 include README.md
 include RELATED_WORK.md
 include ROADMAP.md
+include TODO.md
+include NEGATIVE_RESULTS.md
+include CLAUDE.md
 include SECURITY.md
 include requirements.txt
 include setup.sh
 recursive-include scripts *.py *.sh
 recursive-include docs *.json *.md
 recursive-include examples *.py
-recursive-include tests *.py
+recursive-include tests *.py *.c *.json
+recursive-include c *.c *.h *.md Makefile
+recursive-include research *.py *.md *.json

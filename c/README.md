@@ -56,7 +56,16 @@ Generic 802.11 Information Element (IE) parsing intentionally does not belong in
 - `mt7921_dev.h` / `mt7921_dev.c`: WFSYS reset (profile-driven), DMA engine initialization, device bringup orchestration, monitor mode filters (CE or UNI), `mt7921_tune` for 2.4 GHz, 5 GHz, and 6 GHz at 20/40/80/160 MHz, 802.11 probe request generation, Connac2 TXWI descriptor framing, and packet injection.
 - `mt7921_rxd.h` / `mt7921_rxd.c`: Connac2 RX descriptor decoding, P-RXV hardware PHY telemetry decoding (`mt7921_decode_rxv`), the shared rate arithmetic (`mt7921_phy_fill_rate`, HT through EHT), the per-chip decoder selector, 802.11 frame extraction, RCPI-to-RSSI translation, frame family classification, and radiotap pcap writing with rate and MCS metadata.
 - `mt7921_smoke.c`: Standalone CLI validator mimicking `scripts/hardware_smoke.py`. Emits structured, redacted JSON telemetry to stdout conforming to `docs/hardware-smoke.schema.json`.
+- `mt7921_radio.h` / `mt7921_radio.c`: Bounded MIB wire helpers and timed samples,
+  reversible Group-5 guards, experimental Probe Request descriptors/submission,
+  MT7925 volatile rate-table setup, and TX-status parsing. The register boundary
+  is injectable for offline failure and cleanup tests.
+- `mt76_radio_probe.c`: Native redacted NDJSON acquisition/experiment CLI. It is
+  separate from the existing smoke schema and never enables TX implicitly.
 - `test_rxd.c`: Offline unit test suite validating connac2 and connac3 descriptor parsing, frame extraction, radiotap output, RAM firmware bounds checks, probe request framing, TXWI descriptor layout, the chip table and profiles, and the MT7925 MCU TXD builders without hardware.
+
+The frame/device structs have grown for parity metadata and experimental state.
+Rebuild embedding consumers; this source library does not promise a stable binary ABI.
 
 ## Building
 

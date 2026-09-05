@@ -7,6 +7,23 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Native C acquisition parity with the 2026-09-04 Python research: bounded hardware
+  timestamp and Group-3/5 export, MT7921 EXT and MT7925 atomic UNI MIB queries,
+  opt-in reversible Group-5 reporting, controlled OFDM Probe Request transmission
+  and attenuation, MT7925 fixed-rate setup/DIS_MAT, and per-chip TX-status decoding.
+  `c/mt76_radio_probe` provides a gated, redacted native experiment CLI;
+  `scripts/c_radio_pair.py` supervises independent native receiver validation.
+  See [the parity contract](docs/C_PARITY.md). These remain instrument primitives,
+  not connectivity, calibrated SNR/power, or a general-purpose injector.
+- Shared Python/C synthetic-wire tests, injectable MCU/register failure paths,
+  CLI refusal tests, and an ASan/UBSan target with 10,000 malformed-input cases.
+  C header dependencies now trigger recompilation; source distributions include
+  native C sources and their parity fixtures. Embedders must rebuild for the
+  expanded C structs; no stable binary ABI is promised.
+- Native USB control transfers now honor explicit timeouts through IOKit's
+  `DeviceRequestTO`; retries share a monotonic deadline. MCU waits use monotonic
+  time, reject truncated reply buffers, and account for connac3 software frames.
+
 - `rxd.parse_multi_link` decodes the 802.11be Multi-Link element: the MLD address, the Basic
   variant's Common Info subfields, and each Per-STA Profile's link id and address, reassembling
   element (242) and subelement (254) fragments first. `rxd.station_addresses` returns every

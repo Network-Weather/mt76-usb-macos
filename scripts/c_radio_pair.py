@@ -75,11 +75,14 @@ def run_pair(args, power):
             ]
             rx = subprocess.Popen(rx_cmd, stdout=rx_file)  # noqa: S603 -- fixed executable, no shell
             tx = None
+            failure = None
             try:
                 wait_ready(rx, rx_path)
                 tx = subprocess.Popen(tx_cmd, stdout=tx_file)  # noqa: S603 -- fixed executable, no shell
                 tx.wait(timeout=35)
                 rx.wait(timeout=25)
+            except (RuntimeError, subprocess.TimeoutExpired, OSError) as exc:
+                failure = type(exc).__name__  # preserve a redacted failed-run record
             finally:
                 if tx is not None:
                     stop(tx)
@@ -90,7 +93,8 @@ def run_pair(args, power):
         rc = next((r for r in rr if r.get("event") == "cleanup"), {})
         tc = next((r for r in tr if r.get("event") == "cleanup"), {})
         passed = (
-            rx.returncode == 0
+            failure is None
+            and rx.returncode == 0
             and tx is not None
             and tx.returncode == 0
             and td.get("submitted") == args.count
@@ -100,7 +104,13 @@ def run_pair(args, power):
             and tc.get("alive_before_cleanup")
             and tc.get("firmware_reloaded")
         )
-        return {"power_code": power, "pass": bool(passed), "receiver": rr, "transmitter": tr}
+        return {
+            "power_code": power,
+            "pass": bool(passed),
+            "error": failure,
+            "receiver": rr,
+            "transmitter": tr,
+        }
 
 
 def main():
@@ -145,7 +155,7 @@ def main():
                 {
                     "power_code": power,
                     "pass": run["pass"],
-                    "receiver": next(r for r in run["receiver"] if r["event"] == "dwell"),
+                    "receiver": next((r for r in run["receiver"] if r["event"] == "dwell"), None),
                 }
             ),
             flush=True,

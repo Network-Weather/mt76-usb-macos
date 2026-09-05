@@ -88,6 +88,7 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
         uint8_t raw[65536];
         uint32_t len = sizeof(raw);
         int ret = mt7921_rx_read(dev, raw, &len, count ? 5 : 100);
+        if (stopping) break; /* signal-aborted IOKit reads are cancellation, not USB failure */
         if (ret == MT7921_ERR_TIMEOUT) { timeouts++; continue; }
         if (ret) { errors++; result = -1; break; }
         if (len >= 4 && (raw[3] >> 3) == 0) {
@@ -136,7 +137,7 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
         rate_matches += f.has_phy && f.phy.rate_mbps == expected_rate;
     }
     uint64_t elapsed = mt_radio_monotonic_us() - started;
-    bool after_ok = !mib || mt_mib_read(dev, offsets, n, &after) == 0;
+    bool after_ok = !mib || (!stopping && mt_mib_read(dev, offsets, n, &after) == 0);
     printf("{\"event\":\"dwell\",\"phase\":\"%s\",\"elapsed_us\":%" PRIu64
            ",\"frames\":%u,\"timestamps\":%u,\"first_timestamp\":%u,\"last_timestamp\":%u,"
            "\"group5_frames\":%u,\"timeouts\":%u,\"usb_errors\":%u,\"decode_errors\":%u,"
@@ -157,6 +158,7 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
                                        before.opened_us - before.closed_us) / 2);
     else printf("null");
     puts("}");
+    if (stopping && !result) return 0; /* caller still restores state and exits 130 */
     return result || !after_ok || sent != (unsigned)count ? -1 : 0;
 }
 static void usage(void) {
