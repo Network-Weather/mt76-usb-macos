@@ -224,6 +224,7 @@ def main():
     parser.add_argument("--ack", action="store_true", help="MT7925 diagnostic ACK envelope")
     parser.add_argument("--band", type=int, choices=(0, 1), default=0)
     parser.add_argument("--chains", type=int, choices=(1, 2))
+    parser.add_argument("--chain-order", choices=("before", "after"), default="before")
     parser.add_argument("--width", type=int, choices=(20, 80, 160), default=20)
     parser.add_argument("--primary", type=int, choices=(36, 149), default=36)
     parser.add_argument(
@@ -266,6 +267,8 @@ def main():
         parser.error("ACK variant applies to MT7925 UNI only")
     if args.chains is not None and args.chip != "mt7925":
         parser.error("chain variant applies to MT7925 UNI only")
+    if args.chain_order == "after" and args.chains is None:
+        parser.error("after-START chain order requires --chains")
     if args.state and args.chip != "mt7925":
         parser.error("state snapshots apply to MT7925 only")
     if args.hardware and args.chip != "mt7925":
@@ -291,6 +294,7 @@ def main():
         "primary_channel": args.primary,
         "center_channel": center,
         "chains": args.chains,
+        "chain_order": args.chain_order,
         "state_snapshots": args.state,
         "hardware_snapshots": args.hardware,
         "candidate_beacon_selector": args.beacon_selector,
@@ -317,6 +321,21 @@ def main():
             else:
                 dev.mcu_cmd_word(m.MCU_CE_CMD(0x4C), payload, wait=False, timeout=1000)
             return dev.msg_seq
+
+        def send_chains():
+            dev.mcu_uni(0x4A, chain_request(args.band, args.chains), wait=False, timeout=1000)
+            seq = dev.msg_seq
+            out["phases"].append(
+                {
+                    "name": "chains" if args.chain_order == "before" else "chains_after_start",
+                    "request_sequence": seq,
+                    **collect(dev, seq, args.correlate),
+                }
+            )
+            if args.state:
+                out["phases"][-1]["control_after"] = control_snapshot(dev)
+            if args.hardware:
+                out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
 
         try:
             dev.bringup(*images, log=lambda *_: None)
@@ -345,22 +364,8 @@ def main():
                         out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
                     if args.state:
                         out["phases"][-1]["control_after"] = control_snapshot(dev)
-                if start and args.chains is not None:
-                    dev.mcu_uni(
-                        0x4A, chain_request(args.band, args.chains), wait=False, timeout=1000
-                    )
-                    seq = dev.msg_seq
-                    out["phases"].append(
-                        {
-                            "name": "chains",
-                            "request_sequence": seq,
-                            **collect(dev, seq, args.correlate),
-                        }
-                    )
-                    if args.state:
-                        out["phases"][-1]["control_after"] = control_snapshot(dev)
-                    if args.hardware:
-                        out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
+                if start and args.chains is not None and args.chain_order == "before":
+                    send_chains()
                 seq = send(start)
                 out["phases"].append(
                     {"name": name, "request_sequence": seq, **collect(dev, seq, args.correlate)}
@@ -369,6 +374,8 @@ def main():
                     out["phases"][-1]["control_after"] = control_snapshot(dev)
                 if args.hardware:
                     out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
+                if start and args.chains is not None and args.chain_order == "after":
+                    send_chains()
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__

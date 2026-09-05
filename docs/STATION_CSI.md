@@ -19,9 +19,11 @@ reload succeeded. One earlier run had one queued report immediately after STOP,
 so instantaneous queue emptiness is not promised.
 
 This establishes live CSI data delivery, **not** calibrated amplitude/phase,
-distance, angle, channel impulse response, or mesh-topology inference. The maximum
-chain commands 1 and 2 both still produced RX indices 0 and 1; do not advertise
-that tag as a validated one-chain restriction. No association or transmission
+distance, angle, channel impulse response, or mesh-topology inference. Maximum
+chain commands sent **before START** both produced RX indices0/1; later controls
+establish that sending count1 **after START** restricts reports to RX index0.
+This is an output restriction, not proof of physically disabling an RF chain.
+No association or transmission
 was required. Transmitter addresses, coefficient arrays and their hashes are
 never exported; the tool records aggregate cardinalities/ranges only.
 
@@ -406,6 +408,40 @@ The address RAM was **not read or published**. Only single-entry behavior has
 been tested; duplicate, full-list and multi-entry semantics remain unvalidated.
 
 [Sanitized filter evidence](../research/evidence/csi-filter-2026-09-05.json).
+
+## Maximum-chain control works after START
+
+The initial before-START control missed a real capability. In a fresh normal
+channel36/20MHz run, START produced116 reports (58 each RX0/RX1); tag3/count1
+then produced57 reports, **all RX0**. Tag3/count2 restored116 reports (58 each).
+A second fresh boot yielded98 paired reports,57 RX0-only,100 paired,58 RX0-only,
+then96 paired after another START. Thus START also resets the effective override.
+All windows lasted about one second, no transfer limit was reached, every CSI
+event validated, commands acknowledged status0, and stop/reload/alive passed.
+
+The checked-in CLI reproduces the one-chain result:
+
+```sh
+python research/csi_control_probe.py --chip mt7925 --ack --beacon-selector --chains 1 --chain-order after --correlate
+```
+
+Its separate hardware validation yielded90 paired baseline reports and48 RX0-only
+reports after the command. The default remains `--chain-order before` for faithful
+reproduction of earlier controls; the output records the selected order explicitly.
+Offline mocked-device tests verify command ordering, STOP/reload cleanup, and
+rejection of an after-START order without a count.
+
+This validates selection of reported receiver indices for these beacon captures,
+not radio power saving, physical antenna-path disable, or arbitrary chain counts.
+The wire count remains bounded to1/2. [Sanitized evidence](../research/evidence/csi-chain-order-2026-09-05.json).
+
+A third ordering control further narrows the lifetime: START92 paired → count1
+45 RX0-only → resend the same beacon-selector command94 paired → count2 96 paired
+→ count1 48 RX0-only → START94 paired. This matches the control handler's
+unconditional clearing of configuration byte+3 at `0xe003d43a`, with only tag3
+setting it again at `0xe003d4f2`. Consequently, send the maximum-chain override
+**last**, after START and any other CSI configuration commands, and reapply it
+after changing those commands. This is not a persistent radio-chain setting.
 
 ## Specific data/control selectors: still no readout
 

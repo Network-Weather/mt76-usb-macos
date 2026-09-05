@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
+import json
 import struct
+import sys
 from types import SimpleNamespace
 
 import pytest
@@ -174,3 +176,67 @@ def test_normal_frame_shape_contains_only_type_and_phy():
     assert p.frame_shape({**decoded, "fcs_err": True}) is None
     assert p.frame_shape({"frame": b"x"}) is None
     assert p.frame_shape(None) is None
+
+
+@pytest.mark.parametrize(
+    ("order", "expected"), [("before", [0, 2, 3, 1, 0, 0]), ("after", [0, 2, 1, 3, 0, 0])]
+)
+def test_cli_places_chain_command_on_requested_side_of_start(monkeypatch, capsys, order, expected):
+    class Device:
+        CHIP = m.CHIP_MT7925
+        msg_seq = 0
+
+        def __init__(self):
+            self.tags = []
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            pass
+
+        def uni_option(self, *_):
+            return 6
+
+        def mcu_uni(self, cid, payload, **_):
+            assert cid == 0x4A
+            self.tags.append(struct.unpack_from("<H", payload, 4)[0])
+            self.msg_seq += 1
+
+        def bringup(self, *_, **__):
+            pass
+
+        def set_monitor_mode(self):
+            pass
+
+        def set_sniffer(self, *_):
+            pass
+
+        def tune(self, *geometry):
+            assert geometry == ("5GHz", 36, 36, 20)
+
+        def alive(self):
+            return True
+
+    dev = Device()
+    monkeypatch.setattr(m, "open_device", lambda _: dev)
+    monkeypatch.setattr(m, "firmware_dir", lambda: "unused")
+    monkeypatch.setattr(m, "load_firmware", lambda *_: ())
+    monkeypatch.setattr(p, "collect", lambda *_: {})
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["probe", "--chip", "mt7925", "--beacon-selector", "--chains", "1", "--chain-order", order],
+    )
+    assert p.main() == 0
+    assert dev.tags == expected
+    out = json.loads(capsys.readouterr().out)
+    assert out["chain_order"] == order
+    assert out["cleanup_reload_alive"]
+
+
+def test_after_start_requires_a_chain_setting(monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["probe", "--chip", "mt7925", "--chain-order", "after"])
+    with pytest.raises(SystemExit) as exc:
+        p.main()
+    assert exc.value.code == 2
