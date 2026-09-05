@@ -146,6 +146,11 @@ Do not mix this command into acquisition without accounting for its read effects
 No calibrated RSSI/SNR/frequency-offset units, non-Wi-Fi discrimination, packet
 attribution, or validity of every source-derived field name is claimed.
 
+Follow-up: [frequency-offset provenance](FREQUENCY_OFFSET.md) now traces word19's
+signed20 assembly and integer conversion, plus word49's direct six-bit SNR export.
+Two fresh boots exactly match nonzero cached-vector inputs to returned values;
+a third zero-cache control and status2/zero replies establish important limits.
+
 [Sanitized evidence](../research/evidence/legacy-rx-stats-2026-09-05.json) retains
 the candidate 66-word prefix and control observations. The tool retains both
 layout hypotheses; the candidate interpretation does not silently replace the

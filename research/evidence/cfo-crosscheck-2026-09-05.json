@@ -1,0 +1,458 @@
+{
+  "tool": "cfo_crosscheck_evidence",
+  "date_utc": "2026-09-05",
+  "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+  "calculation": "0x0093141c..0x00931488",
+  "snr_export": "0x0093189a..0x009318b2",
+  "cache_addresses": [
+    "0x02040808",
+    "0x02040858",
+    "0x0204085c"
+  ],
+  "note": "Run1 exploratory schema, whole words removed. Runs1/3 nonzero matches; run2 zero control. No calibrated units, source attribution or freshness claim.",
+  "runs": [
+    {
+      "tool": "cfo_crosscheck",
+      "date_utc": "2026-09-05T10:26:20.254556+00:00",
+      "rows": [
+        {
+          "phase": "normal",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_result_u32": 0,
+            "factor": 19
+          },
+          "statistics": [
+            {
+              "body_bytes": 300,
+              "echoed_sequence": 1,
+              "reported_count": 72,
+              "uninterpreted_tail_bytes": 28,
+              "candidate_status_u32": 100,
+              "frequency_offset_word19_u32": 0,
+              "snr_word49_u32": 0
+            }
+          ],
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_result_u32": 0,
+            "factor": 19
+          }
+        },
+        {
+          "phase": "rf_rx",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          },
+          "statistics": [
+            {
+              "body_bytes": 300,
+              "echoed_sequence": 2,
+              "reported_count": 72,
+              "uninterpreted_tail_bytes": 28,
+              "candidate_status_u32": 0,
+              "frequency_offset_word19_u32": 4294938857,
+              "snr_word49_u32": 27
+            }
+          ],
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          }
+        },
+        {
+          "phase": "rf_rx_second",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          },
+          "statistics": [
+            {
+              "body_bytes": 300,
+              "echoed_sequence": 3,
+              "reported_count": 72,
+              "uninterpreted_tail_bytes": 28,
+              "candidate_status_u32": 0,
+              "frequency_offset_word19_u32": 4294938857,
+              "snr_word49_u32": 27
+            }
+          ],
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          }
+        },
+        {
+          "phase": "stopped",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          },
+          "statistics": [
+            {
+              "body_bytes": 300,
+              "echoed_sequence": 4,
+              "reported_count": 72,
+              "uninterpreted_tail_bytes": 28,
+              "candidate_status_u32": 0,
+              "frequency_offset_word19_u32": 4294938857,
+              "snr_word49_u32": 27
+            }
+          ],
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          }
+        },
+        {
+          "phase": "stopped_second",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          },
+          "statistics": [
+            {
+              "body_bytes": 300,
+              "echoed_sequence": 5,
+              "reported_count": 72,
+              "uninterpreted_tail_bytes": 28,
+              "candidate_status_u32": 2,
+              "frequency_offset_word19_u32": 0,
+              "snr_word49_u32": 0
+            }
+          ],
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -23948,
+            "firmware_integer_result_u32": 4294938857,
+            "factor": 19
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "cfo_crosscheck_probe",
+      "date_utc": "2026-09-05T10:28:20.629393+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "cache_addresses": [
+        "0x2040808",
+        "0x2040858",
+        "0x204085c"
+      ],
+      "rows": [
+        {
+          "phase": "normal",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 100,
+            "cached_fields_stable": true,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0
+          }
+        },
+        {
+          "phase": "rf_rx",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 0,
+            "cached_fields_stable": true,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0,
+            "frequency_offset_exact_match": true,
+            "snr_exact_match": true
+          }
+        },
+        {
+          "phase": "rf_rx_second",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 0,
+            "cached_fields_stable": true,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0,
+            "frequency_offset_exact_match": true,
+            "snr_exact_match": true
+          }
+        },
+        {
+          "phase": "stopped",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 0,
+            "cached_fields_stable": true,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0,
+            "frequency_offset_exact_match": true,
+            "snr_exact_match": true
+          }
+        },
+        {
+          "phase": "stopped_second",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 2,
+            "cached_fields_stable": true,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "cfo_crosscheck_probe",
+      "date_utc": "2026-09-05T10:28:56.090415+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "cache_addresses": [
+        "0x2040808",
+        "0x2040858",
+        "0x204085c"
+      ],
+      "rows": [
+        {
+          "phase": "normal",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 100,
+            "cached_fields_stable": true,
+            "cached_measurement_nonzero": false,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0
+          }
+        },
+        {
+          "phase": "rf_rx",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": 0,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 0,
+            "firmware_frequency_offset_s32": 0,
+            "firmware_snr_field": 0
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -24018,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 4294938774,
+            "firmware_frequency_offset_s32": -28522,
+            "firmware_snr_field": 28
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 0,
+            "cached_fields_stable": false,
+            "cached_measurement_nonzero": false,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0
+          }
+        },
+        {
+          "phase": "rf_rx_second",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": -24018,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 4294938774,
+            "firmware_frequency_offset_s32": -28522,
+            "firmware_snr_field": 28
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -24018,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 4294938774,
+            "firmware_frequency_offset_s32": -28522,
+            "firmware_snr_field": 28
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 0,
+            "cached_fields_stable": true,
+            "cached_measurement_nonzero": true,
+            "frequency_offset_word19_u32": 4294938774,
+            "snr_word49_u32": 28,
+            "frequency_offset_exact_match": true,
+            "snr_exact_match": true
+          }
+        },
+        {
+          "phase": "stopped",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": -24018,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 4294938774,
+            "firmware_frequency_offset_s32": -28522,
+            "firmware_snr_field": 28
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -24018,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 4294938774,
+            "firmware_frequency_offset_s32": -28522,
+            "firmware_snr_field": 28
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 0,
+            "cached_fields_stable": true,
+            "cached_measurement_nonzero": true,
+            "frequency_offset_word19_u32": 4294938774,
+            "snr_word49_u32": 28,
+            "frequency_offset_exact_match": true,
+            "snr_exact_match": true
+          }
+        },
+        {
+          "phase": "stopped_second",
+          "before": {
+            "bandwidth_code": 0,
+            "raw_signed20": -24018,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 4294938774,
+            "firmware_frequency_offset_s32": -28522,
+            "firmware_snr_field": 28
+          },
+          "after": {
+            "bandwidth_code": 0,
+            "raw_signed20": -24018,
+            "firmware_integer_factor": 19,
+            "firmware_frequency_offset_u32": 4294938774,
+            "firmware_frequency_offset_s32": -28522,
+            "firmware_snr_field": 28
+          },
+          "comparison": {
+            "body_bytes": 300,
+            "candidate_status_u32": 2,
+            "cached_fields_stable": true,
+            "cached_measurement_nonzero": true,
+            "frequency_offset_word19_u32": 0,
+            "snr_word49_u32": 0
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}
