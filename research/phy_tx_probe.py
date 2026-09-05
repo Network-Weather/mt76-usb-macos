@@ -383,6 +383,7 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
     signals = [[] for _ in rates]
     status = collections.Counter()
     counts = collections.Counter()
+    rx_timing = []
     started = time.monotonic()
     ready.set()
     while not stop.is_set():
@@ -418,6 +419,16 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
         if d.get("fcs_err"):
             counts["controlled_fcs_errors"] += 1
             continue
+        if tx_timing:
+            # RXD Group2 timestamp is source-defined; record only exact own
+            # good-FCS frames. Cross-radio clock offset/latch point is unknown.
+            rx_timing.append(
+                {
+                    "sequence": seq,
+                    "rxd_timestamp_raw": d.get("timestamp"),
+                    "received_host_seconds": time.monotonic() - started,
+                }
+            )
         phase = seq // per_phase
         seen[phase].add(seq)
         if d.get("rssi") is not None:
@@ -445,7 +456,7 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
                 struct.unpack_from("<I", raw, 4)[0] & legacy_rx.MT_RXD1_NORMAL_GROUP_5
             )
         phys[phase][json.dumps(fields, sort_keys=True)] += 1
-    return {
+    result = {
         "chip": dev.CHIP,
         "counts": dict(counts),
         "phases": [
@@ -460,6 +471,9 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
         ],
         "tx_status": [{"fields": json.loads(k), "count": v} for k, v in status.items()],
     }
+    if tx_timing:
+        result["own_rx_timing"] = rx_timing
+    return result
 
 
 def main():

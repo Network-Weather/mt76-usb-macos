@@ -5,6 +5,10 @@ fields**. Two bounded, independently received packet-size/rate controls support
 a1µs timestamp clock and32µs front-time/delay ticks. This is more than a command
 ACK, but it is not calibrated airtime, a pure contention timer, or ranging.
 
+A later [cross-radio RXD/TXS control](CROSS_RADIO_CLOCK.md) finds that relative
+timestamp separation follows modeled packet duration to1–2µs across five rates
+and two lengths. It does not establish absolute latch points or propagation time.
+
 ## Exact readout, no new hardware controls
 
 At mt76 pin`c5a3bd91aa735b669618610d5f0ebfa5786845a6`, the

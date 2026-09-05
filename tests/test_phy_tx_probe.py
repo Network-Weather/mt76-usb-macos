@@ -507,12 +507,18 @@ def test_receive_query_rejects_nonqueries(category, selector):
         request(category, selector)
 
 
-def test_capture_only_exact_own_frames_and_valid_fcs(monkeypatch):
+@pytest.mark.parametrize("timing", [False, True])
+def test_capture_only_exact_own_frames_and_valid_fcs(monkeypatch, timing):
     stop = p.threading.Event()
     frame = p.c3.controlled_frame(0)
     samples = iter(
         [
-            {"pkt_type": 2, "frame": frame, "phy": {"mode_name": "HT", "mcs": 0}},
+            {
+                "pkt_type": 2,
+                "frame": frame,
+                "timestamp": 12345,
+                "phy": {"mode_name": "HT", "mcs": 0},
+            },
             {"pkt_type": 2, "frame": frame, "phy": {"mode_name": "HT", "mcs": 0}},
             {"pkt_type": 2, "frame": frame, "fcs_err": True},
             {"pkt_type": 2, "frame": frame + b"different"},
@@ -528,7 +534,12 @@ def test_capture_only_exact_own_frames_and_valid_fcs(monkeypatch):
 
     monkeypatch.setattr(m, "decoder_for", lambda dev: decode)
     dev = SimpleNamespace(CHIP=m.CHIP_MT7921, rx_read=lambda **kwargs: b"")
-    out = p.capture(dev, {0: frame}, 1, p.threading.Event(), stop)
+    out = p.capture(dev, {0: frame}, 1, p.threading.Event(), stop, tx_timing=timing)
     assert out["phases"][0]["unique_exact_frames"] == 1
     assert out["phases"][0]["phy"][0]["count"] == 2
     assert out["counts"]["controlled_fcs_errors"] == 1
+    if timing:
+        assert [row["rxd_timestamp_raw"] for row in out["own_rx_timing"]] == [12345, None]
+        assert [row["sequence"] for row in out["own_rx_timing"]] == [0, 0]
+    else:
+        assert "own_rx_timing" not in out
