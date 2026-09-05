@@ -82,6 +82,9 @@ readback of the hardware table SRAM.** ITCR reads mirror ITDR1 in this trial;
 its read semantics are unresolved and not promoted to table-index evidence.
 Alive and full normal reload pass. No host frames were submitted.
 
+The later indirect-read control below now independently verifies actual table
+contents. It does not retroactively turn these earlier staging reads into SRAM reads.
+
 [Sanitized pointer/command evidence](../research/evidence/fixed-rate-table-2026-09-05.json).
 
 ## Independent on-air verification
@@ -228,3 +231,44 @@ restores the exact descriptor register and reloads the receiver. Weak WTBL
 controls and small samples prevent a reliability/gain claim. No further SPE
 index sweep, power change or physical antenna diagnosis follows from this.
 [Sanitized HE spatial evidence](../research/evidence/he-table-spatial-transmit-2026-09-05.json).
+
+## New primitive: actual indexed table readback, not staging echoes
+
+The already retained ROM window contains a second, fully ordinary RV32 routine
+at`0x0083c14e..0x0083c174`. It masks the index to6 bits, writes
+`0x80000000 | index` to ITCR, then reads ITDR0/ITDR1 into the two caller-provided
+output pointers. Unlike the writer, **OP bit16 is zero**; SELECT bits25:24 stay0.
+The [MT7925 register header](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/chips/coda/mt7925/wf_wtblon_top.h)
+independently names the same addresses and EXEC/OP/SELECT/INDEX fields. It labels
+ITDR data as a full32-bit word and does **not** name the unknown low nibble.
+No nibble/bandwidth guess or sweep was performed.
+
+`research.fixed_rate_readback.read_slot` permits MT7925 slots18/25 only. It
+follows the ROM's indirect-read sequence and rejects invalid/all-ones bus data.
+It changes the volatile read selector, not a table entry; callers must serialize
+it with other table users. It does not use ITCR readback as an index/completion
+witness and does not inspect other station, beamforming or power tables.
+
+A no-transmission control establishes genuine indexed behavior:
+
+| Step | Slot18 (ITDR0, ITDR1) | Slot25 |
+|---|---|---|
+| Fresh normal boot | 0x4b,0x11040 | 0x4b,0x11040 |
+| Write only18: HT0/explicit1 | **0x80,0x80** | unchanged |
+| Read25, then reselect18 | **0x80,0x80** again | unchanged |
+| Normal firmware reload | **0x4b,0x11040** | unchanged |
+
+An explicit restoration of the original18 entry is verified too, followed by
+another normal reload and matching final read. This checks cleanup of these
+two entries in this trial; it is not a blanket audit of all hardware state.
+
+A separate fresh-boot repetition of the three accepted UNI40/slot25 requests
+also reads25, reads18, then reselects25 after each command. Slot25's ITDR1 is
+**0x49 -> 0x02011049 -> 0x49**, matching its software cache;18 stays0x11040.
+All three status codes are0. Thus the unexplained cache byte2=9 **actually
+reaches the hardware table low nibble**, not just a staging register. It remains
+apparently uninitialized in the traced handler, with no completed prologue/
+memory-safety audit and no established semantic name. Normal reload restores
+both entries to the original0x4b/0x11040. Both runs pass all alive/cleanup checks.
+Neither control submits a host frame or writes nonvolatile memory.
+[Sanitized indexed-read evidence](../research/evidence/fixed-rate-readback-2026-09-05.json).
