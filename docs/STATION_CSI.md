@@ -268,3 +268,33 @@ duplicates, bounded tails and required fields, then exports aggregate counts,
 value ranges and transient I/Q digest cardinality (never digests themselves).
 Thirty-one targeted CSI tests cover command bounds, event separation, privacy,
 malformed payloads and the narrow tail rule. Production Python/C APIs are unchanged.
+
+## Passive source coincidence and a receiver-pair key
+
+`--correlate` compares identifiers only transiently within each bounded receive
+window. It exports counts, not MAC addresses, timestamps, sequence numbers or
+sample arrays. Across two fresh boots, every CSI transmitter was also observed
+sending a good-FCS beacon in that same START window:
+
+| Run | Window | Heard beacons / transmitters | CSI reports / transmitters | Exact RX0/RX1 pairs using TA + tag25 |
+|---|---|---|---|---|
+| 1 | 0.671 s; 512-transfer ceiling reached | 34 / 6 | 58 / 5 | 29 |
+| 2 | 1.003 s; 157 transfers | 59 / 6 | 96 / 5 | 48 |
+
+All 58/96 reports belonged to the shared transmitter set. The first run is
+transfer-limited and **must not be compared as a full one-second rate**. Both
+runs had zero CSI reports in the preceding configuration/stop windows and the
+following STOP window; cleanup/alive passed. Source coincidence supports the
+beacon-selector interpretation but is not yet exact per-frame attribution.
+
+Tag17 (the public H-index field) produced only singletons. Tag23 grouped multiple
+reports per transmitter and was unsuitable for per-frame pairing. **TA + tag25**
+gave exact one-RX0/one-RX1 groups in both runs, with no repeated RX index within a
+group. Tag25 is newer than the pinned public enum; it is an empirical pairing
+key, not a globally unique identifier or a clock with established units. Its
+full u32 value did not equal the heard beacons' sequence number, sequence-control
+word, TSF-low32 or normal RX descriptor timestamp in either run.
+
+[Sanitized correlation evidence](../research/evidence/csi-correlation-2026-09-05.json).
+Two additional tests verify the counting/pairing logic, reject bad FCS/nonbeacons,
+and ensure none of the transient identifiers or correlation values are exported.

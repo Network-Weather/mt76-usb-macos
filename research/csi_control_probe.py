@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import usb.core
 
 import mt7921u as m
+from research.csi_correlation import CsiCorrelation
 from research.csi_event_summary import CsiSummary
 
 
@@ -140,29 +141,36 @@ def beacon_selector_request(band):
     return struct.pack("<B3xHHBI2x", band, 2, 11, 0, 0x20)
 
 
-def collect(dev, seq):
+def collect(dev, seq, correlate=False):
     started = time.monotonic()
     deadline = started + 1
     count = 0
     events = collections.Counter()
     csi = CsiSummary()
+    correlation = CsiCorrelation() if correlate else None
+    decode = m.decoder_for(dev) if correlate else None
     while time.monotonic() < deadline and count < 512:
         try:
             raw = bytes(dev.rx_read(timeout=100))
         except usb.core.USBTimeoutError:
             continue
         count += 1
+        if correlation is not None:
+            correlation.add_frame(decode(raw))
         shape = event_shape(raw, dev.CHIP, seq)
         if shape is not None:
             events[json.dumps(shape, sort_keys=True)] += 1
             if dev.CHIP == m.CHIP_MT7925 and shape.get("candidate_csi_event"):
                 csi.add(raw[44 : 44 + shape["body_bytes"]])
+                if correlation is not None:
+                    correlation.add_csi(raw[44 : 44 + shape["body_bytes"]])
     return {
         "transfers": count,
         "elapsed_s": round(time.monotonic() - started, 3),
         "transfer_limit_reached": count == 512,
         "events": [{"shape": json.loads(key), "count": value} for key, value in events.items()],
         "csi_summary": csi.export(),
+        "correlation": correlation.export() if correlation is not None else None,
     }
 
 
@@ -179,6 +187,9 @@ def main():
     parser.add_argument(
         "--beacon-selector", action="store_true", help="test candidate frame selector 0x20"
     )
+    parser.add_argument(
+        "--correlate", action="store_true", help="aggregate CSI/beacon coincidences"
+    )
     args = parser.parse_args()
     if args.ack and args.chip != "mt7925":
         parser.error("ACK variant applies to MT7925 UNI only")
@@ -190,6 +201,8 @@ def main():
         parser.error("hardware snapshots apply to MT7925 only")
     if args.beacon_selector and args.chip != "mt7925":
         parser.error("frame selector applies to MT7925 only")
+    if args.correlate and args.chip != "mt7925":
+        parser.error("correlation applies to MT7925 only")
     uid = "0846:9072" if args.chip == "mt7925" else "0e8d:7961"
     out = {
         "tool": "csi_control_probe",
@@ -199,6 +212,7 @@ def main():
         "state_snapshots": args.state,
         "hardware_snapshots": args.hardware,
         "candidate_beacon_selector": args.beacon_selector,
+        "correlation_enabled": args.correlate,
         "uni_option": (7 if args.ack else 6) if args.chip == "mt7925" else None,
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "phases": [],
@@ -235,7 +249,7 @@ def main():
                         {
                             "name": "candidate_beacon_selector",
                             "request_sequence": seq,
-                            **collect(dev, seq),
+                            **collect(dev, seq, args.correlate),
                         }
                     )
                     if args.hardware:
@@ -248,14 +262,20 @@ def main():
                     )
                     seq = dev.msg_seq
                     out["phases"].append(
-                        {"name": "chains", "request_sequence": seq, **collect(dev, seq)}
+                        {
+                            "name": "chains",
+                            "request_sequence": seq,
+                            **collect(dev, seq, args.correlate),
+                        }
                     )
                     if args.state:
                         out["phases"][-1]["control_after"] = control_snapshot(dev)
                     if args.hardware:
                         out["phases"][-1]["hardware_after"] = hardware_snapshot(dev)
                 seq = send(start)
-                out["phases"].append({"name": name, "request_sequence": seq, **collect(dev, seq)})
+                out["phases"].append(
+                    {"name": name, "request_sequence": seq, **collect(dev, seq, args.correlate)}
+                )
                 if args.state:
                     out["phases"][-1]["control_after"] = control_snapshot(dev)
                 if args.hardware:
