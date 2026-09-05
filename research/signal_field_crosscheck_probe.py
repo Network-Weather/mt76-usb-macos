@@ -89,6 +89,29 @@ def compare(before, after, words):
     return rows
 
 
+def aci_alias_check(words):
+    """Unsupported94bee0 leaves a zero temporary, not a detector reading.
+
+    The first hypothesis that this retained word31 was falsified on hardware.
+    The intervening93177a/93177c stores zero for absent FAGC indices2/3.
+    Keep the rejected prediction explicit alongside the corrected zero model.
+    """
+    if len(words) != 66:
+        raise ValueError("exact66-word measured prefix required")
+    prior = fields.u32(words[31])
+    actual = [fields.u32(words[i]) for i in (42, 43)]
+    expected = [(prior >> 17) & 1, (prior >> 16) & 1]
+    return {
+        "prior_fagc_wb1_word31_u32": prior,
+        "advertised_aci_words42_43": actual,
+        "rejected_stale_fagc_prediction": expected,
+        "matches_rejected_stale_fagc_prediction": actual == expected,
+        "expected_untouched_zero_temp": [0, 0],
+        "matches_untouched_zero_temp": actual == [0, 0],
+        "warning": "unsupported reader; zeros do not mean absence of adjacent-channel interference",
+    }
+
+
 def main():
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -117,6 +140,7 @@ def main():
                     "before": before,
                     "after": after,
                     "comparison": compare(before, after, words),
+                    "unsupported_aci_alias_check": aci_alias_check(words),
                 }
             )
 

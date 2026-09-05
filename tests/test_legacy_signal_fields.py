@@ -92,3 +92,15 @@ def test_query_bounds_nonmatching_records():
     with pytest.raises(RuntimeError, match="matched band0"):
         cross.query(dev, 1)
     assert dev.reads <= 128
+
+
+@pytest.mark.parametrize(("prior", "expected"), [(0xFFFFFFB9, [1, 1]), (0, [0, 0]), (127, [0, 0])])
+def test_unsupported_aci_is_checked_as_stale_bits_not_a_measurement(prior, expected):
+    words = [0] * 66
+    words[31] = prior
+    result = cross.aci_alias_check(words)
+    assert result["matches_untouched_zero_temp"]
+    assert result["rejected_stale_fagc_prediction"] == expected
+    assert result["matches_rejected_stale_fagc_prediction"] == (expected == [0, 0])
+    words[42] ^= 1
+    assert not cross.aci_alias_check(words)["matches_untouched_zero_temp"]

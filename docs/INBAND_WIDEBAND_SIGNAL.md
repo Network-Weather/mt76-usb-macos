@@ -97,6 +97,29 @@ is enabled**. This trial restores all masks and reloads both radios. Across
 all five format/direct-extraction trials,80 TX statuses are observed;64 full
 packets arrive, with the16 HE LTF0 misses retained separately.
 
+## ACI statistics are unsupported zeros, not interference measurements
+
+The source labels CEc8 words42/43 `ACIHitLower/Upper`, but this pinned image
+does not implement their reader. Builder00931828/0093184e calls0094bee0
+with index0/1 and an output pointer to stack+14. That routine returns
+`c00000bb` without writing the output. The caller ignores the status and
+extracts bits17/16 from the unchanged temporary.
+
+An initial hypothesis that this temporary retained signed FAGC wideband1
+predicted1/1 during RF RX. A five-query receive-only run disproved it: all
+four RF/stopped replies have negative word31 but ACI0/0. Reviewing the
+intervening instructions reveals0093177a/0093177c explicitly stores zero
+at stack+14 for unavailable FAGC indices2/3. Subsequent instantaneous fields
+use stack+18, leaving this zero untouched. A second fresh-boot five-query
+run again returns0/0 throughout and matches the corrected zero model.
+
+[Both runs, including the rejected prediction](../research/evidence/legacy-unsupported-aci-2026-09-05.json)
+are retained. Neither run transmits; both stop/reload successfully. Normal
+mode's all-zero reply is not independent validation of a detector either.
+**These ACI zeros must be treated as unsupported, never as evidence that
+adjacent-channel interference is absent.** No guessed ACI registers or detector
+activation were attempted. This conclusion is specific to the pinned firmware.
+
 ## Reproduction and boundaries
 
 `research/wideband_signal_probe.py --acknowledge-experimental-transmit`

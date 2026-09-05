@@ -1,0 +1,1485 @@
+{
+  "schema": 1,
+  "subject": "MT7961 unsupported ACI statistics: rejected stale-FAGC hypothesis and corrected untouched-zero temporary",
+  "first_hypothesis_run": {
+    "date_utc": "2026-09-05T22:40:46.184200+00:00",
+    "channel": 6,
+    "transmissions": 0,
+    "rows": [
+      {
+        "stage": "normal",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": 0,
+            "fagc_ib1_raw_s8": 0,
+            "fagc_wb0_raw_s8": 0,
+            "fagc_wb1_raw_s8": 0
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -110,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -111,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": 0,
+            "fagc_ib1_raw_s8": 0,
+            "fagc_wb0_raw_s8": 0,
+            "fagc_wb1_raw_s8": 0
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -107,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -91,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 11,
+            "before": -110,
+            "after": -107,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 12,
+            "before": -77,
+            "after": -71,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 13,
+            "before": -111,
+            "after": -91,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 26,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -110,
+            "after": -107,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 35,
+            "before": -111,
+            "after": -91,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 39,
+            "before": -77,
+            "after": -71,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 0,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "expected_stale_temp_bits17_16": [
+            0,
+            0
+          ],
+          "matches_stale_temp": true,
+          "warning": "unsupported reader; not valid adjacent-channel-interference measurements"
+        }
+      },
+      {
+        "stage": "rf_rx",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -109,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -105,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -109,
+            "after": -105,
+            "reported_s32": -108,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 12,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -107,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 26,
+            "before": -99,
+            "after": -99,
+            "reported_s32": -99,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -92,
+            "after": -92,
+            "reported_s32": -92,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -109,
+            "after": -105,
+            "reported_s32": -108,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 35,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -107,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967225,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "expected_stale_temp_bits17_16": [
+            1,
+            1
+          ],
+          "matches_stale_temp": false,
+          "warning": "unsupported reader; not valid adjacent-channel-interference measurements"
+        }
+      },
+      {
+        "stage": "rf_rx_repeat",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -100,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -111,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -110,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -100,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -109,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -111,
+            "after": -109,
+            "reported_s32": -108,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 12,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -110,
+            "after": -108,
+            "reported_s32": -107,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 26,
+            "before": -103,
+            "after": -103,
+            "reported_s32": -103,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -100,
+            "after": -100,
+            "reported_s32": -100,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -79,
+            "after": -79,
+            "reported_s32": -79,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -111,
+            "after": -109,
+            "reported_s32": -108,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 35,
+            "before": -110,
+            "after": -108,
+            "reported_s32": -107,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967217,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "expected_stale_temp_bits17_16": [
+            1,
+            1
+          ],
+          "matches_stale_temp": false,
+          "warning": "unsupported reader; not valid adjacent-channel-interference measurements"
+        }
+      },
+      {
+        "stage": "stopped",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -100,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -110,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -100,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -110,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -110,
+            "after": -110,
+            "reported_s32": -110,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 12,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 26,
+            "before": -103,
+            "after": -103,
+            "reported_s32": -103,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -100,
+            "after": -100,
+            "reported_s32": -100,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -79,
+            "after": -79,
+            "reported_s32": -79,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -110,
+            "after": -110,
+            "reported_s32": -110,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 35,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967217,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "expected_stale_temp_bits17_16": [
+            1,
+            1
+          ],
+          "matches_stale_temp": false,
+          "warning": "unsupported reader; not valid adjacent-channel-interference measurements"
+        }
+      },
+      {
+        "stage": "stopped_repeat",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -100,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -110,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -100,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -110,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -110,
+            "after": -110,
+            "reported_s32": -110,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 12,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 26,
+            "before": -103,
+            "after": -103,
+            "reported_s32": -103,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -100,
+            "after": -100,
+            "reported_s32": -100,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -79,
+            "after": -79,
+            "reported_s32": -79,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -110,
+            "after": -110,
+            "reported_s32": -110,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 35,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967217,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "expected_stale_temp_bits17_16": [
+            1,
+            1
+          ],
+          "matches_stale_temp": false,
+          "warning": "unsupported reader; not valid adjacent-channel-interference measurements"
+        }
+      }
+    ],
+    "cleanup_reload_alive": true
+  },
+  "corrected_repeat": {
+    "date_utc": "2026-09-05T22:41:50.945852+00:00",
+    "channel": 6,
+    "transmissions": 0,
+    "rows": [
+      {
+        "stage": "normal",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": 0,
+            "fagc_ib1_raw_s8": 0,
+            "fagc_wb0_raw_s8": 0,
+            "fagc_wb1_raw_s8": 0
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -115,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -109,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": 0,
+            "fagc_ib1_raw_s8": 0,
+            "fagc_wb0_raw_s8": 0,
+            "fagc_wb1_raw_s8": 0
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -109,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -109,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 11,
+            "before": -115,
+            "after": -109,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 12,
+            "before": -77,
+            "after": -77,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 13,
+            "before": -109,
+            "after": -109,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 26,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": 0,
+            "after": 0,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -115,
+            "after": -109,
+            "reported_s32": 0,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 35,
+            "before": -109,
+            "after": -109,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 39,
+            "before": -77,
+            "after": -77,
+            "reported_s32": 0,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 0,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "rejected_stale_fagc_prediction": [
+            0,
+            0
+          ],
+          "matches_rejected_stale_fagc_prediction": true,
+          "expected_untouched_zero_temp": [
+            0,
+            0
+          ],
+          "matches_untouched_zero_temp": true,
+          "warning": "unsupported reader; zeros do not mean absence of adjacent-channel interference"
+        }
+      },
+      {
+        "stage": "rf_rx",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -101,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -111,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -103,
+            "fagc_ib1_raw_s8": -101,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -79
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -107,
+            "inst_wb_raw_s8": -71
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -110,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 12,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -111,
+            "after": -107,
+            "reported_s32": -107,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 26,
+            "before": -103,
+            "after": -103,
+            "reported_s32": -103,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -101,
+            "after": -101,
+            "reported_s32": -101,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -79,
+            "after": -79,
+            "reported_s32": -79,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -110,
+            "source_endpoints_equal": true,
+            "exact_match": false
+          },
+          {
+            "word_index": 35,
+            "before": -111,
+            "after": -107,
+            "reported_s32": -107,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967217,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "rejected_stale_fagc_prediction": [
+            1,
+            1
+          ],
+          "matches_rejected_stale_fagc_prediction": false,
+          "expected_untouched_zero_temp": [
+            0,
+            0
+          ],
+          "matches_untouched_zero_temp": true,
+          "warning": "unsupported reader; zeros do not mean absence of adjacent-channel interference"
+        }
+      },
+      {
+        "stage": "rf_rx_repeat",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -113,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -107,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -109,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -113,
+            "after": -107,
+            "reported_s32": -110,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 12,
+            "before": -77,
+            "after": -77,
+            "reported_s32": -77,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -108,
+            "after": -109,
+            "reported_s32": -112,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 26,
+            "before": -99,
+            "after": -99,
+            "reported_s32": -99,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -92,
+            "after": -92,
+            "reported_s32": -92,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -113,
+            "after": -107,
+            "reported_s32": -110,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 35,
+            "before": -108,
+            "after": -109,
+            "reported_s32": -112,
+            "source_endpoints_equal": false
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -77,
+            "after": -77,
+            "reported_s32": -77,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967225,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "rejected_stale_fagc_prediction": [
+            1,
+            1
+          ],
+          "matches_rejected_stale_fagc_prediction": false,
+          "expected_untouched_zero_temp": [
+            0,
+            0
+          ],
+          "matches_untouched_zero_temp": true,
+          "warning": "unsupported reader; zeros do not mean absence of adjacent-channel interference"
+        }
+      },
+      {
+        "stage": "stopped",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -106,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -106,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -106,
+            "after": -106,
+            "reported_s32": -106,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 12,
+            "before": -77,
+            "after": -77,
+            "reported_s32": -77,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 26,
+            "before": -99,
+            "after": -99,
+            "reported_s32": -99,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -92,
+            "after": -92,
+            "reported_s32": -92,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -106,
+            "after": -106,
+            "reported_s32": -106,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 35,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -77,
+            "after": -77,
+            "reported_s32": -77,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967225,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "rejected_stale_fagc_prediction": [
+            1,
+            1
+          ],
+          "matches_rejected_stale_fagc_prediction": false,
+          "expected_untouched_zero_temp": [
+            0,
+            0
+          ],
+          "matches_untouched_zero_temp": true,
+          "warning": "unsupported reader; zeros do not mean absence of adjacent-channel interference"
+        }
+      },
+      {
+        "stage": "stopped_repeat",
+        "before": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -106,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "after": {
+          "fagc": {
+            "fagc_ib0_raw_s8": -99,
+            "fagc_ib1_raw_s8": -92,
+            "fagc_wb0_raw_s8": -68,
+            "fagc_wb1_raw_s8": -71
+          },
+          "bank0": {
+            "inst_ib_raw_s8": -106,
+            "inst_wb_raw_s8": -68
+          },
+          "bank1": {
+            "inst_ib_raw_s8": -108,
+            "inst_wb_raw_s8": -77
+          }
+        },
+        "comparison": [
+          {
+            "word_index": 10,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 11,
+            "before": -106,
+            "after": -106,
+            "reported_s32": -106,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 12,
+            "before": -77,
+            "after": -77,
+            "reported_s32": -77,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 13,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 26,
+            "before": -99,
+            "after": -99,
+            "reported_s32": -99,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 27,
+            "before": -92,
+            "after": -92,
+            "reported_s32": -92,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 30,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 31,
+            "before": -71,
+            "after": -71,
+            "reported_s32": -71,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 34,
+            "before": -106,
+            "after": -106,
+            "reported_s32": -106,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 35,
+            "before": -108,
+            "after": -108,
+            "reported_s32": -108,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 38,
+            "before": -68,
+            "after": -68,
+            "reported_s32": -68,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          },
+          {
+            "word_index": 39,
+            "before": -77,
+            "after": -77,
+            "reported_s32": -77,
+            "source_endpoints_equal": true,
+            "exact_match": true
+          }
+        ],
+        "unsupported_aci_alias_check": {
+          "prior_fagc_wb1_word31_u32": 4294967225,
+          "advertised_aci_words42_43": [
+            0,
+            0
+          ],
+          "rejected_stale_fagc_prediction": [
+            1,
+            1
+          ],
+          "matches_rejected_stale_fagc_prediction": false,
+          "expected_untouched_zero_temp": [
+            0,
+            0
+          ],
+          "matches_untouched_zero_temp": true,
+          "warning": "unsupported reader; zeros do not mean absence of adjacent-channel interference"
+        }
+      }
+    ],
+    "cleanup_reload_alive": true
+  }
+}

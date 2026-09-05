@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Old ACI statistics are unsupported zeros, not a clean-channel verdict:**
+[The pinned reader is a stub](INBAND_WIDEBAND_SIGNAL.md#aci-statistics-are-unsupported-zeros-not-interference-measurements).
+Two receive-only five-query runs retain0/0; the first disproves a stale-FAGC
+hypothesis. An intervening explicit zero store explains the unchanged output.
+Both hypotheses and both runs are retained; the old radio reloads successfully
+after each run, and no TX or guessed detector activation occurs.
+
 **New raw in-band/wideband signal surfaces work in normal mode:**
 [Firmware provenance and live controls](INBAND_WIDEBAND_SIGNAL.md) resolve
 GET50 to830003e0 and decode its signed upper bytes. Two RF/stopped cross-checks
