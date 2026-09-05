@@ -23,6 +23,10 @@ def test_connac3_probe_descriptor_geometry():
     assert changed[2] == (56 << 26) | 4
     assert changed[:2] == words[:2]
     assert changed[3:] == words[3:]
+    deep = struct.unpack("<16I", build_txwi(frame, 17, -32))
+    assert deep[2] == (32 << 26) | 4
+    assert deep[:2] == words[:2]
+    assert deep[3:] == words[3:]
     no_mat = struct.unpack("<16I", build_txwi(frame, 17, disable_mat=True))
     assert no_mat[6] == words[6] | 8
     assert no_mat[:6] == words[:6]
@@ -109,3 +113,46 @@ def test_capture_assigns_transmit_status_to_phase(monkeypatch):
     result = probe.capture(dev, 8, barrier, 60, [0, -8, 0, -16, 0])
     assert result["phases"][3]["tx_power_raw_values"] == {10: 1}
     assert result["tx_status"][0]["fields"]["tx_count_format0"] == 1
+
+
+def test_alternate_rate_selects_native_table_slots_without_other_changes():
+    frame = probe.controlled_frame(3, True)
+    assert frame[-4:] == bytes((1, 2, 0x8C, 0x6C))
+    slow = struct.unpack("<16I", build_txwi(frame, 3, disable_mat=True))
+    fast = struct.unpack("<16I", build_txwi(frame, 3, disable_mat=True, rate="ofdm54"))
+    assert slow[:6] == fast[:6]
+    assert slow[7:] == fast[7:]
+    assert slow[6] >> 16 & 63 == 18
+    assert fast[6] >> 16 & 63 == 25
+    assert [probe.planned_rate(i, True) for i in range(4)] == ["ofdm6", "ofdm54", "ofdm6", "ofdm54"]
+    assert probe.planned_rate(3, False) == "ofdm6"
+    assert probe.RATES["ofdm54"] == (25, 0x4C, 54.0)
+
+
+def test_interleaved_capture_keeps_rate_and_power_phase_separate(monkeypatch):
+    samples = []
+    for seq, signal in ((0, -60), (1, -61), (12, -64), (13, -65), (36, -68), (37, -69)):
+        speed = probe.RATES[probe.planned_rate(seq, True)][2]
+        samples.append(
+            {
+                "pkt_type": 2,
+                "pkt_type_name": "NORMAL",
+                "frame": probe.controlled_frame(seq, True),
+                "rssi": signal,
+                "phy": {"mode_name": "OFDM", "rate_mbps": speed},
+            }
+        )
+    items = iter(range(6))
+    times = iter((0, 0, 1, 2, 3, 4, 5, 9))
+    monkeypatch.setattr(probe.time, "monotonic", lambda: next(times))
+    monkeypatch.setattr(m, "decoder_for", lambda dev: lambda raw: samples[raw[0]])
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7921, rx_read=lambda **kw: bytes((next(items),)))
+    result = probe.capture(
+        dev, 8, SimpleNamespace(wait=lambda **kw: None), 60, [0, -8, 0, -16, 0], True
+    )
+    assert result["counts"]["controlled_rate_mismatch"] == 0
+    assert result["counts"]["controlled_bytes_exact"] == 6
+    assert result["phases"][3]["by_received_rate"]["OFDM:54.0"] == {
+        "unique_sequences": 1,
+        "median_rssi": -69,
+    }

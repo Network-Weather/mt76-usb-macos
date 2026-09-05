@@ -27,8 +27,8 @@ Important differences from the working MT7961 experiment:
 - Word 6 bit 3, `MT_TXD6_DIS_MAT`, is a candidate control for preserving raw
   injected addresses. The upstream non-MLD vif path sets it.
 
-No association, keys, firmware patch, persistent configuration, rate increase,
-deauthentication, or ACK solicitation is used. The rate-table write is followed
+No association, keys, firmware patch, persistent configuration, sustained/high-packet-rate
+traffic, deauthentication, or ACK solicitation is used. The rate-table write is followed
 by firmware reload and a monitor-mode reconfiguration in cleanup. Read-back of the
 staging register is not proof of rate-table contents; independent receive is the
 acceptance criterion. Both radios' register-alive checks are recorded.
@@ -123,6 +123,65 @@ The complete `scripts/check.sh` gate passes: 412 Python tests, Ruff, documentati
 distribution builds, dependency consistency, and C offline tests. The production
 driver files are unchanged. No captures, firmware, or ambient identifiers are
 committed, only aggregate evidence and synthetic test cases.
+
+## Interleaved PHY rates and stronger attenuation
+
+Redacted [rate/power evidence](../research/evidence/rate-power-2026-09-04.json)
+preserves both runs with firmware hashes and per-rate/per-phase aggregates.
+
+Follow-up on the same local date, after the channel-geometry experiments. This
+adds optional per-packet alternation between OFDM 6 and 54 Mbps, while retaining
+50 ms submission spacing and the 60-frame ceiling. The higher PHY rate does not
+mean higher offered packet load. Both radios remain on channel 149 / 20 MHz.
+
+The table initializer now optionally programs slot 25 to `0x4c`, matching
+`mac80211.c:mt76_rates` entry 11 (OFDM hardware index 12) plus the basic table base
+14, at the same pinned mt76 revision. Slot 18 remains `0x4b` for 6 Mbps. TXWI selects
+between the two preprogrammed slots without intervening MCU commands. Cleanup
+reloads firmware after modifying these volatile slots; exact post-reset table
+contents are not independently read back. Frames advertise both
+supported rates, and the receive side checks the actual PHY rate against each
+sequence's planned rate. Existing default commands still use only 6 Mbps.
+
+```bash
+./.venv/bin/python research/mt7925_tx_probe.py --channel 149 --count 60 \
+  --disable-mat --power-cycle --alternate-rate \
+  --acknowledge-experimental-transmit --output /tmp/rate-power149.json
+./.venv/bin/python research/mt7925_tx_probe.py --channel 149 --count 60 \
+  --disable-mat --power-cycle --cycle-depth 32 --alternate-rate \
+  --acknowledge-experimental-transmit --output /tmp/rate-power149-deep.json
+```
+
+Each phase sends six frames at each rate. The first run uses codes
+`0,-8,0,-16,0`; all **60/60 are byte-exact, 30 per PHY rate, with zero rate
+mismatches**. At code -16, median RSSI is -70 at 6 Mbps and -72 at 54 Mbps.
+There are 60 matching TX statuses; raw powers are `26,18,26,10,26` at both rates.
+
+The second run extends the signed six-bit offset experiment to its -32 boundary:
+
+| Power code | 0 | -16 | 0 | -32 | 0 |
+|---|---:|---:|---:|---:|---:|
+| Byte-exact 6 Mbps frames / sent | 6/6 | 6/6 | 6/6 | 6/6 | 6/6 |
+| Byte-exact 54 Mbps frames / sent | 6/6 | 6/6 | 6/6 | 6/6 | 6/6 |
+| Median RSSI, either PHY rate | -58 | -68 | -60 | -76 | -61 |
+| TX-status power byte, either PHY rate | 26 | 10 | 26 | 250 | 26 |
+
+The -32 code yields approximately 15.5 dB attenuation relative to adjacent
+baselines. Raw power **250 is consistent with signed eight-bit -6**, exactly
+`26 - 32`; it is not a rise to 250 units. The simultaneous signal reduction
+supports that interpretation. Units and absolute radiated power remain uncalibrated.
+Both runs pass all alive checks and firmware cleanup, with zero observed USB errors.
+
+**No decoding boundary was found.** Receiving six short frames at each rate in
+the deepest phase is not a sensitivity specification, statistically strong loss
+estimate, throughput result, or guarantee for long data frames. This experiment
+establishes independent rate selection, stronger attenuation, and the signed-power
+encoding evidence; it does not demonstrate that rate-dependent packet loss is absent
+in general. Noise floor/SNR and absolute RSSI calibration are still unresolved.
+
+Validation after the geometry and rate extensions: complete `scripts/check.sh`
+passes with 418 Python tests, plus Ruff, documentation, builds, dependencies, and
+C offline tests. No production driver changes are included.
 
 The tool returns 2 for no independent decode, 1 for observed execution/cleanup
 errors, and 0 for independent receipt. A zero exit code does not promise complete

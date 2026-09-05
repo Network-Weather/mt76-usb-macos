@@ -972,6 +972,16 @@ control miss. In total both observers decode 119/120 matching-primary controls
 and 0/48 other-primary probes in the same span. Firmware cleanup and all alive
 checks pass.
 
+## MT7925 interleaved rates and deep attenuation (2026-09-04)
+
+The [extended transmit report](MT7925_TRANSMIT.md#interleaved-phy-rates-and-stronger-attenuation)
+records commands and limits. Two 60-frame runs on channel 149 / 20 MHz each receive
+all 60 byte-exact frames, 30 at 6 Mbps and 30 at 54 Mbps, with no rate mismatches.
+The stronger cycle includes code -32: roughly 15.5 dB relative attenuation and raw
+TX power byte 250, consistent with signed -6 after a 32-count reduction from 26.
+Both radios remain alive, and transmitter firmware cleanup succeeds. No decoding
+boundary or absolute sensitivity rating was established by these short probes.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
