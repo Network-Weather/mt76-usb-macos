@@ -58,6 +58,7 @@ MASKS = {CONTROL: 7, RESET: 1 << 29}
 BANKS = {"ordinary_getter": 0x83088600, "timer_getter": 0x83001000}
 OTHER_VIEWS = {"ordinary_index1": 0x83098600, "timer_index1": 0x83011000}
 DURATIONS = (0.25, 1.0)
+CHANNELS = (1, 6, 11, 36)
 THRESHOLD_ADDRESS = 0x02216F2C  # Traced GP+18220; ten signed labels, not calibration.
 
 
@@ -131,7 +132,7 @@ def controls(dev):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--enable-histogram", action="store_true")
-    parser.add_argument("--channel", type=int, choices=(6, 36), default=6)
+    parser.add_argument("--channel", type=int, choices=CHANNELS, default=6)
     parser.add_argument(
         "--compare-views",
         action="store_true",
@@ -162,7 +163,7 @@ def main():
             dev.bringup(*images, log=lambda *_: None)
             dev.set_monitor_mode()
             dev.set_sniffer(True)
-            dev.tune("2.4GHz" if args.channel == 6 else "5GHz", args.channel, args.channel, 20)
+            dev.tune("2.4GHz" if args.channel <= 11 else "5GHz", args.channel, args.channel, 20)
 
         try:
             boot()

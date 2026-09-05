@@ -44,6 +44,7 @@ def test_enable_stop_preserves_unrelated_bits():
     p.set_bits(dev, p.CONTROL, 0)
     assert dev.writes == [(p.CONTROL, 0x12340005), (p.CONTROL, 0x12340000)]
     assert p.DURATIONS == (0.25, 1.0)
+    assert p.CHANNELS == (1, 6, 11, 36)
     assert set(p.MASKS) == {0x83082004, 0x83088230}
 
 

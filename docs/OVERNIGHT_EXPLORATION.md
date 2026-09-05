@@ -18,6 +18,9 @@ while the ordinary index1 bank stays zero. The extra timer view is concentrated
 in bin6 on channel6, versus bins7–8 in the first timer view. Control index1 stays
 disabled. Raw indices replace provisional RF-band labels; physical chain/stage
 mapping is not yet established.
+Additional1→11→6 controls change distributions within2.4GHz, with long-window
+totals98,177/64,592/106,713 despite similar dwell times. Sample fractions are
+not automatically full-dwell coverage; idle/busy gating remains to be tested.
 
 **Per-rate power reports work, but MT7925 inactive-width rows retain history:**
 [both source-defined report interfaces](TXPOWER_TABLE_STATE.md) answer26

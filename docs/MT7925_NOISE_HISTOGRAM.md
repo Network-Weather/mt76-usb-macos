@@ -62,7 +62,7 @@ then reset-separated quarter-second and one-second acquisition windows. Each
 window ends with two stopped counter snapshots50ms apart. Both original masked
 controls are restored and checked, then normal monitor firmware is reloaded.
 
-`--channel` accepts only6 or36 at20MHz. There is no TX, RF-test mode, index1
+`--channel` accepts only1,6,11 or36 at20MHz. There is no TX, RF-test mode, index1
 write, host-memory DMA, nonvolatile programming, or ambient payload/identifier
 export. Shared histogram history is reset and **cannot be restored**. Snapshot
 timing includes USB control overhead, not a hardware-latched acquisition duration.
@@ -131,3 +131,28 @@ band1 wording for these helper indices is therefore replaced with raw indices.
 [Four-view evidence](../research/evidence/mt7925-histogram-views-2026-09-05.json).
 The new capability is synchronized, nonidentical histogram views; it does not
 yet identify which antenna sees a particular interferer.
+
+## Within-2.4GHz channel controls and sample coverage
+
+Three additional fresh boots at1→11→6, all20MHz, retain the synchronized
+three-view behavior while changing the distributions within one RF band:
+
+| Channel | Short total per active view | Long total per active view | Long-window dominant bins, timer0 / timer1 |
+| --- | --- | --- | --- |
+| 1 | 27,211 | 98,177 | 6 / 5 |
+| 11 | 22,947 | 64,592 | 7 / 6 |
+| 6 return | 28,214 | 106,713 | 7 / 6 |
+
+Run starts are19:35:15,19:35:21 and19:35:27 UTC. All counters reset to zero,
+stopped snapshots remain unchanged, control1 stays disabled, and restorations/
+normal reloads pass. This rejects a fixed2.4GHz-versus5GHz-only distribution,
+but does not isolate ambient interference from device/gain/channel configuration.
+
+Long host enable/stop intervals are1.014,1.012 and1.008 seconds, yet totals differ
+substantially. **Histogram fractions describe collected samples, not necessarily
+the whole dwell time.** Gating, busy periods and sample cadence need separate
+measurement before combining these with occupancy or ranking channels. Do not
+call channel11 quieter solely because it collected fewer samples, or recommend
+a channel change from these uncalibrated distributions alone.
+
+[Within-band evidence](../research/evidence/mt7925-histogram-channels-2026-09-05.json).
