@@ -319,14 +319,14 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0, spe_idx=None):
         raise ValueError("rate outside bounded experiment")
     if spe_idx is not None and (
         dev.CHIP != m.CHIP_MT7925
-        or code not in (0x80, 0x200)
+        or code not in (0x80, 0x200, 0x210, 0x240, 0x250)
         or type(spe_idx) is not int
         or spe_idx not in (0, 1, 24)
         or gi
         or ldpc
-        or ltf != int(code == 0x200)
+        or ltf != int(code != 0x80)
     ):
-        raise ValueError("table spatial experiment is MT7925 HT0/HE0 SPE0/1/24 only")
+        raise ValueError("table spatial experiment is MT7925 HT0/HE0/HE-ER0 SPE0/1/24 only")
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
     allowed = {

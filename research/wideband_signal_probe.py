@@ -103,7 +103,16 @@ def acquire(tx, rx, packets):
                     receipts[i] = {
                         "phy": {
                             k: decoded.get("phy", {}).get(k)
-                            for k in ("mode_name", "mcs", "nss", "bw_mhz", "gi")
+                            for k in (
+                                "mode_name",
+                                "mcs",
+                                "nss",
+                                "bw_mhz",
+                                "gi",
+                                "ldpc",
+                                "dcm",
+                                "stbc",
+                            )
                         },
                         "sample_after_receipt_not_atomic": sample(rx),
                     }

@@ -324,6 +324,40 @@ Both alive checks and transmitter reload pass. The Group5 run additionally
 restores the exact receiver report register and reloads the receiver successfully.
 [Sanitized HE-ER evidence](../research/evidence/he-er-transmit-2026-09-05.json).
 
+#### Explicit spatial index1 receives ER frames, but DCM remains unvalidated
+
+The [source-mapped spatial selector](FIXED_RATE_TABLE.md#he-does-not-inherit-the-ht-duplicate-path-result)
+can also be combined with the previously exercised HE/DCM/ER rate codes.
+`research/he_dcm_spatial_probe.py --acknowledge-experimental-transmit` uses
+five four-frame phases at channel6/20MHz: HE1, HE1/DCM, HE-ER1, HE-ER1/DCM,
+HE1. All retain explicit SPE1, GI0/LTF1/BCC, zero NAV, no ACK and unchanged
+power. Packets are50ms paced and each run is capped at20 submissions. The
+first HE phase must receive at least two complete good-FCS packets to proceed.
+
+Every rate change is independently read back from indexed slot18: ITDR0
+`200/210/240/250/200`, ITDR1 always`10080`. These combine the already pinned
+rate mode/DCM masks with ROM83c0ac's SPE-selection/index and LTF mapping.
+The [HE configuration reference](https://www.mathworks.com/help/wlan/ref/wlanhesuconfig.html)
+permits DCM at MCS0 without STBC and at most two space-time streams; these
+one-stream requests do not imply verified emitted coding.
+
+| Fresh run | HE before | HE/DCM | HE-ER | HE-ER/DCM | HE after |
+| --- | --- | --- | --- | --- | --- |
+| First | 2/4 | 0/4 | **3/4** | 0/4 | 1/4 |
+| Repeat | 2/4 | 0/4 | **2/4** | 0/4 | 0/4 |
+
+The five exact ER receipts independently report HE-ER-SU/MCS0/NSS1/20MHz,
+GI0, no LDPC/DCM/STBC. This extends verified ER transmission to explicit
+spatial index1. It is not evidence of greater range or a calibrated gain.
+Neither DCM phase has a decoded payload. The repeat's final control also
+fails, so these small sequential tests cannot isolate a DCM-specific cause.
+All40 TX statuses report the requested rate, raw power36, one attempt and
+zero error bits; command/table/status acceptance is not independent decode.
+Both radios reload successfully after both runs. No receiver register writes
+beyond normal bringup/tuning, power increase or unknown-field sweep occurs.
+[Sanitized indexed-table, packet and scalar observations](../research/evidence/he-dcm-explicit-spatial-2026-09-05.json)
+retain misses and weak controls; signal-register polling remains non-atomic.
+
 ### 2.4GHz follow-up: usable forward direction, reverse still unverified
 
 `--suite lowband --channel 1 --per-phase 4` uses six bounded phases at20MHz:

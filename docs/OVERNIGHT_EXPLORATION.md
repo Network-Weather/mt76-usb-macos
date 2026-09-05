@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Explicit spatial index1 extends verified HE-ER transmission; DCM still unreceived:**
+[Two bounded twenty-frame runs](PHY_TRANSMIT.md#explicit-spatial-index1-receives-er-frames-but-dcm-remains-unvalidated)
+receive3/4 and2/4 exact ER payloads. Indexed table readback matches every
+requested rate and fixed SPE1/LTF1 configuration; all40 TX statuses report
+unchanged power36. DCM yields no payloads, and weak HE controls—including0/4
+at the repeat's end—prevent an isolated cause or gain claim. Both radios reload.
+
 **Old ACI statistics are unsupported zeros, not a clean-channel verdict:**
 [The pinned reader is a stub](INBAND_WIDEBAND_SIGNAL.md#aci-statistics-are-unsupported-zeros-not-interference-measurements).
 Two receive-only five-query runs retain0/0; the first disproves a stale-FAGC
