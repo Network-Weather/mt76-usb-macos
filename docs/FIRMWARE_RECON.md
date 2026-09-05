@@ -67,9 +67,10 @@ Consequences that shape everything downstream:
 - Both images end with a `NON_DL` region at load address 0 that is never sent to the chip.
   It is packed, and it is not firmware in any executable sense.
 
-So the string-reading route works on the MT7921 and cannot work on the MT7925. Any result
-recovered by reading MT7921 firmware has to be re-established on the MT7925 some other way,
-or scoped to the MT7921 alone.
+The on-disk string-reading route works on MT7921, not the encrypted MT7925 container.
+**2026-09-05 update:** bounded [loaded MT7925 code reads](MT7925_LOADED_FIRMWARE.md)
+now work over USB and decode as RV32 with custom Andes-style instructions. MT7961
+findings still require independent MT7925 verification; its ISA and addresses differ.
 
 Roadmap context: [ROADMAP.md](../ROADMAP.md). Chip-generic results land in
 [TESTING.md](TESTING.md); disproven ideas land in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
@@ -132,7 +133,8 @@ Measured on the MT7921 image, 2026-09-03:
 - `RX_AIRTIME_CTRL` (0x4a) is present, which is how per-station airtime accounting is armed
   on the AP parts. Not yet investigated.
 
-The MT7925 image's regions are encrypted, so none of this can be repeated there.
+The MT7925 container regions are encrypted. Subsequent loaded-code reads open a
+separate inspection route; these particular dispatch claims are not verified there.
 
 Cross-checks against the independent analysis cited in RELATED_WORK.md, both read from the
 image here rather than taken on trust: the region map agrees byte-for-byte on every offset,
@@ -631,8 +633,9 @@ is the cheapest evidence that something is there; none has been sent to hardware
    20, but controlled valid Wi-Fi traffic makes it rise too. The MT7996-style `NON_WIFI_TIME`
    offset 27 remains zero on this firmware; an enable or different numbering may exist.
 
-Out of reach for now: anything needing the MT7925's dispatch tables, and anything needing
-real disassembly of the NDS32 code regions, including EX9 table resolution.
+Subsequent work resolved [MT7961 NDS32/EX9 and runtime GP](NDS32_RECON.md) and
+established [readable MT7925 loaded code](MT7925_LOADED_FIRMWARE.md). Its dispatch
+tables and custom compressed ISA still need independent mapping.
 
 ## Scope boundaries
 

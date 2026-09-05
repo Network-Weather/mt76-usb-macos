@@ -5,6 +5,11 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**New MT7925 route:** [loaded plaintext code is USB-readable](MT7925_LOADED_FIRMWARE.md)
+despite the encrypted container. Repeated entry reads establish RV32 startup, and
+a bounded instruction-table read supports an experimental Andes-style expansion.
+This does not yet establish a new measurement command or a complete decoder.
+
 **Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
 Startup exposes the EX9 table, and a GP candidate recovers meaningful string
 references. Internal dispatch tags also must not be equated directly to wire IDs.
