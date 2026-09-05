@@ -958,6 +958,16 @@ are 3.25 and 6.25 dB versus adjacent baselines; the code is not a calibrated RF
 transfer function. Full results, including 199/200 byte-exact observations across
 four DIS_MAT runs and the one unexplained miss, are in the report.
 
+## Controlled channel geometry (2026-09-04)
+
+The [channel-geometry report](CHANNEL_GEOMETRY.md) records commands, test bed,
+acceptance criteria, and limitations. An MT7961 sends 20 MHz OFDM probes while
+the MT7925 observes primary 36 or 44 within the same 80 MHz center-42 span.
+Five same-primary/narrow control phases each receive 12/12 byte-exact frames;
+two other-primary phases each receive 0/12. Both radios remain responsive.
+This must not be generalized to all PHY formats or interpreted as no RF energy:
+an 80 MHz capture is not four independent 20 MHz capture radios.
+
 ## Previously observed, not rerun in the current validation
 
 - control-frame receive;
