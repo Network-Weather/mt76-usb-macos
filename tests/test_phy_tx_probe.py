@@ -33,6 +33,34 @@ def test_rate_allowlist():
         p.descriptor(dev, b"", 0, 0xFFFF)
 
 
+def test_table_spatial_control_changes_only_source_defined_selection_and_index():
+    assert p.TABLE_SPATIAL_SPE == (None, 0, None, 1, 24, None)
+    rates = p.suite_rates("table-spatial", 6)
+    assert len(rates) * 10 <= 60
+    assert {code for _, code in rates} == {0x80}
+    for spe, expected in ((None, 0x40), (0, 0), (1, 0x80), (24, 0xC00)):
+        writes = []
+        dev = SimpleNamespace(
+            CHIP=m.CHIP_MT7925, wr=lambda a, v, target=writes: target.append((a, v)), rr=lambda _: 0
+        )
+        p.program_rate(dev, 0x80, spe_idx=spe)
+        assert writes == [(p.c3.ITDR0, 0x80), (p.c3.ITDR1, expected), (p.c3.ITCR, 0x80010012)]
+
+
+@pytest.mark.parametrize(
+    ("chip", "code", "spe"),
+    [
+        (m.CHIP_MT7921, 0x80, 0),
+        (m.CHIP_MT7925, 0x488, 0),
+        (m.CHIP_MT7925, 0x80, 2),
+        (m.CHIP_MT7925, 0x80, True),
+    ],
+)
+def test_table_spatial_rejects_other_chip_rate_or_path_before_io(chip, code, spe):
+    with pytest.raises(ValueError, match="table spatial"):
+        p.program_rate(SimpleNamespace(CHIP=chip), code, spe_idx=spe)
+
+
 @pytest.mark.parametrize("spe", [0, 1, 24])
 def test_spatial_code_only_changes_connac2_word7_field(spe):
     dev = SimpleNamespace(CHIP=m.CHIP_MT7921)

@@ -31,6 +31,12 @@ succeeded on all three runs.
 
 ## Protocol pointers and reproduction
 
+The [explicit MT7925 spatial-table control](FIXED_RATE_TABLE.md#explicit-spatial-path-selection-wtbl-is-not-path0)
+now distinguishes the default WTBL selector from explicit indices0/1/24.
+Indices1 and24 each receive4/4 one-stream HT probes in two fresh runs;
+index0 is weak. This is a bounded transmit-path control, not calibrated antenna
+selection, a power gain or restored RF health.
+
 ### First40MHz control: status width works, independent reception does not
 
 The later stable channel6 HT8/HE2SS narrow controls justified one bounded width

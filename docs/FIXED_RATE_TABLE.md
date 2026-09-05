@@ -55,8 +55,10 @@ Names derive from the corresponding
 not from guessed adjacent register bits. Positions follow ROM instructions,
 including Andes bitfield-deposit semantics documented by the
 [pinned Andes emulator](https://github.com/andestech/qemu/blob/32902627f26c5d760cd4efab499b989d566822f9/target/riscv/andes_helper.c).
-The existing upstream MT7925 direct writer programs rate plus SPE-selection64.
-Beamforming, dynamic bandwidth and explicit SPE routing were **not tested** here.
+The existing upstream MT7925 direct writer programs rate plus SPE-selection64:
+its source comment explicitly says to use the WTBL SPE index. This is not an
+explicit request for physical path0. Beamforming and dynamic bandwidth remain
+untested. A later explicit-SPE control is described below.
 
 The tag handler stores a rate halfword at stack+4 and seven bytes at stack+7..13,
 then passes stack+4 to ROM. There is no observed store to stack+6. ROM reads
@@ -172,3 +174,39 @@ Those STBC trials used default Group5-off reception. The subsequent
 training-field codes, not a retroactive field observation on these STBC frames.
 
 [Sanitized HE-STBC evidence](../research/evidence/he-stbc-transmit-2026-09-05.json).
+
+## Explicit spatial-path selection: WTBL is not path0
+
+The default `ITDR1=0x40` uses the **WTBL's SPE index**, as the upstream
+MT7925 writer's comment states. The pinned
+[MT7996 fixed-rate request](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7996/mcu.c#L5457)
+defines selection1 as BMC-WTBL and selection0 as explicit TXD/table selection.
+Its beacon example supplies SPE24 at selection0. The vendor
+[`wlanAntPathFavorSelect`](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/common/wlan_lib.c#L11943)
+maps indices0/1 to WF0/WF1 and24 to duplicated one-stream selection.
+These are source names, not measurements of which physical antenna emits.
+
+`--suite table-spatial --transmitter mt7925 --channel 6 --per-phase 4 --tx-timing
+--acknowledge-experimental-transmit` sends24 HT MCS0/1SS frames at20MHz,
+GI0/LTF0/BCC, unchanged power and50ms spacing. Only the ROM-mapped table SPE
+selection/index changes; no WTBL, beamforming profile or calibration writes.
+The descriptor and rate remain constant. Explicit indices are restricted to
+0/1/24 on this chip/rate, with before/middle/after WTBL controls.
+
+| Phase | ITDR1 | First exact receipts | Fresh repeat |
+|---|---|---|---|
+| WTBL before | 0x40 | 3/4 | 1/4 |
+| Explicit0 | 0 | 0/4 | 1/4 |
+| WTBL middle | 0x40 | 4/4 | 4/4 |
+| Explicit1 | 0x80 | **4/4** | **4/4** |
+| Explicit24 | 0xc00 | **4/4** | **4/4** |
+| WTBL after | 0x40 | 4/4 | 4/4 |
+
+Every receipt independently reports HT MCS0, NSS1/NSTS1,20MHz, GI0, no LDPC
+or STBC. Both runs have24 TX statuses, raw power36 throughout and no error
+bits16..22. Explicit1/24 are reproducibly received formats; explicit0 is weak,
+not completely silent. Raw signal medians remain roughly−102..−99, so this
+does **not** establish restored RF health, a calibrated gain or a physical
+antenna fault. The phase ordering and small sample also limit comparisons.
+Both radios answer afterward and the transmitter reloads successfully.
+[Sanitized spatial-table evidence](../research/evidence/table-spatial-transmit-2026-09-05.json).

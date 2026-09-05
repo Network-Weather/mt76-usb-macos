@@ -141,6 +141,18 @@ WIDTH_LTF = (0, 0, 0, 1, 1, 1)
 # Full40MHz HE-SU requires LDPC (BCC is limited to <=242-tone RUs).
 # Apply LDPC to both HE20 controls too, isolating width within that triplet.
 WIDTH_OPTIONS = ((0, 0), (0, 0), (0, 0), (0, 1), (0, 1), (0, 1))
+TABLE_SPATIAL_RATES = tuple(
+    (name, 0x80)
+    for name in (
+        "ht0_wtbl_before",
+        "ht0_table_wf0",
+        "ht0_wtbl_middle",
+        "ht0_table_wf1",
+        "ht0_table_duplicate",
+        "ht0_wtbl_after",
+    )
+)
+TABLE_SPATIAL_SPE = (None, 0, None, 1, 24, None)
 CONNAC3_CODING_CODES.update((0x240, 0x250))
 ALLOWED_RATE_CODES = {
     rate
@@ -179,6 +191,7 @@ def suite_rates(suite, channel):
             "he-g5-cycle",
             "he-er",
             "bandwidth",
+            "table-spatial",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -198,6 +211,7 @@ def suite_rates(suite, channel):
         "he-g5-cycle": HE_G5_RATES,
         "he-er": HE_ER_RATES,
         "bandwidth": WIDTH_RATES,
+        "table-spatial": TABLE_SPATIAL_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -238,9 +252,19 @@ def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None, *, width_mhz
     return bytes(data)
 
 
-def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0):
+def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0, spe_idx=None):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
+    if spe_idx is not None and (
+        dev.CHIP != m.CHIP_MT7925
+        or code != 0x80
+        or type(spe_idx) is not int
+        or spe_idx not in (0, 1, 24)
+        or gi
+        or ldpc
+        or ltf
+    ):
+        raise ValueError("table spatial experiment is MT7925 HT0 SPE0/1/24 only")
     if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
         raise ValueError("coding experiment rate encoding is MT7925-only")
     allowed = {
@@ -262,7 +286,10 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0):
         return
     # mt7925/mac.c mt7925_mac_set_fixed_rate_table at c5a3bd91.
     dev.wr(c3.ITDR0, code)
-    dev.wr(c3.ITDR1, (1 << 6) | (gi << 12) | (ltf << 16) | (ldpc << 25))
+    # mt7996 fixed_rate_table: selection1 takes BMC WTBL; selection0 uses
+    # the table's explicit SPE index. MT7925 ROM83c0ac maps these to bit6/11:7.
+    spatial = 1 << 6 if spe_idx is None else spe_idx << 7
+    dev.wr(c3.ITDR1, spatial | (gi << 12) | (ltf << 16) | (ldpc << 25))
     dev.wr(c3.ITCR, (1 << 31) | (1 << 16) | c3.RATE_TABLE_INDEX)
     for _ in range(100):
         if not dev.rr(c3.ITCR) & (1 << 31):
@@ -453,6 +480,7 @@ def main():
             "he-g5-cycle",
             "he-er",
             "bandwidth",
+            "table-spatial",
         ),
         default="baseline",
     )
@@ -478,7 +506,16 @@ def main():
         p.error("spatial suite currently supports only the Connac2 transmitter")
     if (
         args.suite
-        in ("stbc", "he-coding", "ht-table", "he-table", "he-coding-ltf", "he-er", "bandwidth")
+        in (
+            "stbc",
+            "he-coding",
+            "ht-table",
+            "he-table",
+            "he-coding-ltf",
+            "he-er",
+            "bandwidth",
+            "table-spatial",
+        )
         and args.transmitter != "mt7925"
     ):
         p.error("coding suites currently support only the Connac3 transmitter")
@@ -502,6 +539,7 @@ def main():
         "tx_timing": args.tx_timing,
         "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
+        "table_spatial_codes": TABLE_SPATIAL_SPE if args.suite == "table-spatial" else None,
         "table_gi_ldpc": {
             "ht-table": HT_TABLE_OPTIONS,
             "he-table": HE_TABLE_OPTIONS,
@@ -617,7 +655,10 @@ def main():
                             "he-er": HE_ER_LTF,
                         }.get(args.suite)
                         ltf = ltfs[phase] if ltfs else 0
-                        program_rate(tx, code, gi=gi, ldpc=ldpc, ltf=ltf)
+                        table_spe = (
+                            TABLE_SPATIAL_SPE[phase] if args.suite == "table-spatial" else None
+                        )
+                        program_rate(tx, code, gi=gi, ldpc=ldpc, ltf=ltf, spe_idx=table_spe)
                         for seq in range(phase * args.per_phase, (phase + 1) * args.per_phase):
                             if any(job.done() for job in jobs):
                                 raise RuntimeError("capture stopped before transmit completed")
