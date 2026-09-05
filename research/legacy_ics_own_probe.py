@@ -30,8 +30,9 @@ from research.txpower_register_probe import check_image, m
 def own_ics_observation(raw, packets):
     """Source-inspired locations, only for an exact submitted24-byte header.
 
-    P-RXV2 placement is a hypothesis, not a verified CFO/SNR decoder. Raw source
-    masks are intentionally not converted into calibrated units.
+    P-RXV2 filling is mode dependent: a separate RF-mode cache comparison verifies
+    this location; normal-mode controls return all-one fields, not valid CFO/SNR.
+    Source masks are intentionally not converted into calibrated units.
     """
     shape = legacy.aggregate_shape(raw)
     if shape != {"type": 12, "bytes": 272, "frame_count": 3}:

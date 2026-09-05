@@ -126,8 +126,69 @@ writer copies18+2+4+20 words, and its CFO/SNR calculation uses words20/21. After
 finding18 C-RXV words in ICS, placing the presumed later P-RXV2 at104/108 looked
 plausible. But applying those masks returns **signed20=−1 and SNR bits63 on all
 24 own packets**, with or without Group5. These all-one fields are not usable
-CFO/SNR measurements, and the placement is rejected. The RF-test vector's
-contiguity must not be imposed on the differently serialized ICS aggregate.
+CFO/SNR measurements in these normal-mode controls. The subsequent RF-mode
+experiment below establishes mode-dependent filling at that very location;
+the initial normal-mode rejection must not become a universal absence claim.
 Only identified source masks were exported, never arbitrary words.
 
 [Three controlled HT runs](../research/evidence/legacy-ics-own-ht-2026-09-05.json).
+
+## RF-mode ICS streams populated CFO/SNR beyond the finite log cap
+
+**In RF-test receive mode, the same ICS offset104 contains the actual P-RXV2
+vector, including the firmware-validated CFO and SNR fields.** This bridges the
+previously finite five-record RF-test log to a USB diagnostic stream with known
+frame-header attribution. It does not yet provide calibrated measurements in
+ordinary monitor mode.
+
+[`legacy_ics_rf_probe.py`](../research/legacy_ics_rf_probe.py) first requires four
+exact full-payload good-FCS HT8/two-stream/20MHz normal controls. It then enters
+the established RF RX mode, configures band0, two receive paths and20MHz, enables
+CE93 RMAC ICS, and sends four or eight further synthetic no-ACK HT frames.
+The frequency request is the source's SET18 in kHz: channel6=`2437000`,
+channel36=`5180000`; no other frequency is exposed. The
+[vendor channel setter](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/os/linux/gl_hook_api.c)
+documents these units. Total submissions are capped at8 or12, RF gaps at least
+50ms, and RF collection at one second/2048 bulk-read attempts. Collection stops
+early once every submitted header is observed. RF STOP, masked ICS restoration
+and both-radio normal reload are attempted on every exit.
+
+After RF STOP, two reads of the **fixed96-byte cache at02040808** must agree.
+Its layout is established by the pinned firmware copy at`00930a58..00930a86`:
+18 C-RXV words, two P-RXV1 words, four P-RXV2 words. No arbitrary RAM range is
+read and no cache bytes are exported. A stable cache's first72 bytes must match
+an own-header ICS record's C-RXV16..87 before exporting its known CFO/SNR fields
+or testing the16-byte P-RXV2 copy. This is an in-memory content match, not a
+time-proximity assignment.
+
+Three successful channel6 boots independently reproduce:
+
+| RF own headers observed | Final matched sequence | Cached raw signed20 CFO | Raw SNR field | Exact P-RXV2 copy |
+| --- | --- | --- | --- | --- |
+| 4/4 | 7 | 234 | 24 | Offset104,16 bytes |
+| 8/8 | 11 | 1139 | 24 | Offset104,16 bytes |
+| 8/8 | 11 | 1117 | 24 | Offset104,16 bytes |
+
+All three stable caches match the final own record's entire72-byte C-RXV and
+entire16-byte P-RXV2. Applying the established masks at104/108 also exactly
+reproduces the cache's CFO and SNR. Both eight-frame runs return the finite log
+count **5** through the known GET36/subselector40, yet ICS contains all eight
+own headers with changing populated fields, without resetting or rearming the
+log. Their per-record raw CFO ranges are720..1245 and863..1353; SNR fields16..25
+and24..25. These are raw fields, not Hz/dB or a stable oscillator fingerprint.
+
+In RF mode no ordinary type2 records arrive, so **20/20 known RF headers is not
+20/20 independently decoded full-payload/FCS receptions**. The12 preceding
+normal controls are independently received; the RF records have exact submitted
+24-byte headers and the final-cache content checks. Ambient diagnostics also
+arrive and are not exported as attributed samples. This is a bounded proof of
+streaming beyond the five-record log cap, not an unlimited/lossless throughput
+qualification or a generic third-party-frame decoder.
+
+An initial channel36 attempt receives0/4 normal controls and correctly skips
+RF mode/ICS entirely. It is retained in the evidence. All four attempts reload
+both radios successfully; all three activated attempts restore every mask.
+RF STOP leaves ICS enabled until its separate STOP/restoration, as expected.
+The key remaining question is which RF setup operation populates P-RXV2, and
+whether a narrowly traced control can enable it with normal full-frame RX.
+[Four attempts, including the failed prerequisite](../research/evidence/legacy-ics-rf-stream-2026-09-05.json).

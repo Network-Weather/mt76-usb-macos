@@ -5,12 +5,22 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**RF-mode ICS exposes populated CFO/SNR beyond the five-record log cap:**
+[Three successful controls](LEGACY_ICS.md#rf-mode-ics-streams-populated-cfosnr-beyond-the-finite-log-cap)
+receive12/12 exact normal prerequisites and20/20 known RF headers. Each final
+record exactly matches the stable72-byte C-RXV and16-byte P-RXV2 cache; CFO/SNR
+are populated at104/108 in RF mode, unlike normal all-one fields. Two eight-frame
+runs stream every own header while the finite log stays capped at5, no resets.
+RF headers are not full-payload/FCS verdicts; no calibrated units. Failed ch36
+prerequisite retained; all activated masks and both-radio reloads pass.
+
 **Known HT traffic qualifies legacy Group5 plus ICS coexistence:**
 [Three bounded controls](LEGACY_ICS.md#known-ht-stimulus-qualifies-simultaneous-group5-reception)
 receive48/48 exact packets. Two Group5 runs prove16/16 full72-byte C-RXV copies
 at ICS offset16, paired by known payload/header. Earlier passive misses remain
 unexplained, not universal incompatibility. A guessed extra CFO/SNR placement
-at104/108 returns all-one fields on24/24 own packets and is rejected. All cleanup
+at104/108 returns all-one fields on24/24 normal-mode own packets and is rejected
+for those captures (RF-mode filling is established above). All cleanup
 passes; no raw vectors or ambient exports.
 
 **Legacy CE93 opens RMAC diagnostics on MT7961 too:**
