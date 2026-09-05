@@ -1,7 +1,8 @@
 # MT7925 ICS capture path
 
-**RMAC ICS opens a working type12 USB diagnostic stream**, reproduced in two
-off/on/off runs. See [MAC receive aggregates](#mac-receive-aggregates).
+**Both RMAC and TMAC ICS open working type12 USB diagnostic streams**.
+See [MAC receive aggregates](#mac-receive-aggregates) and
+[own-transmit diagnostic fields](#own-transmit-diagnostic-fields).
 UNI0x49 also reaches a distinct PHY sniffer state machine on the pinned firmware.
 This is a concrete capture lead, **not yet a working raw-PHY capture result**.
 The later [bounded activation checks](#bounded-activation-checks) program the
@@ -194,3 +195,59 @@ never FIDs, inner words, identifiers or traffic payloads. Counts describe the
 leading packet in each USB read, not a claim to enumerate every possible packed
 DMA block. No packet-completeness, calibrated RSSI, chain, timestamp or topology
 interpretation yet. [Sanitized two-run evidence](../research/evidence/rmac-ics-2026-09-05.json).
+
+## Own-transmit diagnostic fields
+
+TMAC-only ICS also works, with a different aggregate shape: **one288-byte,
+frame-count2 aggregate per controlled transmission while enabled**. Four
+fresh-boot off/on/off tests send four synthetic CCK1 packets in each phase,
+alternating65/193-byte MAC frames. All sixteen enabled-phase submissions produce
+an aggregate; eight off windows produce none. The second radio independently
+receives43/48 exact good-FCS packets overall (14/16 in enabled phases), and
+all48 have matched successful TX statuses. Ordinary receive packets continue.
+These controls establish coexistence, not lossless RX or a throughput estimate.
+
+[`tmac_ics_probe.py`](../research/tmac_ics_probe.py) uses module2/condition0=0,
+action1/0, band0, all other conditions zero. TMAC setter/getter
+`0082e282`/`0082e29c` use field key`1a0760`, whose table entry`0084c26c`
+points to`0084c810`, offset0x120, field0 bit pair0/0. Thus enable is
+**`820e4120` bit0**, combined with the already-traced`820e705c` bit24. Both
+read back enabled only in the middle phase; stop, masked restoration and both
+normal firmware reloads pass in every run. No PHY ring or MAC filter action.
+
+The opaque records are **not exact copies of our complete frame or64-byte TXD**:
+neither signature occurs in any aggregate. A local-only differential reducer
+instead checks four isolated submissions, one temporally paired ICS record and
+one correlated TX status each. It emits candidate offsets only, never record
+words. Three runs use enabled-phase sequence ranges12–15,4–7,12–15 and find:
+
+| Aggregate-relative byte offset | Candidate field | Observation |
+| --- | --- | --- |
+| 124 | u32 bits31:20 | Exact submitted12-bit sequence,12/12 pairs |
+| 272 | u32 bits11:0 | Exact submitted12-bit sequence,12/12 pairs |
+| 48 | u32 bits15:0 | Frame bytes+4:69/197,12/12 pairs |
+| 96 | u32 bits15:0 | Frame bytes+4:69/197,12/12 pairs |
+| 20 | u32 relative clock | Same inter-record deltas as TXS timestamp |
+| 84 | u32 relative clock | Same inter-record deltas as TXS timestamp |
+
+The length result is consistent with including a four-byte FCS. It is not a
+generic definition for every record class. Timing analysis was added for the
+last two runs: both candidate words have **zero residual against TXS timestamp
+differences** across four packets per run (three nonzero intervals each).
+No candidate absolute value fell within±10000 raw ticks of the TXS timestamp.
+Thus equal rate/deltas do not establish a shared epoch, clock identity, units,
+PPDU boundary, ranging, or a new independent clock. A clock value may simply be
+repeated in multiple diagnostic headers. The earlier TXS timing qualification
+remains separate; do not attach unearned ToA/ToF semantics here.
+
+Temporal pairing was the discovery method; sequence/length agreement strengthens
+it but does not replace an inner-record format specification. The full header,
+subrecord boundaries, validity/version fields and rate/power fields are still
+open. In particular,288/2 is not a proven144-byte subrecord stride. This is a
+concrete starting map for further own-frame experiments and maintainer notes,
+not a general decoder for ambient traffic.
+
+An intermediate sequence-base32 attempt failed the existing packet builder's
+0–19 bound before any packet or ICS command was sent; both reloads passed.
+The CLI now permits bases0/8 only. This was a host-side test-planning error,
+not a dongle failure. [Four successful runs plus bounded setup failure](../research/evidence/tmac-ics-2026-09-05.json).

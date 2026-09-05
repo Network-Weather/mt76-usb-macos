@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**TMAC ICS adds per-transmit diagnostic records with candidate fields:**
+[Four off/on/off runs](ICS_CAPTURE.md#own-transmit-diagnostic-fields) produce
+sixteen288-byte/frame-count2 aggregates only for the sixteen enabled-phase
+submissions.43/48 packets independently received; all48 matched TX statuses.
+Three differential runs map two sequence and two FCS-inclusive length candidates;
+two clock fields exactly follow TXS inter-packet deltas in two runs, without an
+absolute-clock/PPDU-boundary claim. No opaque record export; all cleanup passes.
+
 **RMAC ICS opens another USB diagnostic stream:**
 [Two off/on/off controls](ICS_CAPTURE.md#mac-receive-aggregates) produce20/21
 type12 aggregates only while enabled, all384 bytes with declared frame-count3.
