@@ -90,8 +90,18 @@ STBC_RATES = (
     ("ht0_after", 0x80),
     ("ht8_after", 0x488),
 )
+# Connac3 HE-SU mode8, DCM bit4, STBC bit14. No LDPC/GI/power changes.
+HE_CODING_RATES = (
+    ("he0_2ss_before", 0x600),
+    ("he0_1ss", 0x200),
+    ("he0_dcm_1ss", 0x210),
+    ("he0_stbc_1ss", 0x4600),
+    ("he0_2ss_after", 0x600),
+)
+CONNAC3_CODING_CODES = {0x4480, 0x210, 0x4600}
 ALLOWED_RATE_CODES = {
-    rate for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES
+    rate
+    for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES + HE_CODING_RATES
 }
 # Vendor gen4m 8fddb9d7 wlanAntPathFavorSelect: 0=WF0, 1=WF1,
 # 0x18=duplicated one-stream path. Connac2 TXD DW7 bits 15:11.
@@ -105,7 +115,7 @@ SPATIAL_RATES = tuple(
 def suite_rates(suite, channel):
     if type(channel) is not int or channel not in (1, 6, 11, 36, 149):
         raise ValueError("only bounded non-DFS test channels")
-    if (channel <= 11) != (suite in ("lowband", "cck", "preamble", "stbc")):
+    if (channel <= 11) != (suite in ("lowband", "cck", "preamble", "stbc", "he-coding")):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
     suites = {
         "baseline": RATES,
@@ -115,6 +125,7 @@ def suite_rates(suite, channel):
         "cck": CCK_RATES,
         "preamble": PREAMBLE_RATES,
         "stbc": STBC_RATES,
+        "he-coding": HE_CODING_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -124,8 +135,8 @@ def suite_rates(suite, channel):
 def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
-    if code == 0x4480 and dev.CHIP != m.CHIP_MT7925:
-        raise ValueError("STBC rate encoding is MT7925-only")
+    if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("coding experiment rate encoding is MT7925-only")
     if spe_idx is not None and (
         dev.CHIP != m.CHIP_MT7921 or code != 0x4B or spe_idx not in (0, 1, 24)
     ):
@@ -150,8 +161,8 @@ def descriptor(dev, frame, seq, code, fixed_bw=False, spe_idx=None):
 def program_rate(dev, code):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
-    if code == 0x4480 and dev.CHIP != m.CHIP_MT7925:
-        raise ValueError("STBC rate encoding is MT7925-only")
+    if code in CONNAC3_CODING_CODES and dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("coding experiment rate encoding is MT7925-only")
     if dev.CHIP != m.CHIP_MT7925:
         return
     # mt7925/mac.c mt7925_mac_set_fixed_rate_table at c5a3bd91.
@@ -214,6 +225,7 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None):
                 "bw_mhz",
                 "gi",
                 "ldpc",
+                "dcm",
                 "rate_mbps",
             )
         }
@@ -244,7 +256,16 @@ def main():
     p.add_argument("--fixed-bw", action="store_true", help="connac3 explicit 20 MHz TXD flag")
     p.add_argument(
         "--suite",
-        choices=("baseline", "streams", "spatial", "lowband", "cck", "preamble", "stbc"),
+        choices=(
+            "baseline",
+            "streams",
+            "spatial",
+            "lowband",
+            "cck",
+            "preamble",
+            "stbc",
+            "he-coding",
+        ),
         default="baseline",
     )
     args = p.parse_args()
@@ -254,8 +275,8 @@ def main():
         p.error("fixed-bw variant applies only to mt7925")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
-    if args.suite == "stbc" and args.transmitter != "mt7925":
-        p.error("STBC suite currently supports only the Connac3 transmitter")
+    if args.suite in ("stbc", "he-coding") and args.transmitter != "mt7925":
+        p.error("coding suites currently support only the Connac3 transmitter")
     try:
         rates = suite_rates(args.suite, args.channel)
     except ValueError as exc:

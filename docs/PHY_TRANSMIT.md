@@ -202,6 +202,29 @@ Primary source at mt76 commit`c5a3bd91aa735b669618610d5f0ebfa5786845a6`:
 [Connac3 rate fields](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac3_mac.h),
 [upstream STBC/NSS test encoding](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7915/mac.c).
 
+### HE coding candidates are not yet independently received
+
+The newer-chip-only `--suite he-coding` uses five four-packet phases at20MHz:
+HE0/NSS2 before, HE0/NSS1, HE0/DCM/NSS1, HE0/STBC/NSS1, HE0/NSS2 after.
+Candidate rates are`0x210` (HE mode8 plus DCM bit4) and`0x4600` (HE mode8,
+two space-time streams, STBC bit14), from the same Connac3 header. Power, GI,
+LDPC and the established descriptor/table mechanism are unchanged.
+
+| Fresh run | HE2SS before | HE1SS | DCM | STBC | HE2SS after |
+|---|---|---|---|---|---|
+| Channel1 | 1/4 | 0/4 | 0/4 | 0/4 | 0/4 |
+| Channel6 | **4/4** | 2/4 | **0/4** | **0/4** | **4/4** |
+
+Channel1 has an inadequate after-control. Channel6 brackets both candidates
+with good HE reception, yet no exact candidate frame arrives. Its four DCM
+statuses preserve rate`0x210`, report one transmission and no error bits;
+those statuses do not establish correct RF emission. The STBC bit is separate
+from the TX-status raw-rate field, so raw rate`0x600` cannot distinguish that
+candidate from ordinary two-stream HE. Neither candidate is advertised as a
+working format, and the negative does not establish silicon-wide absence.
+Both radios remain alive and the transmitter reloads after each trial.
+[Sanitized HE coding evidence](../research/evidence/he-coding-transmit-2026-09-05.json).
+
 ### Initial one-stream method (historical baseline)
 
 All rate/descriptor facts come from mt76 baseline `c5a3bd91`:

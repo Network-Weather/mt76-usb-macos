@@ -171,6 +171,26 @@ def test_stbc_table_write_exact_rate_and_existing_selector():
     ]
 
 
+def test_he_coding_source_bits_and_unchanged_controls():
+    rates = p.suite_rates("he-coding", 1)
+    codes = dict(rates)
+    assert len(rates) * 10 <= 60
+    assert rates[0][1] == rates[-1][1] == 0x600
+    assert codes["he0_dcm_1ss"] == codes["he0_1ss"] | (1 << 4)
+    assert codes["he0_stbc_1ss"] == (1 << 14) | (1 << 10) | (8 << 6)
+    with pytest.raises(ValueError, match="lowband"):
+        p.suite_rates("he-coding", 36)
+
+
+@pytest.mark.parametrize("code", [0x210, 0x4600])
+def test_he_coding_rejects_other_chip_before_io(code):
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7921)
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.program_rate(dev, code)
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.descriptor(dev, b"", 0, code)
+
+
 @pytest.mark.parametrize(
     ("suite", "channel"),
     [
