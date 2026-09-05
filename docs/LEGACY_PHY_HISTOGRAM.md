@@ -79,3 +79,65 @@ bin response across channels, and the firmware's own consumer/threshold
 interpretation. Do not report a constant −92dBm noise floor from bin0-only data.
 See also [normal PHY counters](PHY_RX_COUNTERS.md) and
 [the earlier IPI investigation](FIRMWARE_FIELD_MAPS.md).
+
+## Controlled reception and busy-time follow-up
+
+`--stimulus --acknowledge-experimental-transmit` adds at most12 synthetic no-ACK
+HT/MCS8/NSS2 frames from the MT7925 on channel36 only, four per receive window.
+Exact private per-run frame matching, good FCS and PHY metadata establish receipt;
+no identities or frame bytes are exported. Both radios are reloaded on exit.
+At11:17:25 UTC all three windows received4/4 exact frames, including both enabled
+windows. Those histogram totals were33,613 and126,697, again entirely in bin0.
+Thus the engine and packet capture coexist, but valid Wi-Fi receipt alone did
+not produce a spread across power bins. This sparse, weak-signal control does
+not establish whether Wi-Fi samples are included or excluded from the histogram.
+
+Passive `--channel 1` received27/88 normal transfers in the short/long windows,
+with totals31,098/115,048; channel149 received0/0 with32,915/125,643. All remain
+bin0-only and restore/reload successfully. Only channels1/36/149 were tested;
+the CLI also permits passive6/11, not arbitrary channels or transmit parameters.
+
+The lower sample rate on busy channel1 motivated `--cca-crosscheck`. This opts
+into the established EXT0x5a primary CCA counter, offset11, before enable and
+after stop. MCU waits can consume normal frames. The tool records both the
+histogram enable/stop interval bounds and CCA call bounds; the CCA window
+**encloses**, rather than exactly matches, the histogram window. At most about
+5.2ms of extra time separates their boundaries in these runs.
+
+| Channel / window | Histogram enable interval | Samples × tentative8µs | CCA busy |
+|---|---|---|---|
+| 36 / short | 268.164–271.171ms | 269.816ms | 0ms |
+| 36 / long | 1007.174–1010.112ms | 1008.616ms | 0.093ms |
+| 1 / short | 271.788–275.017ms | 229.984ms | 37.754ms |
+| 1 / long | 1006.398–1009.095ms | 857.840ms | 126.157ms |
+
+Quiet-channel counts fit an8µs cadence within the enable/stop bounds. CCA
+explains much, **not all**, of the busy-channel sample deficit: even adding all
+126.157ms from the enclosing CCA window leaves at least22.401ms unexplained in
+the long window. Additional receiver gating/holdoff is a hypothesis, not a new
+identified counter. Do not substitute `elapsed − 8µs × bins` for CCA, or label
+that residual non-Wi-Fi time. No broad clock, RF power, gain or threshold writes
+were used to force a different result.
+
+[Sanitized follow-up evidence](../research/evidence/legacy-histogram-controls-2026-09-05.json).
+
+## Firmware's own histogram interpretation
+
+The consumer at `0x00922922..0x0092295c` reads eleven bins and the ten thresholds,
+gets another PHY field, selects a threshold index, then computes a tail fraction.
+`0x00922836` compares its signed input with the signed threshold bytes, returning
+the first index whose threshold is at least the input, clamped at9 above the
+last threshold. `0x0092285c` sums all eleven bins, separately sums bins whose
+index is at least the chosen index, and returns integer `100 × tail / total`
+(zero when total is zero). This describes the short-window non-overflowing case;
+the actual arithmetic is32-bit and is not an overflow-safe host API.
+
+One input source is `0x00942a96 → 0x00936e14`: its read form extracts three
+bytes from `0x83088554` into16-bit fields. The histogram caller takes the first
+field, subtracts3, then narrows it to a signed byte before threshold selection.
+Another path uses `0x00936eee` to read bytes31:24 and23:16 of `0x8308838c`,
+then sign-extends the first for threshold selection. These are **threshold/
+decision inputs**, not established instantaneous noise measurements. Neither
+register was written by the host. This consumer supports interpreting the bin
+array as a distribution used for threshold-relative occupancy, but does not
+calibrate its physical power scale or establish a noise-floor estimate.

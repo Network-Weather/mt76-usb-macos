@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
+import struct
 import sys
 
 import pytest
@@ -52,8 +53,24 @@ def test_only_eleven_source_bounded_bin_reads():
         p.bins(dev)
 
 
-def test_opt_in_before_usb(monkeypatch):
-    monkeypatch.setattr(sys, "argv", ["legacy_noise_hist"])
+@pytest.mark.parametrize(
+    "flags",
+    [
+        [],
+        ["--stimulus"],
+        ["--enable-histogram", "--stimulus"],
+        ["--enable-histogram", "--channel", "37"],
+        [
+            "--enable-histogram",
+            "--stimulus",
+            "--acknowledge-experimental-transmit",
+            "--channel",
+            "1",
+        ],
+    ],
+)
+def test_opt_in_before_usb(monkeypatch, flags):
+    monkeypatch.setattr(sys, "argv", ["legacy_noise_hist", *flags])
     monkeypatch.setattr(p.m, "open_device", lambda *_: pytest.fail("USB opened"))
     with pytest.raises(SystemExit) as exc:
         p.main()
@@ -79,3 +96,19 @@ def test_reset_pulse_preserves_other_bits():
     dev = Device()
     p.reset(dev)
     assert dev.writes == [0x81005555, 0xA1005555, 0x81005555]
+
+
+def test_cca_crosscheck_uses_only_established_primary_offset():
+    class Device:
+        def mcu_cmd_word(self, command, request, timeout):
+            assert command == p.m.MCU_EXT_CMD(0x5A)
+            assert request == struct.pack("<IIQ", 0, 11, 0)
+            assert timeout == 1000
+            return bytes(28) + struct.pack("<I", 123)
+
+        def reply_body(self, raw):
+            return raw
+
+    value, opened, closed = p.cca_sample(Device())
+    assert value == 123
+    assert opened <= closed

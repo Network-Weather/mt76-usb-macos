@@ -105,5 +105,12 @@ isolates these issues without claiming working samples:
 
 [`ipi_register_probe.py`](../research/ipi_register_probe.py) preserves the exact
 reversible write experiment behind `--direct-init`. All runs stop/reload cleanly.
-The legacy CE ICAP-start route remains a separate lead; it was not executed here
-because its buffer/architecture defaults have not yet been traced on this image.
+Later SET-dispatch tracing established that the proposed legacy CE ICAP setters
+are absent on this image; see [the static correction](OVERNIGHT_EXPLORATION.md#later-static-correction-legacy-ce-icap-setters-are-absent).
+The EXT04 route remains implemented but capture completion is unresolved.
+
+A **different eleven-bin histogram engine** at`0x83088600` subsequently worked
+with source-traced normal-mode reset/enable/stop controls. This does not make
+the EXT0xa3/`0x830af...` path above work. See the
+[legacy PHY histogram findings](LEGACY_PHY_HISTOGRAM.md) for live time scaling,
+controlled reception, CCA comparison and the bin0-only limitation.
