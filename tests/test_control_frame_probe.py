@@ -67,9 +67,9 @@ def test_invalid_frames_refused(kind, sequence, nonce):
 
 
 def test_invalid_descriptor_and_filter_refused():
-    with pytest.raises(ValueError, match="MT7925 legacy-rate"):
-        p.descriptor(SimpleNamespace(CHIP=p.m.CHIP_MT7921), "rts", 0, NONCE, "ofdm6")
-    with pytest.raises(ValueError, match="MT7925 legacy-rate"):
+    with pytest.raises(ValueError, match="pinned legacy-rate"):
+        p.descriptor(SimpleNamespace(CHIP="unsupported"), "rts", 0, NONCE, "ofdm6")
+    with pytest.raises(ValueError, match="pinned legacy-rate"):
         p.descriptor(SimpleNamespace(CHIP=p.m.CHIP_MT7925), "rts", 0, NONCE, "ht8")
     for address, word, bits in (
         (0x820E5008, 0, 0),
@@ -78,3 +78,20 @@ def test_invalid_descriptor_and_filter_refused():
     ):
         with pytest.raises(ValueError, match="source-defined control-filter"):
             p.filter_value(address, word, bits)
+
+
+@pytest.mark.parametrize("kind", ["probe", "rts", "cts", "ack"])
+def test_old_descriptor_uses_connac2_fields(kind):
+    dev = p.m.device_class_for(p.m.CHIP_MT7921)()
+    raw, payload = p.descriptor(dev, kind, 2, NONCE, "cck1")
+    words = struct.unpack("<16I", raw)
+    assert words[0] & 65535 == len(payload) + 64
+    assert (words[1] >> 11) & 31 == (12 if kind == "probe" else len(payload) // 2)
+    assert words[2] & (1 << 12)
+    assert words[2] & (1 << 13)  # source fixed-rate mgmt/control HTC bit retained
+    assert words[8] & 63 == words[2] & 63
+    assert words[5] & 255 == 18
+    assert words[3] & 1
+    if kind != "probe":
+        assert words[2] & (1 << 10) == 0
+        assert words[3] & ((1 << 31) | (4095 << 16)) == 0

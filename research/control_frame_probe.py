@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-"""Twenty bounded MT7925 legacy-rate probe/RTS/CTS/ACK/probe frames.
+"""Twenty bounded legacy-rate probe/RTS/CTS/ACK/probe frames on either dongle.
 
 Synthetic per-packet destinations, software duration0, no ACK requested, no
-association or automatic handshake. MT7961 verifies exact independent payloads.
+association or automatic handshake. The other radio verifies exact payloads.
 Only source-defined RTS/CTS/ACK receive-filter bits are opened and restored.
 Both radios reload normally. No ambient identities or payloads are exported.
 """
@@ -46,8 +46,8 @@ def frame(kind, sequence, nonce):
 
 
 def descriptor(dev, kind, sequence, nonce, rate):
-    if dev.CHIP != m.CHIP_MT7925 or rate not in RATES:
-        raise ValueError("MT7925 legacy-rate control experiment only")
+    if dev.CHIP not in (m.CHIP_MT7921, m.CHIP_MT7925) or rate not in RATES:
+        raise ValueError("pinned legacy-rate control experiment only")
     payload = frame(kind, sequence, nonce)
     words = list(
         struct.unpack(
@@ -61,10 +61,16 @@ def descriptor(dev, kind, sequence, nonce, rate):
     words[2] |= 1 << 12  # Source SW_DURATION: retain the explicit zero Duration.
     words[5] = (words[5] & ~255) | (16 + sequence)  # Match status by PID, not nonexistent MAC SN.
     if kind != "probe":
-        words[1] = (words[1] & ~(31 << 16)) | ((len(payload) // 2) << 16)
+        shift = 16 if dev.CHIP == m.CHIP_MT7925 else 11
+        words[1] = (words[1] & ~(31 << shift)) | ((len(payload) // 2) << shift)
         words[2] = (words[2] & ~63) | (1 << 4) | {"rts": 11, "cts": 12, "ack": 13}[kind]
         # Control frames have no Sequence Control field; no manual SN insertion.
-        words[3] &= ~((1 << 31) | (4095 << 16) | (1 << 4))
+        words[3] &= ~((1 << 31) | (4095 << 16))
+        if dev.CHIP == m.CHIP_MT7925:
+            words[3] &= ~(1 << 4)  # Connac3 BCM
+        else:
+            words[2] &= ~(1 << 10)  # Connac2 multicast is in DW2, not DW3.
+            words[8] = (words[8] & ~63) | (words[2] & 63)
     return struct.pack("<16I", *words), payload
 
 
@@ -83,8 +89,8 @@ def filter_value(address, current, bits):
 
 
 def set_filter(dev, address, bits):
-    if dev.CHIP != m.CHIP_MT7921:
-        raise ValueError("MT7961 receiver filter only")
+    if dev.CHIP not in (m.CHIP_MT7921, m.CHIP_MT7925):
+        raise ValueError("pinned receiver filters only")
     dev.wr(address, filter_value(address, dev.rr(address), bits))
     value = dev.rr(address)
     filter_value(address, value, 0)
@@ -95,6 +101,7 @@ def set_filter(dev, address, bits):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--rate", choices=tuple(RATES), default="cck1")
+    parser.add_argument("--transmitter", choices=("mt7925", "mt7961"), default="mt7925")
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--open-control-filters", action="store_true")
     args = parser.parse_args()
@@ -103,6 +110,7 @@ def main():
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "rate": args.rate,
+        "transmitter": args.transmitter,
         "maximum_submissions": 20,
         "submitted": 0,
         "phases": [],
@@ -113,7 +121,8 @@ def main():
     with contextlib.ExitStack() as stack:
         radios = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
         images = [m.load_firmware(dev.CHIP, m.firmware_dir()) for dev in radios]
-        rx, tx = radios
+        tx_index = int(args.transmitter == "mt7925")
+        tx, rx = radios[tx_index], radios[1 - tx_index]
         out["firmware_sha256"] = {
             dev.CHIP: [hashlib.sha256(b).hexdigest() for b in image]
             for dev, image in zip(radios, images, strict=True)
@@ -173,7 +182,13 @@ def main():
                                     and (struct.unpack_from("<I", raw)[0] >> 27) & 31 == 0
                                 ):
                                     record["tx_status"].extend(
-                                        s for s in p.c3.tx_status(raw) if s["pid"] == 16 + sequence
+                                        s
+                                        for s in (
+                                            p.c3.tx_status(raw)
+                                            if tx_index
+                                            else d.old_tx_status(raw)
+                                        )
+                                        if s["pid"] == 16 + sequence
                                     )
                                 continue
                             decoded = decode(raw)

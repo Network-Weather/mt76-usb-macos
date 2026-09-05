@@ -11,6 +11,8 @@ classes with exact16/10-byte headers and zero Duration. Probe controls3/4 and4/4
 bracket both runs. Unique status PIDs handle control headers without sequence
 fields. OFDM fails probes too, so is not a control-specific negative. No actual
 peer handshake or ACK timing; all filters already open, all restorations/reloads pass.
+Reverse CCK1 short frames still give0/4 for every class including both probes,
+with20 matched statuses. No usable reverse CSI stimulus or RF-cause claim.
 
 **MT7925 has a working multi-bin PHY histogram:**
 [firmware-traced controls](MT7925_NOISE_HISTOGRAM.md) establish reset, timed

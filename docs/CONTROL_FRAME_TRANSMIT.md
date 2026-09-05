@@ -74,3 +74,20 @@ production exchanges; no automatic CTS/ACK turnaround or SIFS timing was tested.
 contains aggregate own-frame receipts, PHY metadata and matched TX statuses.
 No ambient identities/frames or random destination bytes are exported. Production
 Python/C APIs and passive defaults remain unchanged.
+
+## Reverse short frames do not restore the older transmitter's control
+
+`--transmitter mt7961` uses the pinned [Connac2 descriptor fields](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac2_mac.h):
+header length in DW1 bits15:11, multicast in DW2 bit10, and duplicate type/subtype
+in DW8. Software Duration and manual-SN control bits are shared with Connac3;
+the fixed-rate HTC bit is retained as [the Linux path requires for management/
+control frames](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac_mac.c#L604).
+TXS uses the old32-byte format and the same unique per-packet PIDs.
+
+At19:48:28 UTC, CCK1 reverse Probe/RTS/CTS/ACK/Probe gives **0/4 in all five
+phases**, with20 matched transmitter statuses. MT7925's three selected receive
+drop bits are already clear; mask restoration and both normal reloads pass.
+Shorter frames therefore do not establish a usable reverse stimulus for CSI or
+timing experiments. The failed probe controls prevent a control-frame-specific
+negative, and TX statuses alone do not prove RF emission or reception.
+[Reverse evidence](../research/evidence/control-frame-reverse-2026-09-05.json).
