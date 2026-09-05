@@ -5,6 +5,15 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**MT7925 MIB addresses independently resolved:** [the UNI22-to-ROM trace](MT7925_MIB.md)
+maps offset0 to full32-bit `0x820ed7f0` and offset2 to`0x820ed9a8`, matching
+related MT7992 FCS/MPDU names. Alternating passive reader order proves that raw
+reads consume samples before firmware can accumulate them: direct-first MPDU
+samples105/97/97 leave UNI deltas0, whereas firmware-first deltas101/114/111
+match decoded frames. No counter-enable writes, no TX, normal reload passes.
+The vendor header's per-rate names do not match observed1SS CCK/OFDM traffic;
+do not promote that map into per-rate telemetry. Defaults remain UNI-only.
+
 **Failed-frame PHY capture unlocked:** [FCS filter controls](ERROR_FRAME_CAPTURE.md)
 show that clearing only MAC RFCR bit1 exposes CRC-failed HT15/2SS metadata;
 sniffer drop_err0 alone does not. A factorial test and two same-rate reversals

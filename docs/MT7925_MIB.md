@@ -1,6 +1,6 @@
 # MT7925 UNI MIB characterization
 
-Date: 2026-09-04
+Date: 2026-09-04; firmware/register cross-check 2026-09-05
 
 ## Result
 
@@ -10,7 +10,7 @@ measurements now support a working, though partly provisional, counter map:
 
 | Offset | Provisional meaning | Confidence | Observed behavior |
 | ---: | --- | --- | --- |
-| 0 | RX FCS/error count | Medium | Rises most on busy/noisy channels; zero on the quiet 6 GHz sample |
+| 0 | RX FCS/error count | High, firmware map + related-chip source | ROM resolves to full-width `0x820ed7f0`; passive ownership controls below |
 | 2 | delivered RX MPDU count | High | Matched decoded frames within 0-3 frames in every atomic-sampled dwell |
 | 7 | saturated/read-side artifact | High | Advanced by exactly 65,535 on every 3-6 second dwell, independent of traffic and width |
 | 11 | PHY receive attempts / MDRDY count | High | Always at least the delivered MPDU count and grows when the PHY detects frames it does not deliver |
@@ -21,6 +21,86 @@ measurements now support a working, though partly provisional, counter map:
 | 19 | primary CCA busy duration, microseconds | Medium-high | Exceeds decoded receive duration and closely tracked an independent MT7921 `P_CCA_TIME` reference on repeated 6 GHz samples |
 | 20 | primary energy-detect duration, microseconds | High | Nearly equals the busy counters on 2.4 GHz, is tiny on ordinary 5 GHz traffic, and rises under controlled valid Wi-Fi load; it is not non-Wi-Fi time |
 | 32 | unknown event count | Low | Intermittent, most visible during wide 5 GHz capture |
+
+## Firmware-resolved FCS/MPDU counters and read-clear ownership
+
+The pinned MT7925 firmware now provides an independent address mapping for
+offsets0/2, beyond the earlier traffic correlations. Bounded live table reads
+and ROM inspection give this chain:
+
+1. UNI22 table CID at`0x0221bff4` dispatches to`0xe0053ac0`.
+2. Its ordinary-offset path reads u16 IDs from`0x0224c220 + 2*offset`:
+   offset0→49, offset2→119. It calls`0xe003bc24` through`0xe0053c54`.
+3. The accumulator calls`0xe007a402`; ROM slot`0x00828648` points to`0x008334a6`.
+4. For these IDs, ROM constructs the band0 field key as
+   `((internal_id + 0x3e810) & 0xffff) << 5`. The reversed-endpoint Andes BFOZ
+   instruction deposits low bits; treating it as a conventional extraction
+   gives the wrong key. See the [pinned primary QEMU implementation](https://github.com/andestech/qemu/blob/32902627f26c5d760cd4efab499b989d566822f9/target/riscv/andes_helper.c#L20).
+5. Domain29 slot`0x022113b8` points to descriptor`0x022104f4`, whose first word
+   is ROM mapper`0x0083299a`—the domain slot is not itself a code pointer.
+   That mapper uses table`0x0084d79c` and band0 base`0x820ed000`.
+
+| UNI offset | Internal ID / key | Register descriptor / bit-pair table | Hardware field |
+| ---: | --- | --- | --- |
+| 0 | 49 / `0x1d0820` | `0x84d9a4` / `0x8555f0` | `0x820ed7f0[31:0]` |
+| 2 | 119 / `0x1d10e0` | `0x84dbd4` / `0x8554d8` | `0x820ed9a8[31:0]` |
+
+These agree with the related Linux MT7992 `MIB_RSCR1` and `MIB_RSCR31` offsets
+in [pinned mt7996/mmio.c](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7996/mmio.c#L75),
+which [mt7996/mac.c](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7996/mac.c#L2798)
+accumulates as FCS errors and RX MPDUs. This is corroboration, not permission to
+apply the entire MT7992 map to MT7925. No live Linux-driver defect is claimed.
+
+The loaded accumulator has separate four/eight-byte software-total paths and
+adds each hardware sample into RAM before returning the UNI value. The exact
+software width of these two metadata records is not yet independently resolved;
+a 64-bit reply does not by itself establish a 64-bit hardware counter.
+
+Six passive one-second ch36/20MHz windows alternate firmware-first and
+direct-first sampling after a fresh normal boot, without counter-enable writes:
+
+| Read order | Decoded good MPDUs | UNI deltas: errors / MPDUs | First direct samples: errors / MPDUs |
+| --- | ---: | --- | --- |
+| Firmware first | 101 | 166 / 101 | 1 / 0 |
+| Direct first | 105 | 0 / 0 | 169 / 105 |
+| Firmware first | 114 | 139 / 114 | 0 / 0 |
+| Direct first | 97 | 0 / 0 | 70 / 97 |
+| Firmware first | 111 | 89 / 111 | 0 / 0 |
+| Direct first | 97 | 0 / 0 | 60 / 97 |
+
+Every immediate second direct read is zero. The one error after a firmware-first
+read demonstrates the sampling gap: new traffic can arrive between readers.
+Direct-first reads remove the entire observed window from the subsequent UNI
+delta. **These are competing consumers of read-clear hardware, not independent
+measurement streams.** Keep one owner; normal acquisition should continue using
+UNI totals, not interleave raw reads. Do not subtract consecutive direct samples
+or infer error percentages without qualifying the denominator and interval.
+Counter overflow/saturation, filtering scope and a controlled failed-frame test
+on this receiver remain unqualified. No ambient frame identifiers or payloads
+are exported; alive and normal-reload checks pass.
+
+A fresh repeat with the published reproducer gives firmware-first MPDU
+deltas94/93/101 versus94/92/101 decoded, and direct-first samples98/91/108
+versus98/91/108 decoded with all three subsequent UNI MPDU deltas0. Error
+deltas51/34/11 move through firmware-first reads; direct-first samples44/17/62
+leave firmware deltas0/1/0. All paired second reads are zero and cleanup passes.
+The one extra error and one extra MPDU retain the non-atomic read/capture gaps.
+
+A separate passive six-register check also warns against literal vendor names.
+The pinned vendor [MT7925 MIB header](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/chips/coda/mt7925/bn0_wf_mib_top.h)
+labels`0x75c/0x760` overall FCS good/error and`0x7ec/0x7f0` NSS2/MCS7 good/error.
+But`0x75c/0x760/0x764/0x768` stay zero, while`0x7ec` tracks ordinary **1SS CCK
+and OFDM** packets:49/50/47 versus48/50/47 decoded on ch6,95/93/103 versus
+95/93/103 on ch36. Its paired second reads are zero. This is not evidence for
+per-NSS/MCS statistics; the exact reason for the header/map disagreement is
+unresolved. The firmware-derived mapping above takes precedence for offsets0/2.
+
+Reproducer: [`mt7925_mib_ownership_probe.py`](../research/mt7925_mib_ownership_probe.py)
+requires`--acknowledge-consuming-counters`; fixed-key helper and tests reject
+other offsets/chips. [Sanitized evidence](../research/evidence/mt7925-mib-field-ownership-2026-09-05.json)
+contains the narrow mappings, ROM hashes and anonymous counts, not ROM bytes.
+
+## Earlier behavioral interpretation
 
 The names for 12, 13, 17, 19, and 20 are behavioral identifications, not a
 published MT7925 enum.  Their relationships match MediaTek's documented MT7915
