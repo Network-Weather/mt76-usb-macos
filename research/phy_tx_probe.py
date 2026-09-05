@@ -103,6 +103,9 @@ HE_CODING_RATES = (
 )
 CONNAC3_CODING_CODES = {0x4480, 0x210, 0x4600}
 TIMING_BURST_RATES = (("cck1_paced_before", 0), ("cck1_burst", 0), ("cck1_paced_after", 0))
+TIMING_TYPE_RATES = tuple(
+    (name, 0x488) for name in ("normal_before", "timing_management", "normal_after")
+)
 # Pinned MT7925 ROM83c0ac maps config GI to ITDR1 bits13:12 and LDPC to25.
 # Keep LTF, spatial selection and all unknown low bits at existing baseline.
 # Independent RX, not the field names alone, determines the actual PHY format.
@@ -203,6 +206,7 @@ def suite_rates(suite, channel):
             "table-spatial",
             "he-table-spatial",
             "tx-status-format",
+            "timing-type",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -225,6 +229,7 @@ def suite_rates(suite, channel):
         "table-spatial": TABLE_SPATIAL_RATES,
         "he-table-spatial": HE_TABLE_SPATIAL_RATES,
         "tx-status-format": STATUS_FORMAT_RATES,
+        "timing-type": TIMING_TYPE_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -234,10 +239,25 @@ def suite_rates(suite, channel):
 
 
 def descriptor(
-    dev, frame, seq, code, fixed_bw=False, spe_idx=None, *, width_mhz=20, status_format=0
+    dev,
+    frame,
+    seq,
+    code,
+    fixed_bw=False,
+    spe_idx=None,
+    *,
+    width_mhz=20,
+    status_format=0,
+    management_type=0,
 ):
     if code not in ALLOWED_RATE_CODES:
         raise ValueError("rate outside bounded experiment")
+    if (
+        type(management_type) is not int
+        or management_type not in (0, 1)
+        or (management_type and (dev.CHIP != m.CHIP_MT7925 or code != 0x488 or width_mhz != 20))
+    ):
+        raise ValueError("timing management type requires MT7925 HT8/20MHz")
     if (
         type(status_format) is not int
         or status_format not in (0, 1)
@@ -256,6 +276,10 @@ def descriptor(
         raise ValueError("spatial experiment is Connac2 OFDM6 with SPE 0/1/24 only")
     if dev.CHIP == m.CHIP_MT7925:
         data = bytearray(c3.build_txwi(frame, seq, disable_mat=True))
+        if management_type:
+            # gen4m nic_connac3x_tx.h: TYPE_TIMING_MEASUREMENT=1, DW1 bits24:21.
+            word = struct.unpack_from("<I", data, 4)[0]
+            struct.pack_into("<I", data, 4, (word & ~(15 << 21)) | (1 << 21))
         if status_format:
             word = struct.unpack_from("<I", data, 20)[0]
             struct.pack_into("<I", data, 20, word | (1 << 8))
@@ -376,7 +400,17 @@ def phase_gap(suite, phase):
     return 0.05
 
 
-def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_timing=False):
+def capture(
+    dev,
+    expected,
+    per_phase,
+    ready,
+    stop,
+    rates=RATES,
+    marker=None,
+    tx_timing=False,
+    both_endpoints=False,
+):
     decode = m.decoder_for(dev)
     seen = [set() for _ in rates]
     phys = [collections.Counter() for _ in rates]
@@ -384,11 +418,23 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
     status = collections.Counter()
     counts = collections.Counter()
     rx_timing = []
+    packet_types = collections.Counter()
+    endpoint_reads = 0
     started = time.monotonic()
     ready.set()
     while not stop.is_set():
         try:
-            raw = bytes(dev.rx_read(timeout=100))
+            if both_endpoints:
+                # Short quiet-endpoint polling avoids starving the busy RX endpoint.
+                endpoint = (dev.ep_in_pkt_rx, dev.ep_in_cmd_resp)[endpoint_reads % 2]
+                endpoint_reads += 1
+                raw = bytes(dev.bulk_in(endpoint, 4096, 1))
+                if len(raw) >= 4:
+                    (size,) = struct.unpack_from("<H", raw)
+                    kind = (struct.unpack_from("<I", raw)[0] >> 27) & 31
+                    packet_types[(f"{endpoint:02x}", kind, size)] += 1
+            else:
+                raw = bytes(dev.rx_read(timeout=100))
         except usb.core.USBTimeoutError:
             continue
         if marker is not None and marker in raw:
@@ -473,6 +519,11 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
     }
     if tx_timing:
         result["own_rx_timing"] = rx_timing
+    if both_endpoints:
+        result["usb_packet_type_sizes"] = [
+            {"endpoint": key[0], "packet_type": key[1], "declared_bytes": key[2], "count": count}
+            for key, count in sorted(packet_types.items())
+        ]
     return result
 
 
@@ -483,6 +534,9 @@ def main():
     p.add_argument("--per-phase", type=int, choices=range(1, 11), default=5)
     p.add_argument("--acknowledge-experimental-transmit", action="store_true")
     p.add_argument("--fixed-bw", action="store_true", help="connac3 explicit 20 MHz TXD flag")
+    p.add_argument(
+        "--both-endpoints", action="store_true", help="count USB packet types on both IN endpoints"
+    )
     p.add_argument(
         "--receiver-g5",
         action="store_true",
@@ -521,6 +575,7 @@ def main():
             "table-spatial",
             "he-table-spatial",
             "tx-status-format",
+            "timing-type",
         ),
         default="baseline",
     )
@@ -560,6 +615,7 @@ def main():
             "table-spatial",
             "he-table-spatial",
             "tx-status-format",
+            "timing-type",
         )
         and args.transmitter != "mt7925"
     ):
@@ -582,6 +638,8 @@ def main():
         "fixed_bw": args.fixed_bw or args.suite == "bandwidth",
         "suite": args.suite,
         "tx_timing": args.tx_timing,
+        "both_endpoints": args.both_endpoints,
+        "requested_management_types": (0, 1, 0) if args.suite == "timing-type" else None,
         "requested_status_formats": STATUS_FORMATS if args.suite == "tx-status-format" else None,
         "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
@@ -671,6 +729,7 @@ def main():
                         rates,
                         marker,
                         args.tx_timing,
+                        args.both_endpoints,
                     )
                     for i, dev in enumerate(radios)
                 ]
@@ -728,6 +787,9 @@ def main():
                                     width_mhz=tx_width,
                                     status_format=STATUS_FORMATS[phase]
                                     if args.suite == "tx-status-format"
+                                    else 0,
+                                    management_type=int(phase == 1)
+                                    if args.suite == "timing-type"
                                     else 0,
                                 )
                                 + frame

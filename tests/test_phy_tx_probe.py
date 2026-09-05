@@ -45,6 +45,29 @@ def test_alternate_status_format_changes_only_word5_bit8():
     assert {code for _, code in p.suite_rates("tx-status-format", 6)} == {0x488}
 
 
+def test_timing_management_changes_only_word1_bit21():
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925)
+    frame = p.c3.controlled_frame(0)
+    normal = p.descriptor(dev, frame, 0, 0x488)
+    timing = p.descriptor(dev, frame, 0, 0x488, management_type=1)
+    assert normal[:4] == timing[:4]
+    assert normal[8:] == timing[8:]
+    assert (
+        struct.unpack_from("<I", normal, 4)[0] ^ struct.unpack_from("<I", timing, 4)[0] == 1 << 21
+    )
+    assert p.suite_rates("timing-type", 6) == p.TIMING_TYPE_RATES
+    assert {code for _, code in p.TIMING_TYPE_RATES} == {0x488}
+
+
+@pytest.mark.parametrize(
+    ("chip", "code", "kind"),
+    [("mt7921", 0x488, 1), ("mt7925", 0x80, 1), ("mt7925", 0x488, 2), ("mt7925", 0x488, True)],
+)
+def test_timing_management_rejects_other_chips_rates_and_types(chip, code, kind):
+    with pytest.raises(ValueError, match="timing management"):
+        p.descriptor(SimpleNamespace(CHIP=chip), b"", 0, code, management_type=kind)
+
+
 @pytest.mark.parametrize(
     ("chip", "code", "fmt"),
     [
@@ -543,3 +566,23 @@ def test_capture_only_exact_own_frames_and_valid_fcs(monkeypatch, timing):
         assert [row["sequence"] for row in out["own_rx_timing"]] == [0, 0]
     else:
         assert "own_rx_timing" not in out
+
+
+def test_dual_endpoint_capture_counts_only_header_type_size(monkeypatch):
+    stop = p.threading.Event()
+    reads = []
+
+    def bulk(endpoint, size, timeout):
+        reads.append((endpoint, size, timeout))
+        if len(reads) == 2:
+            stop.set()
+        return struct.pack("<I", (2 << 27) | 80) + b"unpublished private bytes"
+
+    monkeypatch.setattr(m, "decoder_for", lambda _: lambda raw: None)
+    dev = SimpleNamespace(CHIP=m.CHIP_MT7925, ep_in_pkt_rx=0x84, ep_in_cmd_resp=0x85, bulk_in=bulk)
+    out = p.capture(dev, {}, 1, p.threading.Event(), stop, both_endpoints=True)
+    assert reads == [(0x84, 4096, 1), (0x85, 4096, 1)]
+    assert out["usb_packet_type_sizes"] == [
+        {"endpoint": ep, "packet_type": 2, "declared_bytes": 80, "count": 1} for ep in ("84", "85")
+    ]
+    assert "private" not in str(out)

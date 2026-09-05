@@ -77,7 +77,8 @@ are not applied to arbitrary USB records. No such report has been validated.
 `nic_connac3x_tx.h` names management type1 as timing measurement in TXD DW1
 bits24:21. However the inspected `nic/nic_txd_v3.c` management constructor
 (lines436–442) selects the normal type; an enum alone is not a demonstrated
-timing-engine enable recipe. No timing-type descriptor was transmitted.
+timing-engine enable recipe. A subsequent bounded descriptor-only control is
+described below; it does not exercise a full timing protocol.
 
 The compile-conditional802.11v path in `mgmt/wnm.c` requires an in-use station
 record and trigger, builds a directed action frame and follows up after TX-done.
@@ -86,6 +87,39 @@ unit conversion is not evidence of10ns hardware resolution. The corresponding
 `nic/nic_tx.c` block uses older reserved-field names. This remains source lineage,
 not a verified API for the pinned station firmware or a distance measurement.
 No peer action, calibration command or new register write was sent for this audit.
+
+### Descriptor timing-type control: ordinary TX works, no extra report
+
+The `phy_tx_probe --suite timing-type` follow-up changes **only DW1 bit21**
+for the middle phase: normal0 / timing-measurement1 / normal0. Each phase
+sends four synthetic broadcast no-ACK Probe Requests at HT8/20MHz on channel6,
+50ms apart. The PHY, frame format, power, fixed-rate table and TX-status format
+stay constant. This deliberately tests the descriptor bit alone, **not** an
+802.11v/FTM action exchange, associated peer or enabled ToA engine.
+
+Both fresh runs receive **4/4/4 exact good-FCS frames**, still decoded as
+HT8/NSS2/20MHz/GI0/BCC. All12 TX statuses per run are format0, single attempt,
+error-free, raw power36. The timing-marked packets transmit unchanged.
+
+With `--both-endpoints`, input84 and85 are alternated using1ms timeouts.
+Across both runs the MT7925 sees only ordinary type2 frames and its12 type0
+TX statuses per run; the MT7961 sees only type2 frames. Neither run receives
+an extra packet type or a transfer on85. This is a negative for **this
+descriptor-only, unassociated, no-ACK setup**, not proof that timing hardware
+or an enabled producer cannot report. Both alive checks and transmitter
+reloads pass. Packet-type/declared-size counts contain no ambient payloads
+or identifiers; own timing fields remain behind the timing opt-in.
+
+```sh
+python research/phy_tx_probe.py --suite timing-type --transmitter mt7925 \
+  --channel 6 --per-phase 4 --tx-timing --both-endpoints \
+  --acknowledge-experimental-transmit
+```
+
+The nearby TXD6 timestamp-offset enable/index fields remain **untested**:
+the inspected source names the bits but supplies no exercised caller or offset
+units. No timestamp-insertion guesses, peer actions or calibration writes were
+used. [Sanitized descriptor controls](../research/evidence/timing-management-2026-09-05.json).
 
 ## Evidence and source provenance
 
