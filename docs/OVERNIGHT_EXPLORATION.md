@@ -5,6 +5,10 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
+Startup exposes the EX9 table, and a GP candidate recovers meaningful string
+references. Internal dispatch tags also must not be equated directly to wire IDs.
+
 ## ICAP: capture start changes state, node-0 completion not observed
 
 `research/icap_capture_probe.py` sends a bounded EXT 0x04 SET with action 1,

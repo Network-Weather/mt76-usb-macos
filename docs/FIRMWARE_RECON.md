@@ -103,6 +103,13 @@ Earlier instruction/function counts from the Xtensa import are not valid evidenc
 
 ## What the dispatch tables say, without disassembling anything
 
+**2026-09-05 correction:** the numeric-tag comparisons below are historical
+hypotheses, not established wire-command mappings. NDS32/GP cross-checks show
+tag 0xa3 names RDD control and tag 0x3a names MU control, contrary to their
+same-numbered wire EXT enums. A missing numeric tag is not proof that a wire
+command lacks a handler. See [NDS32_RECON](NDS32_RECON.md). Independently measured
+accepted/refused/silent hardware outcomes remain valid.
+
 Command dispatch tables are plain data in the rodata region, so which commands a firmware
 implements can be read straight out of the image. A slot is `{u32 handler, u32 cid}`, and
 `scripts/fw_triage.py --command-map` scans every region for that shape at 4-byte alignment,
