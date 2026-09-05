@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Traced RF DMA setup also fails to recover normal CFO/SNR:**
+[Read-only staged comparison and two fixed controls](LEGACY_ICS.md#rf-dma-setup-matches-the-trace-but-is-insufficient-in-normal-mode)
+confirm all five820e7050 field values at RF entry. Combined DMA/RMAC/RXV
+activation receives8/8 good packets but retains sentinel CFO/SNR. A lone
+post-restoration populated header lacks ordinary good-FCS reception and does
+not repeat; it remains unexplained, not a working recipe. All44 TX statuses,
+mask restoration and both-radio reloads pass.
+
 **RF-init RMAC bit0 is not sufficient for normal CFO/SNR:**
 [One-bit and combined RXV controls](LEGACY_ICS.md#rf-init-rmac-bit0-does-not-fill-normal-p-rxv2)
 receive24/24 exact packets and24/24 own ICS headers across two complete runs;

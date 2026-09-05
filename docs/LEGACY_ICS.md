@@ -317,3 +317,42 @@ a common callback with operation6 and value2; it is not a direct P-RXV2
 register setter. Another traced setup wrapper0094be50 selects fields40080..84
 at820e7050. Their normal values differ from the RF-init arguments; live RF-mode
 comparison is the next test, before considering any direct activation.
+
+## RF DMA setup matches the trace but is insufficient in normal mode
+
+Live domain4 slot02014f14 →02013898 →ROM0082de58 resolves table0084c22c,
+entry0084c24c →0084c2b0, offset50 and five fields. Band0 base820e7000
+therefore selects820e7050, not a host-memory pointer. RF initialization calls
+0094be50(1,1,2,2,0,7f,band); its ten-argument field writer sets:
+
+| Key | Bits | Normal | RF entry |
+| --- | --- | --- | --- |
+| 40080 | 6:0 | 47 | 127 |
+| 40081 | 12:8 | 4 | 2 |
+| 40082 | 15:13 | 2 | 2 |
+| 40083 | 27:16 | 1 | 0 |
+| 40084 | 31:30 | 1 | 1 |
+
+A20-frame staged repeat adds only read-only snapshots of820e7050,820e5604
+and820e3014. Normal values4001442f/24f00903/1 become
+4000427f/24f00902/91 at RF entry, exactly matching the trace, and remain
+unchanged through configuration, START and STOP. It receives4/4 normal
+controls and4/4 RF START headers (CFO1684..1949/SNR23..24); intermediate
+stages remain empty. Thus these register values alone do not distinguish
+active receive from stopped RF state.
+
+The [pinned DMA helper](../research/legacy_rx_dma_setup.py) verifies both code
+hashes, the pointer chain and all five bit pairs. It exposes only the observed
+normal/RF values, preserves unrelated bits under maskcfffff7f, and never
+changes a DMA address or buffer. Two12-frame normal-mode experiments combine
+that setup with the preceding RMAC bit0 and RXV controls. All8/8 active-window
+packets are good-FCS and all8 own ICS vectors still contain CFO−1/SNR63.
+Overall ordinary reception is11/12 then12/12; own ICS is12/12 in each.
+
+One first-run restoration-window header (sequence8) has CFO1714/SNR17, but
+there is no matching ordinary good-FCS packet. The next three and the entire
+fresh-boot repeat are all-one. **This single exception does not establish a
+working normal-mode configuration, a bad-FCS cause, or valid calibrated units.**
+It is retained for exceptional-path investigation. All44 submissions across
+the staged run and two controls have TX status; every activated mask restores,
+and both radios reload. [Complete sanitized evidence](../research/evidence/legacy-rx-dma-setup-2026-09-05.json).

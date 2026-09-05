@@ -29,6 +29,16 @@ from research.txpower_register_probe import check_image, m
 STAGES = ("normal_ics", "rf_entered", "rf_configured", "rf_started", "rf_stopped")
 
 
+def setup_snapshot(dev):
+    """Read only source-traced old-chip controls, never sweep adjacent MMIO."""
+    if dev.CHIP != m.CHIP_MT7921:
+        raise ValueError("old-chip setup controls only")
+    return {
+        hex(address): hex(legacy.valid_word(dev.rr(address)))
+        for address in (0x820E7050, 0x820E5604, 0x820E3014)
+    }
+
+
 def stage_commands(stage):
     if stage not in STAGES:
         raise ValueError("only five fixed stages")
@@ -95,12 +105,19 @@ def main():
                 legacy.send(rx, True)
                 time.sleep(0.05)
                 before = legacy.masks(rx)
+                setup_before = setup_snapshot(rx)
                 if before["0x820e50d0"] != 1 or before["0x820e705c"] != 1 << 24:
                     raise ValueError("ICS reassertion did not read back")
                 packets = {i: packet(tx, i, nonce, 0) for i in range(index * 4, index * 4 + 4)}
                 phase = own.acquire(tx, rx, packets)
                 phase.update(
-                    {"stage": stage, "masks_before": before, "masks_after": legacy.masks(rx)}
+                    {
+                        "stage": stage,
+                        "masks_before": before,
+                        "masks_after": legacy.masks(rx),
+                        "setup_before": setup_before,
+                        "setup_after": setup_snapshot(rx),
+                    }
                 )
                 out["phases"].append(phase)
                 if not index and len(phase["exact_good_phy"]) != 4:

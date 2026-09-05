@@ -5,6 +5,9 @@
 One-bit candidate, not an established P-RXV2 enable API. Optional previously
 traced RXV START tests the two controls together. No RF entry, arbitrary masks,
 raw/ambient vector export, power or nonvolatile changes.
+
+Optional RF DMA setup uses only the five descriptor-pinned fields verified in
+RF entry; it does not change any DMA address or buffer. All controls are restored.
 """
 
 import argparse
@@ -22,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from research import legacy_ics_own_probe as own
 from research import legacy_ics_probe as legacy
+from research import legacy_rx_dma_setup as dma
 from research import legacy_rxv_control_probe as rxv
 from research.noise_self_tx_probe import packet
 from research.txpower_register_probe import check_image, m
@@ -74,6 +78,7 @@ def main():
     parser.add_argument("--activate-rmac-candidate", action="store_true")
     parser.add_argument("--acknowledge-experimental-transmit", action="store_true")
     parser.add_argument("--with-rxv-start", action="store_true")
+    parser.add_argument("--with-rf-dma-setup", action="store_true")
     args = parser.parse_args()
     if not (args.activate_rmac_candidate and args.acknowledge_experimental_transmit):
         parser.error("explicit one-bit RMAC and transmit acknowledgments required")
@@ -82,10 +87,12 @@ def main():
         "max_submissions": 12,
         "channel": 6,
         "with_rxv_start": args.with_rxv_start,
+        "with_rf_dma_setup": args.with_rf_dma_setup,
         "phases": [],
     }
     originals, attempted, field_attempted, original_field = {}, False, False, None
     rxv_attempted = False
+    dma_attempted = False
     with contextlib.ExitStack() as stack:
         rx, tx = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
         radios = (rx, tx)
@@ -106,6 +113,10 @@ def main():
                 boot(i)
             out["verified_ics"] = legacy.verify(rx)
             out["verified_candidate"] = verify(rx)
+            if args.with_rf_dma_setup:
+                out["verified_dma"] = dma.verify(rx)
+                if legacy.valid_word(rx.rr(dma.REGISTER)) & dma.MASK != dma.NORMAL:
+                    raise ValueError("pinned normal DMA prerequisite")
             if args.with_rxv_start:
                 out["verified_rxv"] = rxv.verify(rx)
                 if rxv.snapshot(rx)["owned_mask"] != "0x1":
@@ -127,6 +138,10 @@ def main():
             time.sleep(0.05)
             for index, value in enumerate((1, 0, 1)):
                 rxv_control = None
+                dma_control = None
+                if args.with_rf_dma_setup and index:
+                    dma_attempted = True
+                    dma_control = dma.apply(rx, "rf_setup" if index == 1 else "normal")
                 if args.with_rxv_start and index:
                     if index == 1:
                         rxv_attempted = True
@@ -145,6 +160,7 @@ def main():
                         "bit0_requested": value,
                         "rxv_control": rxv_control,
                         "control": control,
+                        "dma_control": dma_control,
                         "register_after": hex(legacy.valid_word(rx.rr(REGISTER))),
                         "ics_masks": legacy.masks(rx),
                     }
@@ -155,6 +171,14 @@ def main():
         except Exception as exc:
             out["error_type"] = type(exc).__name__
         finally:
+            if dma_attempted:
+                try:
+                    dma.apply(rx, "normal")
+                    out["dma_restored"] = (
+                        legacy.valid_word(rx.rr(dma.REGISTER)) & dma.MASK == dma.NORMAL
+                    )
+                except Exception as exc:
+                    out["dma_restore_error_type"] = type(exc).__name__
             if rxv_attempted:
                 try:
                     rxv.quiesce(rx)
@@ -188,6 +212,7 @@ def main():
         or not all(out.get("restored", {}).values())
         or (field_attempted and not out.get("field_restored"))
         or (rxv_attempted and not out.get("rxv_restored"))
+        or (dma_attempted and not out.get("dma_restored"))
     )
 
 
