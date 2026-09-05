@@ -1,5 +1,10 @@
 # MT7961 PHY detection and decoding counters
 
+**Later qualification:** the [error-frame capture control](ERROR_FRAME_CAPTURE.md)
+shows OFDM FCS`0x83081024[31:16]` becomes1 then stays1 despite multiple delivered
+CRC-failed HT frames. Under the normal enable recipe below this is **not a
+validated accumulating error count**. Do not derive error percentages from it.
+
 **Ten PHY counters are reachable through CE1 GET41, and their normal monitor-mode
 accumulation can now be enabled with the exact firmware control.** Controlled HT and HE
 receptions produce nonzero detection/receive-ready counts; a busier window also

@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Failed-frame PHY capture unlocked:** [FCS filter controls](ERROR_FRAME_CAPTURE.md)
+show that clearing only MAC RFCR bit1 exposes CRC-failed HT15/2SS metadata;
+sniffer drop_err0 alone does not. A factorial test and two same-rate reversals
+separate the controls, retaining only anonymous diagnostics. The source-named
+PHY FCS field remains1 across multiple failed frames, so it must not be used
+as an accumulating error count under the current enable recipe. Original
+filter/counter bits and both firmware reloads are verified; defaults unchanged.
+
 **New GI/LDPC transmit controls:** [MT7925 fixed-rate ROM mapping](FIXED_RATE_TABLE.md)
 locates GI and LDPC bits, and the second dongle independently receives HT8 with
 short GI and with LDPC coding. A corrected UNI40 request also works, but exposes
