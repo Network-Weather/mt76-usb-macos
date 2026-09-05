@@ -122,6 +122,8 @@ def main():
     experiment.add_argument("--match-ta", action="store_true")
     parser.add_argument("--rf-clean-start", action="store_true")
     parser.add_argument("--rf-clean-prepare", choices=("bare", "tune", "channel", "config", "full"))
+    parser.add_argument("--phy-counters", action="store_true")
+    parser.add_argument("--phy-registers", action="store_true")
     args = parser.parse_args()
     if not args.acknowledge_experimental_transmit:
         parser.error("explicit transmit acknowledgment required")
@@ -129,6 +131,8 @@ def main():
         parser.error("clean-start control requires --match-ta")
     if args.rf_clean_start and args.rf_clean_prepare:
         parser.error("choose one clean preparation control")
+    if args.phy_registers and not args.phy_counters:
+        parser.error("register comparison requires --phy-counters")
     out = {
         "tool": "rxv_log_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -141,6 +145,8 @@ def main():
         "match_ta": args.match_ta,
         "rf_clean_start": args.rf_clean_start,
         "rf_clean_prepare": args.rf_clean_prepare,
+        "phy_counters": args.phy_counters,
+        "phy_registers": args.phy_registers,
     }
     marker = b"\xdd\x0c\x02NW\x01" + os.urandom(8)
     frames = {i: controlled_frame(i) + marker for i in range(out["maximum_submissions"])}
@@ -262,7 +268,13 @@ def main():
         try:
             for i in range(2):
                 boot(i)
+            if args.phy_registers:
+                from research.phy_stats_probe import hardware_snapshot
+
+                out["normal_phy_before"] = hardware_snapshot(rx)
             out["normal_control"] = burst(0)
+            if args.phy_registers:
+                out["normal_phy_after"] = hardware_snapshot(rx)
             if not out["normal_control"]["exact_synthetic_frames"]:
                 raise RuntimeError("no independent control receipt; skip RF stimulus")
             if args.rearm_he:
@@ -290,6 +302,10 @@ def main():
             rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 2), wait=False)
             time.sleep(0.1)
             out["before"] = {"count": read_log_count(), "cached": snapshot(rx)}
+            if args.phy_counters:
+                from research.phy_stats_probe import snapshot as phy_snapshot
+
+                out["phy_before"] = phy_snapshot(rx)
             if args.match_ta:
                 out["first_match_state"] = match_ta_state(rx, frames[0][10:16])
             out["rf_stimulus"] = burst(8 if args.rearm_he else 4)
@@ -302,6 +318,12 @@ def main():
             time.sleep(0.2)
             out["stopped"] = {"count": read_log_count(), "cached": snapshot(rx)}
             out["log_readout"] = read_log_fields(out["stopped"]["count"])
+            if args.phy_counters:
+                out["phy_stopped"] = phy_snapshot(rx)
+                out["phy_stopped_repeat"] = phy_snapshot(rx)
+                if args.phy_registers:
+                    out["phy_hardware_stopped"] = hardware_snapshot(rx)
+                    out["phy_after_hardware_read"] = phy_snapshot(rx)
             if args.match_ta:
                 out["first_match_packet_counts"] = packet_counts()
                 out["match_followups"] = []
@@ -332,6 +354,8 @@ def main():
                 out["after_counter_reset"] = {"count": read_log_count(), "cached": snapshot(rx)}
                 if out["after_counter_reset"]["count"] != 0:
                     raise RuntimeError("stopped log reset did not clear count")
+                if args.phy_counters:
+                    out["phy_after_reset"] = phy_snapshot(rx)
                 rx.mcu_cmd_word(m.MCU_CE_CMD(1), rx_setting(1, 2), wait=False)
                 time.sleep(0.1)
                 out["rearmed_he_stimulus"] = burst(12, he_code)
@@ -340,6 +364,9 @@ def main():
                 count = read_log_count()
                 out["rearmed_stopped"] = {"count": count, "cached": snapshot(rx)}
                 out["rearmed_log_readout"] = read_log_fields(count)
+                if args.phy_counters:
+                    out["phy_rearmed_stopped"] = phy_snapshot(rx)
+                    out["phy_rearmed_stopped_repeat"] = phy_snapshot(rx)
             out["alive_after"] = [d.alive() for d in radios]
         except Exception as exc:
             out["error_type"] = type(exc).__name__

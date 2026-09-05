@@ -111,6 +111,16 @@ def test_clean_start_requires_filter_experiment_before_usb(monkeypatch):
     assert exc.value.code == 2
 
 
+def test_phy_registers_require_counter_opt_in_before_usb(monkeypatch):
+    monkeypatch.setattr(
+        sys, "argv", ["rxv", "--acknowledge-experimental-transmit", "--phy-registers"]
+    )
+    monkeypatch.setattr(p.m, "open_device", lambda *_: pytest.fail("USB opened"))
+    with pytest.raises(SystemExit) as exc:
+        p.main()
+    assert exc.value.code == 2
+
+
 @pytest.mark.parametrize(
     ("preparation", "expected"),
     [

@@ -1,0 +1,89 @@
+# MT7961 PHY detection and decoding counters
+
+**Ten PHY counters are reachable through CE1 GET41.** Controlled HT and HE
+receptions produce nonzero detection/receive-ready counts; a busier window also
+produced PHY-header and FCS errors. These complement MAC delivery counts and the
+finite RX-vector log. They do not by themselves classify non-Wi-Fi interference,
+attribute errors to a transmitter, or measure calibrated RF power.
+
+Pinned RAM SHA-256:
+`b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9`.
+
+## Firmware and wire mapping
+
+`<B3xII>(2, 41, byte_offset)` through CE1 returns an EID9 scalar pair
+`<II>(41, value)`. Only that pair is defined here; reply tail bytes are discarded.
+Use exactly offsets0,4,...,36. The firmware accepts byte offsets up to36 but
+does not enforce alignment; the tool does, and never probes unaligned/out-of-range
+locations. GET offset0 refreshes all ten counters; the other nine read that
+stored snapshot. This is not a guarantee of an atomic five-register hardware
+snapshot, or protection against another firmware consumer refreshing it.
+
+- GET dispatch `0x0093363c..0x00933640` reaches`0x00933922`.
+- `0x0093392a..0x0093393c` refreshes only for offset0, through`0x00942d0e`.
+- `0x00933946..0x00933954` reads per-band state+`0x34+offset`.
+- The actual refresh routine`0x00936cc8..0x00936d10` reads five registers and
+  splits each into two **unsigned16-bit values**, stored in32-bit slots.
+  Band0 uses base`0x83081000`; band1 uses`0x83091000` (only band0 tested).
+
+| Band0 register | Low16: GET byte offset / name | High16: GET byte offset / name |
+|---|---|---|
+| `0x83081010` | 0 / CCK PD | 4 / OFDM PD |
+| `0x8308101c` | 8 / CCK SFD error | 12 / CCK SIG error |
+| `0x83081020` | 16 / OFDM TAG error | 20 / OFDM SIG error |
+| `0x83081024` | 24 / CCK FCS error | 28 / OFDM FCS error |
+| `0x83081014` | 32 / CCK MDRDY | 36 / OFDM MDRDY |
+
+Names are cross-checked against the **72-word** CE0xc8 output assignments at
+`0x009312e8..0x0093135c` and`0x009313c2..0x009313e0`, plus pinned Motorola gen4m
+`os/linux/include/gl_qa_agent.h:PARAM_RX_STAT`. That structure uses a different
+order: e.g. CCK SIG precedes SFD, and OFDM SIG precedes TAG. The table above
+follows actual GET41/register order, not a guessed copy of the public structure.
+PD and MDRDY are detection and receive-ready counter names, not exact-frame
+counts. CCK interpretation was not validated by transmitting CCK in this test.
+
+## Live results and counter semantics
+
+`research/phy_stats_probe.py` makes bounded passive normal/RF-RX/stopped queries.
+Its first passive control returned McuError in normal mode, matched all-zero
+snapshots in RF mode, and no host packets in its short receive windows. That
+alone did not establish inactive counters.
+
+`research/rxv_log_probe.py --acknowledge-experimental-transmit --phy-counters`
+then received4/4 exact normal HT controls, sent four RF stimuli and retrieved
+four logged vectors. PHY fields changed from all-zero to **OFDM PD5/MDRDY4**,
+with all error counters zero. Thus the counter route is live under independently
+checked reception conditions, not merely an accepted command.
+
+A second run added `--rearm-he --phy-registers`:4/4 HT and4/4 HE exact controls,
+then four HT and four HE stimuli in reset-separated batches (16 total frames).
+Its busier first RF window changed OFDM PD/MDRDY74→101, FCS errors33→42,
+and SIG errors0→1. These include ambient activity and are not assigned to the
+four synthetic HT frames. After STOP, **two complete queries, a direct five-
+register read, and another complete query all agreed exactly**. No clearing on
+read was observed in that stopped sequence. SET91 reset then returned all-zero
+PHY fields; the subsequent HE batch gave **PD4/MDRDY4**, with errors zero,
+and another repeated stopped query agreed.
+
+Treat these as16-bit snapshots: wrap versus saturation at the limit, periodic
+firmware resets, inter-consumer effects and long-running accumulation still need
+validation. Do not infer packet-loss rate as `PD-MDRDY`, or non-Wi-Fi activity
+from any one of these counters. All experiments restored normal firmware on both
+radios and passed alive checks. No direct register writes or raw frame export.
+
+The normal-mode wire query refusal does not establish that direct register
+access is unavailable. `--phy-registers` explicitly opts into the separate fixed-
+register comparison; its read effects are recorded rather than hidden inside
+the standard counter-query path. In a third controlled run, normal monitor-mode
+reads before and after4/4 exact HT receipts stayed at PD0/MDRDY0 and FCS errors2.
+After entering RF RX, the same physical registers and GET41 agreed at PD7/MDRDY7,
+FCS errors1, across repeated reads. **Normal-mode accumulation is not established**;
+the physical addresses alone are not a working always-on survey API. The next
+discrimination is the firmware's counter enable/reset sequence, not another
+uncontrolled idle observation.
+
+Public-source pin: Motorola gen4m
+`8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`, `include/rftest.h` and
+`os/linux/include/gl_qa_agent.h`. Protocol names only; no vendor implementation
+or firmware bytes copied. See also [RX-vector findings](RX_VECTOR_LOG.md) and
+[sanitized evidence](../research/evidence/phy-rx-counters-2026-09-05.json).
