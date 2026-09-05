@@ -85,6 +85,47 @@ def test_lowband_suite_has_no_vht_and_keeps_packet_ceiling(channel):
     assert dict(rates)["ht8_2ss"] == 0x488
 
 
+@pytest.mark.parametrize("suite", ["cck", "preamble"])
+@pytest.mark.parametrize("channel", [1, 6, 11])
+def test_cck_suites_are_lowband_and_bounded(suite, channel):
+    rates = p.suite_rates(suite, channel)
+    assert len(rates) * 10 <= 60
+    assert rates[0][1] == rates[-1][1] == 0x4B
+    assert all(code in (0, 1, 2, 3, 5, 7) for _, code in rates[1:-1])
+    with pytest.raises(ValueError, match="lowband"):
+        p.suite_rates(suite, 36)
+
+
+@pytest.mark.parametrize("code", [0, 1, 2, 3, 5, 7])
+def test_cck_table_programs_only_allowed_source_rate(code):
+    class Device:
+        CHIP = m.CHIP_MT7925
+
+        def __init__(self):
+            self.writes = []
+
+        def wr(self, address, value):
+            self.writes.append((address, value))
+
+        def rr(self, address):
+            assert address == p.c3.ITCR
+            return 0
+
+    dev = Device()
+    p.program_rate(dev, code)
+    assert dev.writes == [
+        (p.c3.ITDR0, code),
+        (p.c3.ITDR1, 1 << 6),
+        (p.c3.ITCR, (1 << 31) | (1 << 16) | 18),
+    ]
+
+
+def test_preamble_codes_change_only_short_preamble_bit():
+    rates = dict(p.PREAMBLE_RATES)
+    assert rates["cck2_short"] ^ rates["cck2_long"] == 4
+    assert rates["cck11_short"] ^ rates["cck11_long"] == 4
+
+
 @pytest.mark.parametrize(
     ("suite", "channel"),
     [

@@ -5,7 +5,7 @@
 """Try bounded HT/VHT/HE fixed-rate TX, with independent receiver evidence.
 
 At most 60 synthetic no-ACK probes, 50 ms spacing, bounded channels at 20 MHz.
-The lowband suite uses channels1/6/11 and excludes VHT; other suites use36/149.
+Lowband/CCK suites use channels1/6/11 and exclude VHT; others use36/149.
 Known OFDM controls bracket the candidate rates. No association or ambient frame
 output. Full firmware reload in finally removes all experimental transmitter state.
 Requires explicit TX acknowledgment. This is research, not a production API.
@@ -62,7 +62,25 @@ LOWBAND_RATES = (
     ("he0_2ss", (1 << 10) | (8 << 6)),
     ("ofdm_after", 0x4B),
 )
-ALLOWED_RATE_CODES = {rate for _, rate in RATES + STREAM_RATES}
+# mt76.h CCK_RATE and mac80211.c mt76_rates: indices0..3 are1/2/5.5/11 Mbps;
+# bit2 selects short preamble. Only2/11 Mbps short controls are included.
+CCK_RATES = (
+    ("ofdm_before", 0x4B),
+    ("cck1_long", 0),
+    ("cck2_long", 1),
+    ("cck5_5_long", 2),
+    ("cck11_long", 3),
+    ("ofdm_after", 0x4B),
+)
+PREAMBLE_RATES = (
+    ("ofdm_before", 0x4B),
+    ("cck2_long", 1),
+    ("cck2_short", 5),
+    ("cck11_long", 3),
+    ("cck11_short", 7),
+    ("ofdm_after", 0x4B),
+)
+ALLOWED_RATE_CODES = {rate for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES}
 # Vendor gen4m 8fddb9d7 wlanAntPathFavorSelect: 0=WF0, 1=WF1,
 # 0x18=duplicated one-stream path. Connac2 TXD DW7 bits 15:11.
 # Keep DW6 selection bit 10 at the existing zero, as mt7915 test descriptors do.
@@ -75,13 +93,15 @@ SPATIAL_RATES = tuple(
 def suite_rates(suite, channel):
     if type(channel) is not int or channel not in (1, 6, 11, 36, 149):
         raise ValueError("only bounded non-DFS test channels")
-    if (channel <= 11) != (suite == "lowband"):
-        raise ValueError("lowband suite required for 2.4GHz; other suites require 5GHz")
+    if (channel <= 11) != (suite in ("lowband", "cck", "preamble")):
+        raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
     suites = {
         "baseline": RATES,
         "streams": STREAM_RATES,
         "spatial": SPATIAL_RATES,
         "lowband": LOWBAND_RATES,
+        "cck": CCK_RATES,
+        "preamble": PREAMBLE_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -195,7 +215,9 @@ def main():
     p.add_argument("--acknowledge-experimental-transmit", action="store_true")
     p.add_argument("--fixed-bw", action="store_true", help="connac3 explicit 20 MHz TXD flag")
     p.add_argument(
-        "--suite", choices=("baseline", "streams", "spatial", "lowband"), default="baseline"
+        "--suite",
+        choices=("baseline", "streams", "spatial", "lowband", "cck", "preamble"),
+        default="baseline",
     )
     args = p.parse_args()
     if not args.acknowledge_experimental_transmit:

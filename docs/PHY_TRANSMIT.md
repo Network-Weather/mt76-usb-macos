@@ -1,4 +1,4 @@
-# Fixed HT/VHT/HE transmit exploration
+# Fixed PHY-rate transmit exploration
 
 Measured 2026-09-04 Pacific (2026-09-05 UTC), macOS 26.6.1, Python 3.14.7,
 MT7961 ALFA `0e8d:7961` and MT7925 A9000 `0846:9072`. Research-only additions;
@@ -37,7 +37,8 @@ succeeded on all three runs.
 OFDM6, HT0/1SS, HT8/2SS, HE0/1SS, HE0/2SS, OFDM6. It excludes VHT and all
 wider bandwidths; the existing60-packet ceiling,50ms spacing, no-ACK policy,
 fresh private nonce and independent whole-frame/FCS/PHY checks remain. Only
-channels1/6/11 accept this suite; the other suites still require36/149.
+channels1/6/11 accept this suite and the later CCK/preamble suites; the other
+suites still require36/149.
 
 Two fresh MT7925-transmitter runs at12:00:43 and12:01:34 UTC on2026-09-05
 each submitted24 frames. The MT7961 receiver independently reported:
@@ -64,6 +65,41 @@ or nonvolatile writes were attempted. The receiver stayed in normal monitor
 mode; the cleanup evidence specifically covers the transmitter reload, not a
 claimed second receiver reload inside this older probe.
 [Lowband evidence](../research/evidence/lowband-transmit-2026-09-05.json).
+
+### CCK rates and selectable preambles
+
+`--suite cck` and `--suite preamble` use only channels1/6/11,20MHz, with the
+same60-frame limit,50ms spacing, synthetic no-ACK probes, nonce matching and
+independent good-FCS receive evidence. Protocol values come from pinned mt76
+`mt76.h` `CCK_RATE`, `mac80211.c` `mt76_rates` / `mt76_get_rate`: mode0,
+indices0/1/2/3 mean1/2/5.5/11Mbps; bit2 selects short preamble. The preamble
+suite compares codes1/5 and3/7. No short-preamble1Mbps variant is attempted.
+
+MT7925 forward TX, four frames per phase on2026-09-05:
+
+| Run | OFDM before | Four CCK phases | OFDM after |
+|---|---:|---|---:|
+| ch1 CCK rates | 4/4 | 1/2/5.5/11Mbps long:4/4 each | 0/4 |
+| ch1 preambles | 4/4 | 2-long/2-short/11-long/11-short:4/4 each | 1/4 |
+| ch6 preambles | 0/4 | 2-long/2-short/11-long/11-short:4/4 each | 0/4 |
+
+Receiver mode was CCK and rate/index matched each requested value, including
+raw indices5/7 for short preambles. These are independently received PHY
+controls, not inferred from successful TX status. All three fresh-nonce runs
+submitted24 frames and passed both alive checks and transmitter normal reload.
+No control used a power change. The weak/missing OFDM controls and roughly
+−101..−100 raw signal on ch1 mean **RF recovery and general mode-switch health
+are not established**. Successful CCK reception does not qualify throughput,
+range, or calibrated airtime; the existing analytical airtime estimate still
+uses a fixed long-CCK preamble and is not a preamble-duration measurement.
+
+A source-defined CCK-only hypothesis for the failed reverse direction was also
+tested: MT7961 submitted24 ch1 frames with OFDM controls and1/2/5.5/11Mbps CCK,
+but MT7925 independently received none. Both alive checks and transmitter reload
+passed. CCK did not restore the reverse path; no further power/calibration sweep
+was performed.
+
+[Sanitized CCK evidence](../research/evidence/cck-transmit-2026-09-05.json).
 
 ### Two-stream follow-up (2026-09-05 UTC)
 
