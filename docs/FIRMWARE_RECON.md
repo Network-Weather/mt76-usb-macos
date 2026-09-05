@@ -104,7 +104,13 @@ Earlier instruction/function counts from the Xtensa import are not valid evidenc
 
 ## What the dispatch tables say, without disassembling anything
 
-**2026-09-05 correction:** the numeric-tag comparisons below are historical
+**Later2026-09-05 correction:** [the scanner reversed record words](COMMAND_TABLES.md).
+The tables use CID-then-handler; the old interpretation paired each handler with
+the next row's ID. The scanner is fixed, including its skipped-final-record bug.
+Old static assignments and hit/absence counts below are historical, not a reliable
+map or proof of missing capability. Independently measured live results remain valid.
+
+The earlier intermediate correction was: the numeric-tag comparisons below are historical
 hypotheses, not established wire-command mappings. NDS32/GP cross-checks show
 tag 0xa3 names RDD control and tag 0x3a names MU control, contrary to their
 same-numbered wire EXT enums. A missing numeric tag is not proof that a wire
@@ -112,15 +118,15 @@ command lacks a handler. See [NDS32_RECON](NDS32_RECON.md). Independently measur
 accepted/refused/silent hardware outcomes remain valid.
 
 Command dispatch tables are plain data in the rodata region, so which commands a firmware
-implements can be read straight out of the image. A slot is `{u32 handler, u32 cid}`, and
+may expose can be explored in the image. A slot is `{u32 cid, u32 handler}`, and
 `scripts/fw_triage.py --command-map` scans every region for that shape at 4-byte alignment,
 accepting a slot only when the handler points into an address range the image itself declares
 as code.
 
-The evidence is asymmetric and the asymmetry decides how to read the output. A hit is weak:
+Both directions are limited. A hit is weak:
 a code-shaped address can sit beside a small integer by chance, and `CHANNEL_SWITCH` -- a
-command this driver uses successfully on hardware -- produces nine. Zero hits across every
-region is the stronger claim.
+command this driver uses successfully on hardware -- produced nine in the old scan.
+Zero hits only means no matching candidate pair; it does not establish absence.
 
 Measured on the MT7921 image, 2026-09-03:
 
@@ -589,7 +595,7 @@ The four instruments built here compose into a loop that takes an hour and needs
 disassembly. It is written down because every lead below runs through the same steps.
 
 1. **Is it in the image?** `scripts/fw_triage.py --command-map` scans the rodata dispatch
-   tables. Zero hits across every region is a real absence; a hit only makes it a candidate.
+   tables. Zero hits only means no matching pair; a hit only makes it a candidate.
 2. **Does the firmware admit to it?** Send it and check for the refusal:
    16 bytes, echoed ext_cid, `0xfe`. `scripts/mcu_stats.py` recognises this. Calibrate against
    a control that works (`THERMAL_CTRL` 0x2c returns a temperature) so a broken send is not

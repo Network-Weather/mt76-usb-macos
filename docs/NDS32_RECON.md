@@ -65,13 +65,16 @@ It yields direct ICAP-mode-guard and histogram string references:
 - `rdmSetIpiHist` reference: 0x00961634.
 - `rdmGetIpiHist` reference: 0x00961696.
 
-**Important table-label correction:** tag 0xa3 at 0x00961422 resolves to
+**Table-order correction:** [later live-table controls](COMMAND_TABLES.md) establish
+CID-then-handler records. The earlier scanner paired each handler with the next
+row's ID. Correctly aligned, CE0x8f and EXT0x3a both point to`rdmCmdRddCtrl` at
+0x00961422, while EXT0x40 points to MU control.
+
+The earlier intermediate warning was: tag 0xa3 at 0x00961422 resolves to
 `rdmCmdRddCtrl`, while tag 0x3a at 0x0095c90e resolves to `muExtCmdMuTxRxCtrl`.
-Therefore those internal dispatch tags cannot be directly equated to same-numbered
-wire EXT IDs. Earlier numeric matches alone do not identify handlers. The measured
-wire command responses remain valid; static table naming requires an actual
-dispatch-path cross-check. In particular, do not use the initial table-tag 0xa3
-disassembly to construct histogram commands.
+Those were **mispaired adjacent IDs**, not established internal dispatch tags.
+Measured wire command responses remain valid; old static mappings/counts do not.
+Do not use the original reversed table scan to construct commands.
 
 The inspector also annotates `ifcall9` (0xf800 family, unsigned nine-bit
 displacement scaled by two), using GNU opcode facts. These instructions are

@@ -58,7 +58,9 @@ subsequently unlocked the readout above. No calibration capability is claimed.
 
 **Major static-analysis correction:** [NDS32, not Xtensa](NDS32_RECON.md).
 Startup exposes the EX9 table, and a GP candidate recovers meaningful string
-references. Internal dispatch tags also must not be equated directly to wire IDs.
+references. A later [table-order correction](COMMAND_TABLES.md) explains the
+apparent internal-tag mismatch: the old scanner read handler-then-next-CID instead
+of CID-then-handler. Corrected mappings match independent CSI/BF/RDD controls.
 
 ## ICAP: capture start changes state, node-0 completion not observed
 
