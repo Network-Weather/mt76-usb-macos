@@ -6,7 +6,7 @@
 Protocol: pinned Motorola gen4m wlan_oid.h RBIST_CAP_START_T, FUNC_IDX;
 wlan_oid.c wlanoidExtRfTestICapStart and wlanoidRfTestICapGetIQData.
 Node 0 is a candidate from the QA legacy default, NOT a proven MT7961 ADC node.
-At most 256 requested samples, free-run with ring off, architecture 0 (on-chip),
+At most 256 requested samples, ring off, architecture 0 (on-chip),
 all EMI/source addresses zero. Optional one 1-KiB bank request after capture.
 Only event metadata and bounded sample summary statistics leave the process.
 No raw IQ, ambient frame bytes, addresses, or packet fingerprints are serialized.
@@ -30,14 +30,22 @@ from research.icap_status_probe import event_summary, status_request
 from research.testmode_receiver_probe import rx_setting
 
 
-def capture_request(samples=256, trigger=True):
+def capture_request(samples=256, trigger=True, trigger_event=0, node=0):
     if samples not in (64, 256) or type(trigger) is not bool:
         raise ValueError("bounded sample count and boolean trigger required")
+    if trigger_event not in (0, 0xFFFFFFFF):
+        raise ValueError("only baseline or firmware-derived no-event-gate candidate")
+    if node not in (0, 0x49):
+        raise ValueError("only baseline or source-derived node candidate")
     words = [0] * 20
     words[0] = int(trigger)
+    words[2] = trigger_event
+    words[3] = node
     words[4] = samples
     words[5] = samples
-    # node=0 candidate, free-run/ring=0, architecture=0; no EMI addresses.
+    # Firmware 0x0096c562: event -1 clears bit 19 rather than selecting an event.
+    # Node 0x49 is the pinned QA mapping for node 8, not validated for MT7961.
+    # ring=0, architecture=0; no EMI addresses.
     return struct.pack("<B3xI20I", 1, 11, *words)
 
 
@@ -106,6 +114,10 @@ def collect(dev, seconds, seq):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--samples", type=int, choices=(64, 256), default=256)
+    p.add_argument("--node", type=lambda value: int(value, 0), choices=(0, 0x49), default=0)
+    p.add_argument(
+        "--no-event-gate", action="store_true", help="firmware-derived event -1 candidate"
+    )
     p.add_argument("--prepare-rx", action="store_true")
     p.add_argument(
         "--icap-channel", action="store_true", help="explicit ICAP channel-switch preparation"
@@ -116,7 +128,8 @@ def main():
         "tool": "icap_capture_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "samples_requested": args.samples,
-        "node_candidate": 0,
+        "trigger_event": 0xFFFFFFFF if args.no_event_gate else 0,
+        "node_candidate": args.node,
         "architecture": 0,
         "prepare_rx": args.prepare_rx,
         "icap_channel": args.icap_channel,
@@ -156,7 +169,7 @@ def main():
                     time.sleep(0.1)
             ext(status_request(), query=True)
             out["before"] = collect(dev, 0.3, dev.msg_seq)
-            ext(capture_request(args.samples))
+            ext(capture_request(args.samples, trigger_event=out["trigger_event"], node=args.node))
             out["start_events"] = collect(dev, 0.3, dev.msg_seq)
             for _ in range(3):
                 ext(status_request(), query=True)
@@ -174,7 +187,14 @@ def main():
             out["error_type"] = type(exc).__name__
         finally:
             try:
-                ext(capture_request(args.samples, trigger=False))
+                ext(
+                    capture_request(
+                        args.samples,
+                        trigger=False,
+                        trigger_event=out["trigger_event"],
+                        node=args.node,
+                    )
+                )
                 out["stop_events"] = collect(dev, 0.2, dev.msg_seq)
             except (m.McuError, RuntimeError, usb.core.USBError) as exc:
                 out["stop_error_type"] = type(exc).__name__

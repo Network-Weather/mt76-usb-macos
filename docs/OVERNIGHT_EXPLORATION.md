@@ -144,6 +144,36 @@ attenuation pattern; ambient traffic still dominates last-sample observations.
 
 [Sanitized chain-isolation evidence](../research/evidence/testmode-rx-chains-2026-09-05.json).
 
+## ICAP: firmware-backed event-gate and node follow-up
+
+Corrected disassembly identifies the actual ICAP dispatcher at 0x00933d86:
+mode checks, action 1, functions 11/12/17 and the expected request length agree
+with the working command. Start routes through 0x00964d5c → 0x0095c678 →
+0x0095c630. In the chip routine at 0x0096c562, event -1 clears register bit 19
+instead of enabling an event selector. Thus the earlier label “free-run” for
+event 0 was not established by the firmware. The tool now labels the alternative
+`--no-event-gate`, not “working free-run.”
+
+Two further bounded 64-requested-sample, on-chip-only runs with explicit channel
+preparation used event 0xffffffff: first node 0, then node 0x49. The latter is the
+pinned QA mapping for node 8, also selected by the original
+[MtkICAPtool](https://github.com/MtkWifiRev/MtkICAPtool/tree/d829596a88e66382b3afe0f6be1de0c15ff88037)
+on a different chip; it remains a candidate here. Both runs again gave pre-start
+done=1, then 0/0/0. No data retrieval was requested and reset/alive checks passed.
+[Evidence](../research/evidence/icap-trigger-node-2026-09-05.json).
+
+The start/status path calls through ROM-table words at 0x00823000 and 0x00823014.
+Their actual targets are a new read-only lead. Sample length remains a requested
+software parameter, not proof of a hardware-enforced ADC sample ceiling; captures
+are additionally bounded by ring-off, on-chip storage and short stop/reset windows.
+
+The bounded USB read check succeeded: 0x00915000 returns 0x15090046 and
+0x0096c7bc returns 0x00000c46, matching known image bytes. ROM-table words
+0x00823000 and 0x00823014 return **0x008322da** and **0x00832344**, respectively.
+Both targets lie in the expected ROM range. Only four words were read; firmware
+reload/alive checks passed. This establishes a viable targeted-ROM-inspection
+route, not permission or need to dump unrelated memory. Checkpoint: 620 tests pass.
+
 The public-source revision remains Motorola gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`;
 no vendor implementation/header or firmware blob is included in this repository.
 

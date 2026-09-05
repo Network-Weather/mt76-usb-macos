@@ -72,3 +72,11 @@ wire EXT IDs. Earlier numeric matches alone do not identify handlers. The measur
 wire command responses remain valid; static table naming requires an actual
 dispatch-path cross-check. In particular, do not use the initial table-tag 0xa3
 disassembly to construct histogram commands.
+
+The inspector also annotates `ifcall9` (0xf800 family, unsigned nine-bit
+displacement scaled by two), using GNU opcode facts. These instructions are
+missing from the installed Ghidra decoder; see the upstream
+[inline-call issue](https://github.com/NationalSecurityAgency/ghidra/issues/8974)
+and [GNU port submission](https://sourceware.org/legacy-ml/binutils/2013-07/msg00066.html).
+The helper is still a bounded linear inspector, not a complete control-flow or
+decompiler repair. It stops at other unknown instructions rather than guessing.

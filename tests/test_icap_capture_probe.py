@@ -39,6 +39,26 @@ def test_data_request_only_one_bank_one_kib():
     assert data_request()[32:] == bytes(56)
 
 
+def test_no_event_gate_changes_only_event_word():
+    baseline = capture_request(64)
+    candidate = capture_request(64, trigger_event=0xFFFFFFFF)
+    assert candidate[:16] == baseline[:16]
+    assert candidate[16:20] == b"\xff" * 4
+    assert candidate[20:] == baseline[20:]
+    with pytest.raises(ValueError, match="no-event-gate"):
+        capture_request(trigger_event=1)
+
+
+def test_candidate_node_changes_only_node_word():
+    baseline = capture_request(64)
+    candidate = capture_request(64, node=0x49)
+    assert candidate[:20] == baseline[:20]
+    assert candidate[20:24] == struct.pack("<I", 0x49)
+    assert candidate[24:] == baseline[24:]
+    with pytest.raises(ValueError, match="node candidate"):
+        capture_request(node=8)
+
+
 def test_channel_setup_never_starts_tx():
     assert channel_request(1, 13) == struct.pack("<B3xII", 1, 1, 13)
     with pytest.raises(ValueError, match="only fixed ICAP"):

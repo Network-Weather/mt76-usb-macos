@@ -40,6 +40,16 @@ public class Nds32Inspect extends GhidraScript {
         long table = Long.decode(args[2]);
         PseudoDisassembler decoder = new PseudoDisassembler(currentProgram);
         while (pc.compareTo(end) < 0 && !monitor.isCancelled()) {
+            byte[] prefix = new byte[2];
+            currentProgram.getMemory().getBytes(pc, prefix);
+            int half = ((prefix[0] & 255) << 8) | (prefix[1] & 255);
+            if ((half & 0xfe00) == 0xf800) {
+                // GNU nds32 opcode facts: IFCALL9, unsigned nine-bit displacement * 2.
+                // Annotation only: no inline-call p-code or control-flow simulation.
+                println(pc + " ifcall9 " + pc.add((half & 511) * 2) + " [annotation only]");
+                pc = pc.add(2);
+                continue;
+            }
             PseudoInstruction ins = decoder.disassemble(pc);
             if (ins == null) { println("UNDECODED " + pc); break; }
             String result = pc + " " + describe(ins);
