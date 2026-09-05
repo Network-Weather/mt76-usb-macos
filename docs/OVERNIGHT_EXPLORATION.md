@@ -10,6 +10,12 @@ received as NSS1/NSTS2/STBC=true, four exact frames and then one on a fresh repe
 HT controls bracket both trials; the degraded/variable link prevents a gain claim.
 The source-mapped rate is4480, not the older chip's different STBC encoding.
 
+**New TX timing telemetry:** [MT7925 TX-status fields](TX_STATUS_TIMING.md) expose
+live timestamp/front-time/delay values. Across48 no-ACK packets at five rates
+and two lengths, a1µs/32µs clock model plus nominal packet airtime leaves a
+per-boot offset with29–32µs spread. This is a promising delay observation, not
+yet calibrated contention time or interference attribution.
+
 **Spatial-reuse queries:** [UNI25 capability/indicator replies](SPATIAL_REUSE.md)
 work on MT7925 through unsolicited sequence-zero events. Two fresh-band controls
 return stable configuration flags, but all eight counters remain zero despite

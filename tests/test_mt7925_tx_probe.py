@@ -73,6 +73,27 @@ def test_connac3_status_uses_four_word_header_twelve_word_records():
     assert tx_status(raw[:-1]) == []
 
 
+@pytest.mark.parametrize("format_id", [0, 1, 2, 3])
+def test_optional_raw_timing_fields_masked_and_format_guarded(format_id):
+    words = [
+        format_id << 23 | 0x480,
+        7 << 20,
+        0x1234ABCD,
+        3 << 24 | 0x80,
+        0xFFFFFFFF,
+        0xE2345678,
+    ] + [0] * 6
+    raw = struct.pack("<4I", 64, 0, 0, 0) + struct.pack("<12I", *words)
+    plain = tx_status(raw)[0]
+    result = tx_status(raw, include_timing=True)[0]
+    assert "timestamp_raw" not in plain
+    assert result["timestamp_raw"] == 0xFFFFFFFF
+    assert result["tx_delay_raw"] == 0xABCD
+    assert result["rate_stbc"]
+    assert result["front_time_raw_format0"] == (0x345678 if format_id == 0 else None)
+    assert "private" not in repr(tx_status(raw + b"private USB tail", include_timing=True))
+
+
 def test_capture_power_phase_assignment_and_exact_bytes(monkeypatch):
     samples = []
     for seq, signal in ((0, -50), (12, -54), (36, -58), (60, -50)):

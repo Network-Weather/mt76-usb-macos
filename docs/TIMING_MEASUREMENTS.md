@@ -5,6 +5,10 @@ The normal receiver timestamps already support relative clock alignment; see
 investigation asks whether a separate time-of-arrival (ToA) / timing-measurement
 engine is accessible without a full networking driver.
 
+A separate [TX-status timing investigation](TX_STATUS_TIMING.md) now finds live
+timestamp/front-time/delay telemetry with rate and payload-length controls.
+It does not depend on the refused RTT interface or establish ToA/ranging.
+
 ## RTT capability query: explicit negative on both builds
 
 The pinned gen4m source defines CE`0x44` QUERY with an empty payload.

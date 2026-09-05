@@ -176,13 +176,21 @@ def program_rate(dev, code):
     raise RuntimeError("rate table busy")
 
 
-def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None):
+def timing_padding(length):
+    """Only an optional128-byte private vendor IE, for packet-time controls."""
+    if type(length) is not int or length not in (0, 128):
+        raise ValueError("timing padding must be0 or128 bytes")
+    return b"\xdd\x7e\x02NW\x02" + bytes(122) if length else b""
+
+
+def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_timing=False):
     decode = m.decoder_for(dev)
     seen = [set() for _ in rates]
     phys = [collections.Counter() for _ in rates]
     signals = [[] for _ in rates]
     status = collections.Counter()
     counts = collections.Counter()
+    started = time.monotonic()
     ready.set()
     while not stop.is_set():
         try:
@@ -194,8 +202,14 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None):
             continue
         counts["decoded_usb_records"] += 1
         if d["pkt_type"] == 0:
-            rows = c3.tx_status(raw) if dev.CHIP == m.CHIP_MT7925 else tx_status_records(raw)
+            rows = (
+                c3.tx_status(raw, include_timing=tx_timing)
+                if dev.CHIP == m.CHIP_MT7925
+                else tx_status_records(raw)
+            )
             for row in rows:
+                if tx_timing and dev.CHIP == m.CHIP_MT7925:
+                    row["status_received_host_seconds"] = time.monotonic() - started
                 status[json.dumps(row, sort_keys=True)] += 1
         frame = d.get("frame", b"")
         if len(frame) < 24:
@@ -255,6 +269,18 @@ def main():
     p.add_argument("--acknowledge-experimental-transmit", action="store_true")
     p.add_argument("--fixed-bw", action="store_true", help="connac3 explicit 20 MHz TXD flag")
     p.add_argument(
+        "--tx-timing",
+        action="store_true",
+        help="raw Connac3 TXS timing fields; no unit or ranging claim",
+    )
+    p.add_argument(
+        "--timing-padding",
+        type=int,
+        choices=(0, 128),
+        default=0,
+        help="append128-byte private IE for TX timing length control",
+    )
+    p.add_argument(
         "--suite",
         choices=(
             "baseline",
@@ -273,6 +299,10 @@ def main():
         p.error("explicit transmit acknowledgment required")
     if args.fixed_bw and args.transmitter != "mt7925":
         p.error("fixed-bw variant applies only to mt7925")
+    if args.tx_timing and args.transmitter != "mt7925":
+        p.error("TX timing currently supports only the Connac3 transmitter")
+    if args.timing_padding and not args.tx_timing:
+        p.error("timing padding requires explicit --tx-timing")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
     if args.suite in ("stbc", "he-coding") and args.transmitter != "mt7925":
@@ -290,6 +320,8 @@ def main():
         "gap_s": 0.05,
         "fixed_bw": args.fixed_bw,
         "suite": args.suite,
+        "tx_timing": args.tx_timing,
+        "timing_padding_bytes": args.timing_padding,
         "spatial_codes": SPATIAL_SPE if args.suite == "spatial" else None,
         "submitted": 0,
         "firmware_sha256": {},
@@ -299,8 +331,10 @@ def main():
     # from matching this run. Never output the nonce, ambient frames, or headers.
     marker = b"\xdd\x0c\x02NW\x01" + os.urandom(8)
     expected = {
-        seq: c3.controlled_frame(seq) + marker for seq in range(len(rates) * args.per_phase)
+        seq: c3.controlled_frame(seq) + marker + timing_padding(args.timing_padding)
+        for seq in range(len(rates) * args.per_phase)
     }
+    out["frame_bytes_without_fcs"] = len(expected[0])
     out["unique_run_payload"] = True
     with contextlib.ExitStack() as stack:
         radios = [stack.enter_context(m.open_device(uid)) for uid in ("0e8d:7961", "0846:9072")]
@@ -323,7 +357,15 @@ def main():
                 ready = [threading.Event(), threading.Event()]
                 jobs = [
                     pool.submit(
-                        capture, dev, expected, args.per_phase, ready[i], stop, rates, marker
+                        capture,
+                        dev,
+                        expected,
+                        args.per_phase,
+                        ready[i],
+                        stop,
+                        rates,
+                        marker,
+                        args.tx_timing,
                     )
                     for i, dev in enumerate(radios)
                 ]

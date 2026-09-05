@@ -191,6 +191,20 @@ def test_he_coding_rejects_other_chip_before_io(code):
         p.descriptor(dev, b"", 0, code)
 
 
+def test_timing_padding_is_exact_valid_private_ie():
+    assert p.timing_padding(0) == b""
+    value = p.timing_padding(128)
+    assert len(value) == 128
+    assert value[:6] == b"\xdd\x7e\x02NW\x02"
+    assert value[1] == len(value) - 2
+
+
+@pytest.mark.parametrize("length", [True, -1, 127, 129, 256])
+def test_timing_padding_is_bounded(length):
+    with pytest.raises(ValueError, match="padding"):
+        p.timing_padding(length)
+
+
 @pytest.mark.parametrize(
     ("suite", "channel"),
     [
