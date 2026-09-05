@@ -1,0 +1,193 @@
+{
+  "scope": "Read-only UNI08 tag7 selectors0/1/2, hardware cross-check, no timeout writes",
+  "runs": [
+    {
+      "tool": "band_timeout_query_probe",
+      "date_utc": "2026-09-05T11:45:39.037812+00:00",
+      "channel": 36,
+      "uni_option": 3,
+      "rows": [
+        {
+          "requested_selector": 0,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 0,
+          "value_u16": 462,
+          "register": "0x820e40c8",
+          "before": "0x6001ce",
+          "after": "0x6001ce",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 1,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 1,
+          "value_u16": 120,
+          "register": "0x820e40cc",
+          "before": "0x380078",
+          "after": "0x380078",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 2,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 2,
+          "value_u16": 208,
+          "register": "0x820e40d0",
+          "before": "0x1c00d0",
+          "after": "0x1c00d0",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 0,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 0,
+          "value_u16": 462,
+          "register": "0x820e40c8",
+          "before": "0x6001ce",
+          "after": "0x6001ce",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 1,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 1,
+          "value_u16": 120,
+          "register": "0x820e40cc",
+          "before": "0x380078",
+          "after": "0x380078",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 2,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 2,
+          "value_u16": 208,
+          "register": "0x820e40d0",
+          "before": "0x1c00d0",
+          "after": "0x1c00d0",
+          "register_stable": true,
+          "query_matches_register": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "band_timeout_query_probe",
+      "date_utc": "2026-09-05T11:46:15.605871+00:00",
+      "channel": 1,
+      "uni_option": 3,
+      "rows": [
+        {
+          "requested_selector": 0,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 0,
+          "value_u16": 462,
+          "register": "0x820e40c8",
+          "before": "0x6001ce",
+          "after": "0x6001ce",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 1,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 1,
+          "value_u16": 120,
+          "register": "0x820e40cc",
+          "before": "0x380078",
+          "after": "0x380078",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 2,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 2,
+          "value_u16": 208,
+          "register": "0x820e40d0",
+          "before": "0x1c00d0",
+          "after": "0x1c00d0",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 0,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 0,
+          "value_u16": 462,
+          "register": "0x820e40c8",
+          "before": "0x6001ce",
+          "after": "0x6001ce",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 1,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 1,
+          "value_u16": 120,
+          "register": "0x820e40cc",
+          "before": "0x380078",
+          "after": "0x380078",
+          "register_stable": true,
+          "query_matches_register": true
+        },
+        {
+          "requested_selector": 2,
+          "eid": 33,
+          "body_bytes": 16,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "selector": 2,
+          "value_u16": 208,
+          "register": "0x820e40d0",
+          "before": "0x1c00d0",
+          "after": "0x1c00d0",
+          "register_stable": true,
+          "query_matches_register": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

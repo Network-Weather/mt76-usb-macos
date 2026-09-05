@@ -1,0 +1,84 @@
+{
+  "scope": "Exact ROM descriptor fields only, no ROM bytes",
+  "runs": [
+    {
+      "tool": "band_field_descriptors",
+      "date_utc": "2026-09-05T11:43:43.217283+00:00",
+      "fields": [
+        {
+          "key": "0x620",
+          "entry": "0x84cb80",
+          "pointer": "0x84cd6c",
+          "field_count": 5,
+          "register": "0x820e3014",
+          "low_bit": 8,
+          "high_bit": 8
+        },
+        {
+          "key": "0x621",
+          "entry": "0x84cb80",
+          "pointer": "0x84cd6c",
+          "field_count": 5,
+          "register": "0x820e3014",
+          "low_bit": 7,
+          "high_bit": 7
+        },
+        {
+          "key": "0x1a0420",
+          "entry": "0x84c19c",
+          "pointer": "0x854f5c",
+          "field_count": 2,
+          "register": "0x820e40c8",
+          "low_bit": 0,
+          "high_bit": 15
+        },
+        {
+          "key": "0x1a0440",
+          "entry": "0x84c1a4",
+          "pointer": "0x854f5c",
+          "field_count": 2,
+          "register": "0x820e40cc",
+          "low_bit": 0,
+          "high_bit": 15
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "band_field_descriptors",
+      "date_utc": "2026-09-05T11:45:42.916867+00:00",
+      "fields": [
+        {
+          "key": "0x622",
+          "entry": "0x84cb80",
+          "pointer": "0x84cd6c",
+          "field_count": 5,
+          "register": "0x820e3014",
+          "low_bit": 4,
+          "high_bit": 4
+        },
+        {
+          "key": "0x623",
+          "entry": "0x84cb80",
+          "pointer": "0x84cd6c",
+          "field_count": 5,
+          "register": "0x820e3014",
+          "low_bit": 2,
+          "high_bit": 2
+        },
+        {
+          "key": "0x624",
+          "entry": "0x84cb80",
+          "pointer": "0x84cd6c",
+          "field_count": 5,
+          "register": "0x820e3014",
+          "low_bit": 0,
+          "high_bit": 0
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

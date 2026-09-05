@@ -15,6 +15,42 @@ def test_only_rx_report_bit_changes():
     assert on[9] == 0  # TX-vector reporting never enabled.
 
 
+def test_traced_register_reads_only_and_extracts_rx_tx():
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+
+        def rr(self, address):
+            assert address == 0x820E3014
+            return 0x80
+
+    assert p.report_register(Device()) == {
+        "register": "0x820e3014",
+        "raw": "0x80",
+        "rx_bit7": 1,
+        "tx_bit8": 0,
+    }
+
+
+def test_report_register_rejects_other_chip_before_read():
+    class Device:
+        CHIP = p.m.CHIP_MT7921
+
+    with pytest.raises(ValueError, match="MT7925-only"):
+        p.report_register(Device())
+
+
+@pytest.mark.parametrize("word", [0xFFFFFFFF, -1, True])
+def test_report_register_rejects_invalid_read(word):
+    class Device:
+        CHIP = p.m.CHIP_MT7925
+
+        def rr(self, _):
+            return word
+
+    with pytest.raises(ValueError, match="invalid report"):
+        p.report_register(Device())
+
+
 @pytest.mark.parametrize("value", [0, 1, 2, None, "True"])
 def test_no_arbitrary_enable_values(value):
     with pytest.raises(ValueError, match="boolean"):

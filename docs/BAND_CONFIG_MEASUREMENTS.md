@@ -61,7 +61,7 @@ A bounded144-byte live table read matches these callbacks:
 | 1, RX-vector reporting | `0xe0030dda` | null |
 | 5, EDCCA enable | `0xe0030e14` | `0xe0030e70` |
 | 6, EDCCA thresholds | `0xe0030eb4` | `0xe0030ef0` |
-| 7, still being investigated | `0xe0030f28` | `0xe0030f60` |
+| 7, MAC timeout fields | `0xe0030f28` | `0xe0030f60` |
 
 The enable query zeroes an eight-byte buffer and calls`0xe0078ebc`, which calls
 `0xe0057c4e`. That leaf is simply **return0**: it never fills the buffer. The
@@ -140,7 +140,51 @@ This closes the simple alternate-existing-endpoint hypothesis for the tested
 configuration, not firmware routing configurations that were never enabled.
 [Dual-endpoint evidence](../research/evidence/rxv-report-endpoints-2026-09-05.json).
 
-Next: trace actual band-config handlers and reply construction, compare reported
-thresholds with source-identified physical fields, and identify the reporting
-switch's routing/enable dependencies. Matching literal−69 in unrelated rate-
-selection routines is not sufficient provenance; those candidates are rejected.
+### The RX-vector setter really reaches hardware
+
+MT7925 callback`0xe0030dda` passes normalized TX/RX booleans and band to
+`0xe0079e50`, which uses the live callback at GP−9216+40 =`0x02210428`
+→ROM`0x0082a21e`. The first argument4 is a **varargs argument count**, not a
+register domain. Band0 keys are`0x620` (TX) and`0x621` (RX), domain0.
+Domain0 mapper`0x0082e6ea` uses table`0x0084c9f8`; the exact record at`0x84cb80`
+points to`0x84cd6c`, offset`0x14`, five fields. The first two resolve to
+**`0x820e3014` bits8 and7** respectively. This is a ROM-derived mapping, not an
+assumption from another chipset's ARB layout.
+
+`rxv_report_probe.py --chip mt7925 --enable-reporting --both-endpoints --registers`
+now reads that exact register before/after each window. Fresh normal boot gives
+`0x1`; RX-only off/on/off gives **`0x1 →0x81 →0x1`**, stable throughout each
+window. TX bit8 remains clear. Good-FCS frames are42/42/43, all on0x84, with no
+new stream and unchanged Group5. Reload returns0x1. Thus an ineffective command
+is no longer the explanation on MT7925; a further start/routing dependency remains.
+[Hardware report control](../research/evidence/rxv-report-hardware-2026-09-05.json).
+
+## A third query: MAC timeout configuration
+
+Tag7 has three selectors0/1/2, a12-byte TLV and a16-byte body:
+`<4xHHB7x>(7,12,selector)`. QUERY option3 yields matched EID`0x21`, reserved4,
+tag7/length12, selector/reserved3, value32. The getter bounds selector≤2 and
+all three paths return only a16-bit hardware field. No SET was exercised.
+
+Callback`0xe0030f60` →`0xe0083b72` uses ROM read helper`0x0082a374` for
+keys`0x1a0420`/`0x1a0440`, resolving through domain26 mapper`0x0082bd2c` and
+table`0x84c094` to`0x820e40c8`/`0x820e40cc` low16. Selector2 uses ROM callback
+slot`0x829d7c` →`0x82e2f8`, reading`0x820e40d0` low16 directly.
+
+Pinned upstream mt76 `mt7996/regs.h` names the first two registers TMAC
+CDTR/ODTR and their low16 fields `MT_TIMEOUT_VAL_PLCP`. The third field remains
+unnamed here. This supports a timeout-configuration interpretation, **not**
+measured latency, arrival time, RF range, or a promise that these units are µs.
+
+`research/band_timeout_query_probe.py` exercises each selector twice and reads
+the exact corresponding register before/after. Fresh channel36 and channel1
+boots agree: selectors0/1/2 yield **462/120/208**. Full register values are
+`0x006001ce`, `0x00380078`, `0x001c00d0`; all twelve query values match low16,
+all registers stay stable, and reloads pass. This is a newly verified query
+surface, not a new RF measurement or a reason to alter timeout settings.
+[Sanitized timeout evidence](../research/evidence/band-timeout-queries-2026-09-05.json),
+[field descriptor provenance](../research/evidence/band-field-descriptors-2026-09-05.json).
+
+Next: resolve the separate RX-vector start bit and routing dependencies. Matching
+literal−69 in unrelated rate-selection routines is not sufficient EDCCA provenance;
+those candidates were rejected before the actual dispatcher was found.

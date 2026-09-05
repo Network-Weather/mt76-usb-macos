@@ -26,6 +26,21 @@ import mt7921u as m
 from research.rx_vector_probe import vectors
 
 
+def report_register(dev):
+    """MT7925 tag1 -> ROM keys0x620/621 -> ARB0x3014 bits8/7."""
+    if dev.CHIP != m.CHIP_MT7925:
+        raise ValueError("MT7925-only traced report register")
+    word = dev.rr(0x820E3014)
+    if type(word) is not int or not 0 <= word < 0xFFFFFFFF:
+        raise ValueError("invalid report register")
+    return {
+        "register": "0x820e3014",
+        "raw": hex(word),
+        "rx_bit7": (word >> 7) & 1,
+        "tx_bit8": (word >> 8) & 1,
+    }
+
+
 def request(enabled):
     if type(enabled) is not bool:
         raise ValueError("boolean RX-only report control required")
@@ -81,6 +96,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chip", choices=("mt7961", "mt7925"), required=True)
     parser.add_argument("--enable-reporting", action="store_true")
+    parser.add_argument("--registers", action="store_true", help="MT7925 exact report-bit readback")
     parser.add_argument(
         "--both-endpoints",
         action="store_true",
@@ -89,6 +105,8 @@ def main():
     args = parser.parse_args()
     if not args.enable_reporting:
         parser.error("explicit receive-report configuration opt-in required")
+    if args.registers and args.chip != "mt7925":
+        parser.error("register cross-check is MT7925-only")
     out = {
         "tool": "rxv_report_probe",
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -120,13 +138,19 @@ def main():
 
         try:
             boot()
+            if args.registers:
+                out["hardware_initial"] = report_register(dev)
             for enabled in (False, True, False):
                 row = {"rx_report_requested": enabled}
                 out["rows"].append(row)
                 row["reply"] = control(enabled)
                 if row["reply"].get("command_result_status") not in (None, 0):
                     raise RuntimeError("report command refused")
+                if args.registers:
+                    row["hardware_before"] = report_register(dev)
                 row["window"] = receive(dev, args.both_endpoints)
+                if args.registers:
+                    row["hardware_after"] = report_register(dev)
             out["alive_after"] = dev.alive()
         except Exception as exc:
             out["error_type"] = type(exc).__name__
@@ -138,6 +162,8 @@ def main():
             try:
                 boot()
                 out["cleanup_reload_alive"] = dev.alive()
+                if args.registers:
+                    out["hardware_after_reload"] = report_register(dev)
             except Exception as exc:
                 out["cleanup_error_type"] = type(exc).__name__
     print(json.dumps(out, indent=2))
