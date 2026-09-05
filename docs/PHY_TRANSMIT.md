@@ -211,13 +211,20 @@ Primary source at mt76 commit`c5a3bd91aa735b669618610d5f0ebfa5786845a6`:
 [Connac3 rate fields](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt76_connac3_mac.h),
 [upstream STBC/NSS test encoding](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7915/mac.c).
 
-### HE coding candidates are not yet independently received
+### Initial HE coding negatives (LTF0)
+
+The [LTF1 follow-up](FIXED_RATE_TABLE.md#he-stbc-unlocked-by-changing-ltf-alone)
+subsequently receives HE STBC3/4 then2/4 with good HE2SS controls, while DCM
+remains unreceived. Exact PHY reports are HE-SU/MCS0/NSS1/NSTS2/STBC=true.
 
 The newer-chip-only `--suite he-coding` uses five four-packet phases at20MHz:
 HE0/NSS2 before, HE0/NSS1, HE0/DCM/NSS1, HE0/STBC/NSS1, HE0/NSS2 after.
 Candidate rates are`0x210` (HE mode8 plus DCM bit4) and`0x4600` (HE mode8,
 two space-time streams, STBC bit14), from the same Connac3 header. Power, GI,
 LDPC and the established descriptor/table mechanism are unchanged.
+
+The linked LTF1 follow-up establishes HE STBC reception. These original
+LTF0 observations remain valid, but are not the current capability limit.
 
 | Fresh run | HE2SS before | HE1SS | DCM | STBC | HE2SS after |
 |---|---|---|---|---|---|

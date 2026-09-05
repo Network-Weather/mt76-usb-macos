@@ -114,6 +114,7 @@ HE_TABLE_RATES = tuple(
 )
 HE_TABLE_OPTIONS = ((0, 0), (1, 0), (2, 0), (0, 0), (0, 1), (0, 0))
 HE_TABLE_LTF = (0, 1, 2, 1, 0, 0)
+HE_CODING_LTF = (1, 1, 1, 1, 1)
 ALLOWED_RATE_CODES = {
     rate
     for _, rate in RATES + STREAM_RATES + CCK_RATES + PREAMBLE_RATES + STBC_RATES + HE_CODING_RATES
@@ -141,6 +142,7 @@ def suite_rates(suite, channel):
             "timing-burst",
             "ht-table",
             "he-table",
+            "he-coding-ltf",
         )
     ):
         raise ValueError("lowband/CCK suite required for 2.4GHz; other suites require 5GHz")
@@ -156,6 +158,7 @@ def suite_rates(suite, channel):
         "timing-burst": TIMING_BURST_RATES,
         "ht-table": HT_TABLE_RATES,
         "he-table": HE_TABLE_RATES,
+        "he-coding-ltf": HE_CODING_RATES,
     }
     if suite not in suites:
         raise ValueError("unknown bounded rate suite")
@@ -196,6 +199,9 @@ def program_rate(dev, code, *, gi=0, ldpc=0, ltf=0):
     allowed = {
         0x488: ((0, 0, 0), (1, 0, 0), (0, 0, 1)),
         0x600: ((0, 0, 0), (1, 1, 0), (2, 2, 0), (0, 1, 0), (0, 0, 1)),
+        0x200: ((0, 0, 0), (0, 1, 0)),
+        0x210: ((0, 0, 0), (0, 1, 0)),
+        0x4600: ((0, 0, 0), (0, 1, 0)),
     }
     if any(type(v) is not int for v in (gi, ltf, ldpc)) or (gi, ltf, ldpc) not in allowed.get(
         code, ((0, 0, 0),)
@@ -320,6 +326,9 @@ def capture(dev, expected, per_phase, ready, stop, rates=RATES, marker=None, tx_
         }
         if dev.CHIP == m.CHIP_MT7921 and phy.get("mode_name") == "HE-SU":
             fields["he_ltf_size_raw"] = he_ltf_raw(raw)
+            fields["he_ltf_group5_present"] = bool(
+                struct.unpack_from("<I", raw, 4)[0] & legacy_rx.MT_RXD1_NORMAL_GROUP_5
+            )
         phys[phase][json.dumps(fields, sort_keys=True)] += 1
     return {
         "chip": dev.CHIP,
@@ -371,6 +380,7 @@ def main():
             "timing-burst",
             "ht-table",
             "he-table",
+            "he-coding-ltf",
         ),
         default="baseline",
     )
@@ -387,7 +397,10 @@ def main():
         p.error("timing-burst requires explicit --tx-timing")
     if args.suite == "spatial" and args.transmitter != "mt7961":
         p.error("spatial suite currently supports only the Connac2 transmitter")
-    if args.suite in ("stbc", "he-coding", "ht-table", "he-table") and args.transmitter != "mt7925":
+    if (
+        args.suite in ("stbc", "he-coding", "ht-table", "he-table", "he-coding-ltf")
+        and args.transmitter != "mt7925"
+    ):
         p.error("coding suites currently support only the Connac3 transmitter")
     try:
         rates = suite_rates(args.suite, args.channel)
@@ -410,7 +423,7 @@ def main():
             args.suite
         ),
         "submitted": 0,
-        "table_ltf": HE_TABLE_LTF if args.suite == "he-table" else None,
+        "table_ltf": {"he-table": HE_TABLE_LTF, "he-coding-ltf": HE_CODING_LTF}.get(args.suite),
         "firmware_sha256": {},
     }
     if args.tx_timing:
@@ -468,7 +481,10 @@ def main():
                             args.suite
                         )
                         gi, ldpc = options[phase] if options else (0, 0)
-                        ltf = HE_TABLE_LTF[phase] if args.suite == "he-table" else 0
+                        ltfs = {"he-table": HE_TABLE_LTF, "he-coding-ltf": HE_CODING_LTF}.get(
+                            args.suite
+                        )
+                        ltf = ltfs[phase] if ltfs else 0
                         program_rate(tx, code, gi=gi, ldpc=ldpc, ltf=ltf)
                         for seq in range(phase * args.per_phase, (phase + 1) * args.per_phase):
                             if any(job.done() for job in jobs):

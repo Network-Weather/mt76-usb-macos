@@ -13,6 +13,8 @@ on-air probes retain our deterministic direct-table path.
 The same mapping now produces independently received HE GI1/GI2 and LDPC.
 GI-only HE requests failed; paired GI/LTF settings work. LTF itself remains
 unverified because full-group5 LTF metadata is unavailable.
+Changing only LTF0→1 also unlocks **HE STBC**, independently received3/4 then2/4,
+with HE2SS controls4/4 before/after both runs. DCM remains unreceived; no gain claim.
 
 **New STBC transmit format:** [MT7925 HT0/STBC](PHY_TRANSMIT.md) is independently
 received as NSS1/NSTS2/STBC=true, four exact frames and then one on a fresh repeat.

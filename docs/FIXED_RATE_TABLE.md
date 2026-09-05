@@ -139,3 +139,25 @@ verified LTF duration. No production RX decoder changed. Both radios remain
 alive and transmitter reload passes; raw RSSI remains uncalibrated.
 
 [Sanitized HE table evidence](../research/evidence/he-table-transmit-2026-09-05.json).
+
+## HE STBC unlocked by changing LTF alone
+
+`--suite he-coding-ltf` repeats the previous HE coding suite with only LTF code1
+instead of0, for every phase. GI0, LDPC0, rate codes, power,20MHz channel6,
+four frames per phase and50ms pacing remain unchanged. Five phases are HE2SS,
+HE1SS, DCM1SS, STBC1SS, HE2SS. Both fresh-nonce runs independently receive:
+
+| Run | HE2SS before | HE1SS | DCM | STBC | HE2SS after |
+|---|---|---|---|---|---|
+| First | 4/4 | 1/4 | 0/4 | **3/4** | 4/4 |
+| Repeat | 4/4 | 0/4 | 0/4 | **2/4** | 4/4 |
+
+All five STBC receipts report **HE-SU MCS0, NSS1, NSTS2, STBC=true**, GI0,
+LDPC=false,20MHz,8.6Mbps derived rate. This supersedes the old LTF0 STBC negative:
+HE STBC is a working format, not merely a successful TX status. DCM remains
+unreceived; poor ordinary one-stream controls prevent a comparative coding-gain
+claim. Group5 presence is now checked explicitly and isfalse in every matched
+HE frame here, so the LTF duration still has no independent RX evidence.
+Both alive checks and transmitter normal reload pass in both runs.
+
+[Sanitized HE-STBC evidence](../research/evidence/he-stbc-transmit-2026-09-05.json).

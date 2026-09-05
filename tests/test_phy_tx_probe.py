@@ -282,6 +282,20 @@ def test_he_ltf_short_record_is_unknown():
     assert p.he_ltf_raw(bytes(23)) is None
 
 
+def test_he_coding_ltf_changes_only_training_setting_from_old_suite():
+    assert p.suite_rates("he-coding-ltf", 6) == p.HE_CODING_RATES
+    assert p.HE_CODING_LTF == (1,) * len(p.HE_CODING_RATES)
+    for _, code in p.HE_CODING_RATES:
+        writes = []
+        dev = SimpleNamespace(
+            CHIP=m.CHIP_MT7925, wr=lambda a, v: writes.append((a, v)), rr=lambda _: 0
+        )
+        p.program_rate(dev, code, ltf=1)
+        assert writes == [(p.c3.ITDR0, code), (p.c3.ITDR1, 0x10040), (p.c3.ITCR, 0x80010012)]
+        with pytest.raises(ValueError, match="MT7925-only"):
+            p.program_rate(SimpleNamespace(CHIP=m.CHIP_MT7921), code, ltf=1)
+
+
 @pytest.mark.parametrize("length", [True, -1, 127, 129, 256])
 def test_timing_padding_is_bounded(length):
     with pytest.raises(ValueError, match="padding"):
