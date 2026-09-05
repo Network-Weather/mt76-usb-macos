@@ -1,0 +1,245 @@
+{
+  "tool": "mt7925_startup_and_dispatch_controls",
+  "prestart_container_matches": {
+    "entry": true,
+    "r1_start": true
+  },
+  "runs": [
+    {
+      "tool": "mt7925_loaded_startup_controls",
+      "windows": [
+        {
+          "label": "candidate_strings",
+          "base": "0x22700d4",
+          "length": 256,
+          "sha256": "f715d0281d51b303e8ca56185412d2d3dfbe8d3aed6a2d7e73807a89c07df860",
+          "distinct_bytes": 9
+        },
+        {
+          "label": "callback_slots",
+          "base": "0x828478",
+          "length": 12,
+          "sha256": "5ac67faef1b1ab194d4ed07625b7cc734aa582385ceebf288ae0bfc6b5262027",
+          "distinct_bytes": 6
+        },
+        {
+          "label": "startup_continuation",
+          "base": "0x90d870",
+          "length": 256,
+          "sha256": "15c39a0bbe27dd0f939758c62b5dac604ed841fcaf17e688ef46e7720f257fc1",
+          "distinct_bytes": 91
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_loaded_r0_and_callback_read",
+      "windows": [
+        {
+          "label": "loaded_r0",
+          "base": "0x90d000",
+          "length": 77200,
+          "sha256": "fb289b9ae215c5977e1879bbbed286e3e8ffd75bdbfece13bfc4b8fee5dc405e",
+          "distinct_bytes": 256
+        },
+        {
+          "label": "rom_callback_targets",
+          "base": "0x84904c",
+          "length": 128,
+          "sha256": "5f629ac2607c580165420df9ae9e073ace3e5cbf8fb99122d85bac593c268492",
+          "distinct_bytes": 73
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_prestart_read_control",
+      "phases": [
+        {
+          "phase": "after_download_before_start",
+          "fw_state_register": "0x1",
+          "windows": [
+            {
+              "label": "entry",
+              "base": "0x90d000",
+              "length": 256,
+              "sha256": "f5e63e330ff1515048d3cfb9d39cc21530e325968d803d6a95268784212a030e",
+              "distinct_bytes": 165
+            },
+            {
+              "label": "r1_start",
+              "base": "0x2212800",
+              "length": 256,
+              "sha256": "3f478c63892b04acaf38b623fefeaa6522524872022305e994fcf3739a73897f",
+              "distinct_bytes": 163
+            },
+            {
+              "label": "startup_data_argument",
+              "base": "0x22700d4",
+              "length": 256,
+              "sha256": "69385aeff10d0f2a4857a0cb45e7c3cb7b9108e35ef9d7fa9d9d835d673d7db2",
+              "distinct_bytes": 163
+            }
+          ]
+        },
+        {
+          "phase": "after_bringup",
+          "fw_state_register": "0x3",
+          "windows": [
+            {
+              "label": "entry",
+              "base": "0x90d000",
+              "length": 256,
+              "sha256": "dba5416070800168e618fc3b3258dd2b13332587a97fa779f2864d0afafcb26f",
+              "distinct_bytes": 94
+            },
+            {
+              "label": "r1_start",
+              "base": "0x2212800",
+              "length": 256,
+              "sha256": "14a5d850c255623f9472e3c650abce0c78d32f0276b315b3a276a0462d97a1ac",
+              "distinct_bytes": 9
+            },
+            {
+              "label": "startup_data_argument",
+              "base": "0x22700d4",
+              "length": 256,
+              "sha256": "f715d0281d51b303e8ca56185412d2d3dfbe8d3aed6a2d7e73807a89c07df860",
+              "distinct_bytes": 9
+            }
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_static_data_and_rom_control",
+      "windows": [
+        {
+          "label": "after_startup_clear_end",
+          "base": "0x2268ea4",
+          "length": 4096,
+          "sha256": "ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7",
+          "distinct_bytes": 1
+        },
+        {
+          "label": "r1_tail",
+          "base": "0x226efd0",
+          "length": 4096,
+          "sha256": "f7a2a9b921b999fd7b9f702f7d36c5b234f27b591370a6a683d63449b4c68366",
+          "distinct_bytes": 5
+        },
+        {
+          "label": "rom_callback_bodies",
+          "base": "0x80eb9c",
+          "length": 128,
+          "sha256": "f4aa47f421c0237a947af0dcf788124fd8599137e9c3afebd7c811e472183d52",
+          "distinct_bytes": 41
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_dispatch_data_control",
+      "windows": [
+        {
+          "label": "dispatcher_data_argument",
+          "base": "0x228ad00",
+          "length": 256,
+          "sha256": "d1653c701aae06448f5909c94ddbfceef061f8d16adf23da44318c0e5215199e",
+          "distinct_bytes": 164
+        },
+        {
+          "label": "candidate_gp_02200000_table",
+          "base": "0x2200218",
+          "length": 240,
+          "sha256": "2a3204f06180835b201bea26f31a8abefe6d456b10a7f96a92ccb9e8e0679158",
+          "distinct_bytes": 70
+        },
+        {
+          "label": "candidate_gp_02212630_table",
+          "base": "0x2212848",
+          "length": 240,
+          "sha256": "42a3bc6affa2d66cd9d8fe72c259cacfab20ac09c9a17b3672f4f697232dbc09",
+          "distinct_bytes": 16
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_dispatch_data_control",
+      "windows": [
+        {
+          "label": "candidate_gp_02210000_table",
+          "base": "0x2210218",
+          "length": 240,
+          "sha256": "9547ae76911a1415a0a91643551981c159e6340334b2c4c6c8506ec2c6c3a479",
+          "distinct_bytes": 34
+        },
+        {
+          "label": "candidate_gp_02210000_callback_values",
+          "base": "0x2205f5c",
+          "length": 16,
+          "sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+          "distinct_bytes": 1
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_rom_entry_read",
+      "windows": [
+        {
+          "label": "rom_entry",
+          "base": "0x800000",
+          "length": 256,
+          "sha256": "2b3cf84784628aad23abec733aedaa3249434ad8eee838118d0721a1d450cacd",
+          "distinct_bytes": 100
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_rom_entry_read",
+      "windows": [
+        {
+          "label": "rom_entry",
+          "base": "0x80cadc",
+          "length": 256,
+          "sha256": "e22c0accf43e2f559e9f1aa3aa38691e1b036f7ac4b2197477e6f28aa28e65ee",
+          "distinct_bytes": 74
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_dispatch_data_control",
+      "windows": [
+        {
+          "label": "rom_gp_02212800_table",
+          "base": "0x2212a18",
+          "length": 240,
+          "sha256": "da764c89f84f704bf71ce79b6ced99c6b4e93ef3539bb332831257fd8b054fbf",
+          "distinct_bytes": 20
+        },
+        {
+          "label": "rom_gp_02212800_callback_values",
+          "base": "0x220875c",
+          "length": 16,
+          "sha256": "fccf733fe064da4c8d0378ff11331874abc389d6c9f340f8ab91cdae392e69b8",
+          "distinct_bytes": 5
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

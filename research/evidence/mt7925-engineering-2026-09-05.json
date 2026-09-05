@@ -1,0 +1,33 @@
+{
+  "tool": "station_testmode_probe",
+  "chip": "mt7925",
+  "test_mode": true,
+  "engineering": true,
+  "date_utc": "2026-09-05T07:04:47.444484+00:00",
+  "rows": [
+    {
+      "selector": 0,
+      "state": "matched_reply",
+      "reply_bytes": 32,
+      "command_result_cid": 70,
+      "status_u32": 3221225659,
+      "cleanup_reload_alive": true
+    },
+    {
+      "selector": 46,
+      "state": "matched_reply",
+      "reply_bytes": 32,
+      "command_result_cid": 70,
+      "status_u32": 3221225659,
+      "cleanup_reload_alive": true
+    },
+    {
+      "selector": 50,
+      "state": "matched_reply",
+      "reply_bytes": 32,
+      "command_result_cid": 70,
+      "status_u32": 3221225659,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

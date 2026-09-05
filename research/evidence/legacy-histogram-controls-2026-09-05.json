@@ -1,0 +1,963 @@
+{
+  "runs": [
+    {
+      "tool": "legacy_noise_hist_probe",
+      "date_utc": "2026-09-05T11:17:25.114993+00:00",
+      "firmware_threshold_labels": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "channel": 36,
+      "maximum_submissions": 12,
+      "submitted": 12,
+      "rows": [
+        {
+          "requested_seconds": 0.25,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 0.26626549987122416,
+            "transfers": 4,
+            "packet_types": {
+              "NORMAL": 4
+            },
+            "limit_reached": false,
+            "exact_frames": 4,
+            "submitted": 4,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "stopped_bins": [
+            33613,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            33613,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "requested_seconds": 1.0,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 1.0113582499325275,
+            "transfers": 6,
+            "packet_types": {
+              "NORMAL": 6
+            },
+            "limit_reached": false,
+            "exact_frames": 4,
+            "submitted": 4,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "stopped_bins": [
+            126697,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            126697,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "original_masked_bits": {
+        "83082004": 0,
+        "83088230": 0,
+        "83088234": 0
+      },
+      "baseline_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "baseline_window": {
+        "elapsed_seconds": 0.2663718748372048,
+        "transfers": 9,
+        "packet_types": {
+          "NORMAL": 9
+        },
+        "limit_reached": false,
+        "exact_frames": 4,
+        "submitted": 4,
+        "phy": [
+          {
+            "mode": "HT",
+            "mcs": 8,
+            "nss": 2,
+            "width_mhz": 20,
+            "count": 4
+          }
+        ]
+      },
+      "baseline_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "alive_after": true,
+      "restore": {
+        "83088234": true,
+        "83088230": true,
+        "83082004": true
+      },
+      "cleanup_reload_alive": true,
+      "tx_cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_noise_hist_probe",
+      "date_utc": "2026-09-05T11:17:51.227366+00:00",
+      "firmware_threshold_labels": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "channel": 1,
+      "maximum_submissions": 0,
+      "submitted": 0,
+      "rows": [
+        {
+          "requested_seconds": 0.25,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 0.27137045795097947,
+            "transfers": 27,
+            "packet_types": {
+              "NORMAL": 27
+            },
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            31098,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            31098,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "requested_seconds": 1.0,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 1.0199830001220107,
+            "transfers": 88,
+            "packet_types": {
+              "NORMAL": 88
+            },
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            115048,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            115048,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "original_masked_bits": {
+        "83082004": 0,
+        "83088230": 0,
+        "83088234": 0
+      },
+      "baseline_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "baseline_window": {
+        "elapsed_seconds": 0.2636522089596838,
+        "transfers": 13,
+        "packet_types": {
+          "NORMAL": 13
+        },
+        "limit_reached": false
+      },
+      "baseline_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "alive_after": true,
+      "restore": {
+        "83088234": true,
+        "83088230": true,
+        "83082004": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_noise_hist_probe",
+      "date_utc": "2026-09-05T11:18:20.256209+00:00",
+      "firmware_threshold_labels": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "channel": 149,
+      "maximum_submissions": 0,
+      "submitted": 0,
+      "rows": [
+        {
+          "requested_seconds": 0.25,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 0.260234166868031,
+            "transfers": 0,
+            "packet_types": {},
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            32915,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            32915,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "requested_seconds": 1.0,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 1.0022133749444038,
+            "transfers": 0,
+            "packet_types": {},
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            125643,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            125643,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "original_masked_bits": {
+        "83082004": 0,
+        "83088230": 0,
+        "83088234": 0
+      },
+      "baseline_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "baseline_window": {
+        "elapsed_seconds": 0.2642602501437068,
+        "transfers": 0,
+        "packet_types": {},
+        "limit_reached": false
+      },
+      "baseline_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "alive_after": true,
+      "restore": {
+        "83088234": true,
+        "83088230": true,
+        "83082004": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_noise_hist_probe",
+      "date_utc": "2026-09-05T11:18:57.493285+00:00",
+      "firmware_threshold_labels": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "channel": 1,
+      "maximum_submissions": 0,
+      "submitted": 0,
+      "rows": [
+        {
+          "requested_seconds": 0.25,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 0.27040391601622105,
+            "transfers": 25,
+            "packet_types": {
+              "NORMAL": 25
+            },
+            "limit_reached": false
+          },
+          "enabled_seconds_bounds": [
+            0.2717879160773009,
+            0.2750168340280652
+          ],
+          "cca_crosscheck": {
+            "delta_us": 37754,
+            "sample_seconds_bounds": [
+              0.27503250003792346,
+              0.27698479196988046
+            ],
+            "extra_window_seconds_upper": 0.0051968758925795555
+          },
+          "stopped_bins": [
+            28748,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            28748,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "requested_seconds": 1.0,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 1.0052046671044081,
+            "transfers": 133,
+            "packet_types": {
+              "NORMAL": 133
+            },
+            "limit_reached": false
+          },
+          "enabled_seconds_bounds": [
+            1.0063979169353843,
+            1.0090949998702854
+          ],
+          "cca_crosscheck": {
+            "delta_us": 126157,
+            "sample_seconds_bounds": [
+              1.0090999160893261,
+              1.011032332899049
+            ],
+            "extra_window_seconds_upper": 0.004634415963664651
+          },
+          "stopped_bins": [
+            107230,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            107230,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "original_masked_bits": {
+        "83082004": 0,
+        "83088230": 0,
+        "83088234": 0
+      },
+      "baseline_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "baseline_window": {
+        "elapsed_seconds": 0.2639436249155551,
+        "transfers": 59,
+        "packet_types": {
+          "NORMAL": 59
+        },
+        "limit_reached": false
+      },
+      "baseline_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "alive_after": true,
+      "restore": {
+        "83088234": true,
+        "83088230": true,
+        "83082004": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_noise_hist_probe",
+      "date_utc": "2026-09-05T11:19:27.064556+00:00",
+      "firmware_threshold_labels": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "channel": 36,
+      "maximum_submissions": 0,
+      "submitted": 0,
+      "rows": [
+        {
+          "requested_seconds": 0.25,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 0.2669164580293,
+            "transfers": 0,
+            "packet_types": {},
+            "limit_reached": false
+          },
+          "enabled_seconds_bounds": [
+            0.2681636670604348,
+            0.27117129205726087
+          ],
+          "cca_crosscheck": {
+            "delta_us": 0,
+            "sample_seconds_bounds": [
+              0.2711789158638567,
+              0.27316479198634624
+            ],
+            "extra_window_seconds_upper": 0.0050011249259114265
+          },
+          "stopped_bins": [
+            33727,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            33727,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "requested_seconds": 1.0,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 1.0059574160259217,
+            "transfers": 2,
+            "packet_types": {
+              "NORMAL": 2
+            },
+            "limit_reached": false
+          },
+          "enabled_seconds_bounds": [
+            1.0071744590532035,
+            1.0101122921332717
+          ],
+          "cca_crosscheck": {
+            "delta_us": 93,
+            "sample_seconds_bounds": [
+              1.0101174579467624,
+              1.0120721671264619
+            ],
+            "extra_window_seconds_upper": 0.0048977080732584
+          },
+          "stopped_bins": [
+            126077,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            126077,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "original_masked_bits": {
+        "83082004": 0,
+        "83088230": 0,
+        "83088234": 0
+      },
+      "baseline_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "baseline_window": {
+        "elapsed_seconds": 0.26406941609457135,
+        "transfers": 3,
+        "packet_types": {
+          "NORMAL": 3
+        },
+        "limit_reached": false
+      },
+      "baseline_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "alive_after": true,
+      "restore": {
+        "83088234": true,
+        "83088230": true,
+        "83082004": true
+      },
+      "cleanup_reload_alive": true
+    }
+  ]
+}

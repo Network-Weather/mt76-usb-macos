@@ -1,0 +1,227 @@
+{
+  "scope": "MT7925 pinned firmware, read-only EDCCA hardware cross-checks; no threshold SET or TX",
+  "runs": [
+    {
+      "tool": "edcca_query_probe",
+      "date_utc": "2026-09-05T11:41:33.250494+00:00",
+      "channel": 36,
+      "width_mhz": 160,
+      "uni_option": 3,
+      "rows": [
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1,
+          "enable_hardware_verified": false,
+          "enable_provenance": "pinned_firmware_stub_synthesizes_one"
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        },
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1,
+          "enable_hardware_verified": false,
+          "enable_provenance": "pinned_firmware_stub_synthesizes_one"
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            187,
+            190,
+            193
+          ],
+          "threshold_signed": [
+            -69,
+            -66,
+            -63
+          ],
+          "auxiliary_byte": 0
+        }
+      ],
+      "hardware_before": {
+        "registers": {
+          "0x83088554": "0xd8c1bebb",
+          "0x83088608": "0x0"
+        },
+        "field_bytes": [
+          187,
+          190,
+          193,
+          0
+        ],
+        "field_signed": [
+          -69,
+          -66,
+          -63,
+          0
+        ],
+        "fourth_field_not_in_uni_reply": true
+      },
+      "hardware_after": {
+        "registers": {
+          "0x83088554": "0xd8c1bebb",
+          "0x83088608": "0x0"
+        },
+        "field_bytes": [
+          187,
+          190,
+          193,
+          0
+        ],
+        "field_signed": [
+          -69,
+          -66,
+          -63,
+          0
+        ],
+        "fourth_field_not_in_uni_reply": true
+      },
+      "hardware_stable": true,
+      "query_triplets_match_hardware": true,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "edcca_query_probe",
+      "date_utc": "2026-09-05T11:42:15.987598+00:00",
+      "channel": 1,
+      "width_mhz": 20,
+      "uni_option": 3,
+      "rows": [
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1,
+          "enable_hardware_verified": false,
+          "enable_provenance": "pinned_firmware_stub_synthesizes_one"
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            191,
+            194,
+            197
+          ],
+          "threshold_signed": [
+            -65,
+            -62,
+            -59
+          ],
+          "auxiliary_byte": 0
+        },
+        {
+          "request_tag": 5,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 0,
+          "enable_raw": 1,
+          "enable_hardware_verified": false,
+          "enable_provenance": "pinned_firmware_stub_synthesizes_one"
+        },
+        {
+          "request_tag": 6,
+          "eid": 33,
+          "body_bytes": 12,
+          "sequence_matches": true,
+          "recognized_config": true,
+          "event_tag": 1,
+          "threshold_bytes": [
+            191,
+            194,
+            197
+          ],
+          "threshold_signed": [
+            -65,
+            -62,
+            -59
+          ],
+          "auxiliary_byte": 0
+        }
+      ],
+      "hardware_before": {
+        "registers": {
+          "0x83088554": "0xd8c5c2bf",
+          "0x83088608": "0x0"
+        },
+        "field_bytes": [
+          191,
+          194,
+          197,
+          0
+        ],
+        "field_signed": [
+          -65,
+          -62,
+          -59,
+          0
+        ],
+        "fourth_field_not_in_uni_reply": true
+      },
+      "hardware_after": {
+        "registers": {
+          "0x83088554": "0xd8c5c2bf",
+          "0x83088608": "0x0"
+        },
+        "field_bytes": [
+          191,
+          194,
+          197,
+          0
+        ],
+        "field_signed": [
+          -65,
+          -62,
+          -59,
+          0
+        ],
+        "fourth_field_not_in_uni_reply": true
+      },
+      "hardware_stable": true,
+      "query_triplets_match_hardware": true,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

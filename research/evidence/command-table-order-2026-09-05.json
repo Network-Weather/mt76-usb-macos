@@ -1,0 +1,25 @@
+{
+  "scope": "Decoded command IDs and handler pointers only; raw firmware remains local",
+  "layout": "little-endian u32 CID then u32 handler",
+  "mt7961_file_layout": [
+    {"cid_word": "0x02025cec", "cid": "0x8f", "handler": "0x00961422", "control": "CE8F receiver state verified"},
+    {"cid_word": "0x02018d2c", "cid": "0x3a", "handler": "0x00961422", "control": "same RDD callback; EXT routing not requalified"},
+    {"cid_word": "0x02018d24", "cid": "0x40", "handler": "0x0095c90e", "control": "MU control string match"}
+  ],
+  "mt7925_live": [
+    {"cid_word": "0x0221c05c", "cid": "0x19", "handler": "0xe009ea2c"},
+    {"cid_word": "0x0221c064", "cid": "0x33", "handler": "0x0091719c"},
+    {"cid_word": "0x0221c0cc", "cid": "0x4a", "handler": "0xe003d3f0"}
+  ],
+  "mt7925_rdd_tag_table": {
+    "base": "0x02219aa8",
+    "entries": [
+      {"tag": 0, "handler": "0xe009f098"},
+      {"tag": 1, "handler": "0xe009ea24", "not_sent": true},
+      {"tag": 2, "handler": "0xe009ea28", "not_sent": true}
+    ]
+  },
+  "live_table_reads_alive": true,
+  "live_table_reads_cleanup_reload_alive": true,
+  "feature_absence_from_scan_not_established": true
+}

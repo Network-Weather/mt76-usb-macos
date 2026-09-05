@@ -1,0 +1,156 @@
+{
+  "scope": "Single experimental RX-vector bit4 control: masked restore failed; full normal reload recovered. No TX or new vector stream.",
+  "evidence": {
+    "tool": "rxv_report_probe",
+    "date_utc": "2026-09-05T11:47:51.452615+00:00",
+    "chip": "mt7925",
+    "channel": 1,
+    "both_endpoints": true,
+    "start_control": true,
+    "rows": [
+      {
+        "rx_report_requested": false,
+        "reply": {
+          "body_bytes": 32,
+          "command_result_status": 0
+        },
+        "start_requested": false,
+        "hardware_before": {
+          "register": "0x820e3014",
+          "raw": "0x1",
+          "rx_bit7": 0,
+          "tx_bit8": 0,
+          "start_candidate_bit4": 0
+        },
+        "window": {
+          "transfers": 45,
+          "elapsed_seconds": 1.0183456658851355,
+          "limit_reached": false,
+          "packet_types": {
+            "NORMAL": 45,
+            "good_fcs_frames": 45
+          },
+          "endpoint_transfers": {
+            "84": 45
+          },
+          "frame_group_masks": {
+            "23": 45
+          },
+          "non_frame_sizes": []
+        },
+        "hardware_after": {
+          "register": "0x820e3014",
+          "raw": "0x1",
+          "rx_bit7": 0,
+          "tx_bit8": 0,
+          "start_candidate_bit4": 0
+        }
+      },
+      {
+        "rx_report_requested": true,
+        "reply": {
+          "body_bytes": 32,
+          "command_result_status": 0
+        },
+        "start_requested": false,
+        "hardware_before": {
+          "register": "0x820e3014",
+          "raw": "0x81",
+          "rx_bit7": 1,
+          "tx_bit8": 0,
+          "start_candidate_bit4": 0
+        },
+        "window": {
+          "transfers": 46,
+          "elapsed_seconds": 1.0200486672110856,
+          "limit_reached": false,
+          "packet_types": {
+            "NORMAL": 46,
+            "good_fcs_frames": 46
+          },
+          "endpoint_transfers": {
+            "84": 46
+          },
+          "frame_group_masks": {
+            "23": 46
+          },
+          "non_frame_sizes": []
+        },
+        "hardware_after": {
+          "register": "0x820e3014",
+          "raw": "0x81",
+          "rx_bit7": 1,
+          "tx_bit8": 0,
+          "start_candidate_bit4": 0
+        }
+      },
+      {
+        "rx_report_requested": true,
+        "reply": {
+          "body_bytes": 32,
+          "command_result_status": 0
+        },
+        "start_requested": true,
+        "hardware_before": {
+          "register": "0x820e3014",
+          "raw": "0x91",
+          "rx_bit7": 1,
+          "tx_bit8": 0,
+          "start_candidate_bit4": 1
+        },
+        "window": {
+          "transfers": 39,
+          "elapsed_seconds": 1.017778332810849,
+          "limit_reached": false,
+          "packet_types": {
+            "NORMAL": 39,
+            "good_fcs_frames": 39
+          },
+          "endpoint_transfers": {
+            "84": 39
+          },
+          "frame_group_masks": {
+            "23": 39
+          },
+          "non_frame_sizes": []
+        },
+        "hardware_after": {
+          "register": "0x820e3014",
+          "raw": "0x91",
+          "rx_bit7": 1,
+          "tx_bit8": 0,
+          "start_candidate_bit4": 1
+        }
+      },
+      {
+        "rx_report_requested": true,
+        "reply": {
+          "body_bytes": 32,
+          "command_result_status": 0
+        },
+        "start_requested": false
+      }
+    ],
+    "hardware_initial": {
+      "register": "0x820e3014",
+      "raw": "0x1",
+      "rx_bit7": 0,
+      "tx_bit8": 0,
+      "start_candidate_bit4": 0
+    },
+    "error_type": "RuntimeError",
+    "restore_start_error_type": "RuntimeError",
+    "cleanup_off": {
+      "body_bytes": 32,
+      "command_result_status": 0
+    },
+    "cleanup_reload_alive": true,
+    "hardware_after_reload": {
+      "register": "0x820e3014",
+      "raw": "0x1",
+      "rx_bit7": 0,
+      "tx_bit8": 0,
+      "start_candidate_bit4": 0
+    }
+  }
+}

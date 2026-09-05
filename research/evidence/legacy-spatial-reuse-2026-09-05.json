@@ -1,0 +1,323 @@
+{
+  "scope": "Source-defined EXT A8 SET-framed GET15/18 only; no SR enable/reset; config and aggregate counters",
+  "runs": [
+    {
+      "tool": "legacy_spatial_reuse_query_probe",
+      "date_utc": "2026-09-05T12:13:29.758287+00:00",
+      "channel": 1,
+      "transport": "EXT_A8_SET_with_GET15_or_GET18",
+      "rows": [
+        {
+          "get_subcommand": 15,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 28,
+              "sequence_matches": true,
+              "sr_event_subcommand": 1,
+              "capability_flags_pinned20": [
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                0,
+                1
+              ]
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 54,
+            "0": 55,
+            "2": 17
+          },
+          "transfers": 128,
+          "transfer_limit_reached": true
+        },
+        {
+          "get_subcommand": 18,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 32,
+              "sequence_matches": true,
+              "sr_event_subcommand": 4,
+              "non_srg_inter_ppdu_rcpi_raw": 0,
+              "srg_inter_ppdu_rcpi_raw": 0,
+              "indicators_raw": {
+                "non_srg_valid": 0,
+                "srg_valid": 0,
+                "intra_bss_ppdu": 0,
+                "inter_bss_ppdu": 0,
+                "non_srg_ppdu_valid": 0,
+                "srg_ppdu_valid": 0,
+                "sr_ampdu_mpdu": 0,
+                "sr_ampdu_mpdu_acked": 0
+              }
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 44,
+            "0": 44
+          },
+          "transfers": 90,
+          "transfer_limit_reached": false
+        },
+        {
+          "get_subcommand": 18,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 32,
+              "sequence_matches": true,
+              "sr_event_subcommand": 4,
+              "non_srg_inter_ppdu_rcpi_raw": 0,
+              "srg_inter_ppdu_rcpi_raw": 0,
+              "indicators_raw": {
+                "non_srg_valid": 0,
+                "srg_valid": 0,
+                "intra_bss_ppdu": 0,
+                "inter_bss_ppdu": 0,
+                "non_srg_ppdu_valid": 0,
+                "srg_ppdu_valid": 0,
+                "sr_ampdu_mpdu": 0,
+                "sr_ampdu_mpdu_acked": 0
+              }
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "0": 51,
+            "1": 46
+          },
+          "transfers": 99,
+          "transfer_limit_reached": false
+        },
+        {
+          "get_subcommand": 15,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 28,
+              "sequence_matches": true,
+              "sr_event_subcommand": 1,
+              "capability_flags_pinned20": [
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                0,
+                1
+              ]
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "0": 61,
+            "1": 47,
+            "2": 18
+          },
+          "transfers": 128,
+          "transfer_limit_reached": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_spatial_reuse_query_probe",
+      "date_utc": "2026-09-05T12:13:36.491582+00:00",
+      "channel": 36,
+      "transport": "EXT_A8_SET_with_GET15_or_GET18",
+      "rows": [
+        {
+          "get_subcommand": 15,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 28,
+              "sequence_matches": true,
+              "sr_event_subcommand": 1,
+              "capability_flags_pinned20": [
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                0,
+                1
+              ]
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {},
+          "transfers": 2,
+          "transfer_limit_reached": false
+        },
+        {
+          "get_subcommand": 18,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 32,
+              "sequence_matches": true,
+              "sr_event_subcommand": 4,
+              "non_srg_inter_ppdu_rcpi_raw": 0,
+              "srg_inter_ppdu_rcpi_raw": 0,
+              "indicators_raw": {
+                "non_srg_valid": 0,
+                "srg_valid": 0,
+                "intra_bss_ppdu": 0,
+                "inter_bss_ppdu": 0,
+                "non_srg_ppdu_valid": 0,
+                "srg_ppdu_valid": 0,
+                "sr_ampdu_mpdu": 0,
+                "sr_ampdu_mpdu_acked": 0
+              }
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 2
+          },
+          "transfers": 4,
+          "transfer_limit_reached": false
+        },
+        {
+          "get_subcommand": 18,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 32,
+              "sequence_matches": true,
+              "sr_event_subcommand": 4,
+              "non_srg_inter_ppdu_rcpi_raw": 0,
+              "srg_inter_ppdu_rcpi_raw": 0,
+              "indicators_raw": {
+                "non_srg_valid": 0,
+                "srg_valid": 0,
+                "intra_bss_ppdu": 0,
+                "inter_bss_ppdu": 0,
+                "non_srg_ppdu_valid": 0,
+                "srg_ppdu_valid": 0,
+                "sr_ampdu_mpdu": 0,
+                "sr_ampdu_mpdu_acked": 0
+              }
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {},
+          "transfers": 2,
+          "transfer_limit_reached": false
+        },
+        {
+          "get_subcommand": 15,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 168,
+              "body_bytes": 28,
+              "sequence_matches": true,
+              "sr_event_subcommand": 1,
+              "capability_flags_pinned20": [
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                0,
+                1
+              ]
+            },
+            {
+              "command_result_status": 0
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 2
+          },
+          "transfers": 4,
+          "transfer_limit_reached": false
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

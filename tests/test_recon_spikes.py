@@ -408,28 +408,46 @@ def test_the_batch_size_matches_what_upstream_sends():
 def test_code_ranges_cover_the_load_addresses_the_image_declares():
     # The MT7921 RAM image's own region table, plus the mask ROM the patch overlays.
     assert ft.in_code(0x00915000)  # region 0 base
-    assert ft.in_code(0xE02767C0)  # the GET_MIB_INFO handler, in region 3 IRAM
+    assert ft.in_code(0xE02767C0)  # code-shaped address in region 3 IRAM
     assert ft.in_code(0x00918340)  # a dispatcher in region 0
     assert not ft.in_code(0x1818CDEF)  # a magic number, not an address
     assert not ft.in_code(0x02015C00)  # rodata is not code
     assert not ft.in_code(0)
 
 
-def test_scan_dispatch_slots_finds_a_handler_cid_pair():
-    blob = b"\xff" * 12 + struct.pack("<II", 0xE02767C0, 0x5A) + b"\x00" * 8
+def test_scan_dispatch_slots_finds_a_cid_handler_pair():
+    blob = b"\xff" * 12 + struct.pack("<II", 0x5A, 0xE02767C0) + b"\x00" * 8
     found = ft.scan_dispatch_slots(blob, {0x5A: "GET_MIB_INFO"})
     assert found[0x5A] == [(12, 0xE02767C0)]
 
 
 def test_scan_dispatch_slots_ignores_a_cid_beside_a_non_code_word():
-    blob = struct.pack("<II", 0x1818CDEF, 0x5A)
+    blob = struct.pack("<II", 0x5A, 0x1818CDEF)
     assert ft.scan_dispatch_slots(blob, {0x5A: "GET_MIB_INFO"})[0x5A] == []
 
 
 def test_scan_dispatch_slots_reports_an_absent_cid_as_an_empty_list():
-    blob = struct.pack("<II", 0xE02767C0, 0x5A)
+    blob = struct.pack("<II", 0x5A, 0xE02767C0)
     found = ft.scan_dispatch_slots(blob, {0x5A: "x", 0xAD: "PHY_STAT_INFO"})
     assert found[0xAD] == []
+
+
+def test_dispatch_pair_exact_eight_bytes_and_final_record():
+    assert ft.scan_dispatch_slots(struct.pack("<II", 0x3A, 0x961422), {0x3A: "RDD"}) == {
+        0x3A: [(0, 0x961422)]
+    }
+    blob = struct.pack("<4I", 0x40, 0x95C90E, 0x3A, 0x961422)
+    found = ft.scan_dispatch_slots(blob, {0x40: "MU", 0x3A: "RDD"})
+    assert found == {0x40: [(0, 0x95C90E)], 0x3A: [(8, 0x961422)]}
+
+
+def test_dispatch_reverse_layout_and_incomplete_or_unaligned_are_not_pairs():
+    for blob in (
+        struct.pack("<II", 0x961422, 0x3A),
+        bytes(7),
+        b"x" + struct.pack("<II", 0x3A, 0x961422),
+    ):
+        assert ft.scan_dispatch_slots(blob, {0x3A: "RDD"}) == {0x3A: []}
 
 
 def test_the_command_name_table_pins_the_two_ids_the_spikes_depend_on():

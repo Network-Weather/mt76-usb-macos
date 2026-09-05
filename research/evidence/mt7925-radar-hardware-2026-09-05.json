@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "purpose": "MT7925 independently ROM-mapped radar hardware arming; no pulse sensitivity claim",
+  "firmware_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+  "mapper": "0x834812",
+  "callbacks": {
+    "begin": "0x834a6a",
+    "mode": "0x834abc",
+    "end": "0x834cc0",
+    "producer": "0x834df0"
+  },
+  "mapping": {
+    "tool": "mt7925_rdd_field_mapping",
+    "fields": [
+      {
+        "key": "0x2a0020",
+        "table_entry": "0x84e7cc",
+        "field_table": "0x8558f8",
+        "register": "0x83082004",
+        "field_count": 1,
+        "low_bit": 6,
+        "high_bit": 8,
+        "mask": "0x1c0"
+      },
+      {
+        "key": "0x2d0000",
+        "table_entry": "0x84e6e4",
+        "field_table": "0x8558d0",
+        "register": "0x830a5000",
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 0,
+        "mask": "0x1"
+      },
+      {
+        "key": "0x2d0080",
+        "table_entry": "0x84e704",
+        "field_table": "0x8558c0",
+        "register": "0x830a500c",
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "mask": "0xffffffff"
+      },
+      {
+        "key": "0x2d00e0",
+        "table_entry": "0x84e71c",
+        "field_table": "0x8558b4",
+        "register": "0x830a5010",
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "mask": "0xffffffff"
+      },
+      {
+        "key": "0x2d01a0",
+        "table_entry": "0x84e74c",
+        "field_table": "0x855894",
+        "register": "0x830a5014",
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "mask": "0xffffffff"
+      }
+    ],
+    "descriptors": [
+      {
+        "key": "0x2a0020",
+        "entry": "0x84e7cc",
+        "pointer": "0x8558f8",
+        "meta": "0x12004"
+      },
+      {
+        "key": "0x2d0000",
+        "entry": "0x84e6e4",
+        "pointer": "0x8558d0",
+        "meta": "0x15000"
+      },
+      {
+        "key": "0x2d0080",
+        "entry": "0x84e704",
+        "pointer": "0x8558c0",
+        "meta": "0x1500c"
+      },
+      {
+        "key": "0x2d00e0",
+        "entry": "0x84e71c",
+        "pointer": "0x8558b4",
+        "meta": "0x15010"
+      },
+      {
+        "key": "0x2d01a0",
+        "entry": "0x84e74c",
+        "pointer": "0x855894",
+        "meta": "0x15014"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "trial": {
+    "tool": "rdd_receive_probe",
+    "chip": "mt7925",
+    "channel": 36,
+    "detector_region_raw": 1,
+    "date_utc": "2026-09-05T15:22:10.747760+00:00",
+    "rows": [
+      {
+        "events": [
+          {
+            "eid": 1,
+            "ext_eid": 0,
+            "sequence_matches": true,
+            "body_bytes": 8,
+            "candidate_rdd_event": false,
+            "command_result_status": 0
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 55
+        },
+        "endpoint_transfers": {
+          "84": 56
+        },
+        "transfers": 56,
+        "transfer_limit_reached": false,
+        "endpoint_timeout_ms": 1,
+        "elapsed_seconds": 1.0015720420051366
+      },
+      {
+        "events": [],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 58
+        },
+        "endpoint_transfers": {
+          "84": 58
+        },
+        "transfers": 58,
+        "transfer_limit_reached": false,
+        "endpoint_timeout_ms": 1,
+        "elapsed_seconds": 1.0008252090774477,
+        "hardware_after": {
+          "registers_raw": {
+            "0x83082004": "0x140",
+            "0x830a5000": "0x81",
+            "0x830a500c": "0x416000",
+            "0x830a5010": "0x416200",
+            "0x830a5014": "0x416000"
+          },
+          "detector_mode_bits8_6": 5,
+          "capture_field_2d0000": 1,
+          "buffer_begin": "0x416000",
+          "buffer_end": "0x416200",
+          "producer_word": "0x416000"
+        }
+      },
+      {
+        "events": [],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 56
+        },
+        "endpoint_transfers": {
+          "84": 56
+        },
+        "transfers": 56,
+        "transfer_limit_reached": false,
+        "endpoint_timeout_ms": 1,
+        "elapsed_seconds": 1.0008189170621336,
+        "hardware_after": {
+          "registers_raw": {
+            "0x83082004": "0x140",
+            "0x830a5000": "0x81",
+            "0x830a500c": "0x416000",
+            "0x830a5010": "0x416200",
+            "0x830a5014": "0x416000"
+          },
+          "detector_mode_bits8_6": 5,
+          "capture_field_2d0000": 1,
+          "buffer_begin": "0x416000",
+          "buffer_end": "0x416200",
+          "producer_word": "0x416000"
+        }
+      }
+    ],
+    "state_before": {
+      "host_enabled_byte": 0,
+      "prerequisite_byte_02221ccd": 1
+    },
+    "hardware_before": {
+      "registers_raw": {
+        "0x83082004": "0x0",
+        "0x830a5000": "0x80",
+        "0x830a500c": "0x0",
+        "0x830a5010": "0x0",
+        "0x830a5014": "0x0"
+      },
+      "detector_mode_bits8_6": 0,
+      "capture_field_2d0000": 0,
+      "buffer_begin": "0x0",
+      "buffer_end": "0x0",
+      "producer_word": "0x0"
+    },
+    "initial_stop": {
+      "events": [
+        {
+          "eid": 1,
+          "ext_eid": 0,
+          "sequence_matches": true,
+          "body_bytes": 8,
+          "candidate_rdd_event": false,
+          "command_result_status": 0
+        }
+      ],
+      "good_fcs_frames_by_phy_mode": {
+        "1": 64
+      },
+      "endpoint_transfers": {
+        "84": 65
+      },
+      "transfers": 65,
+      "transfer_limit_reached": false,
+      "endpoint_timeout_ms": 1,
+      "elapsed_seconds": 1.0013627919834107
+    },
+    "state_after_initial_stop": {
+      "host_enabled_byte": 0,
+      "prerequisite_byte_02221ccd": 1
+    },
+    "hardware_after_initial_stop": {
+      "registers_raw": {
+        "0x83082004": "0x0",
+        "0x830a5000": "0x80",
+        "0x830a500c": "0x0",
+        "0x830a5010": "0x0",
+        "0x830a5014": "0x0"
+      },
+      "detector_mode_bits8_6": 0,
+      "capture_field_2d0000": 0,
+      "buffer_begin": "0x0",
+      "buffer_end": "0x0",
+      "producer_word": "0x0"
+    },
+    "state_after_start": {
+      "host_enabled_byte": 1,
+      "prerequisite_byte_02221ccd": 1
+    },
+    "hardware_after_start": {
+      "registers_raw": {
+        "0x83082004": "0x140",
+        "0x830a5000": "0x81",
+        "0x830a500c": "0x416000",
+        "0x830a5010": "0x416200",
+        "0x830a5014": "0x416000"
+      },
+      "detector_mode_bits8_6": 5,
+      "capture_field_2d0000": 1,
+      "buffer_begin": "0x416000",
+      "buffer_end": "0x416200",
+      "producer_word": "0x416000"
+    },
+    "alive_after": true,
+    "final_stop": {
+      "events": [
+        {
+          "eid": 1,
+          "ext_eid": 0,
+          "sequence_matches": true,
+          "body_bytes": 8,
+          "candidate_rdd_event": false,
+          "command_result_status": 0
+        }
+      ],
+      "good_fcs_frames_by_phy_mode": {
+        "1": 55
+      },
+      "endpoint_transfers": {
+        "84": 56
+      },
+      "transfers": 56,
+      "transfer_limit_reached": false,
+      "endpoint_timeout_ms": 1,
+      "elapsed_seconds": 1.001128416042775
+    },
+    "state_after_final_stop": {
+      "host_enabled_byte": 0,
+      "prerequisite_byte_02221ccd": 1
+    },
+    "hardware_after_final_stop": {
+      "registers_raw": {
+        "0x83082004": "0x0",
+        "0x830a5000": "0x81",
+        "0x830a500c": "0x416000",
+        "0x830a5010": "0x416200",
+        "0x830a5014": "0x416000"
+      },
+      "detector_mode_bits8_6": 0,
+      "capture_field_2d0000": 1,
+      "buffer_begin": "0x416000",
+      "buffer_end": "0x416200",
+      "producer_word": "0x416000"
+    },
+    "cleanup_reload_alive": true,
+    "state_after_reload": {
+      "host_enabled_byte": 0,
+      "prerequisite_byte_02221ccd": 1
+    },
+    "hardware_after_reload": {
+      "registers_raw": {
+        "0x83082004": "0x0",
+        "0x830a5000": "0x80",
+        "0x830a500c": "0x0",
+        "0x830a5010": "0x0",
+        "0x830a5014": "0x0"
+      },
+      "detector_mode_bits8_6": 0,
+      "capture_field_2d0000": 0,
+      "buffer_begin": "0x0",
+      "buffer_end": "0x0",
+      "producer_word": "0x0"
+    }
+  }
+}

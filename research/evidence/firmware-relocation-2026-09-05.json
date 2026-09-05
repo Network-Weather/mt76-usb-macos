@@ -1,0 +1,29 @@
+{
+  "tool": "runtime_gp_relocation_check",
+  "gp_candidate": 33566720,
+  "relocation_delta": 1100,
+  "reads": [
+    {
+      "address": "0x20190e4",
+      "value_u32": 0
+    },
+    {
+      "address": "0x20190ec",
+      "value_u32": 9857950
+    },
+    {
+      "address": "0x2013800",
+      "value_u32": 8547454
+    },
+    {
+      "address": "0x2013808",
+      "value_u32": 8547490
+    },
+    {
+      "address": "0x201380c",
+      "value_u32": 8547184
+    }
+  ],
+  "alive_after": true,
+  "cleanup_reload_alive": true
+}

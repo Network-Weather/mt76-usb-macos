@@ -1,0 +1,60 @@
+{
+  "tool": "mt7925_csi_timer_source",
+  "writer": "0xe0061190",
+  "report_tag": 25,
+  "report_copy": "0xe009e670",
+  "callback": {
+    "tool": "mt7925_csi_tag25_callback",
+    "slot": "0x828418",
+    "target": "0x80e3fa",
+    "base": "0x80e3f8",
+    "length": 128,
+    "sha256": "c9379464c379cfd87afe64bfcb727f7a248e365964639c26d2e6d6fb58c8c760",
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "reader": {
+    "tool": "mt7925_csi_register_callback_code",
+    "windows": [
+      {
+        "base": "0x81497c",
+        "length": 128,
+        "sha256": "43d713be93784ef00a7ac1cdf28475b423de07aa2f2ea27da89d8d1cd437d128"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "counter_timing": {
+    "tool": "mt7925_csi_tag25_counter_rate",
+    "register": "0x81060068",
+    "intervals": [
+      {
+        "elapsed_s": 0.10839252104051411,
+        "increment_mod32": 108646,
+        "increments_per_second": 1002338.5281295482,
+        "read_latency_ms": 0.700125
+      },
+      {
+        "elapsed_s": 0.2556346245110035,
+        "increment_mod32": 255624,
+        "increments_per_second": 999958.4386855896,
+        "read_latency_ms": 0.682542
+      },
+      {
+        "elapsed_s": 0.10829741647467017,
+        "increment_mod32": 108314,
+        "increments_per_second": 1000153.1294639305,
+        "read_latency_ms": 0.692375
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "upstream": {
+    "revision": "c5a3bd91aa735b669618610d5f0ebfa5786845a6",
+    "path": "mt7925/pci.c",
+    "block": "WF_MCU_GPT",
+    "base": "0x81060000"
+  }
+}

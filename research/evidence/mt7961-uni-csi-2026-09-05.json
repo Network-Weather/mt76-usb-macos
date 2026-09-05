@@ -1,0 +1,40 @@
+{
+  "tool": "mt7961_station_uni_csi_control",
+  "uni_cid": 74,
+  "option": 7,
+  "phases": [
+    {
+      "name": "uni_stop_before",
+      "transfers": 1,
+      "elapsed_s": 1.077509667025879,
+      "transfer_limit_reached": false,
+      "events": [
+        {
+          "shape": {
+            "body_bytes": 8,
+            "command_result_status": 3221225659,
+            "eid": 1,
+            "sequence": 4
+          },
+          "count": 1
+        }
+      ],
+      "csi_summary": {
+        "valid_events": 0,
+        "invalid_events": 0,
+        "validation_errors": {},
+        "zero_tail_bytes_counts": [],
+        "inner_shapes": [],
+        "metadata_counts": {},
+        "iq_distinct_payloads": 0,
+        "iq_int16_values": 0,
+        "iq_nonzero_values": 0,
+        "iq_min_raw": null,
+        "iq_max_raw": null
+      }
+    }
+  ],
+  "remaining_controls_skipped": "stop did not return exactly one success result",
+  "alive_after": true,
+  "cleanup_reload_alive": true
+}

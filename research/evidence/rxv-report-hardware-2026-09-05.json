@@ -1,0 +1,135 @@
+{
+  "scope": "MT7925 RX-only report control with exact ROM-derived hardware readback; no direct MMIO writes or TX",
+  "evidence": {
+    "tool": "rxv_report_probe",
+    "date_utc": "2026-09-05T11:44:32.406443+00:00",
+    "chip": "mt7925",
+    "channel": 1,
+    "both_endpoints": true,
+    "rows": [
+      {
+        "rx_report_requested": false,
+        "reply": {
+          "body_bytes": 32,
+          "command_result_status": 0
+        },
+        "hardware_before": {
+          "register": "0x820e3014",
+          "raw": "0x1",
+          "rx_bit7": 0,
+          "tx_bit8": 0
+        },
+        "window": {
+          "transfers": 42,
+          "elapsed_seconds": 1.0129227498546243,
+          "limit_reached": false,
+          "packet_types": {
+            "NORMAL": 42,
+            "good_fcs_frames": 42
+          },
+          "endpoint_transfers": {
+            "84": 42
+          },
+          "frame_group_masks": {
+            "23": 42
+          },
+          "non_frame_sizes": []
+        },
+        "hardware_after": {
+          "register": "0x820e3014",
+          "raw": "0x1",
+          "rx_bit7": 0,
+          "tx_bit8": 0
+        }
+      },
+      {
+        "rx_report_requested": true,
+        "reply": {
+          "body_bytes": 32,
+          "command_result_status": 0
+        },
+        "hardware_before": {
+          "register": "0x820e3014",
+          "raw": "0x81",
+          "rx_bit7": 1,
+          "tx_bit8": 0
+        },
+        "window": {
+          "transfers": 42,
+          "elapsed_seconds": 1.013929125154391,
+          "limit_reached": false,
+          "packet_types": {
+            "NORMAL": 42,
+            "good_fcs_frames": 42
+          },
+          "endpoint_transfers": {
+            "84": 42
+          },
+          "frame_group_masks": {
+            "23": 42
+          },
+          "non_frame_sizes": []
+        },
+        "hardware_after": {
+          "register": "0x820e3014",
+          "raw": "0x81",
+          "rx_bit7": 1,
+          "tx_bit8": 0
+        }
+      },
+      {
+        "rx_report_requested": false,
+        "reply": {
+          "body_bytes": 32,
+          "command_result_status": 0
+        },
+        "hardware_before": {
+          "register": "0x820e3014",
+          "raw": "0x1",
+          "rx_bit7": 0,
+          "tx_bit8": 0
+        },
+        "window": {
+          "transfers": 43,
+          "elapsed_seconds": 1.0073150838725269,
+          "limit_reached": false,
+          "packet_types": {
+            "NORMAL": 43,
+            "good_fcs_frames": 43
+          },
+          "endpoint_transfers": {
+            "84": 43
+          },
+          "frame_group_masks": {
+            "23": 43
+          },
+          "non_frame_sizes": []
+        },
+        "hardware_after": {
+          "register": "0x820e3014",
+          "raw": "0x1",
+          "rx_bit7": 0,
+          "tx_bit8": 0
+        }
+      }
+    ],
+    "hardware_initial": {
+      "register": "0x820e3014",
+      "raw": "0x1",
+      "rx_bit7": 0,
+      "tx_bit8": 0
+    },
+    "alive_after": true,
+    "cleanup_off": {
+      "body_bytes": 32,
+      "command_result_status": 0
+    },
+    "cleanup_reload_alive": true,
+    "hardware_after_reload": {
+      "register": "0x820e3014",
+      "raw": "0x1",
+      "rx_bit7": 0,
+      "tx_bit8": 0
+    }
+  }
+}

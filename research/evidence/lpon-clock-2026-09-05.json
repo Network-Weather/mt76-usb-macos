@@ -1,0 +1,3290 @@
+{
+  "scope": "Read-only LPON37c candidate and own packet timestamp comparisons; unknown relative epochs, not latency or ranging",
+  "counter_candidates": {
+    "date_utc": "2026-09-05T16:55:30.761896+00:00",
+    "radios": [
+      {
+        "samples": [
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887390.072420291,
+            "host_after_seconds": 1887390.073007625
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1827584,
+            "host_before_seconds": 1887390.073017916,
+            "host_after_seconds": 1887390.073506458
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887390.126914375,
+            "host_after_seconds": 1887390.127825041
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1882468,
+            "host_before_seconds": 1887390.127834875,
+            "host_after_seconds": 1887390.128509333
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887390.182080708,
+            "host_after_seconds": 1887390.182891875
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1937444,
+            "host_before_seconds": 1887390.182900583,
+            "host_after_seconds": 1887390.183533916
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887390.238593458,
+            "host_after_seconds": 1887390.23949525
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1994129,
+            "host_before_seconds": 1887390.239504416,
+            "host_after_seconds": 1887390.240456666
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887390.294523583,
+            "host_after_seconds": 1887390.295386916
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 2049990,
+            "host_before_seconds": 1887390.295396708,
+            "host_after_seconds": 1887390.295961833
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887390.347844125,
+            "host_after_seconds": 1887390.348767333
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 2103378,
+            "host_before_seconds": 1887390.348778666,
+            "host_after_seconds": 1887390.349877583
+          }
+        ],
+        "chip": "mt7921",
+        "firmware_sha256": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      },
+      {
+        "samples": [
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887392.862171541,
+            "host_after_seconds": 1887392.862374041
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 978285,
+            "host_before_seconds": 1887392.862377708,
+            "host_after_seconds": 1887392.862504041
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887392.914393958,
+            "host_after_seconds": 1887392.915433958
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1031827,
+            "host_before_seconds": 1887392.915443833,
+            "host_after_seconds": 1887392.916133583
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887392.969698666,
+            "host_after_seconds": 1887392.970547833
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1086883,
+            "host_before_seconds": 1887392.970551833,
+            "host_after_seconds": 1887392.97118025
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887393.026250708,
+            "host_after_seconds": 1887393.027339625
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1143779,
+            "host_before_seconds": 1887393.027349125,
+            "host_after_seconds": 1887393.028160875
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887393.082370458,
+            "host_after_seconds": 1887393.083305708
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1199722,
+            "host_before_seconds": 1887393.083316583,
+            "host_after_seconds": 1887393.086566208
+          },
+          {
+            "candidate": "mt7915_offset",
+            "address": "0x820eb314",
+            "value_raw": 0,
+            "host_before_seconds": 1887393.141716708,
+            "host_after_seconds": 1887393.142642375
+          },
+          {
+            "candidate": "mt7916_mt7996_offset",
+            "address": "0x820eb37c",
+            "value_raw": 1259026,
+            "host_before_seconds": 1887393.142668041,
+            "host_after_seconds": 1887393.143279416
+          }
+        ],
+        "chip": "mt7925",
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      }
+    ]
+  },
+  "packet_controls": [
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 6,
+      "cleanup_reload_alive": true,
+      "configured_center": 6,
+      "configured_width_mhz": 20,
+      "date_utc": "2026-09-05T16:59:32.222326+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "frame_bytes_without_fcs": 65,
+      "gap_s": 0.05,
+      "host_submissions": [
+        {
+          "call_seconds": 0.00020070886239409447,
+          "sequence": 0,
+          "start_seconds": 0.003611332969740033
+        },
+        {
+          "call_seconds": 0.00047795800492167473,
+          "sequence": 1,
+          "start_seconds": 0.05770549993030727
+        },
+        {
+          "call_seconds": 0.0002169169019907713,
+          "sequence": 2,
+          "start_seconds": 0.1093589998781681
+        },
+        {
+          "call_seconds": 0.00032808282412588596,
+          "sequence": 3,
+          "start_seconds": 0.15984337497502565
+        },
+        {
+          "call_seconds": 0.0004818749148398638,
+          "sequence": 4,
+          "start_seconds": 0.37308262498117983
+        },
+        {
+          "call_seconds": 0.0006397089455276728,
+          "sequence": 5,
+          "start_seconds": 0.4270560829900205
+        },
+        {
+          "call_seconds": 0.0005814169999212027,
+          "sequence": 6,
+          "start_seconds": 0.4825013328809291
+        },
+        {
+          "call_seconds": 0.00041429209522902966,
+          "sequence": 7,
+          "start_seconds": 0.538082332815975
+        },
+        {
+          "call_seconds": 0.00035662506707012653,
+          "sequence": 8,
+          "start_seconds": 0.7482217918150127
+        },
+        {
+          "call_seconds": 0.0005712909623980522,
+          "sequence": 9,
+          "start_seconds": 0.8036592919379473
+        },
+        {
+          "call_seconds": 0.00023179198615252972,
+          "sequence": 10,
+          "start_seconds": 0.8574137499090284
+        },
+        {
+          "call_seconds": 0.00016866717487573624,
+          "sequence": 11,
+          "start_seconds": 0.9081719578243792
+        },
+        {
+          "call_seconds": 0.0002919582184404135,
+          "sequence": 12,
+          "start_seconds": 1.121371166780591
+        },
+        {
+          "call_seconds": 0.0008264589123427868,
+          "sequence": 13,
+          "start_seconds": 1.1757029579021037
+        },
+        {
+          "call_seconds": 0.00040799984708428383,
+          "sequence": 14,
+          "start_seconds": 1.2287824579980224
+        },
+        {
+          "call_seconds": 0.0003332500346004963,
+          "sequence": 15,
+          "start_seconds": 1.2815377078950405
+        },
+        {
+          "call_seconds": 0.00027658301405608654,
+          "sequence": 16,
+          "start_seconds": 1.490470499964431
+        },
+        {
+          "call_seconds": 0.000593916978687048,
+          "sequence": 17,
+          "start_seconds": 1.5459487498737872
+        },
+        {
+          "call_seconds": 0.0004199577961117029,
+          "sequence": 18,
+          "start_seconds": 1.5990710000041872
+        },
+        {
+          "call_seconds": 0.0021056670229882,
+          "sequence": 19,
+          "start_seconds": 1.6502716247923672
+        },
+        {
+          "call_seconds": 0.0003415830433368683,
+          "sequence": 20,
+          "start_seconds": 1.8607281248550862
+        },
+        {
+          "call_seconds": 0.0005293339490890503,
+          "sequence": 21,
+          "start_seconds": 1.914548832923174
+        },
+        {
+          "call_seconds": 0.0002996248658746481,
+          "sequence": 22,
+          "start_seconds": 1.968457082984969
+        },
+        {
+          "call_seconds": 0.00022016698494553566,
+          "sequence": 23,
+          "start_seconds": 2.0227375829126686
+        }
+      ],
+      "per_phase": 4,
+      "phase_gap_seconds": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "phase_tx_width_mhz": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ],
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 308,
+            "frames_seen": 308,
+            "own_nonce_usb_records": 19
+          },
+          "lpon_packet_clock_brackets": [
+            {
+              "counter_after_raw": 3990732,
+              "counter_before_raw": 3973058,
+              "host_after_seconds": 1887633.701878791,
+              "host_before_seconds": 1887633.683782416,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 2,
+                  "timestamp_raw": 3866038
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4255445,
+              "counter_before_raw": 4224981,
+              "host_after_seconds": 1887633.966693166,
+              "host_before_seconds": 1887633.935651541,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 4,
+                  "timestamp_raw": 4130530
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4309871,
+              "counter_before_raw": 4280567,
+              "host_after_seconds": 1887634.021663125,
+              "host_before_seconds": 1887633.99123325,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 5,
+                  "timestamp_raw": 4184601
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4364938,
+              "counter_before_raw": 4327087,
+              "host_after_seconds": 1887634.076163291,
+              "host_before_seconds": 1887634.037776916,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 6,
+                  "timestamp_raw": 4240092
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4420463,
+              "counter_before_raw": 4383070,
+              "host_after_seconds": 1887634.131708291,
+              "host_before_seconds": 1887634.093666375,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 7,
+                  "timestamp_raw": 4295564
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4635237,
+              "counter_before_raw": 4634626,
+              "host_after_seconds": 1887634.346359791,
+              "host_before_seconds": 1887634.345231166,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 8,
+                  "timestamp_raw": 4509483
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4685939,
+              "counter_before_raw": 4635786,
+              "host_after_seconds": 1887634.39765325,
+              "host_before_seconds": 1887634.346481583,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 9,
+                  "timestamp_raw": 4560892
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4739327,
+              "counter_before_raw": 4737343,
+              "host_after_seconds": 1887634.45051725,
+              "host_before_seconds": 1887634.447953333,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 10,
+                  "timestamp_raw": 4614566
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4790121,
+              "counter_before_raw": 4789510,
+              "host_after_seconds": 1887634.501240041,
+              "host_before_seconds": 1887634.500202916,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 11,
+                  "timestamp_raw": 4665169
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5003155,
+              "counter_before_raw": 4997813,
+              "host_after_seconds": 1887634.714347666,
+              "host_before_seconds": 1887634.708420416,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 12,
+                  "timestamp_raw": 4878272
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5060206,
+              "counter_before_raw": 5059351,
+              "host_after_seconds": 1887634.771361458,
+              "host_before_seconds": 1887634.769975708,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 13,
+                  "timestamp_raw": 4934178
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5110511,
+              "counter_before_raw": 5101201,
+              "host_after_seconds": 1887634.821671875,
+              "host_before_seconds": 1887634.811811333,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 14,
+                  "timestamp_raw": 4985787
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5163167,
+              "counter_before_raw": 5146347,
+              "host_after_seconds": 1887634.874333208,
+              "host_before_seconds": 1887634.857010916,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 15,
+                  "timestamp_raw": 5038446
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5372049,
+              "counter_before_raw": 5348057,
+              "host_after_seconds": 1887635.083247666,
+              "host_before_seconds": 1887635.058649333,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 16,
+                  "timestamp_raw": 5247312
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5427788,
+              "counter_before_raw": 5406451,
+              "host_after_seconds": 1887635.139318125,
+              "host_before_seconds": 1887635.117167833,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 17,
+                  "timestamp_raw": 5302969
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5480779,
+              "counter_before_raw": 5453856,
+              "host_after_seconds": 1887635.193992916,
+              "host_before_seconds": 1887635.164484,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 18,
+                  "timestamp_raw": 5356050
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5533679,
+              "counter_before_raw": 5509320,
+              "host_after_seconds": 1887635.244967625,
+              "host_before_seconds": 1887635.219998583,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 19,
+                  "timestamp_raw": 5408895
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5796438,
+              "counter_before_raw": 5761152,
+              "host_after_seconds": 1887635.507671791,
+              "host_before_seconds": 1887635.471791041,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 21,
+                  "timestamp_raw": 5671587
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5904039,
+              "counter_before_raw": 5890700,
+              "host_after_seconds": 1887635.615204125,
+              "host_before_seconds": 1887635.601408125,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 23,
+                  "timestamp_raw": 5779348
+                }
+              ]
+            }
+          ],
+          "own_rx_timing": [
+            {
+              "received_host_seconds": 0.41547341691330075,
+              "rxd_timestamp_raw": 3866038,
+              "sequence": 2
+            },
+            {
+              "received_host_seconds": 0.6803762919735163,
+              "rxd_timestamp_raw": 4130530,
+              "sequence": 4
+            },
+            {
+              "received_host_seconds": 0.7353642089292407,
+              "rxd_timestamp_raw": 4184601,
+              "sequence": 5
+            },
+            {
+              "received_host_seconds": 0.7899052088614553,
+              "rxd_timestamp_raw": 4240092,
+              "sequence": 6
+            },
+            {
+              "received_host_seconds": 0.8454291250091046,
+              "rxd_timestamp_raw": 4295564,
+              "sequence": 7
+            },
+            {
+              "received_host_seconds": 1.0599514588247985,
+              "rxd_timestamp_raw": 4509483,
+              "sequence": 8
+            },
+            {
+              "received_host_seconds": 1.1125067919492722,
+              "rxd_timestamp_raw": 4560892,
+              "sequence": 9
+            },
+            {
+              "received_host_seconds": 1.1641214590054005,
+              "rxd_timestamp_raw": 4614566,
+              "sequence": 10
+            },
+            {
+              "received_host_seconds": 1.214824334019795,
+              "rxd_timestamp_raw": 4665169,
+              "sequence": 11
+            },
+            {
+              "received_host_seconds": 1.427952041849494,
+              "rxd_timestamp_raw": 4878272,
+              "sequence": 12
+            },
+            {
+              "received_host_seconds": 1.4849741249345243,
+              "rxd_timestamp_raw": 4934178,
+              "sequence": 13
+            },
+            {
+              "received_host_seconds": 1.5352907499764115,
+              "rxd_timestamp_raw": 4985787,
+              "sequence": 14
+            },
+            {
+              "received_host_seconds": 1.5879612918943167,
+              "rxd_timestamp_raw": 5038446,
+              "sequence": 15
+            },
+            {
+              "received_host_seconds": 1.7969139588531107,
+              "rxd_timestamp_raw": 5247312,
+              "sequence": 16
+            },
+            {
+              "received_host_seconds": 1.8529534169938415,
+              "rxd_timestamp_raw": 5302969,
+              "sequence": 17
+            },
+            {
+              "received_host_seconds": 1.9079210418276489,
+              "rxd_timestamp_raw": 5356050,
+              "sequence": 18
+            },
+            {
+              "received_host_seconds": 1.9585992498323321,
+              "rxd_timestamp_raw": 5408895,
+              "sequence": 19
+            },
+            {
+              "received_host_seconds": 2.221308499807492,
+              "rxd_timestamp_raw": 5671587,
+              "sequence": 21
+            },
+            {
+              "received_host_seconds": 2.32876745890826,
+              "rxd_timestamp_raw": 5779348,
+              "sequence": 23
+            }
+          ],
+          "phases": [
+            {
+              "median_rssi_raw": -102,
+              "name": "ofdm_before",
+              "phy": [
+                {
+                  "count": 1,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 11,
+                    "mode_name": "OFDM",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 6,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 75,
+              "unique_exact_frames": 1
+            },
+            {
+              "median_rssi_raw": -102,
+              "name": "cck1_long",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 0,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 1,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 0,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -101,
+              "name": "cck2_long",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 1,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 2,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -101.5,
+              "name": "cck5_5_long",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 2,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 5.5,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 2,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -101,
+              "name": "cck11_long",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 3,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 11,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 3,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -101.5,
+              "name": "ofdm_after",
+              "phy": [
+                {
+                  "count": 2,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 11,
+                    "mode_name": "OFDM",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 6,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 75,
+              "unique_exact_frames": 2
+            }
+          ],
+          "tx_status": []
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 199,
+            "frames_seen": 175
+          },
+          "lpon_packet_clock_brackets": [
+            {
+              "counter_after_raw": 1329531,
+              "counter_before_raw": 1315118,
+              "host_after_seconds": 1887633.596345458,
+              "host_before_seconds": 1887633.581042041,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 0,
+                  "timestamp_raw": 1196263
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1383857,
+              "counter_before_raw": 1364634,
+              "host_after_seconds": 1887633.650641916,
+              "host_before_seconds": 1887633.630791208,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 1,
+                  "timestamp_raw": 1250511
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1435255,
+              "counter_before_raw": 1417088,
+              "host_after_seconds": 1887633.701999625,
+              "host_before_seconds": 1887633.68364875,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 2,
+                  "timestamp_raw": 1302021
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1485909,
+              "counter_before_raw": 1464629,
+              "host_after_seconds": 1887633.752687,
+              "host_before_seconds": 1887633.730756125,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 3,
+                  "timestamp_raw": 1352570
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1699980,
+              "counter_before_raw": 1669694,
+              "host_after_seconds": 1887633.966989166,
+              "host_before_seconds": 1887633.935846125,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 4,
+                  "timestamp_raw": 1565885
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1754431,
+              "counter_before_raw": 1722270,
+              "host_after_seconds": 1887634.022187583,
+              "host_before_seconds": 1887633.988409708,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 5,
+                  "timestamp_raw": 1619956
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1809486,
+              "counter_before_raw": 1771746,
+              "host_after_seconds": 1887634.076511333,
+              "host_before_seconds": 1887634.037903708,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 6,
+                  "timestamp_raw": 1675447
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1865039,
+              "counter_before_raw": 1827670,
+              "host_after_seconds": 1887634.132123666,
+              "host_before_seconds": 1887634.093814583,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 7,
+                  "timestamp_raw": 1730919
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2079855,
+              "counter_before_raw": 2079204,
+              "host_after_seconds": 1887634.346597916,
+              "host_before_seconds": 1887634.345349958,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 8,
+                  "timestamp_raw": 1945114
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2131298,
+              "counter_before_raw": 2080568,
+              "host_after_seconds": 1887634.399399416,
+              "host_before_seconds": 1887634.34672325,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 9,
+                  "timestamp_raw": 1996523
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2183891,
+              "counter_before_raw": 2181907,
+              "host_after_seconds": 1887634.450689625,
+              "host_before_seconds": 1887634.448060916,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 10,
+                  "timestamp_raw": 2050197
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2234948,
+              "counter_before_raw": 2234235,
+              "host_after_seconds": 1887634.501701416,
+              "host_before_seconds": 1887634.500349833,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 11,
+                  "timestamp_raw": 2100800
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2447661,
+              "counter_before_raw": 2442462,
+              "host_after_seconds": 1887634.71452475,
+              "host_before_seconds": 1887634.708614541,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 12,
+                  "timestamp_raw": 2314079
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2504865,
+              "counter_before_raw": 2504090,
+              "host_after_seconds": 1887634.771620083,
+              "host_before_seconds": 1887634.770229583,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 13,
+                  "timestamp_raw": 2369985
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2555068,
+              "counter_before_raw": 2546157,
+              "host_after_seconds": 1887634.82185975,
+              "host_before_seconds": 1887634.812214208,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 14,
+                  "timestamp_raw": 2421594
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2607765,
+              "counter_before_raw": 2590983,
+              "host_after_seconds": 1887634.874541666,
+              "host_before_seconds": 1887634.857132791,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 15,
+                  "timestamp_raw": 2474253
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2816601,
+              "counter_before_raw": 2796017,
+              "host_after_seconds": 1887635.083510666,
+              "host_before_seconds": 1887635.062097625,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 16,
+                  "timestamp_raw": 2683169
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2872352,
+              "counter_before_raw": 2851104,
+              "host_after_seconds": 1887635.139584375,
+              "host_before_seconds": 1887635.117239791,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 17,
+                  "timestamp_raw": 2738826
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2925329,
+              "counter_before_raw": 2898596,
+              "host_after_seconds": 1887635.192128375,
+              "host_before_seconds": 1887635.164728041,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 18,
+                  "timestamp_raw": 2791907
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2978218,
+              "counter_before_raw": 2953745,
+              "host_after_seconds": 1887635.245182416,
+              "host_before_seconds": 1887635.219875,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 19,
+                  "timestamp_raw": 2844753
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3186803,
+              "counter_before_raw": 3158378,
+              "host_after_seconds": 1887635.45357825,
+              "host_before_seconds": 1887635.424868541,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 20,
+                  "timestamp_raw": 3053489
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3241005,
+              "counter_before_raw": 3205713,
+              "host_after_seconds": 1887635.5079075,
+              "host_before_seconds": 1887635.471878083,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 21,
+                  "timestamp_raw": 3107571
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3294666,
+              "counter_before_raw": 3262071,
+              "host_after_seconds": 1887635.561457583,
+              "host_before_seconds": 1887635.528193083,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 22,
+                  "timestamp_raw": 3161281
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3348572,
+              "counter_before_raw": 3335386,
+              "host_after_seconds": 1887635.615297,
+              "host_before_seconds": 1887635.601509,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 23,
+                  "timestamp_raw": 3215333
+                }
+              ]
+            }
+          ],
+          "own_rx_timing": [],
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck1_long",
+              "phy": [],
+              "rate_code": 0,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck2_long",
+              "phy": [],
+              "rate_code": 1,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck5_5_long",
+              "phy": [],
+              "rate_code": 2,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck11_long",
+              "phy": [],
+              "rate_code": 3,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": [
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 41524,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 0,
+                "status_received_host_seconds": 0.3089114159811288,
+                "timestamp_raw": 1196263,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 43220,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 1,
+                "status_received_host_seconds": 0.363183582900092,
+                "timestamp_raw": 1250511,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 44829,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 2,
+                "status_received_host_seconds": 0.4144666250795126,
+                "timestamp_raw": 1302021,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 46409,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 3,
+                "status_received_host_seconds": 0.46520620794035494,
+                "timestamp_raw": 1352570,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 53075,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 4,
+                "status_received_host_seconds": 0.6795100830495358,
+                "timestamp_raw": 1565885,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 24
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 54765,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 5,
+                "status_received_host_seconds": 0.7347139581106603,
+                "timestamp_raw": 1619956,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 24
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 56498,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 6,
+                "status_received_host_seconds": 0.7890393750276417,
+                "timestamp_raw": 1675447,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 25
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 58231,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 7,
+                "status_received_host_seconds": 0.8446498750708997,
+                "timestamp_raw": 1730919,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 25
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 64796,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 8,
+                "status_received_host_seconds": 1.0591054160613567,
+                "timestamp_raw": 1945114,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 145
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 66532,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 9,
+                "status_received_host_seconds": 1.1119352909736335,
+                "timestamp_raw": 1996523,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 16
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 68206,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 10,
+                "status_received_host_seconds": 1.1631722908932716,
+                "timestamp_raw": 2050197,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 19
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 69791,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 11,
+                "status_received_host_seconds": 1.2141917499247938,
+                "timestamp_raw": 2100800,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 15
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 76456,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 12,
+                "status_received_host_seconds": 1.427005749894306,
+                "timestamp_raw": 2314079,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 10
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 78155,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 13,
+                "status_received_host_seconds": 1.4842354159336537,
+                "timestamp_raw": 2369985,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 58
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 79816,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 14,
+                "status_received_host_seconds": 1.5343657080084085,
+                "timestamp_raw": 2421594,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 10
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 81462,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 15,
+                "status_received_host_seconds": 1.5870512078981847,
+                "timestamp_raw": 2474253,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 9
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 87990,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 16,
+                "status_received_host_seconds": 1.7960243329871446,
+                "timestamp_raw": 2683169,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 8
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 89729,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 17,
+                "status_received_host_seconds": 1.8520799579564482,
+                "timestamp_raw": 2738826,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 9
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 91388,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 18,
+                "status_received_host_seconds": 1.9046567908953875,
+                "timestamp_raw": 2791907,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 8
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 93038,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 19,
+                "status_received_host_seconds": 1.9576640410814434,
+                "timestamp_raw": 2844753,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 10
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 99562,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 20,
+                "status_received_host_seconds": 2.166123833041638,
+                "timestamp_raw": 3053489,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 5
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 101250,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 21,
+                "status_received_host_seconds": 2.2204055830370635,
+                "timestamp_raw": 3107571,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 7
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 102928,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 22,
+                "status_received_host_seconds": 2.2739865409675986,
+                "timestamp_raw": 3161281,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 7
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 104620,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 23,
+                "status_received_host_seconds": 2.327764041023329,
+                "timestamp_raw": 3215333,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            }
+          ]
+        }
+      ],
+      "receiver_g5": false,
+      "requested_status_formats": null,
+      "spatial_codes": null,
+      "submitted": 24,
+      "suite": "cck",
+      "table_gi_ldpc": null,
+      "table_ltf": null,
+      "table_spatial_codes": null,
+      "timing_padding_bytes": 0,
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7925",
+      "tx_timing": true,
+      "unique_run_payload": true
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 6,
+      "cleanup_reload_alive": true,
+      "configured_center": 6,
+      "configured_width_mhz": 20,
+      "date_utc": "2026-09-05T16:59:55.430003+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "frame_bytes_without_fcs": 193,
+      "gap_s": 0.05,
+      "host_submissions": [
+        {
+          "call_seconds": 0.00034466618672013283,
+          "sequence": 0,
+          "start_seconds": 0.0020050418097525835
+        },
+        {
+          "call_seconds": 0.0004527911078184843,
+          "sequence": 1,
+          "start_seconds": 0.0535497919190675
+        },
+        {
+          "call_seconds": 0.0001497080083936453,
+          "sequence": 2,
+          "start_seconds": 0.10811062483116984
+        },
+        {
+          "call_seconds": 0.0002466249279677868,
+          "sequence": 3,
+          "start_seconds": 0.16148883290588856
+        },
+        {
+          "call_seconds": 0.0002967079635709524,
+          "sequence": 4,
+          "start_seconds": 0.36960616684518754
+        },
+        {
+          "call_seconds": 0.00035874987952411175,
+          "sequence": 5,
+          "start_seconds": 0.42110429191961884
+        },
+        {
+          "call_seconds": 0.0005755422171205282,
+          "sequence": 6,
+          "start_seconds": 0.4755662498064339
+        },
+        {
+          "call_seconds": 0.0004252500366419554,
+          "sequence": 7,
+          "start_seconds": 0.5277220827993006
+        },
+        {
+          "call_seconds": 0.00019591604359447956,
+          "sequence": 8,
+          "start_seconds": 0.7406361668836325
+        },
+        {
+          "call_seconds": 0.0002558748237788677,
+          "sequence": 9,
+          "start_seconds": 0.7923707920126617
+        },
+        {
+          "call_seconds": 0.00024654087610542774,
+          "sequence": 10,
+          "start_seconds": 0.8462939169257879
+        },
+        {
+          "call_seconds": 0.0003612081054598093,
+          "sequence": 11,
+          "start_seconds": 0.9001989169046283
+        },
+        {
+          "call_seconds": 0.00018795905634760857,
+          "sequence": 12,
+          "start_seconds": 1.108143457910046
+        },
+        {
+          "call_seconds": 0.0018764589913189411,
+          "sequence": 13,
+          "start_seconds": 1.1593678328208625
+        },
+        {
+          "call_seconds": 0.0006921249441802502,
+          "sequence": 14,
+          "start_seconds": 1.2162633328698575
+        },
+        {
+          "call_seconds": 0.00027533317916095257,
+          "sequence": 15,
+          "start_seconds": 1.2683379168156534
+        },
+        {
+          "call_seconds": 0.0003499588929116726,
+          "sequence": 16,
+          "start_seconds": 1.4775650829542428
+        },
+        {
+          "call_seconds": 0.0004831249825656414,
+          "sequence": 17,
+          "start_seconds": 1.5294162079226226
+        },
+        {
+          "call_seconds": 0.00036945799365639687,
+          "sequence": 18,
+          "start_seconds": 1.585001999977976
+        },
+        {
+          "call_seconds": 0.00039804214611649513,
+          "sequence": 19,
+          "start_seconds": 1.639340957859531
+        },
+        {
+          "call_seconds": 0.00047720898874104023,
+          "sequence": 20,
+          "start_seconds": 1.8527664579451084
+        },
+        {
+          "call_seconds": 0.0003188340924680233,
+          "sequence": 21,
+          "start_seconds": 1.9042864579241723
+        },
+        {
+          "call_seconds": 0.0014090421609580517,
+          "sequence": 22,
+          "start_seconds": 1.9602460828609765
+        },
+        {
+          "call_seconds": 0.00055312504991889,
+          "sequence": 23,
+          "start_seconds": 2.014842541888356
+        }
+      ],
+      "per_phase": 4,
+      "phase_gap_seconds": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "phase_tx_width_mhz": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ],
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 269,
+            "frames_seen": 269,
+            "own_nonce_usb_records": 19
+          },
+          "lpon_packet_clock_brackets": [
+            {
+              "counter_after_raw": 4018589,
+              "counter_before_raw": 4016300,
+              "host_after_seconds": 1887656.931232083,
+              "host_before_seconds": 1887656.928438083,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 3,
+                  "timestamp_raw": 3898484
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4228296,
+              "counter_before_raw": 4220970,
+              "host_after_seconds": 1887657.140966291,
+              "host_before_seconds": 1887657.133118708,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 4,
+                  "timestamp_raw": 4108101
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4279883,
+              "counter_before_raw": 4268864,
+              "host_after_seconds": 1887657.192503541,
+              "host_before_seconds": 1887657.180950916,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 5,
+                  "timestamp_raw": 4159643
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4335897,
+              "counter_before_raw": 4324144,
+              "host_after_seconds": 1887657.24856475,
+              "host_before_seconds": 1887657.236325833,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 6,
+                  "timestamp_raw": 4214179
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4386538,
+              "counter_before_raw": 4370512,
+              "host_after_seconds": 1887657.299180875,
+              "host_before_seconds": 1887657.282667291,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 7,
+                  "timestamp_raw": 4266327
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4598351,
+              "counter_before_raw": 4575182,
+              "host_after_seconds": 1887657.511123791,
+              "host_before_seconds": 1887657.487352375,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 8,
+                  "timestamp_raw": 4478287
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4650304,
+              "counter_before_raw": 4630493,
+              "host_after_seconds": 1887657.563008166,
+              "host_before_seconds": 1887657.542652833,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 9,
+                  "timestamp_raw": 4530051
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4704120,
+              "counter_before_raw": 4677715,
+              "host_after_seconds": 1887657.616766708,
+              "host_before_seconds": 1887657.589857125,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 10,
+                  "timestamp_raw": 4583982
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4758057,
+              "counter_before_raw": 4734950,
+              "host_after_seconds": 1887657.670725208,
+              "host_before_seconds": 1887657.647110541,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 11,
+                  "timestamp_raw": 4637939
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 4965475,
+              "counter_before_raw": 4938277,
+              "host_after_seconds": 1887657.879116208,
+              "host_before_seconds": 1887657.850446375,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 12,
+                  "timestamp_raw": 4845348
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5017493,
+              "counter_before_raw": 4985133,
+              "host_after_seconds": 1887657.930124291,
+              "host_before_seconds": 1887657.897171083,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 13,
+                  "timestamp_raw": 4897081
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5073899,
+              "counter_before_raw": 5040505,
+              "host_after_seconds": 1887657.986544208,
+              "host_before_seconds": 1887657.952624291,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 14,
+                  "timestamp_raw": 4953682
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5125640,
+              "counter_before_raw": 5087636,
+              "host_after_seconds": 1887658.038277833,
+              "host_before_seconds": 1887657.999676583,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 15,
+                  "timestamp_raw": 5005548
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5335071,
+              "counter_before_raw": 5294626,
+              "host_after_seconds": 1887658.24777875,
+              "host_before_seconds": 1887658.206720833,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 16,
+                  "timestamp_raw": 5214677
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5386750,
+              "counter_before_raw": 5347648,
+              "host_after_seconds": 1887658.299422333,
+              "host_before_seconds": 1887658.259751541,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 17,
+                  "timestamp_raw": 5266635
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5497922,
+              "counter_before_raw": 5497129,
+              "host_after_seconds": 1887658.410561791,
+              "host_before_seconds": 1887658.409268416,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 19,
+                  "timestamp_raw": 5376830
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5761445,
+              "counter_before_raw": 5757019,
+              "host_after_seconds": 1887658.674079958,
+              "host_before_seconds": 1887658.669174166,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 21,
+                  "timestamp_raw": 5641343
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5818160,
+              "counter_before_raw": 5804180,
+              "host_after_seconds": 1887658.730843375,
+              "host_before_seconds": 1887658.716346291,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 22,
+                  "timestamp_raw": 5697538
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 5872312,
+              "counter_before_raw": 5860437,
+              "host_after_seconds": 1887658.785021875,
+              "host_before_seconds": 1887658.772408458,
+              "packet_clocks": [
+                {
+                  "kind": "RXD",
+                  "sequence": 23,
+                  "timestamp_raw": 5752042
+                }
+              ]
+            }
+          ],
+          "own_rx_timing": [
+            {
+              "received_host_seconds": 0.4679821669124067,
+              "rxd_timestamp_raw": 3898484,
+              "sequence": 3
+            },
+            {
+              "received_host_seconds": 0.6777158749755472,
+              "rxd_timestamp_raw": 4108101,
+              "sequence": 4
+            },
+            {
+              "received_host_seconds": 0.7292404167819768,
+              "rxd_timestamp_raw": 4159643,
+              "sequence": 5
+            },
+            {
+              "received_host_seconds": 0.7853152498137206,
+              "rxd_timestamp_raw": 4214179,
+              "sequence": 6
+            },
+            {
+              "received_host_seconds": 0.8359211669303477,
+              "rxd_timestamp_raw": 4266327,
+              "sequence": 7
+            },
+            {
+              "received_host_seconds": 1.048279041890055,
+              "rxd_timestamp_raw": 4478287,
+              "sequence": 8
+            },
+            {
+              "received_host_seconds": 1.0997647079639137,
+              "rxd_timestamp_raw": 4530051,
+              "sequence": 9
+            },
+            {
+              "received_host_seconds": 1.1535355828236789,
+              "rxd_timestamp_raw": 4583982,
+              "sequence": 10
+            },
+            {
+              "received_host_seconds": 1.2075336668640375,
+              "rxd_timestamp_raw": 4637939,
+              "sequence": 11
+            },
+            {
+              "received_host_seconds": 1.4158244580030441,
+              "rxd_timestamp_raw": 4845348,
+              "sequence": 12
+            },
+            {
+              "received_host_seconds": 1.4668552079237998,
+              "rxd_timestamp_raw": 4897081,
+              "sequence": 13
+            },
+            {
+              "received_host_seconds": 1.5232962078880519,
+              "rxd_timestamp_raw": 4953682,
+              "sequence": 14
+            },
+            {
+              "received_host_seconds": 1.5750059578567743,
+              "rxd_timestamp_raw": 5005548,
+              "sequence": 15
+            },
+            {
+              "received_host_seconds": 1.7845602498855442,
+              "rxd_timestamp_raw": 5214677,
+              "sequence": 16
+            },
+            {
+              "received_host_seconds": 1.8361287917941809,
+              "rxd_timestamp_raw": 5266635,
+              "sequence": 17
+            },
+            {
+              "received_host_seconds": 1.947274916805327,
+              "rxd_timestamp_raw": 5376830,
+              "sequence": 19
+            },
+            {
+              "received_host_seconds": 2.2107949999626726,
+              "rxd_timestamp_raw": 5641343,
+              "sequence": 21
+            },
+            {
+              "received_host_seconds": 2.267603874905035,
+              "rxd_timestamp_raw": 5697538,
+              "sequence": 22
+            },
+            {
+              "received_host_seconds": 2.321801207959652,
+              "rxd_timestamp_raw": 5752042,
+              "sequence": 23
+            }
+          ],
+          "phases": [
+            {
+              "median_rssi_raw": -102,
+              "name": "ofdm_before",
+              "phy": [
+                {
+                  "count": 1,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 11,
+                    "mode_name": "OFDM",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 6,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 75,
+              "unique_exact_frames": 1
+            },
+            {
+              "median_rssi_raw": -101.5,
+              "name": "cck1_long",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 0,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 1,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 0,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -101,
+              "name": "cck2_long",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 1,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 2,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -101,
+              "name": "cck5_5_long",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 2,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 5.5,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 2,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -101,
+              "name": "cck11_long",
+              "phy": [
+                {
+                  "count": 3,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 3,
+                    "mode_name": "CCK",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 11,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 3,
+              "unique_exact_frames": 3
+            },
+            {
+              "median_rssi_raw": -101,
+              "name": "ofdm_after",
+              "phy": [
+                {
+                  "count": 3,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 11,
+                    "mode_name": "OFDM",
+                    "nss": 1,
+                    "nsts": 1,
+                    "rate_mbps": 6,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 75,
+              "unique_exact_frames": 3
+            }
+          ],
+          "tx_status": []
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 191,
+            "frames_seen": 167
+          },
+          "lpon_packet_clock_brackets": [
+            {
+              "counter_after_raw": 1306152,
+              "counter_before_raw": 1305117,
+              "host_after_seconds": 1887656.772625416,
+              "host_before_seconds": 1887656.770948416,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 0,
+                  "timestamp_raw": 1170770
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1360764,
+              "counter_before_raw": 1360351,
+              "host_after_seconds": 1887656.827202041,
+              "host_before_seconds": 1887656.826211333,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 1,
+                  "timestamp_raw": 1225317
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1413175,
+              "counter_before_raw": 1410332,
+              "host_after_seconds": 1887656.879772791,
+              "host_before_seconds": 1887656.876162958,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 2,
+                  "timestamp_raw": 1278727
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1464934,
+              "counter_before_raw": 1462721,
+              "host_after_seconds": 1887656.931455916,
+              "host_before_seconds": 1887656.928554125,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 3,
+                  "timestamp_raw": 1330261
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1674649,
+              "counter_before_raw": 1667414,
+              "host_after_seconds": 1887657.141182958,
+              "host_before_seconds": 1887657.133232041,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 4,
+                  "timestamp_raw": 1538399
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1726204,
+              "counter_before_raw": 1714821,
+              "host_after_seconds": 1887657.192676416,
+              "host_before_seconds": 1887657.181044291,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 5,
+                  "timestamp_raw": 1589941
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1782314,
+              "counter_before_raw": 1770892,
+              "host_after_seconds": 1887657.248776,
+              "host_before_seconds": 1887657.236702708,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 6,
+                  "timestamp_raw": 1644477
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 1832855,
+              "counter_before_raw": 1816927,
+              "host_after_seconds": 1887657.299366375,
+              "host_before_seconds": 1887657.282754625,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 7,
+                  "timestamp_raw": 1696625
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2044810,
+              "counter_before_raw": 2021714,
+              "host_after_seconds": 1887657.511876,
+              "host_before_seconds": 1887657.487484958,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 8,
+                  "timestamp_raw": 1909373
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2096664,
+              "counter_before_raw": 2076955,
+              "host_after_seconds": 1887657.563243291,
+              "host_before_seconds": 1887657.542776958,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 9,
+                  "timestamp_raw": 1961137
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2150551,
+              "counter_before_raw": 2124262,
+              "host_after_seconds": 1887657.617006833,
+              "host_before_seconds": 1887657.590080208,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 10,
+                  "timestamp_raw": 2015068
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2204429,
+              "counter_before_raw": 2181735,
+              "host_after_seconds": 1887657.671016333,
+              "host_before_seconds": 1887657.647506875,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 11,
+                  "timestamp_raw": 2069025
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2413061,
+              "counter_before_raw": 2384816,
+              "host_after_seconds": 1887657.879457708,
+              "host_before_seconds": 1887657.850623125,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 12,
+                  "timestamp_raw": 2276936
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2464066,
+              "counter_before_raw": 2431626,
+              "host_after_seconds": 1887657.930517583,
+              "host_before_seconds": 1887657.897370541,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 13,
+                  "timestamp_raw": 2328668
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2520258,
+              "counter_before_raw": 2486992,
+              "host_after_seconds": 1887657.986761333,
+              "host_before_seconds": 1887657.952812208,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 14,
+                  "timestamp_raw": 2385269
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2572027,
+              "counter_before_raw": 2534051,
+              "host_after_seconds": 1887658.038447791,
+              "host_before_seconds": 1887657.999887958,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 15,
+                  "timestamp_raw": 2437135
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2781433,
+              "counter_before_raw": 2741100,
+              "host_after_seconds": 1887658.248060958,
+              "host_before_seconds": 1887658.20689325,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 16,
+                  "timestamp_raw": 2646408
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2832852,
+              "counter_before_raw": 2794090,
+              "host_after_seconds": 1887658.299247708,
+              "host_before_seconds": 1887658.259877958,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 17,
+                  "timestamp_raw": 2698366
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2889125,
+              "counter_before_raw": 2888288,
+              "host_after_seconds": 1887658.355589041,
+              "host_before_seconds": 1887658.354123333,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 18,
+                  "timestamp_raw": 2753752
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 2944336,
+              "counter_before_raw": 2943592,
+              "host_after_seconds": 1887658.410743541,
+              "host_before_seconds": 1887658.409404166,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 19,
+                  "timestamp_raw": 2808561
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3156189,
+              "counter_before_raw": 3154788,
+              "host_after_seconds": 1887658.622614083,
+              "host_before_seconds": 1887658.620649791,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 20,
+                  "timestamp_raw": 3021541
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3207773,
+              "counter_before_raw": 3203434,
+              "host_after_seconds": 1887658.674234125,
+              "host_before_seconds": 1887658.669244958,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 21,
+                  "timestamp_raw": 3073122
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3264505,
+              "counter_before_raw": 3250615,
+              "host_after_seconds": 1887658.731102041,
+              "host_before_seconds": 1887658.716435833,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 22,
+                  "timestamp_raw": 3129317
+                }
+              ]
+            },
+            {
+              "counter_after_raw": 3318612,
+              "counter_before_raw": 3307027,
+              "host_after_seconds": 1887658.785305708,
+              "host_before_seconds": 1887658.772796083,
+              "packet_clocks": [
+                {
+                  "kind": "TXS",
+                  "sequence": 23,
+                  "timestamp_raw": 3183821
+                }
+              ]
+            }
+          ],
+          "own_rx_timing": [],
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck1_long",
+              "phy": [],
+              "rate_code": 0,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck2_long",
+              "phy": [],
+              "rate_code": 1,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck5_5_long",
+              "phy": [],
+              "rate_code": 2,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "cck11_long",
+              "phy": [],
+              "rate_code": 3,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": [
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 40765,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 0,
+                "status_received_host_seconds": 0.30917366687208414,
+                "timestamp_raw": 1170770,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 10
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 42378,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 1,
+                "status_received_host_seconds": 0.36367774987593293,
+                "timestamp_raw": 1225317,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 101
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 44079,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 2,
+                "status_received_host_seconds": 0.4162880419753492,
+                "timestamp_raw": 1278727,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 69
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 45749,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 3,
+                "status_received_host_seconds": 0.46792874997481704,
+                "timestamp_raw": 1330261,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 10
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 52253,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 4,
+                "status_received_host_seconds": 0.6776333749294281,
+                "timestamp_raw": 1538399,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 56
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 53864,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 5,
+                "status_received_host_seconds": 0.7291197918821126,
+                "timestamp_raw": 1589941,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 56
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 55568,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 6,
+                "status_received_host_seconds": 0.7852146248333156,
+                "timestamp_raw": 1644477,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 56
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 57198,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 0,
+                "rate_stbc": false,
+                "sequence": 7,
+                "status_received_host_seconds": 0.8358208339195698,
+                "timestamp_raw": 1696625,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 56
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 63846,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 8,
+                "status_received_host_seconds": 1.048365166876465,
+                "timestamp_raw": 1909373,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 32
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 65464,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 9,
+                "status_received_host_seconds": 1.0997164999134839,
+                "timestamp_raw": 1961137,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 31
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 67149,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 10,
+                "status_received_host_seconds": 1.1534863749984652,
+                "timestamp_raw": 2015068,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 32
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 68836,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1,
+                "rate_stbc": false,
+                "sequence": 11,
+                "status_received_host_seconds": 1.2074884588364512,
+                "timestamp_raw": 2069025,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 31
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 75332,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 12,
+                "status_received_host_seconds": 1.4158923339564353,
+                "timestamp_raw": 2276936,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 16
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 76949,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 13,
+                "status_received_host_seconds": 1.4669800838455558,
+                "timestamp_raw": 2328668,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 16
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 78718,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 14,
+                "status_received_host_seconds": 1.5232360418885946,
+                "timestamp_raw": 2385269,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 16
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 80339,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 2,
+                "rate_stbc": false,
+                "sequence": 15,
+                "status_received_host_seconds": 1.5748912498820573,
+                "timestamp_raw": 2437135,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 16
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 86879,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 16,
+                "status_received_host_seconds": 1.7845291669946164,
+                "timestamp_raw": 2646408,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 11
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 88503,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 17,
+                "status_received_host_seconds": 1.8357317498885095,
+                "timestamp_raw": 2698366,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 11
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 90233,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 18,
+                "status_received_host_seconds": 1.8920980838593096,
+                "timestamp_raw": 2753752,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 11
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 91935,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 3,
+                "rate_stbc": false,
+                "sequence": 19,
+                "status_received_host_seconds": 1.9472096669487655,
+                "timestamp_raw": 2808561,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 22
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 98602,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 20,
+                "status_received_host_seconds": 2.1591046669054776,
+                "timestamp_raw": 3021541,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 9
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 100214,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 21,
+                "status_received_host_seconds": 2.210678458912298,
+                "timestamp_raw": 3073122,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 9
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 101970,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 22,
+                "status_received_host_seconds": 2.267592624993995,
+                "timestamp_raw": 3129317,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 9
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 103673,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 75,
+                "rate_stbc": false,
+                "sequence": 23,
+                "status_received_host_seconds": 2.321788291912526,
+                "timestamp_raw": 3183821,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 10
+              }
+            }
+          ]
+        }
+      ],
+      "receiver_g5": false,
+      "requested_status_formats": null,
+      "spatial_codes": null,
+      "submitted": 24,
+      "suite": "cck",
+      "table_gi_ldpc": null,
+      "table_ltf": null,
+      "table_spatial_codes": null,
+      "timing_padding_bytes": 128,
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7925",
+      "tx_timing": true,
+      "unique_run_payload": true
+    }
+  ]
+}

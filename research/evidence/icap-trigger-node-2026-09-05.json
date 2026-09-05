@@ -1,0 +1,128 @@
+{
+  "runs": [
+    {
+      "tool": "icap_capture_probe",
+      "date_utc": "2026-09-05T07:22:27.486651+00:00",
+      "samples_requested": 64,
+      "trigger_event": 4294967295,
+      "node_candidate": 0,
+      "architecture": 0,
+      "prepare_rx": false,
+      "icap_channel": true,
+      "retrieve": false,
+      "polls": [
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ]
+      ],
+      "before": [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 1,
+          "function_raw": 12
+        }
+      ],
+      "start_events": [],
+      "completion_observed": false,
+      "alive_after": true,
+      "stop_events": [],
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "icap_capture_probe",
+      "date_utc": "2026-09-05T07:23:52.336931+00:00",
+      "samples_requested": 64,
+      "trigger_event": 4294967295,
+      "node_candidate": 73,
+      "architecture": 0,
+      "prepare_rx": false,
+      "icap_channel": true,
+      "retrieve": false,
+      "polls": [
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ],
+        [
+          {
+            "eid": 237,
+            "ext_eid": 4,
+            "sequence_matches": true,
+            "unsolicited_sequence": false,
+            "body_bytes": 68,
+            "candidate_capture_done_raw": 0,
+            "function_raw": 12
+          }
+        ]
+      ],
+      "before": [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 1,
+          "function_raw": 12
+        }
+      ],
+      "start_events": [],
+      "completion_observed": false,
+      "alive_after": true,
+      "stop_events": [],
+      "cleanup_reload_alive": true
+    }
+  ]
+}

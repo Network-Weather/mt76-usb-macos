@@ -1,0 +1,72 @@
+{
+  "scope": "Exact twelve-entry UNI08 dispatch table; function pointers only, no firmware bytes",
+  "evidence": {
+    "tool": "mt7925_band_config_table",
+    "date_utc": "2026-09-05T11:35:28.586653+00:00",
+    "base": "0x02214c70",
+    "records": [
+      {
+        "tag": 1,
+        "set_handler": "0xe0030dda",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 2,
+        "set_handler": "0xe008543e",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 3,
+        "set_handler": "0xe0046e6c",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 4,
+        "set_handler": "0xe0046eca",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 5,
+        "set_handler": "0xe0030e14",
+        "query_handler": "0xe0030e70"
+      },
+      {
+        "tag": 6,
+        "set_handler": "0xe0030eb4",
+        "query_handler": "0xe0030ef0"
+      },
+      {
+        "tag": 7,
+        "set_handler": "0xe0030f28",
+        "query_handler": "0xe0030f60"
+      },
+      {
+        "tag": 8,
+        "set_handler": "0xe0030fb0",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 9,
+        "set_handler": "0xe0031000",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 10,
+        "set_handler": "0xe003100c",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 11,
+        "set_handler": "0xe0030fe6",
+        "query_handler": "0x0"
+      },
+      {
+        "tag": 12,
+        "set_handler": "0xe0085328",
+        "query_handler": "0x0"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  }
+}

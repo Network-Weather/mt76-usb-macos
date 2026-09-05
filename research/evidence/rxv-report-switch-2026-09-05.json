@@ -1,0 +1,152 @@
+{
+  "runs": [
+    {
+      "tool": "rxv_report_probe",
+      "date_utc": "2026-09-05T11:28:39.187538+00:00",
+      "chip": "mt7925",
+      "channel": 1,
+      "rows": [
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 32,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 76,
+            "elapsed_seconds": 1.0138830000068992,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 76,
+              "good_fcs_frames": 76
+            },
+            "frame_group_masks": {
+              "23": 76
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": true,
+          "reply": {
+            "body_bytes": 32,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 90,
+            "elapsed_seconds": 1.0000565419904888,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 90,
+              "good_fcs_frames": 90
+            },
+            "frame_group_masks": {
+              "23": 90
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 32,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 92,
+            "elapsed_seconds": 1.0191891251597553,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 92,
+              "good_fcs_frames": 92
+            },
+            "frame_group_masks": {
+              "23": 92
+            },
+            "non_frame_sizes": []
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_off": {
+        "body_bytes": 32,
+        "command_result_status": 0
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "rxv_report_probe",
+      "date_utc": "2026-09-05T11:28:45.773968+00:00",
+      "chip": "mt7961",
+      "channel": 1,
+      "rows": [
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 93,
+            "elapsed_seconds": 1.0290501250419766,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 93,
+              "good_fcs_frames": 93
+            },
+            "frame_group_masks": {
+              "7": 93
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": true,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 76,
+            "elapsed_seconds": 1.0400558749679476,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 76,
+              "good_fcs_frames": 76
+            },
+            "frame_group_masks": {
+              "7": 76
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 52,
+            "elapsed_seconds": 1.0061698749195784,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 52,
+              "good_fcs_frames": 52
+            },
+            "frame_group_masks": {
+              "7": 52
+            },
+            "non_frame_sizes": []
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_off": {
+        "body_bytes": 16,
+        "command_result_status": 0
+      },
+      "cleanup_reload_alive": true
+    }
+  ]
+}

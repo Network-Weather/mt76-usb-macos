@@ -1,0 +1,313 @@
+{
+  "tool": "normal_phy_counter_evidence",
+  "date_utc": "2026-09-05",
+  "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+  "control_register": "0x83082004",
+  "mask": "0xe00",
+  "enabled_value": "0xa00",
+  "notes": [
+    "Exact firmware-derived mask; no RF-test mode or other receiver register writes.",
+    "Each run submits twelve synthetic no-ACK HT frames: baseline, enabled, original-mask restored.",
+    "Both fresh runs preserve 4/4 exact normal receipts in every phase while counters change only when enabled.",
+    "Ambient activity can contribute to PD/MDRDY; these are not synthetic delivery counts.",
+    "Original masked control bits restored, then normal firmware reloaded on both radios."
+  ],
+  "runs": [
+    {
+      "tool": "normal_phy_counter_probe",
+      "date_utc": "2026-09-05T11:07:50.271766+00:00",
+      "maximum_submissions": 12,
+      "submitted": 12,
+      "rows": [
+        {
+          "phase": "baseline",
+          "control_bits": 0,
+          "before": {
+            "cck_pd": 0,
+            "ofdm_pd": 0,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 1,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 0
+          },
+          "receipt": {
+            "exact_frames": 4,
+            "transfers": 11,
+            "limit_reached": false,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "after": {
+            "cck_pd": 0,
+            "ofdm_pd": 0,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 1,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 0
+          }
+        },
+        {
+          "phase": "enabled",
+          "control_bits": 2560,
+          "before": {
+            "cck_pd": 0,
+            "ofdm_pd": 0,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 0
+          },
+          "receipt": {
+            "exact_frames": 4,
+            "transfers": 6,
+            "limit_reached": false,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "after": {
+            "cck_pd": 0,
+            "ofdm_pd": 7,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 7
+          }
+        },
+        {
+          "phase": "restored",
+          "control_bits": 0,
+          "before": {
+            "cck_pd": 0,
+            "ofdm_pd": 7,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 7
+          },
+          "receipt": {
+            "exact_frames": 4,
+            "transfers": 6,
+            "limit_reached": false,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "after": {
+            "cck_pd": 0,
+            "ofdm_pd": 7,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 7
+          }
+        }
+      ],
+      "original_counter_bits": 0,
+      "alive_after": [
+        true,
+        true
+      ],
+      "counter_bits_restored": true,
+      "cleanup": [
+        {
+          "alive": true
+        },
+        {
+          "alive": true
+        }
+      ]
+    },
+    {
+      "tool": "normal_phy_counter_probe",
+      "date_utc": "2026-09-05T11:08:48.654081+00:00",
+      "maximum_submissions": 12,
+      "submitted": 12,
+      "rows": [
+        {
+          "phase": "baseline",
+          "control_bits": 0,
+          "before": {
+            "cck_pd": 0,
+            "ofdm_pd": 0,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 1,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 0
+          },
+          "receipt": {
+            "exact_frames": 4,
+            "transfers": 9,
+            "limit_reached": false,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "after": {
+            "cck_pd": 0,
+            "ofdm_pd": 0,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 1,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 0
+          }
+        },
+        {
+          "phase": "enabled",
+          "control_bits": 2560,
+          "before": {
+            "cck_pd": 0,
+            "ofdm_pd": 0,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 0
+          },
+          "receipt": {
+            "exact_frames": 4,
+            "transfers": 6,
+            "limit_reached": false,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "after": {
+            "cck_pd": 0,
+            "ofdm_pd": 7,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 7
+          }
+        },
+        {
+          "phase": "restored",
+          "control_bits": 0,
+          "before": {
+            "cck_pd": 0,
+            "ofdm_pd": 7,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 7
+          },
+          "receipt": {
+            "exact_frames": 4,
+            "transfers": 6,
+            "limit_reached": false,
+            "phy": [
+              {
+                "mode": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "width_mhz": 20,
+                "count": 4
+              }
+            ]
+          },
+          "after": {
+            "cck_pd": 0,
+            "ofdm_pd": 7,
+            "cck_sfd_error": 0,
+            "cck_sig_error": 0,
+            "ofdm_tag_error": 0,
+            "ofdm_sig_error": 0,
+            "cck_fcs_error": 0,
+            "ofdm_fcs_error": 0,
+            "cck_mdrdy": 0,
+            "ofdm_mdrdy": 7
+          }
+        }
+      ],
+      "original_counter_bits": 0,
+      "alive_after": [
+        true,
+        true
+      ],
+      "counter_bits_restored": true,
+      "cleanup": [
+        {
+          "alive": true
+        },
+        {
+          "alive": true
+        }
+      ]
+    }
+  ]
+}

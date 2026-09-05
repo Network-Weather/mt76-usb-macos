@@ -1,0 +1,575 @@
+{
+  "scope": "MT7925 HE GI/LTF and LDPC controls; first trial has LTF0 GI-only negatives, later two use paired settings; LTF RX metadata unavailable",
+  "trials": [
+    {
+      "date_utc": "2026-09-05T15:57:32.253064+00:00",
+      "transmitter": "mt7925",
+      "channel": 6,
+      "suite": "he-table",
+      "per_phase": 4,
+      "submitted": 20,
+      "gap_s": 0.05,
+      "table_gi_ldpc": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "table_ltf": null,
+      "frame_bytes_without_fcs": 65,
+      "unique_run_payload": true,
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "receiver": {
+        "chip": "mt7921",
+        "counts": {
+          "decoded_usb_records": 210,
+          "frames_seen": 210
+        },
+        "phases": [
+          {
+            "median_rssi_raw": -99,
+            "name": "he2_before",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "he2_gi1",
+            "phy": [],
+            "rate_code": 1536,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "he2_gi2",
+            "phy": [],
+            "rate_code": 1536,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": -99.5,
+            "name": "he2_ldpc",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "ldpc": true,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -100,
+            "name": "he2_after",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          }
+        ],
+        "tx_status": []
+      }
+    },
+    {
+      "date_utc": "2026-09-05T16:00:24.510071+00:00",
+      "transmitter": "mt7925",
+      "channel": 6,
+      "suite": "he-table",
+      "per_phase": 4,
+      "submitted": 24,
+      "gap_s": 0.05,
+      "table_gi_ldpc": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "table_ltf": [
+        0,
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      "frame_bytes_without_fcs": 65,
+      "unique_run_payload": true,
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "receiver": {
+        "chip": "mt7921",
+        "counts": {
+          "decoded_usb_records": 236,
+          "frames_seen": 236
+        },
+        "phases": [
+          {
+            "median_rssi_raw": -98,
+            "name": "he2_before",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -98,
+            "name": "he2_gi1_ltf1",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 1,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 16.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -99,
+            "name": "he2_gi2_ltf2",
+            "phy": [
+              {
+                "count": 3,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 2,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 14.6,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 3
+          },
+          {
+            "median_rssi_raw": -100,
+            "name": "he2_ltf1",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -99,
+            "name": "he2_ldpc",
+            "phy": [
+              {
+                "count": 3,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": true,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 3
+          },
+          {
+            "median_rssi_raw": -100,
+            "name": "he2_after",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          }
+        ],
+        "tx_status": []
+      }
+    },
+    {
+      "date_utc": "2026-09-05T16:01:32.008658+00:00",
+      "transmitter": "mt7925",
+      "channel": 6,
+      "suite": "he-table",
+      "per_phase": 4,
+      "submitted": 24,
+      "gap_s": 0.05,
+      "table_gi_ldpc": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "table_ltf": [
+        0,
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      "frame_bytes_without_fcs": 65,
+      "unique_run_payload": true,
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "receiver": {
+        "chip": "mt7921",
+        "counts": {
+          "decoded_usb_records": 239,
+          "frames_seen": 239
+        },
+        "phases": [
+          {
+            "median_rssi_raw": -98,
+            "name": "he2_before",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -98,
+            "name": "he2_gi1_ltf1",
+            "phy": [
+              {
+                "count": 3,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 1,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 16.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 3
+          },
+          {
+            "median_rssi_raw": -100,
+            "name": "he2_gi2_ltf2",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 2,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 14.6,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -100,
+            "name": "he2_ltf1",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -99.5,
+            "name": "he2_ldpc",
+            "phy": [
+              {
+                "count": 4,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": true,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 4
+          },
+          {
+            "median_rssi_raw": -100,
+            "name": "he2_after",
+            "phy": [
+              {
+                "count": 3,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "he_ltf_size_raw": null,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "HE-SU",
+                  "nss": 2,
+                  "nsts": 2,
+                  "rate_mbps": 17.2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1536,
+            "unique_exact_frames": 3
+          }
+        ],
+        "tx_status": []
+      }
+    }
+  ]
+}

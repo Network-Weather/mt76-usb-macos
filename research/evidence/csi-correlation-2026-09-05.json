@@ -1,0 +1,1221 @@
+{
+  "tool": "mt7925_csi_passive_correlation",
+  "runs": [
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "chains": 2,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "candidate_beacon_selector": true,
+      "correlation_enabled": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:33:10.301097+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 61,
+          "elapsed_s": 1.011,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 58,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "candidate_beacon_selector",
+          "request_sequence": 2,
+          "transfers": 63,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 56,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 3,
+          "transfers": 79,
+          "elapsed_s": 1.0,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 56,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 4,
+          "transfers": 512,
+          "elapsed_s": 0.671,
+          "transfer_limit_reached": true,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "body_bytes": 564,
+                "candidate_csi_event": true,
+                "eid": 74,
+                "sequence": 0,
+                "tlv_bytes": 560,
+                "tlv_tag": 0,
+                "valid_outer_tlv": true
+              },
+              "count": 58
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 58,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [
+              {
+                "bytes": 36,
+                "count": 58
+              }
+            ],
+            "inner_shapes": [
+              {
+                "fields": [
+                  {
+                    "tag": 0,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 1,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 2,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 3,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 4,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 5,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 6,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 7,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 8,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 9,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 10,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 11,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 12,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 17,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 18,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 19,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 20,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 21,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 22,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 23,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 24,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 25,
+                    "bytes": 4
+                  }
+                ],
+                "count": 58
+              }
+            ],
+            "metadata_counts": {
+              "band_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                }
+              ],
+              "cbw_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                }
+              ],
+              "channel_index_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                }
+              ],
+              "data_count": [
+                {
+                  "value": 64,
+                  "count": 58
+                }
+              ],
+              "dbw_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                }
+              ],
+              "remain_last_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                }
+              ],
+              "rssi_raw_signed_byte": [
+                {
+                  "value": -91,
+                  "count": 1
+                },
+                {
+                  "value": -90,
+                  "count": 7
+                },
+                {
+                  "value": -89,
+                  "count": 9
+                },
+                {
+                  "value": -88,
+                  "count": 6
+                },
+                {
+                  "value": -87,
+                  "count": 12
+                },
+                {
+                  "value": -86,
+                  "count": 13
+                },
+                {
+                  "value": -85,
+                  "count": 10
+                }
+              ],
+              "rx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 29
+                },
+                {
+                  "value": 1,
+                  "count": 29
+                }
+              ],
+              "rx_mode_raw": [
+                {
+                  "value": 1,
+                  "count": 58
+                }
+              ],
+              "rx_rate_raw": [
+                {
+                  "value": 11,
+                  "count": 58
+                }
+              ],
+              "segment_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                }
+              ],
+              "snr_raw_byte": [
+                {
+                  "value": 22,
+                  "count": 8
+                },
+                {
+                  "value": 23,
+                  "count": 24
+                },
+                {
+                  "value": 24,
+                  "count": 24
+                },
+                {
+                  "value": 26,
+                  "count": 2
+                }
+              ],
+              "tx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                }
+              ],
+              "version_raw": [
+                {
+                  "value": 22,
+                  "count": 58
+                }
+              ]
+            },
+            "iq_distinct_payloads": 58,
+            "iq_int16_values": 7424,
+            "iq_nonzero_values": 6143,
+            "iq_min_raw": -2387,
+            "iq_max_raw": 2635
+          },
+          "correlation": {
+            "beacons": 34,
+            "beacon_transmitters": 6,
+            "csi_reports": 58,
+            "csi_transmitters": 5,
+            "shared_transmitters": 5,
+            "reports_from_heard_beacon_transmitters": 58,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {
+              "tag17": {
+                "groups": 58,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 58
+              },
+              "tag23": {
+                "groups": 5,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 5,
+                "singleton_groups": 0
+              },
+              "tag23+tag25": {
+                "groups": 29,
+                "exact_rx0_rx1_pairs": 29,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag25": {
+                "groups": 29,
+                "exact_rx0_rx1_pairs": 29,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              }
+            },
+            "full_word_coincidences": {
+              "tag17": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag23": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag25": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              }
+            }
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xe0820820",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 5,
+          "transfers": 95,
+          "elapsed_s": 1.006,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 5
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 57,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x40820820",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "chains": 2,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "candidate_beacon_selector": true,
+      "correlation_enabled": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:33:46.675833+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 64,
+          "elapsed_s": 1.01,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 60,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "candidate_beacon_selector",
+          "request_sequence": 2,
+          "transfers": 85,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 3,
+          "transfers": 68,
+          "elapsed_s": 1.001,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 58,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 4,
+          "transfers": 157,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "body_bytes": 564,
+                "candidate_csi_event": true,
+                "eid": 74,
+                "sequence": 0,
+                "tlv_bytes": 560,
+                "tlv_tag": 0,
+                "valid_outer_tlv": true
+              },
+              "count": 96
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 96,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [
+              {
+                "bytes": 36,
+                "count": 96
+              }
+            ],
+            "inner_shapes": [
+              {
+                "fields": [
+                  {
+                    "tag": 0,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 1,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 2,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 3,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 4,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 5,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 6,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 7,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 8,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 9,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 10,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 11,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 12,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 17,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 18,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 19,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 20,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 21,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 22,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 23,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 24,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 25,
+                    "bytes": 4
+                  }
+                ],
+                "count": 96
+              }
+            ],
+            "metadata_counts": {
+              "band_raw": [
+                {
+                  "value": 0,
+                  "count": 96
+                }
+              ],
+              "cbw_raw": [
+                {
+                  "value": 0,
+                  "count": 96
+                }
+              ],
+              "channel_index_raw": [
+                {
+                  "value": 0,
+                  "count": 96
+                }
+              ],
+              "data_count": [
+                {
+                  "value": 64,
+                  "count": 96
+                }
+              ],
+              "dbw_raw": [
+                {
+                  "value": 0,
+                  "count": 96
+                }
+              ],
+              "remain_last_raw": [
+                {
+                  "value": 0,
+                  "count": 96
+                }
+              ],
+              "rssi_raw_signed_byte": [
+                {
+                  "value": -91,
+                  "count": 5
+                },
+                {
+                  "value": -90,
+                  "count": 13
+                },
+                {
+                  "value": -89,
+                  "count": 18
+                },
+                {
+                  "value": -88,
+                  "count": 6
+                },
+                {
+                  "value": -87,
+                  "count": 13
+                },
+                {
+                  "value": -86,
+                  "count": 18
+                },
+                {
+                  "value": -85,
+                  "count": 23
+                }
+              ],
+              "rx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 48
+                },
+                {
+                  "value": 1,
+                  "count": 48
+                }
+              ],
+              "rx_mode_raw": [
+                {
+                  "value": 1,
+                  "count": 96
+                }
+              ],
+              "rx_rate_raw": [
+                {
+                  "value": 11,
+                  "count": 96
+                }
+              ],
+              "segment_raw": [
+                {
+                  "value": 0,
+                  "count": 96
+                }
+              ],
+              "snr_raw_byte": [
+                {
+                  "value": 21,
+                  "count": 4
+                },
+                {
+                  "value": 22,
+                  "count": 16
+                },
+                {
+                  "value": 23,
+                  "count": 38
+                },
+                {
+                  "value": 24,
+                  "count": 24
+                },
+                {
+                  "value": 25,
+                  "count": 10
+                },
+                {
+                  "value": 26,
+                  "count": 4
+                }
+              ],
+              "tx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 96
+                }
+              ],
+              "version_raw": [
+                {
+                  "value": 22,
+                  "count": 96
+                }
+              ]
+            },
+            "iq_distinct_payloads": 96,
+            "iq_int16_values": 12288,
+            "iq_nonzero_values": 10171,
+            "iq_min_raw": -2345,
+            "iq_max_raw": 2187
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 96,
+            "csi_transmitters": 5,
+            "shared_transmitters": 5,
+            "reports_from_heard_beacon_transmitters": 96,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {
+              "tag17": {
+                "groups": 96,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 96
+              },
+              "tag23": {
+                "groups": 5,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 5,
+                "singleton_groups": 0
+              },
+              "tag23+tag25": {
+                "groups": 48,
+                "exact_rx0_rx1_pairs": 48,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag25": {
+                "groups": 48,
+                "exact_rx0_rx1_pairs": 48,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              }
+            },
+            "full_word_coincidences": {
+              "tag17": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag23": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag25": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              }
+            }
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xf0820820",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 5,
+          "transfers": 63,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 5
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          },
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x40820820",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    }
+  ]
+}

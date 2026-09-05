@@ -1,0 +1,663 @@
+{
+  "scope": "MT7961 Group5 LTF origin validation using independently received controlled MT7925 HE frames; no raw vectors or packet identities",
+  "current_upstream_commit": "be5ce7910521492d4a2e4ce7ee3843680a46c047",
+  "vendor_source_commit": "8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec",
+  "firmware_sha256": {
+    "mt7921": [
+      "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+      "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+    ],
+    "mt7925": [
+      "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+      "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+    ]
+  },
+  "trials": [
+    {
+      "date_utc": "2026-09-05T16:05:47.723767+00:00",
+      "suite": "he-table",
+      "per_phase": 4,
+      "submitted": 24,
+      "table_gi_ldpc": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "table_ltf": [
+        0,
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      "receiver_g5_register": {
+        "before": "0x2773400",
+        "enabled": "0x2f73400"
+      },
+      "receiver_g5_phase_values": null,
+      "receiver_g5_restored": true,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "cleanup_receiver_reload_alive": true,
+      "counts": {
+        "decoded_usb_records": 95,
+        "frames_seen": 95
+      },
+      "phases": [
+        {
+          "name": "he2_before",
+          "unique_exact_frames": 0,
+          "phy": []
+        },
+        {
+          "name": "he2_gi1_ltf1",
+          "unique_exact_frames": 0,
+          "phy": []
+        },
+        {
+          "name": "he2_gi2_ltf2",
+          "unique_exact_frames": 0,
+          "phy": []
+        },
+        {
+          "name": "he2_ltf1",
+          "unique_exact_frames": 0,
+          "phy": []
+        },
+        {
+          "name": "he2_ldpc",
+          "unique_exact_frames": 0,
+          "phy": []
+        },
+        {
+          "name": "he2_after",
+          "unique_exact_frames": 0,
+          "phy": []
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T16:06:41.962246+00:00",
+      "suite": "he-g5-cycle",
+      "per_phase": 4,
+      "submitted": 12,
+      "table_gi_ldpc": null,
+      "table_ltf": null,
+      "receiver_g5_register": {
+        "before": "0x2773400",
+        "enabled": "0x2773400"
+      },
+      "receiver_g5_phase_values": [
+        "0x2773400",
+        "0x2f73400",
+        "0x2773400"
+      ],
+      "receiver_g5_restored": true,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "cleanup_receiver_reload_alive": true,
+      "counts": {
+        "decoded_usb_records": 172,
+        "frames_seen": 172,
+        "own_nonce_usb_records": 12
+      },
+      "phases": [
+        {
+          "name": "he2_g5_off_before",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": false,
+              "ltf_mt76_pointer_raw": null,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        },
+        {
+          "name": "he2_g5_on",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 3,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": null
+            },
+            {
+              "count": 1,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 2,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        },
+        {
+          "name": "he2_g5_off_after",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": false,
+              "ltf_mt76_pointer_raw": null,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T16:07:22.579137+00:00",
+      "suite": "he-table",
+      "per_phase": 4,
+      "submitted": 24,
+      "table_gi_ldpc": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "table_ltf": [
+        0,
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      "receiver_g5_register": {
+        "before": "0x2773400",
+        "enabled": "0x2f73400"
+      },
+      "receiver_g5_phase_values": [],
+      "receiver_g5_restored": true,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "cleanup_receiver_reload_alive": true,
+      "counts": {
+        "decoded_usb_records": 246,
+        "frames_seen": 246,
+        "own_nonce_usb_records": 22
+      },
+      "phases": [
+        {
+          "name": "he2_before",
+          "unique_exact_frames": 3,
+          "phy": [
+            {
+              "count": 3,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        },
+        {
+          "name": "he2_gi1_ltf1",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 1,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        },
+        {
+          "name": "he2_gi2_ltf2",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 2,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        },
+        {
+          "name": "he2_ltf1",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 1,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 2,
+              "ltf_vendor_word0_raw": null
+            },
+            {
+              "count": 3,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        },
+        {
+          "name": "he2_ldpc",
+          "unique_exact_frames": 3,
+          "phy": [
+            {
+              "count": 3,
+              "gi": 0,
+              "ldpc": true,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        },
+        {
+          "name": "he2_after",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T16:08:34.200615+00:00",
+      "suite": "he-table",
+      "per_phase": 4,
+      "submitted": 24,
+      "table_gi_ldpc": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "table_ltf": [
+        0,
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      "receiver_g5_register": {
+        "before": "0x2773400",
+        "enabled": "0x2f73400"
+      },
+      "receiver_g5_phase_values": [],
+      "receiver_g5_restored": true,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "cleanup_receiver_reload_alive": true,
+      "counts": {
+        "decoded_usb_records": 260,
+        "frames_seen": 260,
+        "own_nonce_usb_records": 24
+      },
+      "phases": [
+        {
+          "name": "he2_before",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 0
+            }
+          ]
+        },
+        {
+          "name": "he2_gi1_ltf1",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 1,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 1
+            }
+          ]
+        },
+        {
+          "name": "he2_gi2_ltf2",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 3,
+              "gi": 2,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 2
+            },
+            {
+              "count": 1,
+              "gi": 2,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 2,
+              "ltf_vendor_word0_raw": 2
+            }
+          ]
+        },
+        {
+          "name": "he2_ltf1",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 1
+            }
+          ]
+        },
+        {
+          "name": "he2_ldpc",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 2,
+              "gi": 0,
+              "ldpc": true,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 2,
+              "ltf_vendor_word0_raw": 0
+            },
+            {
+              "count": 2,
+              "gi": 0,
+              "ldpc": true,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 0
+            }
+          ]
+        },
+        {
+          "name": "he2_after",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 3,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 0
+            },
+            {
+              "count": 1,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 2,
+              "ltf_vendor_word0_raw": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T16:09:11.152020+00:00",
+      "suite": "he-table",
+      "per_phase": 4,
+      "submitted": 24,
+      "table_gi_ldpc": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "table_ltf": [
+        0,
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      "receiver_g5_register": {
+        "before": "0x2773400",
+        "enabled": "0x2f73400"
+      },
+      "receiver_g5_phase_values": [],
+      "receiver_g5_restored": true,
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": true,
+      "cleanup_receiver_reload_alive": true,
+      "counts": {
+        "decoded_usb_records": 258,
+        "frames_seen": 258,
+        "own_nonce_usb_records": 24
+      },
+      "phases": [
+        {
+          "name": "he2_before",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 0
+            }
+          ]
+        },
+        {
+          "name": "he2_gi1_ltf1",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 1,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 1
+            }
+          ]
+        },
+        {
+          "name": "he2_gi2_ltf2",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 3,
+              "gi": 2,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 2
+            },
+            {
+              "count": 1,
+              "gi": 2,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 2,
+              "ltf_vendor_word0_raw": 2
+            }
+          ]
+        },
+        {
+          "name": "he2_ltf1",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 2,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 2,
+              "ltf_vendor_word0_raw": 1
+            },
+            {
+              "count": 2,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 1
+            }
+          ]
+        },
+        {
+          "name": "he2_ldpc",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": true,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 0
+            }
+          ]
+        },
+        {
+          "name": "he2_after",
+          "unique_exact_frames": 4,
+          "phy": [
+            {
+              "count": 4,
+              "gi": 0,
+              "ldpc": false,
+              "group5_present": true,
+              "ltf_mt76_pointer_raw": 3,
+              "ltf_vendor_word0_raw": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

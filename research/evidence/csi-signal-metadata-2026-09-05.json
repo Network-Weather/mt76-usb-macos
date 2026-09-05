@@ -1,0 +1,1985 @@
+{
+  "scope": "Pinned MT7925 CSI signal encoding and aggregate RX0/RX1 pair checks; no calibrated RF units or identifiers",
+  "runs": [
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "receive_width_mhz": 20,
+      "primary_channel": 36,
+      "center_channel": 36,
+      "chains": null,
+      "chain_order": "before",
+      "state_snapshots": false,
+      "hardware_snapshots": false,
+      "candidate_beacon_selector": true,
+      "candidate_qos_data_selector": false,
+      "candidate_data_selector": false,
+      "candidate_blockack_selector": false,
+      "candidate_rts_selector": false,
+      "correlation_enabled": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T11:52:56.222332+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 84,
+          "elapsed_s": 1.006,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 9
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 7
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 0,
+              "equal_snr_raw": 0,
+              "different_rssi_raw": 0,
+              "rx1_minus_rx0_rssi_raw_min": null,
+              "rx1_minus_rx0_rssi_raw_max": null
+            },
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          }
+        },
+        {
+          "name": "candidate_beacon_selector",
+          "request_sequence": 2,
+          "transfers": 90,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 20
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 0,
+              "equal_snr_raw": 0,
+              "different_rssi_raw": 0,
+              "rx1_minus_rx0_rssi_raw_min": null,
+              "rx1_minus_rx0_rssi_raw_max": null
+            },
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          }
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 221,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "body_bytes": 564,
+                "candidate_csi_event": true,
+                "eid": 74,
+                "sequence": 0,
+                "tlv_bytes": 560,
+                "tlv_tag": 0,
+                "valid_outer_tlv": true
+              },
+              "count": 116
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 30
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 9
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 116,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [
+              {
+                "bytes": 36,
+                "count": 116
+              }
+            ],
+            "inner_shapes": [
+              {
+                "fields": [
+                  {
+                    "tag": 0,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 1,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 2,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 3,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 4,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 5,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 6,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 7,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 8,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 9,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 10,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 11,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 12,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 17,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 18,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 19,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 20,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 21,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 22,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 23,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 24,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 25,
+                    "bytes": 4
+                  }
+                ],
+                "count": 116
+              }
+            ],
+            "metadata_counts": {
+              "band_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "cbw_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "channel_index_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "data_count": [
+                {
+                  "value": 64,
+                  "count": 116
+                }
+              ],
+              "dbw_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "remain_last_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "rssi_raw_signed_byte": [
+                {
+                  "value": -91,
+                  "count": 3
+                },
+                {
+                  "value": -90,
+                  "count": 15
+                },
+                {
+                  "value": -89,
+                  "count": 24
+                },
+                {
+                  "value": -88,
+                  "count": 6
+                },
+                {
+                  "value": -87,
+                  "count": 30
+                },
+                {
+                  "value": -86,
+                  "count": 24
+                },
+                {
+                  "value": -85,
+                  "count": 14
+                }
+              ],
+              "rx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                },
+                {
+                  "value": 1,
+                  "count": 58
+                }
+              ],
+              "rx_mode_raw": [
+                {
+                  "value": 1,
+                  "count": 116
+                }
+              ],
+              "rx_rate_raw": [
+                {
+                  "value": 11,
+                  "count": 116
+                }
+              ],
+              "segment_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "snr_pinned_encoding_minus16": [
+                {
+                  "value": 4,
+                  "count": 2
+                },
+                {
+                  "value": 5,
+                  "count": 10
+                },
+                {
+                  "value": 6,
+                  "count": 22
+                },
+                {
+                  "value": 7,
+                  "count": 52
+                },
+                {
+                  "value": 8,
+                  "count": 20
+                },
+                {
+                  "value": 9,
+                  "count": 10
+                }
+              ],
+              "snr_raw_byte": [
+                {
+                  "value": 20,
+                  "count": 2
+                },
+                {
+                  "value": 21,
+                  "count": 10
+                },
+                {
+                  "value": 22,
+                  "count": 22
+                },
+                {
+                  "value": 23,
+                  "count": 52
+                },
+                {
+                  "value": 24,
+                  "count": 20
+                },
+                {
+                  "value": 25,
+                  "count": 10
+                }
+              ],
+              "tx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "version_raw": [
+                {
+                  "value": 22,
+                  "count": 116
+                }
+              ]
+            },
+            "iq_distinct_payloads": 116,
+            "iq_int16_values": 14848,
+            "iq_nonzero_values": 12291,
+            "iq_min_raw": -2733,
+            "iq_max_raw": 2434
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 116,
+            "csi_transmitters": 6,
+            "shared_transmitters": 6,
+            "reports_from_heard_beacon_transmitters": 116,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 58,
+              "equal_snr_raw": 58,
+              "different_rssi_raw": 58,
+              "rx1_minus_rx0_rssi_raw_min": -5,
+              "rx1_minus_rx0_rssi_raw_max": -1
+            },
+            "candidate_pair_keys": {
+              "tag17": {
+                "groups": 116,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 116
+              },
+              "tag23": {
+                "groups": 6,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 6,
+                "singleton_groups": 0
+              },
+              "tag23+tag25": {
+                "groups": 58,
+                "exact_rx0_rx1_pairs": 58,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag25": {
+                "groups": 58,
+                "exact_rx0_rx1_pairs": 58,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              }
+            },
+            "full_word_coincidences": {
+              "tag17": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag23": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag25": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              }
+            }
+          }
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 94,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 564,
+                "candidate_csi_event": true,
+                "eid": 74,
+                "sequence": 0,
+                "tlv_bytes": 560,
+                "tlv_tag": 0,
+                "valid_outer_tlv": true
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 18
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 6
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 2,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [
+              {
+                "bytes": 36,
+                "count": 2
+              }
+            ],
+            "inner_shapes": [
+              {
+                "fields": [
+                  {
+                    "tag": 0,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 1,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 2,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 3,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 4,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 5,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 6,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 7,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 8,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 9,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 10,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 11,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 12,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 17,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 18,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 19,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 20,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 21,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 22,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 23,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 24,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 25,
+                    "bytes": 4
+                  }
+                ],
+                "count": 2
+              }
+            ],
+            "metadata_counts": {
+              "band_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "cbw_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "channel_index_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "data_count": [
+                {
+                  "value": 64,
+                  "count": 2
+                }
+              ],
+              "dbw_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "remain_last_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "rssi_raw_signed_byte": [
+                {
+                  "value": -89,
+                  "count": 1
+                },
+                {
+                  "value": -86,
+                  "count": 1
+                }
+              ],
+              "rx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 1
+                },
+                {
+                  "value": 1,
+                  "count": 1
+                }
+              ],
+              "rx_mode_raw": [
+                {
+                  "value": 1,
+                  "count": 2
+                }
+              ],
+              "rx_rate_raw": [
+                {
+                  "value": 11,
+                  "count": 2
+                }
+              ],
+              "segment_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "snr_pinned_encoding_minus16": [
+                {
+                  "value": 8,
+                  "count": 2
+                }
+              ],
+              "snr_raw_byte": [
+                {
+                  "value": 24,
+                  "count": 2
+                }
+              ],
+              "tx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "version_raw": [
+                {
+                  "value": 22,
+                  "count": 2
+                }
+              ]
+            },
+            "iq_distinct_payloads": 2,
+            "iq_int16_values": 256,
+            "iq_nonzero_values": 212,
+            "iq_min_raw": -1993,
+            "iq_max_raw": 1750
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 2,
+            "csi_transmitters": 1,
+            "shared_transmitters": 1,
+            "reports_from_heard_beacon_transmitters": 2,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 1,
+              "equal_snr_raw": 1,
+              "different_rssi_raw": 1,
+              "rx1_minus_rx0_rssi_raw_min": -3,
+              "rx1_minus_rx0_rssi_raw_max": -3
+            },
+            "candidate_pair_keys": {
+              "tag17": {
+                "groups": 2,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 2
+              },
+              "tag23": {
+                "groups": 1,
+                "exact_rx0_rx1_pairs": 1,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag23+tag25": {
+                "groups": 1,
+                "exact_rx0_rx1_pairs": 1,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag25": {
+                "groups": 1,
+                "exact_rx0_rx1_pairs": 1,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              }
+            },
+            "full_word_coincidences": {
+              "tag17": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag23": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag25": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              }
+            }
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "receive_width_mhz": 20,
+      "primary_channel": 36,
+      "center_channel": 36,
+      "chains": null,
+      "chain_order": "before",
+      "state_snapshots": false,
+      "hardware_snapshots": false,
+      "candidate_beacon_selector": true,
+      "candidate_qos_data_selector": false,
+      "candidate_data_selector": false,
+      "candidate_blockack_selector": false,
+      "candidate_rts_selector": false,
+      "correlation_enabled": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T11:53:03.817651+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 74,
+          "elapsed_s": 1.014,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 5
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 0,
+              "equal_snr_raw": 0,
+              "different_rssi_raw": 0,
+              "rx1_minus_rx0_rssi_raw_min": null,
+              "rx1_minus_rx0_rssi_raw_max": null
+            },
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          }
+        },
+        {
+          "name": "candidate_beacon_selector",
+          "request_sequence": 2,
+          "transfers": 143,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 75
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 0,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [],
+            "inner_shapes": [],
+            "metadata_counts": {},
+            "iq_distinct_payloads": 0,
+            "iq_int16_values": 0,
+            "iq_nonzero_values": 0,
+            "iq_min_raw": null,
+            "iq_max_raw": null
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 0,
+            "csi_transmitters": 0,
+            "shared_transmitters": 0,
+            "reports_from_heard_beacon_transmitters": 0,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 0,
+              "equal_snr_raw": 0,
+              "different_rssi_raw": 0,
+              "rx1_minus_rx0_rssi_raw_min": null,
+              "rx1_minus_rx0_rssi_raw_max": null
+            },
+            "candidate_pair_keys": {},
+            "full_word_coincidences": {}
+          }
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 196,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "body_bytes": 564,
+                "candidate_csi_event": true,
+                "eid": 74,
+                "sequence": 0,
+                "tlv_bytes": 560,
+                "tlv_tag": 0,
+                "valid_outer_tlv": true
+              },
+              "count": 116
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 8
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 4
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 116,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [
+              {
+                "bytes": 36,
+                "count": 116
+              }
+            ],
+            "inner_shapes": [
+              {
+                "fields": [
+                  {
+                    "tag": 0,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 1,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 2,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 3,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 4,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 5,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 6,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 7,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 8,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 9,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 10,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 11,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 12,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 17,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 18,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 19,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 20,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 21,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 22,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 23,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 24,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 25,
+                    "bytes": 4
+                  }
+                ],
+                "count": 116
+              }
+            ],
+            "metadata_counts": {
+              "band_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "cbw_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "channel_index_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "data_count": [
+                {
+                  "value": 64,
+                  "count": 116
+                }
+              ],
+              "dbw_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "remain_last_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "rssi_raw_signed_byte": [
+                {
+                  "value": -91,
+                  "count": 7
+                },
+                {
+                  "value": -90,
+                  "count": 16
+                },
+                {
+                  "value": -89,
+                  "count": 22
+                },
+                {
+                  "value": -88,
+                  "count": 6
+                },
+                {
+                  "value": -87,
+                  "count": 20
+                },
+                {
+                  "value": -86,
+                  "count": 24
+                },
+                {
+                  "value": -85,
+                  "count": 21
+                }
+              ],
+              "rx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 58
+                },
+                {
+                  "value": 1,
+                  "count": 58
+                }
+              ],
+              "rx_mode_raw": [
+                {
+                  "value": 1,
+                  "count": 116
+                }
+              ],
+              "rx_rate_raw": [
+                {
+                  "value": 11,
+                  "count": 116
+                }
+              ],
+              "segment_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "snr_pinned_encoding_minus16": [
+                {
+                  "value": 5,
+                  "count": 4
+                },
+                {
+                  "value": 6,
+                  "count": 34
+                },
+                {
+                  "value": 7,
+                  "count": 44
+                },
+                {
+                  "value": 8,
+                  "count": 26
+                },
+                {
+                  "value": 9,
+                  "count": 8
+                }
+              ],
+              "snr_raw_byte": [
+                {
+                  "value": 21,
+                  "count": 4
+                },
+                {
+                  "value": 22,
+                  "count": 34
+                },
+                {
+                  "value": 23,
+                  "count": 44
+                },
+                {
+                  "value": 24,
+                  "count": 26
+                },
+                {
+                  "value": 25,
+                  "count": 8
+                }
+              ],
+              "tx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 116
+                }
+              ],
+              "version_raw": [
+                {
+                  "value": 22,
+                  "count": 116
+                }
+              ]
+            },
+            "iq_distinct_payloads": 116,
+            "iq_int16_values": 14848,
+            "iq_nonzero_values": 12288,
+            "iq_min_raw": -2538,
+            "iq_max_raw": 2848
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 116,
+            "csi_transmitters": 6,
+            "shared_transmitters": 6,
+            "reports_from_heard_beacon_transmitters": 116,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 58,
+              "equal_snr_raw": 58,
+              "different_rssi_raw": 57,
+              "rx1_minus_rx0_rssi_raw_min": -6,
+              "rx1_minus_rx0_rssi_raw_max": 0
+            },
+            "candidate_pair_keys": {
+              "tag17": {
+                "groups": 116,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 116
+              },
+              "tag23": {
+                "groups": 6,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 6,
+                "singleton_groups": 0
+              },
+              "tag23+tag25": {
+                "groups": 58,
+                "exact_rx0_rx1_pairs": 58,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag25": {
+                "groups": 58,
+                "exact_rx0_rx1_pairs": 58,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              }
+            },
+            "full_word_coincidences": {
+              "tag17": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag23": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag25": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              }
+            }
+          }
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 71,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 564,
+                "candidate_csi_event": true,
+                "eid": 74,
+                "sequence": 0,
+                "tlv_bytes": 560,
+                "tlv_tag": 0,
+                "valid_outer_tlv": true
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "good_fcs_frame_classes": [
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 8,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 128,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 59
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 212,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 196,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 3
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 148,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 2
+            },
+            {
+              "shape": {
+                "bw_mhz": 20,
+                "fc_type_subtype": 180,
+                "nss": 1,
+                "phy_mode_raw": 1
+              },
+              "count": 1
+            }
+          ],
+          "csi_summary": {
+            "valid_events": 2,
+            "invalid_events": 0,
+            "validation_errors": {},
+            "zero_tail_bytes_counts": [
+              {
+                "bytes": 36,
+                "count": 2
+              }
+            ],
+            "inner_shapes": [
+              {
+                "fields": [
+                  {
+                    "tag": 0,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 1,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 2,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 3,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 4,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 5,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 6,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 7,
+                    "bytes": 128
+                  },
+                  {
+                    "tag": 8,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 9,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 10,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 11,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 12,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 17,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 18,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 19,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 20,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 21,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 22,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 23,
+                    "bytes": 4
+                  },
+                  {
+                    "tag": 24,
+                    "bytes": 8
+                  },
+                  {
+                    "tag": 25,
+                    "bytes": 4
+                  }
+                ],
+                "count": 2
+              }
+            ],
+            "metadata_counts": {
+              "band_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "cbw_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "channel_index_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "data_count": [
+                {
+                  "value": 64,
+                  "count": 2
+                }
+              ],
+              "dbw_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "remain_last_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "rssi_raw_signed_byte": [
+                {
+                  "value": -90,
+                  "count": 1
+                },
+                {
+                  "value": -86,
+                  "count": 1
+                }
+              ],
+              "rx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 1
+                },
+                {
+                  "value": 1,
+                  "count": 1
+                }
+              ],
+              "rx_mode_raw": [
+                {
+                  "value": 1,
+                  "count": 2
+                }
+              ],
+              "rx_rate_raw": [
+                {
+                  "value": 11,
+                  "count": 2
+                }
+              ],
+              "segment_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "snr_pinned_encoding_minus16": [
+                {
+                  "value": 7,
+                  "count": 2
+                }
+              ],
+              "snr_raw_byte": [
+                {
+                  "value": 23,
+                  "count": 2
+                }
+              ],
+              "tx_index_raw": [
+                {
+                  "value": 0,
+                  "count": 2
+                }
+              ],
+              "version_raw": [
+                {
+                  "value": 22,
+                  "count": 2
+                }
+              ]
+            },
+            "iq_distinct_payloads": 2,
+            "iq_int16_values": 256,
+            "iq_nonzero_values": 212,
+            "iq_min_raw": -1693,
+            "iq_max_raw": 1948
+          },
+          "correlation": {
+            "beacons": 59,
+            "beacon_transmitters": 6,
+            "csi_reports": 2,
+            "csi_transmitters": 1,
+            "shared_transmitters": 1,
+            "reports_from_heard_beacon_transmitters": 2,
+            "invalid_csi_events": 0,
+            "paired_signal_metadata": {
+              "exact_rx0_rx1_pairs": 1,
+              "equal_snr_raw": 1,
+              "different_rssi_raw": 1,
+              "rx1_minus_rx0_rssi_raw_min": -4,
+              "rx1_minus_rx0_rssi_raw_max": -4
+            },
+            "candidate_pair_keys": {
+              "tag17": {
+                "groups": 2,
+                "exact_rx0_rx1_pairs": 0,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 2
+              },
+              "tag23": {
+                "groups": 1,
+                "exact_rx0_rx1_pairs": 1,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag23+tag25": {
+                "groups": 1,
+                "exact_rx0_rx1_pairs": 1,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              },
+              "tag25": {
+                "groups": 1,
+                "exact_rx0_rx1_pairs": 1,
+                "groups_with_repeated_rx_index": 0,
+                "singleton_groups": 0
+              }
+            },
+            "full_word_coincidences": {
+              "tag17": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag23": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              },
+              "tag25": {
+                "beacon_tsf_low32": 0,
+                "rx_descriptor_timestamp": 0,
+                "sequence_control": 0,
+                "sequence_number": 0
+              }
+            }
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

@@ -6,6 +6,37 @@ hardware result, and a packet seen once is not presented as a reliability guaran
 
 ## Offline test suite
 
+### PHY transmit and station testmode exploration, 2026-09-04
+
+[PHY transmit experiments](PHY_TRANSMIT.md) independently confirmed HT MCS 0/7
+and VHT MCS 0 from both dongles, plus HE-SU MCS 0 from MT7961, on channel 36,
+20 MHz. Acceptance required exact synthetic frame bytes, valid FCS and expected
+receiver PHY metadata. MT7925 HE produced no independent decode in either tested
+descriptor variant. All runs passed firmware reload/alive cleanup.
+
+[Station testmode exploration](STATION_TESTMODE.md) unlocked seven MT7961 CE query
+selectors after idle RF-test mode entry. The follow-up RX setup and bounded traffic
+test did not establish live sampling: counters stayed zero and signal words fixed.
+MT7925 UNI receive-stat requests did not yield a valid statistics event. Both reports
+give exact commands, primary protocol references, device/firmware context, sanitized
+evidence and remaining limits. No shipped defaults or native C API changed.
+
+Validation for this research branch: **599 offline Python tests passed**, targeted
+ruff lint/format checks passed, local documentation/JSON checks passed, and
+`git diff --check` passed. This is not a repeat of full C sanitizer or release gates.
+
+Follow-up RX-path activation: four controlled runs, each with 12/12 exact-frame
+monitor controls and 36 bounded test probes, isolated the explicit high-word RX
+mask as the difference between idle and live sampling. Band-only and unchanged
+setup remained idle; mask-enabled counters advanced and froze after stop.
+See [request encoding, table, evidence and limits](STATION_TESTMODE.md#rx-path-activation-follow-up).
+
+ICAP follow-up: a status-only request returned a matched 68-byte event after
+station mode 2; RF-test and spectrum mode attempts were silent in their 1.5-second
+event windows. No IQ capture was started or validated. The follow-up suite reports
+**604 passing Python tests**, with targeted ruff checks, documentation/JSON checks
+and whitespace checks passing. [ICAP protocol and limits](STATION_TESTMODE.md#icap-status-through-station-mode-entry).
+
 ### Radio-observability research, 2026-09-04
 
 The [radio observability report](RADIO_OBSERVABILITY.md) records new research-only

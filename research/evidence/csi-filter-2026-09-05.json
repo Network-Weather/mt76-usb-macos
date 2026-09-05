@@ -1,0 +1,487 @@
+{
+  "experiment": "MT7925 passive CSI transmitter allowlist",
+  "firmware_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+  "privacy": "Counts only; selected and other transmitter addresses never serialized",
+  "runs": [
+    {
+      "tool": "csi_filter_probe",
+      "date_utc": "2026-09-05T09:48:37.566336+00:00",
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "phases": [
+        {
+          "name": "stop_before",
+          "transfers": 83,
+          "elapsed_s": 1.011,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 58,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "beacon_selector",
+          "transfers": 96,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "unfiltered_start",
+          "transfers": 178,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 58,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 94,
+          "csi_transmitters": 5,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 74,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 74
+        },
+        {
+          "name": "add_selected",
+          "transfers": 183,
+          "elapsed_s": 1.001,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 56,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 20,
+          "csi_transmitters": 1,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "filtered_restart",
+          "transfers": 268,
+          "elapsed_s": 1.006,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 57,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 94,
+          "csi_transmitters": 5,
+          "selected_csi_reports": 18,
+          "other_csi_reports": 76,
+          "after_ack_selected_csi": 18,
+          "after_ack_other_csi": 76
+        },
+        {
+          "name": "remove_selected",
+          "transfers": 236,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 56,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 92,
+          "csi_transmitters": 6,
+          "selected_csi_reports": 18,
+          "other_csi_reports": 74,
+          "after_ack_selected_csi": 18,
+          "after_ack_other_csi": 74
+        },
+        {
+          "name": "restored_restart",
+          "transfers": 273,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 55,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 90,
+          "csi_transmitters": 6,
+          "selected_csi_reports": 18,
+          "other_csi_reports": 72,
+          "after_ack_selected_csi": 18,
+          "after_ack_other_csi": 72
+        },
+        {
+          "name": "stop_after",
+          "transfers": 186,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 56,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        }
+      ]
+    },
+    {
+      "tool": "csi_filter_probe",
+      "date_utc": "2026-09-05T09:49:25.625497+00:00",
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "phases": [
+        {
+          "name": "stop_before",
+          "transfers": 71,
+          "elapsed_s": 1.01,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "beacon_selector",
+          "transfers": 67,
+          "elapsed_s": 1.005,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "unfiltered_start",
+          "transfers": 160,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 58,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 94,
+          "csi_transmitters": 5,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 74,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 74
+        },
+        {
+          "name": "add_selected",
+          "transfers": 163,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 56,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 20,
+          "csi_transmitters": 1,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "remove_selected",
+          "transfers": 264,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 57,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 94,
+          "csi_transmitters": 5,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 74,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 74
+        },
+        {
+          "name": "readd_selected",
+          "transfers": 165,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 58,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 18,
+          "csi_transmitters": 1,
+          "selected_csi_reports": 18,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 18,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "restart_after_readd",
+          "transfers": 174,
+          "elapsed_s": 1.005,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 96,
+          "csi_transmitters": 5,
+          "selected_csi_reports": 18,
+          "other_csi_reports": 78,
+          "after_ack_selected_csi": 18,
+          "after_ack_other_csi": 78
+        },
+        {
+          "name": "stop_after",
+          "transfers": 131,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 56,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        }
+      ]
+    },
+    {
+      "tool": "csi_filter_probe",
+      "date_utc": "2026-09-05T09:49:37.235167+00:00",
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "phases": [
+        {
+          "name": "stop_before",
+          "transfers": 112,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "beacon_selector",
+          "transfers": 65,
+          "elapsed_s": 1.009,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "unfiltered_start",
+          "transfers": 170,
+          "elapsed_s": 1.005,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 96,
+          "csi_transmitters": 5,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 76,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 76
+        },
+        {
+          "name": "add_selected",
+          "transfers": 81,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 20,
+          "csi_transmitters": 1,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "remove_selected",
+          "transfers": 161,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 98,
+          "csi_transmitters": 5,
+          "selected_csi_reports": 20,
+          "other_csi_reports": 78,
+          "after_ack_selected_csi": 20,
+          "after_ack_other_csi": 78
+        },
+        {
+          "name": "readd_selected",
+          "transfers": 84,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 59,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 18,
+          "csi_transmitters": 1,
+          "selected_csi_reports": 18,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 18,
+          "after_ack_other_csi": 0
+        },
+        {
+          "name": "restart_after_readd",
+          "transfers": 161,
+          "elapsed_s": 1.001,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 58,
+          "beacon_transmitters": 6,
+          "selected_beacons": 9,
+          "csi_reports": 96,
+          "csi_transmitters": 6,
+          "selected_csi_reports": 18,
+          "other_csi_reports": 78,
+          "after_ack_selected_csi": 18,
+          "after_ack_other_csi": 78
+        },
+        {
+          "name": "stop_after",
+          "transfers": 173,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "command_statuses": [
+            0
+          ],
+          "invalid_csi_events": 0,
+          "beacons": 57,
+          "beacon_transmitters": 6,
+          "selected_beacons": 10,
+          "csi_reports": 0,
+          "csi_transmitters": 0,
+          "selected_csi_reports": 0,
+          "other_csi_reports": 0,
+          "after_ack_selected_csi": 0,
+          "after_ack_other_csi": 0
+        }
+      ]
+    }
+  ]
+}

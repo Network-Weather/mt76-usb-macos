@@ -322,9 +322,9 @@ list, and [docs/QUALITY.md](docs/QUALITY.md) for the enforced checks and known e
   [measured negative results](NEGATIVE_RESULTS.md).
 - MT7925 and firmware research: [MT7925 port notes](docs/MT7925.md),
   [MT7925 UNI MIB characterization](docs/MT7925_MIB.md),
-  [firmware reconnaissance](docs/FIRMWARE_RECON.md), and the
-  [research-tool index](research/README.md). These research indexes are current through
-  2026-09-04.
+  [firmware reconnaissance](docs/FIRMWARE_RECON.md),
+  [live MT7925 CSI readout](docs/STATION_CSI.md), and the
+  [research-tool index](research/README.md), updated through 2026-09-05.
 
 ## License and provenance
 

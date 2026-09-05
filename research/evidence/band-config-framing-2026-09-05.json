@@ -1,0 +1,118 @@
+{
+  "runs": [
+    {
+      "tool": "band_config_initial_framing_control",
+      "date_utc": "2026-09-05T11:23:27.386354+00:00",
+      "rows": [
+        {
+          "chip": "mt7921",
+          "tag": 1,
+          "body_bytes": 16,
+          "command_result_status": 0,
+          "alive_after": true,
+          "cleanup_reload_alive": true,
+          "wire_option": 7
+        },
+        {
+          "chip": "mt7921",
+          "tag": 5,
+          "body_bytes": 16,
+          "command_result_status": 0,
+          "alive_after": true,
+          "cleanup_reload_alive": true,
+          "wire_option": 7
+        },
+        {
+          "chip": "mt7921",
+          "tag": 6,
+          "body_bytes": 16,
+          "command_result_status": 0,
+          "alive_after": true,
+          "cleanup_reload_alive": true,
+          "wire_option": 7
+        },
+        {
+          "chip": "mt7925",
+          "tag": 1,
+          "body_bytes": 16,
+          "alive_after": true,
+          "cleanup_reload_alive": true,
+          "wire_option": 3
+        },
+        {
+          "chip": "mt7925",
+          "tag": 5,
+          "body_bytes": 32,
+          "alive_after": true,
+          "cleanup_reload_alive": true,
+          "wire_option": 3
+        },
+        {
+          "chip": "mt7925",
+          "tag": 6,
+          "body_bytes": 32,
+          "alive_after": true,
+          "cleanup_reload_alive": true,
+          "wire_option": 3
+        }
+      ]
+    },
+    {
+      "tool": "band_config_explicit_query_control",
+      "date_utc": "2026-09-05T11:24:17.184017+00:00",
+      "rows": [
+        {
+          "chip": "mt7921",
+          "tag": 1,
+          "option": 3,
+          "body_bytes": 16,
+          "command_result_status": 0,
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "chip": "mt7921",
+          "tag": 5,
+          "option": 3,
+          "body_bytes": 16,
+          "command_result_status": 0,
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "chip": "mt7921",
+          "tag": 6,
+          "option": 3,
+          "body_bytes": 16,
+          "command_result_status": 0,
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "chip": "mt7925",
+          "tag": 1,
+          "option": 3,
+          "body_bytes": 16,
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "chip": "mt7925",
+          "tag": 5,
+          "option": 3,
+          "body_bytes": 32,
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "chip": "mt7925",
+          "tag": 6,
+          "option": 3,
+          "body_bytes": 32,
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    }
+  ]
+}
