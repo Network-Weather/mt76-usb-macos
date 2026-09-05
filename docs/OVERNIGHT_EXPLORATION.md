@@ -5,6 +5,14 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**ICS GI/LDPC controls narrow the noncontiguous TX-vector mapping:**
+[Five coding runs](ICS_CAPTURE.md#guard-interval-and-coding-narrow-the-split-layout)
+receive20/20 enabled-phase packets independently,48/60 overall. Changed patterns
+qualify source-style GI at36 bits27:26 and LDPC at88 bit7; contiguous GI at28
+fails. LDPC also changes offset48 bit12, so its low16 is not an unrestricted
+length. HT normal/short-GI values fit the L-SIG model, without calibration claims.
+All sixty TX statuses, control restores and both-radio reloads pass.
+
 **ICS fields are PHY-format dependent; source-style TX-vector masks help:**
 [Four CCK/HT/HE controls](ICS_CAPTURE.md#hthe-counterexamples-and-split-tx-vector-fields)
 receive48/48 independently. Shape/sequences/clocks persist, but CCK length/rate

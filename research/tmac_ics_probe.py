@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 """Three four-packet CCK or qualified HT/HE phases with TMAC ICS off/on/off.
 
-Optional independent rate or zero/negative-four power differentials only.
+Optional independent rate, qualified coding, or zero/negative-four power controls.
 Opaque records stay local in memory; output is matched metadata/hypotheses.
 """
 
@@ -69,6 +69,19 @@ def planned_rate(sequence, pattern):
     )
 
 
+def planned_coding(sequence, pattern):
+    changed = int(sequence % 4 >= 2)
+    if pattern == "ht-gi":
+        return {"code": 0x488, "gi": changed, "ltf": 0, "ldpc": 0}
+    if pattern == "ht-gi-alternating":
+        return {"code": 0x488, "gi": sequence % 2, "ltf": 0, "ldpc": 0}
+    if pattern in ("he-ldpc", "he-ldpc-alternating"):
+        if pattern == "he-ldpc-alternating":
+            changed = sequence % 2
+        return {"code": 0x600, "gi": 0, "ltf": 1, "ldpc": changed}
+    raise ValueError("only qualified HT GI or HE LDPC patterns")
+
+
 def send(dev, start):
     if dev.CHIP != m.CHIP_MT7925 or dev.uni_option(0x49, False) != 7:
         raise ValueError("pinned MT7925 UNI49 required")
@@ -132,7 +145,7 @@ def own_field_match(raw, packets):
 
 
 def own_sequence_observation(raw, packets):
-    """Only four previously identified field locations, paired by two sequences.
+    """Previously identified fields and source masks, paired by two sequences.
 
     Retains format counterexamples without weakening the strict length matcher.
     No extra record words or clock origins are exported.
@@ -170,10 +183,13 @@ def own_sequence_observation(raw, packets):
             "ldpc": (alternate_txv2 >> 7) & 1,
             "nsts_raw": (alternate_txv2 >> 28) & 15,
         },
+        "source_txv1_at36_hypothesis": {
+            "gi": (struct.unpack_from("<I", raw, 36)[0] >> 26) & 3,
+        },
     }
 
 
-def candidate_fields(records, packets, statuses):
+def candidate_fields(records, packets, statuses, received_phy=None):
     """Local-only bytes -> differential hypotheses; never export record words.
 
     Association is temporal (one aggregate after each isolated submission), not
@@ -199,9 +215,20 @@ def candidate_fields(records, packets, statuses):
         "relative_clock_candidates": [],
         "power_candidates": [],
         "rate_candidates": [],
+        "independent_phy_bit_candidates": [],
     }
     for offset in range(8, 285, 4):
         values = [struct.unpack_from("<I", raw, offset)[0] for _, raw in records]
+        if received_phy and set(received_phy) == set(indices):
+            for field, bits in (("gi", 2), ("ldpc", 1)):
+                expected = [received_phy[i].get(field) for i in indices]
+                if any(v is None for v in expected) or len(set(expected)) < 2:
+                    continue
+                for shift in range(33 - bits):
+                    if [(v >> shift) & ((1 << bits) - 1) for v in values] == expected:
+                        out["independent_phy_bit_candidates"].append(
+                            {"field": field, "offset": offset, "shift": shift, "bits": bits}
+                        )
         for shift in range(21):
             if [(v >> shift) & 0xFFF for v in values] == indices:
                 out["sequence_candidates"].append({"offset": offset, "shift": shift, "bits": 12})
@@ -270,7 +297,7 @@ def candidate_fields(records, packets, statuses):
     return out
 
 
-def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
+def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed", coding_pattern="fixed"):
     if len(packets) != 4:
         raise ValueError("exactly four prepared packets")
     pending = list(packets.items())
@@ -278,6 +305,7 @@ def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
     shapes, types = collections.Counter(), collections.Counter()
     records = []  # Local-only opaque bytes; reduced before returning.
     own_phy = {}
+    settings = {}
     decoder = m.decoder_for(rx)
     by_payload = {payload: index for index, (payload, _) in pending}
     start = time.monotonic()
@@ -286,7 +314,10 @@ def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
         now = time.monotonic()
         if len(submitted) < 4 and now >= next_tx and now < start + 0.25:
             index, (_, wire) = pending[len(submitted)]
-            if rate_pattern != "fixed":
+            if coding_pattern != "fixed":
+                settings[index] = planned_coding(index, coding_pattern)
+                phy.program_rate(tx, **settings[index])
+            elif rate_pattern != "fixed":
                 phy.program_rate(tx, planned_rate(index, rate_pattern))
             tx.bulk_out(tx.ep_out_ac_be, wire, 1000)
             submitted.append(index)
@@ -307,7 +338,7 @@ def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
                         good.add(index)
                         own_phy[index] = {
                             k: decoded.get("phy", {}).get(k)
-                            for k in ("mode_name", "mcs", "nss", "bw_mhz")
+                            for k in ("mode_name", "mcs", "nss", "bw_mhz", "gi", "ldpc", "stbc")
                         }
                 continue
             if len(raw) >= 4:
@@ -339,9 +370,10 @@ def acquire(tx, rx, packets, sequence=None, rate_pattern="fixed"):
         "submitted_sequences": submitted,
         "exact_good_sequences": sorted(good),
         "exact_good_phy": own_phy,
+        "programmed_coding": settings,
         "tx_status": statuses,
         "own_exact_matches_in_ics": matches,
-        "differential_hypotheses": candidate_fields(records, packets, statuses),
+        "differential_hypotheses": candidate_fields(records, packets, statuses, own_phy),
         "known_frame_field_matches": [
             match
             for _, raw in records
@@ -372,6 +404,11 @@ def main():
     parser.add_argument("--sequence-base", type=int, choices=(0, 8), default=0)
     parser.add_argument("--power-differential", action="store_true")
     parser.add_argument(
+        "--coding-pattern",
+        choices=("fixed", "ht-gi", "ht-gi-alternating", "he-ldpc", "he-ldpc-alternating"),
+        default="fixed",
+    )
+    parser.add_argument(
         "--rate-pattern",
         choices=("fixed", "blocks", "alternating", "ht-he", "ht-he-blocks", "cck-ht-he"),
         default="fixed",
@@ -381,6 +418,8 @@ def main():
         parser.error("explicit TMAC ICS and transmit acknowledgments required")
     if args.power_differential and args.rate_pattern != "fixed":
         parser.error("separate power and rate differential runs required")
+    if args.coding_pattern != "fixed" and (args.power_differential or args.rate_pattern != "fixed"):
+        parser.error("coding controls require separate fixed-rate/no-power-offset runs")
     out = {
         "date_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "phases": [],
@@ -426,6 +465,7 @@ def main():
             out["sequence_base"] = args.sequence_base
             out["power_differential"] = args.power_differential
             out["rate_pattern"] = args.rate_pattern
+            out["coding_pattern"] = args.coding_pattern
             for phase, enabled in enumerate((False, True, False)):
                 sequence = None
                 if phase:
@@ -437,7 +477,7 @@ def main():
                         args.sequence_base + phase * 4, args.sequence_base + phase * 4 + 4
                     )
                 }
-                row = acquire(tx, rx, packets, sequence, args.rate_pattern)
+                row = acquire(tx, rx, packets, sequence, args.rate_pattern, args.coding_pattern)
                 row["ics_enabled"] = enabled
                 row["masks_after"] = masks(tx)
                 out["phases"].append(row)

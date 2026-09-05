@@ -392,3 +392,46 @@ submitted synthetic packet, and exports only the few previously located fields
 and source-defined mask hypotheses. It does not relax the strict two-length
 matching rule or export opaque record words/clock origins.
 [Four PHY-format controls](../research/evidence/tmac-ics-phy-formats-2026-09-05.json).
+
+## Guard interval and coding narrow the split layout
+
+Five further twelve-packet off/on/off runs vary previously qualified HT8 guard
+interval and HE-SU LDPC controls. All twenty enabled-phase packets are received
+independently with exact payload and good FCS, with four288-byte/frame-count2
+diagnostics per enabled phase and none in the ten off windows. Overall reception
+is **48/60**, not60/60: the three HT runs receive12/12,8/12,7/12; the two HE
+runs12/12,9/12. All sixty TX statuses arrive. The losses occur in off windows;
+that temporal observation is not evidence that ICS improves reception. All
+masked controls restore and both radios reload successfully in every run.
+
+The receiver's decoded GI/LDPC values are used as differential references only
+when all four enabled packets are independently received. Constant fields and
+incomplete reception cannot qualify a candidate. A grouped pattern separates
+coding from the alternating65/193-byte lengths; a second alternating coding
+pattern tests accidental sequence/length/clock correlations.
+
+| Source-style field | Aggregate-relative location | Independent control |
+| --- | --- | --- |
+| TXV1 GI | Offset36 bits27:26 | HT GI0/1, grouped and alternating |
+| TXV2 LDPC | Offset88 bit7 | HE BCC/LDPC, grouped and alternating |
+
+Offset36 is the **only GI bit-pair candidate common to both scanned patterns**.
+The contiguous-layout GI mask at offset28 remains zero even for received short
+GI. This extends the partial noncontiguous mapping: TXV0-style mode/power at24,
+TXV1-style GI at36, and TXV2-style rate/NSTS/LDPC at88. It does not establish
+complete word layouts or qualify default-zero bandwidth/STBC fields.
+
+LDPC also follows **offset48 bit12** in both patterns. Thus the previously
+reported low16 at48 is a packed quantity, not an unrestricted length. HE BCC
+values49/91 become4145/4187 under LDPC (adding4096), while low12 remains49/91.
+These runs use LTF setting1 rather than the earlier mixed-format LTF0 controls;
+do not compare their HE low12 values as if coding were the only difference.
+For the short HE payload, offset96 changes78 to79 with LDPC; the long payload
+stays202. Its delimiter/padding/FEC interpretation is still unresolved.
+
+The HT results also strengthen, without proving, the L-SIG-length hypothesis:
+65/193-byte payloads produce48/105 at normal GI and45/96 at short GI, matching
+`3*ceil((40 + Nsym*symbol_us - 20)/4)-3`, with Nsym12/31 and symbol duration
+4/3.6µs. This is a model comparison, not a new measured-airtime calibration.
+No opaque records, ambient payloads or clock origins are published.
+[Five coding controls](../research/evidence/tmac-ics-coding-2026-09-05.json).

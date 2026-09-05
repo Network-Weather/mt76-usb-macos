@@ -73,6 +73,18 @@ def test_bounded_rate_patterns():
         p.planned_rate(0, "sweep")
 
 
+def test_coding_controls_change_only_one_qualified_setting():
+    assert p.planned_coding(4, "ht-gi") == {"code": 0x488, "gi": 0, "ltf": 0, "ldpc": 0}
+    assert p.planned_coding(6, "ht-gi") == {"code": 0x488, "gi": 1, "ltf": 0, "ldpc": 0}
+    assert p.planned_coding(5, "ht-gi-alternating")["gi"] == 1
+    assert p.planned_coding(4, "he-ldpc") == {"code": 0x600, "gi": 0, "ltf": 1, "ldpc": 0}
+    assert p.planned_coding(6, "he-ldpc") == {"code": 0x600, "gi": 0, "ltf": 1, "ldpc": 1}
+    assert p.planned_coding(5, "he-ldpc-alternating")["ldpc"] == 1
+    assert p.planned_coding(6, "he-ldpc-alternating")["ldpc"] == 0
+    with pytest.raises(ValueError, match="qualified"):
+        p.planned_coding(0, "guess")
+
+
 def test_tmac_field_pair_and_masks():
     assert p.TMAC_WORDS[0x84C810] & 0xFFFF == 0
     assert p.TMAC_WORDS[0x84C270] & 0xFFFF == 0x120
@@ -104,7 +116,7 @@ def test_restore_rejects_other_addresses():
 
 
 def test_differential_candidates_export_no_record_words():
-    packets, records, statuses = {}, [], []
+    packets, records, statuses, received_phy = {}, [], [], {}
     for i in range(36, 40):
         payload = bytes(65 if i % 2 == 0 else 193)
         packets[i] = payload, b""
@@ -115,6 +127,9 @@ def test_differential_candidates_export_no_record_words():
         struct.pack_into("<I", raw, 24, power << 16)
         rate = i % 2
         struct.pack_into("<I", raw, 28, rate << 8)
+        gi = int(i % 4 >= 2)
+        struct.pack_into("<I", raw, 40, gi << 11)
+        received_phy[i] = {"gi": gi, "ldpc": False}
         records.append((i, bytes(raw)))
         statuses.append(
             {"sequence": i, "timestamp_raw": timestamp, "power_raw": power, "rate_raw": rate}
@@ -136,3 +151,11 @@ def test_differential_candidates_export_no_record_words():
     assert "record_words" not in result
     assert not p.candidate_fields(records[:3], packets, statuses)["qualified_temporal_pairing"]
     assert not p.candidate_fields(records, packets, statuses[:3])["qualified_temporal_pairing"]
+    with_phy = p.candidate_fields(records, packets, statuses, received_phy)
+    assert {"field": "gi", "offset": 40, "shift": 11, "bits": 2} in with_phy[
+        "independent_phy_bit_candidates"
+    ]
+    assert not any(r["field"] == "ldpc" for r in with_phy["independent_phy_bit_candidates"])
+    assert not p.candidate_fields(records, packets, statuses, {36: received_phy[36]})[
+        "independent_phy_bit_candidates"
+    ]

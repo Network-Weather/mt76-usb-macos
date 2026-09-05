@@ -1,0 +1,4090 @@
+{
+  "runs": [
+    {
+      "date_utc": "2026-09-05T21:16:03.926408+00:00",
+      "phases": [
+        {
+          "elapsed_seconds": 0.4001040421426296,
+          "attempts": 480,
+          "submitted_sequences": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "exact_good_sequences": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "exact_good_phy": {
+            "0": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "1": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "2": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            },
+            "3": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "0": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "1": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "2": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "3": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 1770403,
+              "rate_stbc": false,
+              "front_time_raw_format0": 59259,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 1797768,
+              "rate_stbc": false,
+              "front_time_raw_format0": 60114,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 82,
+              "timestamp_raw": 1829634,
+              "rate_stbc": false,
+              "front_time_raw_format0": 61031,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 1857040,
+              "rate_stbc": false,
+              "front_time_raw_format0": 61966,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 61
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.40377395786345005,
+          "attempts": 330,
+          "submitted_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_phy": {
+            "4": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "5": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "6": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            },
+            "7": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "4": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "5": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "6": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "7": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 4,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 19,
+              "timestamp_raw": 2174497,
+              "rate_stbc": false,
+              "front_time_raw_format0": 71871,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 5,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 7,
+              "timestamp_raw": 2202992,
+              "rate_stbc": false,
+              "front_time_raw_format0": 72776,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 6,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 167,
+              "timestamp_raw": 2239241,
+              "rate_stbc": false,
+              "front_time_raw_format0": 73746,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 7,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2264289,
+              "rate_stbc": false,
+              "front_time_raw_format0": 74693,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": true,
+            "association": "temporal, not decoded identity",
+            "sequence_candidates": [
+              {
+                "offset": 124,
+                "shift": 20,
+                "bits": 12
+              },
+              {
+                "offset": 272,
+                "shift": 0,
+                "bits": 12
+              }
+            ],
+            "length_candidates": [
+              {
+                "offset": 96,
+                "shift": 0,
+                "bits": 16,
+                "bytes_added_to_frame": 4
+              }
+            ],
+            "clock_candidates": [],
+            "relative_clock_candidates": [
+              {
+                "offset": 20,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "offset": 84,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "power_candidates": [],
+            "rate_candidates": []
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [
+            {
+              "sequence": 4,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 48,
+              "offset96_u16": 69,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 5,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 105,
+              "offset96_u16": 197,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 6,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 45,
+              "offset96_u16": 69,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 7,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 96,
+              "offset96_u16": 197,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            }
+          ],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 19
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            },
+            {
+              "endpoint": 132,
+              "type": 12,
+              "count": 4
+            }
+          ],
+          "aggregate_shapes": [
+            {
+              "endpoint": 132,
+              "type": 12,
+              "bytes": 288,
+              "frame_count": 2,
+              "count": 4
+            }
+          ],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": true,
+          "masks_after": {
+            "0x820e4120": 1,
+            "0x820e705c": 16777216
+          }
+        },
+        {
+          "elapsed_seconds": 0.4016184997744858,
+          "attempts": 300,
+          "submitted_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_phy": {
+            "8": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "9": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "10": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            },
+            "11": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "8": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "9": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "10": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "11": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 8,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 245,
+              "timestamp_raw": 2587223,
+              "rate_stbc": false,
+              "front_time_raw_format0": 84543,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 9,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2608360,
+              "rate_stbc": false,
+              "front_time_raw_format0": 85445,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 10,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2639932,
+              "rate_stbc": false,
+              "front_time_raw_format0": 86431,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 11,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2670193,
+              "rate_stbc": false,
+              "front_time_raw_format0": 87376,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 20
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        }
+      ],
+      "start_request_hex": "0000000000005800000100000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "max_submissions": 12,
+      "verified": {
+        "code": [
+          {
+            "name": "uni49",
+            "address": "0xe00353cc",
+            "bytes": 368,
+            "sha256": "ced1a52cf18d311433439a323a0275b5a29d3b972d1a1ad3e38fce4f6be88a2c",
+            "matches": true
+          },
+          {
+            "name": "state_machine",
+            "address": "0xe0073f60",
+            "bytes": 584,
+            "sha256": "afa0e98e90fa49f45e2fdd98f6121e4f545890a9bfd1039918b90a657cc58a57",
+            "matches": true
+          },
+          {
+            "name": "rom_controls",
+            "address": "0x836df4",
+            "bytes": 320,
+            "sha256": "08762c5fdac8a909f95a69572ed7f6cbfddeb4f6bf1d362b55d32be73d16c24b",
+            "matches": true
+          },
+          {
+            "name": "prerequisite_mapper",
+            "address": "0x82f880",
+            "bytes": 256,
+            "sha256": "6bc71096f1f5bc0342c5bff05f8babf575f55fa7f8feebe71c552e6da9165463",
+            "matches": true
+          },
+          {
+            "name": "capture_mapper",
+            "address": "0x836cdc",
+            "bytes": 256,
+            "sha256": "e39a812426dcb3b99e4f39bc554bfb028bb23f865e90248bd37914d71e7542e3",
+            "matches": true
+          },
+          {
+            "name": "instruction_table",
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true
+          }
+        ],
+        "metadata": {
+          "0x221c07c": "0x49",
+          "0x221c080": "0xe00353cc",
+          "0x22113c4": "0x2210504",
+          "0x2210504": "0x82f882",
+          "0x84ce80": "0x84d1f4",
+          "0x84ce84": "0x50000",
+          "0x84d1f8": "0x1b1b1c1c",
+          "0x22114f8": "0x22105ec",
+          "0x22114fc": "0x22105ec",
+          "0x22105ec": "0x836cdc",
+          "0x84f0f8": "0x84f178",
+          "0x84f0fc": "0xd0090",
+          "0x84f188": "0x8080a0a",
+          "0x84f18c": "0x1010302",
+          "0x829670": "0x836df4",
+          "0x82969c": "0x836ece",
+          "0x8296a0": "0x836ee0"
+        }
+      },
+      "tmac_rom_sha256": "ca0bb92e18743eeec55509b70149ecbe93454342cc80700aa62d9e32982f6b0b",
+      "tmac_metadata": {
+        "0x84c26c": "0x84c810",
+        "0x84c270": "0x70120",
+        "0x84c810": "0x8080000",
+        "0x829d68": "0x82e282",
+        "0x829d6c": "0x82e29c"
+      },
+      "original_masks": {
+        "0x820e4120": 0,
+        "0x820e705c": 0
+      },
+      "sequence_base": 0,
+      "power_differential": false,
+      "rate_pattern": "fixed",
+      "coding_pattern": "ht-gi",
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored": {
+        "0x820e4120": true,
+        "0x820e705c": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T21:17:47.931761+00:00",
+      "phases": [
+        {
+          "elapsed_seconds": 0.40069212508387864,
+          "attempts": 423,
+          "submitted_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_sequences": [],
+          "exact_good_phy": {},
+          "programmed_coding": {
+            "8": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "9": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "10": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "11": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 8,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 1997032,
+              "rate_stbc": false,
+              "front_time_raw_format0": 66823,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 9,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2026287,
+              "rate_stbc": false,
+              "front_time_raw_format0": 67737,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 10,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2055288,
+              "rate_stbc": false,
+              "front_time_raw_format0": 68643,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 11,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 68,
+              "timestamp_raw": 2088730,
+              "rate_stbc": false,
+              "front_time_raw_format0": 69626,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 76
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.40115308319218457,
+          "attempts": 285,
+          "submitted_sequences": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "exact_good_sequences": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "exact_good_phy": {
+            "12": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "13": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "14": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            },
+            "15": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "12": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "13": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "14": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "15": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 12,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2404198,
+              "rate_stbc": false,
+              "front_time_raw_format0": 79547,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 13,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2438050,
+              "rate_stbc": false,
+              "front_time_raw_format0": 80604,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 14,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2466832,
+              "rate_stbc": false,
+              "front_time_raw_format0": 81504,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 15,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2502514,
+              "rate_stbc": false,
+              "front_time_raw_format0": 82619,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": true,
+            "association": "temporal, not decoded identity",
+            "sequence_candidates": [
+              {
+                "offset": 124,
+                "shift": 20,
+                "bits": 12
+              },
+              {
+                "offset": 272,
+                "shift": 0,
+                "bits": 12
+              }
+            ],
+            "length_candidates": [
+              {
+                "offset": 96,
+                "shift": 0,
+                "bits": 16,
+                "bytes_added_to_frame": 4
+              }
+            ],
+            "clock_candidates": [],
+            "relative_clock_candidates": [
+              {
+                "offset": 20,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "offset": 84,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "power_candidates": [],
+            "rate_candidates": [],
+            "independent_phy_bit_candidates": [
+              {
+                "field": "gi",
+                "offset": 16,
+                "shift": 10,
+                "bits": 2
+              },
+              {
+                "field": "gi",
+                "offset": 36,
+                "shift": 26,
+                "bits": 2
+              },
+              {
+                "field": "gi",
+                "offset": 80,
+                "shift": 10,
+                "bits": 2
+              }
+            ]
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [
+            {
+              "sequence": 12,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 48,
+              "offset96_u16": 69,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 13,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 105,
+              "offset96_u16": 197,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 14,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 45,
+              "offset96_u16": 69,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 15,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 96,
+              "offset96_u16": 197,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            }
+          ],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 19
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            },
+            {
+              "endpoint": 132,
+              "type": 12,
+              "count": 4
+            }
+          ],
+          "aggregate_shapes": [
+            {
+              "endpoint": 132,
+              "type": 12,
+              "bytes": 288,
+              "frame_count": 2,
+              "count": 4
+            }
+          ],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": true,
+          "masks_after": {
+            "0x820e4120": 1,
+            "0x820e705c": 16777216
+          }
+        },
+        {
+          "elapsed_seconds": 0.4001247079577297,
+          "attempts": 285,
+          "submitted_sequences": [
+            16,
+            17,
+            18,
+            19
+          ],
+          "exact_good_sequences": [
+            16,
+            17,
+            18,
+            19
+          ],
+          "exact_good_phy": {
+            "16": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "17": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "18": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            },
+            "19": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "16": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "17": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "18": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "19": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 16,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2806645,
+              "rate_stbc": false,
+              "front_time_raw_format0": 92124,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 17,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2841087,
+              "rate_stbc": false,
+              "front_time_raw_format0": 93200,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 18,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2871497,
+              "rate_stbc": false,
+              "front_time_raw_format0": 94150,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 19,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2899533,
+              "rate_stbc": false,
+              "front_time_raw_format0": 95026,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 20
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        }
+      ],
+      "start_request_hex": "0000000000005800000100000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "max_submissions": 12,
+      "verified": {
+        "code": [
+          {
+            "name": "uni49",
+            "address": "0xe00353cc",
+            "bytes": 368,
+            "sha256": "ced1a52cf18d311433439a323a0275b5a29d3b972d1a1ad3e38fce4f6be88a2c",
+            "matches": true
+          },
+          {
+            "name": "state_machine",
+            "address": "0xe0073f60",
+            "bytes": 584,
+            "sha256": "afa0e98e90fa49f45e2fdd98f6121e4f545890a9bfd1039918b90a657cc58a57",
+            "matches": true
+          },
+          {
+            "name": "rom_controls",
+            "address": "0x836df4",
+            "bytes": 320,
+            "sha256": "08762c5fdac8a909f95a69572ed7f6cbfddeb4f6bf1d362b55d32be73d16c24b",
+            "matches": true
+          },
+          {
+            "name": "prerequisite_mapper",
+            "address": "0x82f880",
+            "bytes": 256,
+            "sha256": "6bc71096f1f5bc0342c5bff05f8babf575f55fa7f8feebe71c552e6da9165463",
+            "matches": true
+          },
+          {
+            "name": "capture_mapper",
+            "address": "0x836cdc",
+            "bytes": 256,
+            "sha256": "e39a812426dcb3b99e4f39bc554bfb028bb23f865e90248bd37914d71e7542e3",
+            "matches": true
+          },
+          {
+            "name": "instruction_table",
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true
+          }
+        ],
+        "metadata": {
+          "0x221c07c": "0x49",
+          "0x221c080": "0xe00353cc",
+          "0x22113c4": "0x2210504",
+          "0x2210504": "0x82f882",
+          "0x84ce80": "0x84d1f4",
+          "0x84ce84": "0x50000",
+          "0x84d1f8": "0x1b1b1c1c",
+          "0x22114f8": "0x22105ec",
+          "0x22114fc": "0x22105ec",
+          "0x22105ec": "0x836cdc",
+          "0x84f0f8": "0x84f178",
+          "0x84f0fc": "0xd0090",
+          "0x84f188": "0x8080a0a",
+          "0x84f18c": "0x1010302",
+          "0x829670": "0x836df4",
+          "0x82969c": "0x836ece",
+          "0x8296a0": "0x836ee0"
+        }
+      },
+      "tmac_rom_sha256": "ca0bb92e18743eeec55509b70149ecbe93454342cc80700aa62d9e32982f6b0b",
+      "tmac_metadata": {
+        "0x84c26c": "0x84c810",
+        "0x84c270": "0x70120",
+        "0x84c810": "0x8080000",
+        "0x829d68": "0x82e282",
+        "0x829d6c": "0x82e29c"
+      },
+      "original_masks": {
+        "0x820e4120": 0,
+        "0x820e705c": 0
+      },
+      "sequence_base": 8,
+      "power_differential": false,
+      "rate_pattern": "fixed",
+      "coding_pattern": "ht-gi",
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored": {
+        "0x820e4120": true,
+        "0x820e705c": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T21:22:03.368276+00:00",
+      "phases": [
+        {
+          "elapsed_seconds": 0.40217341715469956,
+          "attempts": 399,
+          "submitted_sequences": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "exact_good_sequences": [],
+          "exact_good_phy": {},
+          "programmed_coding": {
+            "0": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "1": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "2": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "3": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 1957466,
+              "rate_stbc": false,
+              "front_time_raw_format0": 65413,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 1986766,
+              "rate_stbc": false,
+              "front_time_raw_format0": 66328,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 229,
+              "timestamp_raw": 2021804,
+              "rate_stbc": false,
+              "front_time_raw_format0": 67197,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2044686,
+              "rate_stbc": false,
+              "front_time_raw_format0": 68138,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 62
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.4028459591791034,
+          "attempts": 306,
+          "submitted_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_phy": {
+            "4": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "5": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            },
+            "6": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "7": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "4": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "5": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "6": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "7": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 4,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 155,
+              "timestamp_raw": 2365863,
+              "rate_stbc": false,
+              "front_time_raw_format0": 78023,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 5,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2392871,
+              "rate_stbc": false,
+              "front_time_raw_format0": 79019,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 6,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2421560,
+              "rate_stbc": false,
+              "front_time_raw_format0": 79916,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 7,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2452332,
+              "rate_stbc": false,
+              "front_time_raw_format0": 80877,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": true,
+            "association": "temporal, not decoded identity",
+            "sequence_candidates": [
+              {
+                "offset": 124,
+                "shift": 20,
+                "bits": 12
+              },
+              {
+                "offset": 272,
+                "shift": 0,
+                "bits": 12
+              }
+            ],
+            "length_candidates": [
+              {
+                "offset": 96,
+                "shift": 0,
+                "bits": 16,
+                "bytes_added_to_frame": 4
+              }
+            ],
+            "clock_candidates": [],
+            "relative_clock_candidates": [
+              {
+                "offset": 20,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "offset": 84,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "power_candidates": [],
+            "rate_candidates": [],
+            "independent_phy_bit_candidates": [
+              {
+                "field": "gi",
+                "offset": 36,
+                "shift": 26,
+                "bits": 2
+              },
+              {
+                "field": "gi",
+                "offset": 48,
+                "shift": 6,
+                "bits": 2
+              },
+              {
+                "field": "gi",
+                "offset": 48,
+                "shift": 20,
+                "bits": 2
+              },
+              {
+                "field": "gi",
+                "offset": 96,
+                "shift": 7,
+                "bits": 2
+              }
+            ]
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [
+            {
+              "sequence": 4,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 48,
+              "offset96_u16": 69,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 5,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 96,
+              "offset96_u16": 197,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 6,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 48,
+              "offset96_u16": 69,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 7,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 96,
+              "offset96_u16": 197,
+              "offset88_low14": 8,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 2,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 8,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            }
+          ],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 20
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            },
+            {
+              "endpoint": 132,
+              "type": 12,
+              "count": 4
+            }
+          ],
+          "aggregate_shapes": [
+            {
+              "endpoint": 132,
+              "type": 12,
+              "bytes": 288,
+              "frame_count": 2,
+              "count": 4
+            }
+          ],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": true,
+          "masks_after": {
+            "0x820e4120": 1,
+            "0x820e705c": 16777216
+          }
+        },
+        {
+          "elapsed_seconds": 0.4040192908141762,
+          "attempts": 288,
+          "submitted_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_sequences": [
+            8,
+            10,
+            11
+          ],
+          "exact_good_phy": {
+            "8": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "10": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "11": {
+              "mode_name": "HT",
+              "mcs": 8,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 1,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "8": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "9": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "10": {
+              "code": 1160,
+              "gi": 0,
+              "ltf": 0,
+              "ldpc": 0
+            },
+            "11": {
+              "code": 1160,
+              "gi": 1,
+              "ltf": 0,
+              "ldpc": 0
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 8,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 85,
+              "timestamp_raw": 2774540,
+              "rate_stbc": false,
+              "front_time_raw_format0": 90864,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 9,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 46,
+              "timestamp_raw": 2804474,
+              "rate_stbc": false,
+              "front_time_raw_format0": 91841,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 10,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2832241,
+              "rate_stbc": false,
+              "front_time_raw_format0": 92749,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 11,
+              "format": 0,
+              "rate_raw": 1160,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 102,
+              "timestamp_raw": 2861942,
+              "rate_stbc": false,
+              "front_time_raw_format0": 93581,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 28
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        }
+      ],
+      "start_request_hex": "0000000000005800000100000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "max_submissions": 12,
+      "verified": {
+        "code": [
+          {
+            "name": "uni49",
+            "address": "0xe00353cc",
+            "bytes": 368,
+            "sha256": "ced1a52cf18d311433439a323a0275b5a29d3b972d1a1ad3e38fce4f6be88a2c",
+            "matches": true
+          },
+          {
+            "name": "state_machine",
+            "address": "0xe0073f60",
+            "bytes": 584,
+            "sha256": "afa0e98e90fa49f45e2fdd98f6121e4f545890a9bfd1039918b90a657cc58a57",
+            "matches": true
+          },
+          {
+            "name": "rom_controls",
+            "address": "0x836df4",
+            "bytes": 320,
+            "sha256": "08762c5fdac8a909f95a69572ed7f6cbfddeb4f6bf1d362b55d32be73d16c24b",
+            "matches": true
+          },
+          {
+            "name": "prerequisite_mapper",
+            "address": "0x82f880",
+            "bytes": 256,
+            "sha256": "6bc71096f1f5bc0342c5bff05f8babf575f55fa7f8feebe71c552e6da9165463",
+            "matches": true
+          },
+          {
+            "name": "capture_mapper",
+            "address": "0x836cdc",
+            "bytes": 256,
+            "sha256": "e39a812426dcb3b99e4f39bc554bfb028bb23f865e90248bd37914d71e7542e3",
+            "matches": true
+          },
+          {
+            "name": "instruction_table",
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true
+          }
+        ],
+        "metadata": {
+          "0x221c07c": "0x49",
+          "0x221c080": "0xe00353cc",
+          "0x22113c4": "0x2210504",
+          "0x2210504": "0x82f882",
+          "0x84ce80": "0x84d1f4",
+          "0x84ce84": "0x50000",
+          "0x84d1f8": "0x1b1b1c1c",
+          "0x22114f8": "0x22105ec",
+          "0x22114fc": "0x22105ec",
+          "0x22105ec": "0x836cdc",
+          "0x84f0f8": "0x84f178",
+          "0x84f0fc": "0xd0090",
+          "0x84f188": "0x8080a0a",
+          "0x84f18c": "0x1010302",
+          "0x829670": "0x836df4",
+          "0x82969c": "0x836ece",
+          "0x8296a0": "0x836ee0"
+        }
+      },
+      "tmac_rom_sha256": "ca0bb92e18743eeec55509b70149ecbe93454342cc80700aa62d9e32982f6b0b",
+      "tmac_metadata": {
+        "0x84c26c": "0x84c810",
+        "0x84c270": "0x70120",
+        "0x84c810": "0x8080000",
+        "0x829d68": "0x82e282",
+        "0x829d6c": "0x82e29c"
+      },
+      "original_masks": {
+        "0x820e4120": 0,
+        "0x820e705c": 0
+      },
+      "sequence_base": 0,
+      "power_differential": false,
+      "rate_pattern": "fixed",
+      "coding_pattern": "ht-gi-alternating",
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored": {
+        "0x820e4120": true,
+        "0x820e705c": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T21:22:25.976584+00:00",
+      "phases": [
+        {
+          "elapsed_seconds": 0.40396924992091954,
+          "attempts": 465,
+          "submitted_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_phy": {
+            "8": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "9": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "10": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            },
+            "11": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "8": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "9": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "10": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            },
+            "11": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 8,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 1785762,
+              "rate_stbc": false,
+              "front_time_raw_format0": 59660,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 9,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 1814550,
+              "rate_stbc": false,
+              "front_time_raw_format0": 60560,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 10,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 1843512,
+              "rate_stbc": false,
+              "front_time_raw_format0": 61465,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 11,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 1873087,
+              "rate_stbc": false,
+              "front_time_raw_format0": 62389,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 67
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.4018803332000971,
+          "attempts": 309,
+          "submitted_sequences": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "exact_good_sequences": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "exact_good_phy": {
+            "12": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "13": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "14": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            },
+            "15": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "12": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "13": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "14": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            },
+            "15": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 12,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2194977,
+              "rate_stbc": false,
+              "front_time_raw_format0": 72448,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 13,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2225383,
+              "rate_stbc": false,
+              "front_time_raw_format0": 73399,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 14,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2255074,
+              "rate_stbc": false,
+              "front_time_raw_format0": 74327,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 15,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2285299,
+              "rate_stbc": false,
+              "front_time_raw_format0": 75271,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": true,
+            "association": "temporal, not decoded identity",
+            "sequence_candidates": [
+              {
+                "offset": 124,
+                "shift": 20,
+                "bits": 12
+              },
+              {
+                "offset": 272,
+                "shift": 0,
+                "bits": 12
+              }
+            ],
+            "length_candidates": [],
+            "clock_candidates": [],
+            "relative_clock_candidates": [
+              {
+                "offset": 20,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "offset": 84,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "power_candidates": [],
+            "rate_candidates": [],
+            "independent_phy_bit_candidates": [
+              {
+                "field": "ldpc",
+                "offset": 16,
+                "shift": 10,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 20,
+                "shift": 18,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 48,
+                "shift": 12,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 80,
+                "shift": 10,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 84,
+                "shift": 18,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 88,
+                "shift": 7,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 124,
+                "shift": 21,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 272,
+                "shift": 1,
+                "bits": 1
+              }
+            ]
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [
+            {
+              "sequence": 12,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 49,
+              "offset96_u16": 78,
+              "offset88_low14": 0,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 13,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 91,
+              "offset96_u16": 202,
+              "offset88_low14": 0,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 14,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 4145,
+              "offset96_u16": 79,
+              "offset88_low14": 128,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 1,
+                "nsts_raw": 1
+              }
+            },
+            {
+              "sequence": 15,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 4187,
+              "offset96_u16": 202,
+              "offset88_low14": 128,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 1,
+                "nsts_raw": 1
+              }
+            }
+          ],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 20
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            },
+            {
+              "endpoint": 132,
+              "type": 12,
+              "count": 4
+            }
+          ],
+          "aggregate_shapes": [
+            {
+              "endpoint": 132,
+              "type": 12,
+              "bytes": 288,
+              "frame_count": 2,
+              "count": 4
+            }
+          ],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": true,
+          "masks_after": {
+            "0x820e4120": 1,
+            "0x820e705c": 16777216
+          }
+        },
+        {
+          "elapsed_seconds": 0.4015767499804497,
+          "attempts": 306,
+          "submitted_sequences": [
+            16,
+            17,
+            18,
+            19
+          ],
+          "exact_good_sequences": [
+            16,
+            17,
+            18,
+            19
+          ],
+          "exact_good_phy": {
+            "16": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "17": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "18": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            },
+            "19": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "16": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "17": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "18": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            },
+            "19": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 16,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2604253,
+              "rate_stbc": false,
+              "front_time_raw_format0": 85238,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 17,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2633090,
+              "rate_stbc": false,
+              "front_time_raw_format0": 86140,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 18,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2663663,
+              "rate_stbc": false,
+              "front_time_raw_format0": 87095,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 19,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2693978,
+              "rate_stbc": false,
+              "front_time_raw_format0": 88042,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 20
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        }
+      ],
+      "start_request_hex": "0000000000005800000100000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "max_submissions": 12,
+      "verified": {
+        "code": [
+          {
+            "name": "uni49",
+            "address": "0xe00353cc",
+            "bytes": 368,
+            "sha256": "ced1a52cf18d311433439a323a0275b5a29d3b972d1a1ad3e38fce4f6be88a2c",
+            "matches": true
+          },
+          {
+            "name": "state_machine",
+            "address": "0xe0073f60",
+            "bytes": 584,
+            "sha256": "afa0e98e90fa49f45e2fdd98f6121e4f545890a9bfd1039918b90a657cc58a57",
+            "matches": true
+          },
+          {
+            "name": "rom_controls",
+            "address": "0x836df4",
+            "bytes": 320,
+            "sha256": "08762c5fdac8a909f95a69572ed7f6cbfddeb4f6bf1d362b55d32be73d16c24b",
+            "matches": true
+          },
+          {
+            "name": "prerequisite_mapper",
+            "address": "0x82f880",
+            "bytes": 256,
+            "sha256": "6bc71096f1f5bc0342c5bff05f8babf575f55fa7f8feebe71c552e6da9165463",
+            "matches": true
+          },
+          {
+            "name": "capture_mapper",
+            "address": "0x836cdc",
+            "bytes": 256,
+            "sha256": "e39a812426dcb3b99e4f39bc554bfb028bb23f865e90248bd37914d71e7542e3",
+            "matches": true
+          },
+          {
+            "name": "instruction_table",
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true
+          }
+        ],
+        "metadata": {
+          "0x221c07c": "0x49",
+          "0x221c080": "0xe00353cc",
+          "0x22113c4": "0x2210504",
+          "0x2210504": "0x82f882",
+          "0x84ce80": "0x84d1f4",
+          "0x84ce84": "0x50000",
+          "0x84d1f8": "0x1b1b1c1c",
+          "0x22114f8": "0x22105ec",
+          "0x22114fc": "0x22105ec",
+          "0x22105ec": "0x836cdc",
+          "0x84f0f8": "0x84f178",
+          "0x84f0fc": "0xd0090",
+          "0x84f188": "0x8080a0a",
+          "0x84f18c": "0x1010302",
+          "0x829670": "0x836df4",
+          "0x82969c": "0x836ece",
+          "0x8296a0": "0x836ee0"
+        }
+      },
+      "tmac_rom_sha256": "ca0bb92e18743eeec55509b70149ecbe93454342cc80700aa62d9e32982f6b0b",
+      "tmac_metadata": {
+        "0x84c26c": "0x84c810",
+        "0x84c270": "0x70120",
+        "0x84c810": "0x8080000",
+        "0x829d68": "0x82e282",
+        "0x829d6c": "0x82e29c"
+      },
+      "original_masks": {
+        "0x820e4120": 0,
+        "0x820e705c": 0
+      },
+      "sequence_base": 8,
+      "power_differential": false,
+      "rate_pattern": "fixed",
+      "coding_pattern": "he-ldpc",
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored": {
+        "0x820e4120": true,
+        "0x820e705c": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T21:22:51.737346+00:00",
+      "phases": [
+        {
+          "elapsed_seconds": 0.40195041708648205,
+          "attempts": 396,
+          "submitted_sequences": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "exact_good_sequences": [
+            0
+          ],
+          "exact_good_phy": {
+            "0": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "0": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "1": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            },
+            "2": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "3": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 0,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 1933899,
+              "rate_stbc": false,
+              "front_time_raw_format0": 64587,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 1,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 1963103,
+              "rate_stbc": false,
+              "front_time_raw_format0": 65500,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 2,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 1992127,
+              "rate_stbc": false,
+              "front_time_raw_format0": 66407,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 3,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 5,
+              "timestamp_raw": 2022177,
+              "rate_stbc": false,
+              "front_time_raw_format0": 67346,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 63
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        },
+        {
+          "elapsed_seconds": 0.4002205419819802,
+          "attempts": 279,
+          "submitted_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_sequences": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "exact_good_phy": {
+            "4": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "5": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            },
+            "6": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "7": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "4": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "5": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            },
+            "6": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "7": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 4,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2340624,
+              "rate_stbc": false,
+              "front_time_raw_format0": 77297,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 5,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2371052,
+              "rate_stbc": false,
+              "front_time_raw_format0": 78248,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 6,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2403759,
+              "rate_stbc": false,
+              "front_time_raw_format0": 79270,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 7,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2439014,
+              "rate_stbc": false,
+              "front_time_raw_format0": 80372,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": true,
+            "association": "temporal, not decoded identity",
+            "sequence_candidates": [
+              {
+                "offset": 124,
+                "shift": 20,
+                "bits": 12
+              },
+              {
+                "offset": 272,
+                "shift": 0,
+                "bits": 12
+              }
+            ],
+            "length_candidates": [],
+            "clock_candidates": [],
+            "relative_clock_candidates": [
+              {
+                "offset": 20,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "offset": 84,
+                "relative_minus_txs": [
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "power_candidates": [],
+            "rate_candidates": [],
+            "independent_phy_bit_candidates": [
+              {
+                "field": "ldpc",
+                "offset": 16,
+                "shift": 9,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 48,
+                "shift": 1,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 48,
+                "shift": 3,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 48,
+                "shift": 6,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 48,
+                "shift": 12,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 48,
+                "shift": 18,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 52,
+                "shift": 22,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 52,
+                "shift": 26,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 80,
+                "shift": 9,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 88,
+                "shift": 7,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 96,
+                "shift": 7,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 124,
+                "shift": 20,
+                "bits": 1
+              },
+              {
+                "field": "ldpc",
+                "offset": 272,
+                "shift": 0,
+                "bits": 1
+              }
+            ]
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [
+            {
+              "sequence": 4,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 49,
+              "offset96_u16": 78,
+              "offset88_low14": 0,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 1
+              },
+              "source_txv1_at36_hypothesis": {
+                "gi": 0
+              }
+            },
+            {
+              "sequence": 5,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 4187,
+              "offset96_u16": 202,
+              "offset88_low14": 128,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 1,
+                "nsts_raw": 1
+              },
+              "source_txv1_at36_hypothesis": {
+                "gi": 0
+              }
+            },
+            {
+              "sequence": 6,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 65,
+              "offset48_u16": 49,
+              "offset96_u16": 78,
+              "offset88_low14": 0,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 1
+              },
+              "source_txv1_at36_hypothesis": {
+                "gi": 0
+              }
+            },
+            {
+              "sequence": 7,
+              "pairing": "two candidate sequence copies, length not required",
+              "frame_bytes_without_fcs": 193,
+              "offset48_u16": 4187,
+              "offset96_u16": 202,
+              "offset88_low14": 128,
+              "offset24_bits23_16": 36,
+              "source_txv_at24_hypothesis": {
+                "mode": 8,
+                "bandwidth_code": 0,
+                "stbc": 0,
+                "power_raw": 36,
+                "spatial_index": 0,
+                "gi": 0,
+                "rate_index": 0,
+                "ldpc": 0,
+                "nsts_raw": 0
+              },
+              "source_txv2_at88_hypothesis": {
+                "rate_index": 0,
+                "ldpc": 1,
+                "nsts_raw": 1
+              },
+              "source_txv1_at36_hypothesis": {
+                "gi": 0
+              }
+            }
+          ],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 19
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            },
+            {
+              "endpoint": 132,
+              "type": 12,
+              "count": 4
+            }
+          ],
+          "aggregate_shapes": [
+            {
+              "endpoint": 132,
+              "type": 12,
+              "bytes": 288,
+              "frame_count": 2,
+              "count": 4
+            }
+          ],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": true,
+          "masks_after": {
+            "0x820e4120": 1,
+            "0x820e705c": 16777216
+          }
+        },
+        {
+          "elapsed_seconds": 0.4036164579447359,
+          "attempts": 270,
+          "submitted_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_sequences": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "exact_good_phy": {
+            "8": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "9": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            },
+            "10": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": false,
+              "stbc": false
+            },
+            "11": {
+              "mode_name": "HE-SU",
+              "mcs": 0,
+              "nss": 2,
+              "bw_mhz": 20,
+              "gi": 0,
+              "ldpc": true,
+              "stbc": false
+            }
+          },
+          "programmed_coding": {
+            "8": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "9": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            },
+            "10": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 0
+            },
+            "11": {
+              "code": 1536,
+              "gi": 0,
+              "ltf": 1,
+              "ldpc": 1
+            }
+          },
+          "tx_status": [
+            {
+              "sequence": 8,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 3,
+              "timestamp_raw": 2748774,
+              "rate_stbc": false,
+              "front_time_raw_format0": 90052,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 9,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2780386,
+              "rate_stbc": false,
+              "front_time_raw_format0": 91039,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 10,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 4,
+              "timestamp_raw": 2808791,
+              "rate_stbc": false,
+              "front_time_raw_format0": 91927,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            },
+            {
+              "sequence": 11,
+              "format": 0,
+              "rate_raw": 1536,
+              "power_raw": 36,
+              "ack_error_bits": 0,
+              "error_bits_16_22": 0,
+              "tx_count_format0": 1,
+              "pid": 3,
+              "bandwidth_raw": 0,
+              "tx_delay_raw": 6,
+              "timestamp_raw": 2841162,
+              "rate_stbc": false,
+              "front_time_raw_format0": 92939,
+              "mpdu_counters_format1_hypothesis": null,
+              "format1_words5_7_raw": null
+            }
+          ],
+          "own_exact_matches_in_ics": [],
+          "differential_hypotheses": {
+            "qualified_temporal_pairing": false
+          },
+          "known_frame_field_matches": [],
+          "known_sequence_field_observations": [],
+          "leading_packet_types": [
+            {
+              "endpoint": 132,
+              "type": 0,
+              "count": 4
+            },
+            {
+              "endpoint": 132,
+              "type": 2,
+              "count": 18
+            },
+            {
+              "endpoint": 132,
+              "type": 7,
+              "count": 1
+            }
+          ],
+          "aggregate_shapes": [],
+          "invalid_aggregate_lengths": 0,
+          "acknowledgments": [
+            {
+              "cid": 73,
+              "status": 0
+            }
+          ],
+          "ics_enabled": false,
+          "masks_after": {
+            "0x820e4120": 0,
+            "0x820e705c": 0
+          }
+        }
+      ],
+      "start_request_hex": "0000000000005800000100000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "max_submissions": 12,
+      "verified": {
+        "code": [
+          {
+            "name": "uni49",
+            "address": "0xe00353cc",
+            "bytes": 368,
+            "sha256": "ced1a52cf18d311433439a323a0275b5a29d3b972d1a1ad3e38fce4f6be88a2c",
+            "matches": true
+          },
+          {
+            "name": "state_machine",
+            "address": "0xe0073f60",
+            "bytes": 584,
+            "sha256": "afa0e98e90fa49f45e2fdd98f6121e4f545890a9bfd1039918b90a657cc58a57",
+            "matches": true
+          },
+          {
+            "name": "rom_controls",
+            "address": "0x836df4",
+            "bytes": 320,
+            "sha256": "08762c5fdac8a909f95a69572ed7f6cbfddeb4f6bf1d362b55d32be73d16c24b",
+            "matches": true
+          },
+          {
+            "name": "prerequisite_mapper",
+            "address": "0x82f880",
+            "bytes": 256,
+            "sha256": "6bc71096f1f5bc0342c5bff05f8babf575f55fa7f8feebe71c552e6da9165463",
+            "matches": true
+          },
+          {
+            "name": "capture_mapper",
+            "address": "0x836cdc",
+            "bytes": 256,
+            "sha256": "e39a812426dcb3b99e4f39bc554bfb028bb23f865e90248bd37914d71e7542e3",
+            "matches": true
+          },
+          {
+            "name": "instruction_table",
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true
+          }
+        ],
+        "metadata": {
+          "0x221c07c": "0x49",
+          "0x221c080": "0xe00353cc",
+          "0x22113c4": "0x2210504",
+          "0x2210504": "0x82f882",
+          "0x84ce80": "0x84d1f4",
+          "0x84ce84": "0x50000",
+          "0x84d1f8": "0x1b1b1c1c",
+          "0x22114f8": "0x22105ec",
+          "0x22114fc": "0x22105ec",
+          "0x22105ec": "0x836cdc",
+          "0x84f0f8": "0x84f178",
+          "0x84f0fc": "0xd0090",
+          "0x84f188": "0x8080a0a",
+          "0x84f18c": "0x1010302",
+          "0x829670": "0x836df4",
+          "0x82969c": "0x836ece",
+          "0x8296a0": "0x836ee0"
+        }
+      },
+      "tmac_rom_sha256": "ca0bb92e18743eeec55509b70149ecbe93454342cc80700aa62d9e32982f6b0b",
+      "tmac_metadata": {
+        "0x84c26c": "0x84c810",
+        "0x84c270": "0x70120",
+        "0x84c810": "0x8080000",
+        "0x829d68": "0x82e282",
+        "0x829d6c": "0x82e29c"
+      },
+      "original_masks": {
+        "0x820e4120": 0,
+        "0x820e705c": 0
+      },
+      "sequence_base": 0,
+      "power_differential": false,
+      "rate_pattern": "fixed",
+      "coding_pattern": "he-ldpc-alternating",
+      "alive_after": [
+        true,
+        true
+      ],
+      "restored": {
+        "0x820e4120": true,
+        "0x820e705c": true
+      },
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic own-frame metadata only; opaque diagnostic bytes never exported",
+    "Five off/on/off runs, at most twelve submissions each",
+    "Differential bit matches are hypotheses; source masks and changed patterns narrow them",
+    "Incomplete independent receptions retained; not a general ICS decoder or calibrated airtime"
+  ]
+}
