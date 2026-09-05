@@ -2,8 +2,8 @@
 
 Sprint selected and implemented 2026-09-04: C acquisition parity (R30). Items come from
 [ROADMAP.md](ROADMAP.md); check off only against the stated evidence. This is the
-completion record on `feat/c-acquisition-parity`, not a claim of a main-branch
-merge or a new release. [Dated acceptance evidence](docs/TESTING.md#native-c-acquisition-parity-2026-09-04)
+completion record for the work merged into `main`, not a new release.
+[Dated acceptance evidence](docs/TESTING.md#native-c-acquisition-parity-2026-09-04)
 records 554 offline tests, live checks on both dongles, and the explicit limits.
 
 ## C parity sprint (R30)

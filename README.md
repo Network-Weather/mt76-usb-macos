@@ -60,7 +60,7 @@ This project does not try to expose a CoreWLAN or BSD network interface. For pas
 capture, libusb access to the otherwise-unclaimed device is enough.
 
 [C acquisition parity](docs/C_PARITY.md) with the recent Python research is implemented
-and qualified on the feature branch; see [dated evidence](docs/TESTING.md#native-c-acquisition-parity-2026-09-04).
+and qualified on `main`; see [dated evidence](docs/TESTING.md#native-c-acquisition-parity-2026-09-04).
 A future iPad survey spike is deferred in [ROADMAP.md](ROADMAP.md);
 proper networking-driver and baseline-connectivity work are explicitly out of scope.
 
