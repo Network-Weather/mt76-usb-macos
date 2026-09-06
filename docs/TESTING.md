@@ -60,6 +60,19 @@ cause in this experiment. The exact cause/onset remains unknown; this is not
 proof of a new API regression, firmware bug or permanent hardware damage.
 Cold-power/physical recovery and healthy old-radio RF acceptance remain open.
 
+A review of the saved [histogram-guard records](../research/evidence/r32-histogram-guard-2026-09-06.json)
+narrows the observed sequence without identifying a cause. Python channel6,
+channel36 and cancellation runs received144,13 and19 frames; the native channel6
+run then received131, including53 in its third histogram window. The native
+channel36 run recorded zero, and the native channel6 cancellation run already
+had zero in its250ms baseline before histogram activation or cancellation.
+That short baseline alone cannot prove sustained silence, but its zero cannot
+be caused by that run's later cancellation. The subsequent164.5s soak establishes
+the sustained failure. Importantly, these histogram probes check a register
+after cleanup firmware reload, not post-reload RF reception; `reload_alive` is
+not a receiver-health result. No per-frame chronology or proven cold-reset
+boundary identifies the exact transition or rules out earlier retained state.
+
 A later [port-3-only software power-cycle attempt](../research/evidence/r32-old-radio-port-cycle-2026-09-06.json)
 did not recover reception. Read-only topology/BOS checks matched the USB2/USB3
 companion hubs and their individual-port switching descriptors; the selected

@@ -133,6 +133,13 @@ The older dongle remains bin0-only and weak/intermittent on5GHz: its new Python3
 run receives13 total frames, native36 zero. Cancellation is a recovery check,
 not proof of healthy RF reception during its short baseline.
 
+Here `reload_alive` means firmware bring-up completed and a register-health
+check succeeded, not that post-reload capture was tested. The old-radio native
+channel6 run received131 frames, but a later channel6 cancellation baseline was
+already silent before activation. Subsequent long and unchanged-main controls
+confirm sustained old-radio RF silence; its cause remains unresolved. These
+short guard results do not override that [current RF acceptance failure](TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06).
+
 Included candidate: narrowly experimental raw histograms on these pinned profiles,
 with coverage/cadence/calibration unavailable. Longer-session acceptance and
 combined-feature qualification remain separate. Earlier firmware traces, channel
