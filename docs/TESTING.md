@@ -72,23 +72,35 @@ cold firmware reset. [uhubctl documents that distinction](https://github.com/mvp
 No shared hub reset, other port-power control, physical voltage measurement or
 further power-cycle experiment was performed.
 
+A subsequent [unchanged-main control](../research/evidence/r32-old-radio-main-control-2026-09-06.json)
+uses clean `main` at `7eb35d1`, then the feature branch at `e12fa53`, with the
+same passive smoke script and pinned firmware. Both fresh bringups receive zero
+USB transfers/frames on channels1/6/11 (5s each), with57 timeouts, no USB errors
+and exit2/inconclusive. This makes an actively executing R32-only driver or
+decoder regression less likely: the failure also occurs without those changes,
+before frame decoding. It does not rule out persistent state left by earlier
+experiments, since both runs use the same already-affected unit without a proven
+cold power reset. Old-radio acceptance remains open.
+
 The A9000's first native soak was interrupted solely for that coexistence control
 at508.316s:59,095 frames,16 retunes,50 counter rounds, no software drops/USB errors,
 roughly13.1MB current resident memory. It is not a two-hour pass. A fresh native
 two-hour run followed by Python two hours started2026-09-06T21:26:07UTC, using
-channels1/11,30s retunes,10s named-counter/thermal polls. Results are pending.
+channels1/11,30s retunes,10s named-counter/thermal polls. The native process
+exited0 at23:26:09UTC; Python then started and remains running. Final aggregate
+review and qualification decisions are pending, not inferred from exit status.
 
-Before the queued Python run starts, its probe gained the same conservative
+Before the queued Python run started, its probe gained the same conservative
 timestamp wrap/backstep/ambiguous-gap diagnostics as native, with eleven shared
 synthetic cases and an emitted probe-source SHA-256. No running native executable
 was replaced. The supervisor's original `base_commit` records its launch-plan
 snapshot; the Python probe hash identifies the actual later script. Final
 evidence must distinguish these revisions rather than attribute both runs to
 the supervisor's original commit. Unknown Python first/last timestamps are null.
-The prepared Python probe hash is
+The Python probe hash is
 `3d2f87310040b2ca2e1dbc72e6ecf33633866f7ed99f5a81f2194b47598fffe5`;
-the full offline suite now passes 2,025 tests. This is preparation evidence,
-not a result from the not-yet-started Python soak.
+the full offline suite at that instrumentation checkpoint passed 2,025 tests.
+The diagnostic fixtures are preparation evidence, not a completed Python soak.
 
 ## R32 histogram acquisition parity, 2026-09-06
 
