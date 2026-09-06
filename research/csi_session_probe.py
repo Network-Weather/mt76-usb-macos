@@ -25,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import mt7921u as m
 from mt76_csi import CsiAction, build_csi_request, parse_beacon_csi, parse_csi_ack
+from mt76_csi_session import BeaconCsiCapture
 from mt76_measurements import Counter, read_counters, read_thermal
 from mt76_session import AcquisitionSession
 
@@ -41,9 +42,10 @@ def send(dev, action, **kwargs):
 class Window:
     """Transient private selection state; export counts only."""
 
-    def __init__(self, selected=None, receivers=2, cutoff_ns=0, stopped=False):
+    def __init__(self, selected=None, receivers=2, cutoff_ns=0, stopped=False, capture=None):
         self.selected, self.receivers, self.cutoff_ns = selected, receivers, cutoff_ns
         self.stopped = stopped
+        self.capture = capture
         self.counts = collections.Counter()
         self.beacons = collections.Counter()
         self.sources = collections.Counter()
@@ -86,6 +88,12 @@ class Window:
         if report.rx_index >= self.receivers:
             self.counts["receiver_discarded"] += 1
             return
+        if self.capture is not None:
+            report = self.capture.accept(packet)
+            if report is None:
+                self.counts["capture_discarded"] += 1
+                return
+            self.counts["public_helper_accepted"] += 1
         self.counts["accepted_reports"] += 1
         self.sources[report.transmitter] += 1
         self.rx_indices[report.rx_index] += 1
@@ -127,6 +135,7 @@ def main(argv=None):
         "windows": [],
     }
     session = None
+    capture = None
     with m.open_device("0846:9072") as dev:
         images = m.load_firmware(dev.CHIP, args.fw)
         result["firmware_sha256"] = [hashlib.sha256(image).hexdigest() for image in images]
@@ -194,22 +203,32 @@ def main(argv=None):
             elif not stopping:
                 selected = max(eligible, key=baseline.sources.__getitem__)
                 for cycle in range(2):
-                    command(CsiAction.STOP)
-                    command(CsiAction.BEACON_SELECTOR)
-                    command(CsiAction.START)
-                    if args.receiver_order == "before-filter":
-                        command(CsiAction.RECEIVER_COUNT, receivers=1)
-                    command(CsiAction.ADD_TRANSMITTER, transmitter=selected)
+                    if stopping:
+                        break
                     if args.receiver_order == "after-filter":
+                        capture = BeaconCsiCapture(session, selected, receivers=1)
+                        capture.start()
+                        cutoff = capture.configured_ns
+                        print(json.dumps({"event": "capture_started", "cycle": cycle}), flush=True)
+                    else:
+                        command(CsiAction.STOP)
+                        command(CsiAction.BEACON_SELECTOR)
+                        command(CsiAction.START)
                         command(CsiAction.RECEIVER_COUNT, receivers=1)
-                    cutoff = time.monotonic_ns()
+                        command(CsiAction.ADD_TRANSMITTER, transmitter=selected)
+                        cutoff = time.monotonic_ns()
                     if args.stall_ms:
                         time.sleep(
                             args.stall_ms / 1000
                         )  # Deliberate bounded consumer-overflow test.
-                    collect(f"filtered_restart_{cycle}", Window(selected, 1, cutoff))
-                    command(CsiAction.REMOVE_TRANSMITTER, transmitter=selected)
-                    command(CsiAction.STOP)
+                    collect(
+                        f"filtered_restart_{cycle}", Window(selected, 1, cutoff, capture=capture)
+                    )
+                    if capture is not None:
+                        capture.stop()
+                    else:
+                        command(CsiAction.REMOVE_TRANSMITTER, transmitter=selected)
+                        command(CsiAction.STOP)
                     collect(f"stopped_{cycle}", Window(stopped=True), 0.5)
                     if stopping:
                         break
@@ -220,6 +239,16 @@ def main(argv=None):
         except Exception as exc:
             result["error_type"] = type(exc).__name__
         finally:
+            if capture is not None:
+                try:
+                    capture.stop()
+                except Exception as exc:
+                    result["capture_stop_error_type"] = type(exc).__name__
+                result["capture"] = {
+                    "active": capture.active,
+                    "ready": capture.ready,
+                    "needs_reload": capture.needs_reload,
+                }
             if session is not None:
                 session.stop(timeout=4)  # Never reload while the worker still owns USB.
                 result["session"] = session.snapshot()
@@ -233,6 +262,7 @@ def main(argv=None):
     result["exit_code"] = (
         1
         if "error_type" in result
+        or "capture_stop_error_type" in result
         or "cleanup_stop_error_type" in result
         or not result["cleanup_reload_alive"]
         else 130

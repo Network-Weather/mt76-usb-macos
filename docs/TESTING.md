@@ -4,6 +4,23 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 CSI lifetime integration, 2026-09-06
+
+All1,963 tests pass, including real Python/native session workers with synthetic
+write/ACK-shape/status faults at every start command and STOP, epoch/generation
+and channel invalidation, stale packets, fail-closed acceptance and restart.
+Native tests, ASan/UBSan and the new CSI lifetime ThreadSanitizer harness pass.
+The wheel imports outside the checkout and the source archive contains the new
+native implementation/tests. Build used installed dependencies after isolated
+dependency fetching failed under restricted network access.
+
+[Public-helper evidence](../research/evidence/r32-csi-lifetime-2026-09-06.json)
+retains normal, one-event overflow and SIGTERM-after-start runs in both languages.
+Python normal cycles accepted17/20 reports; native18/20. Forced event queues
+dropped98/99 events respectively, with no USB errors or normal-frame queue loss.
+All six runs acknowledged cleanup STOP and reloaded; capture acceptance was off
+at cleanup. This does not close multi-hour, unplug, sleep/wake or calibration gates.
+
 ## R32 CSI wire parity and session gate, 2026-09-06
 
 All1,914 Python tests pass, including shared Python/C CSI requests, ACK status,
@@ -11,7 +28,7 @@ strict version/profile parsing, every truncation, unsupported shapes, native
 output preservation and CLI refusal tests. Native builds/tests and ASan/UBSan
 also pass. [CSI contract](CSI_API.md) and [dated evidence](../research/evidence/r32-csi-session-2026-09-06.json)
 retain six short coexistence/ordering/overflow runs plus two active-CSI SIGTERM
-checks. Public streaming lifetime helpers are not yet promoted.
+checks. This earlier checkpoint predates the lifetime integration above.
 
 Both implementations complete routine counter/thermal queries while receiving
 normal frames and filtered CSI. Count1 before ADD produces both receiver indices;

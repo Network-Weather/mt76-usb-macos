@@ -1,15 +1,17 @@
 # Experimental CSI primitives and session gate (R32)
 
 Implemented on `feat/measurement-api`, not released. `mt76_csi.py` and
-`c/mt76_csi.h` expose matching **pure wire primitives**, not yet a public streaming
-lifecycle. Hardware/session orchestration currently lives in the bounded research
-and native probes below. Do not mistake an accepted command for usable CSI data.
+`c/mt76_csi.h` expose matching pure wire primitives. `mt76_csi_session.py` and
+`c/mt76_csi_session.h` add an opt-in session-bound configuration/acceptance lifetime.
+The acquisition session still owns USB and queues; these helpers do not create a
+second reader. Do not mistake an accepted command for usable CSI data.
 
 | Python | C | Contract |
 | --- | --- | --- |
 | `CsiAction`, `build_csi_request` | `MT_CSI_*`, `mt_csi_request` | MT7925 band0 STOP, START, beacon selector, receiver-count1/2, single-transmitter add/remove; no arbitrary commands or masks |
 | `parse_csi_ack` | `mt_csi_ack` | Exact EID1/sequence/UNI4a status envelope; return the actual status, never silently treat rejection as success |
 | `parse_beacon_csi` / `BeaconCsiReport` | `mt_beacon_csi_parse` / `mt_beacon_csi_report_t` | EID4a/sequence0, complete DMA and TLVs, version22,64 signed I/Q pairs, receiver0/1, transmitter index0; unchanged native output on error |
+| `BeaconCsiCapture.start/accept/stop` | `mt_csi_capture_start/accept/stop` | One selected transmitter, pinned channel36/20MHz session; ordered checked commands, host cutoff/epoch/generation/source/index filters, fail-closed acceptance |
 
 The selected report profile requires band/CBW/DBW/segment/remain0 and OFDM6
 receive metadata. Unknown versions, wider/segmented formats, truncated arrays,
@@ -28,6 +30,39 @@ timer, approximately1us, not over-air TSF, RXD timestamp or arrival time.
 No pair assembly, calibration, clock synchronization or ranging is implemented.
 Matching structure alone cannot establish frame subtype or sensor freshness:
 the caller also needs the qualified mode, channel, firmware, epoch and filtering.
+
+## Session-bound lifetime
+
+Construct `BeaconCsiCapture(session, selected_transmitter, receivers=1)` with a
+nonzero unicast six-byte address selected by the application. Call `start()`,
+route the session's event packets through `accept(packet)`, and call `stop()` in
+cleanup before stopping the session. `accept` returns an owned report or `None`
+for filtered/non-CSI packets. Invalid reports raise `ValueError`; invalid session,
+epoch or retune context raises `CsiCaptureError` and clears readiness.
+
+Native callers zero-initialize `mt_csi_capture_t`, call
+`mt_csi_capture_start(session, &capture, transmitter, receivers)`, route event
+packets through `mt_csi_capture_accept`, and call `mt_csi_capture_stop` before
+destroying the session. Accept returns0 for a report,1 for filtered/not-ready,
+and−1 for invalid arguments, report or context; output stays unchanged on nonzero.
+Start/stop return0 on success and nonzero on failure.
+
+Use **one CSI controller per device**, serialize all capture methods on one
+control thread, and keep the session alive until capture cleanup completes.
+These are caller obligations, not a cross-controller exclusivity lock. Do not
+mix out-of-band CSI commands/retunes or invoke start/stop inside a session callback.
+All start parameters and channel/chip support are checked before configuration.
+Readiness is published only after the worker's callback/deadline checks pass.
+
+Once configuration begins, `active` and `needs_reload` become true even if a
+command subsequently fails. STOP clears `ready` immediately, and clears `active`
+only after its ACK succeeds. `needs_reload` deliberately remains true: STOP is
+not full restoration. After stopping the worker, explicitly reload firmware
+before resuming unrelated experiments; create fresh session/capture objects after
+reload. Never close/reload the device while a failed stop leaves the USB worker
+running. Preserve session queue-loss counters and distinguish queued-at-destroy
+records from delivered data. Host receive time filters already received packets;
+it cannot prove the sampling time or freshness of firmware-buffered coefficients.
 
 ## New control-order requirement
 
@@ -78,11 +113,13 @@ Python /101 native events; neither lost normal-frame queue data or failed USB.
 The Python overflow run used the earlier before-filter ordering, while the native
 overflow run used after-filter, so those counts are not a like-for-like comparison.
 
-Remaining gate: extract matching public session-bound start/accept/stop ownership
-helpers, test failures at every lifecycle stage and epoch/retune rejection, then
-perform the selected longer-session acceptance work. Current wire parity and
-short coexistence evidence do not establish a released streaming API, multi-hour
-stability, calibrated CSI or broader RF configurations.
+The default after-filter path now uses the public lifetime helpers. Shared
+failure tests inject write, ACK-shape and rejected-status faults at each of the
+five start commands and STOP, plus stale packets, retune/session invalidation and
+fresh restart. [Lifetime evidence](../research/evidence/r32-csi-lifetime-2026-09-06.json)
+records normal/overflow/active-capture cancellation in both implementations.
+Longer-session acceptance remains open: these tests do not establish a released
+streaming API, multi-hour stability, calibrated CSI or broader RF configurations.
 
 Active-CSI SIGTERM checks passed in both probes: exit130, explicit STOP ACK and
 normal firmware reload. Native cancellation recorded11 frame/2 event records

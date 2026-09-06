@@ -12,8 +12,10 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
   bounds and narrow band0 beacon/20MHz profile. Stale CCK layouts are rejected.
   Python/C session probes demonstrate capture/query coexistence and visible
   event overflow, and reproduce a new ordering requirement: add the transmitter
-  filter before the final receiver-count command. Public streaming lifetime
-  helpers and longer qualification remain gated; see [CSI API status](docs/CSI_API.md).
+  filter before the final receiver-count command. Matching session-bound
+  start/accept/stop helpers enforce host epoch/generation/source/index checks,
+  fail closed on configuration faults and keep firmware-reload requirements
+  explicit. Longer qualification remains gated; see [CSI API status](docs/CSI_API.md).
 - Strict installed Python/native TX-status decoding with MT7925 raw timestamp,
   delay, bandwidth and STBC, format0-only front-time/TX count and explicit tick
   scale availability. Research readers reuse the bounded parser;12 live status

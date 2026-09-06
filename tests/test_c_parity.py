@@ -29,6 +29,9 @@ def native(tmp_path_factory):
     out = tmp_path_factory.mktemp("c-parity") / "parity.dylib"
     sources = [
         "mt76_csi.c",
+        "mt76_csi_session.c",
+        "mt76_session.c",
+        "test_csi_session.c",
         "mt7921_rxd.c",
         "mt7921_rxd_connac3.c",
         "mt7921_chip.c",
@@ -45,6 +48,8 @@ def native(tmp_path_factory):
             "-Wextra",
             "-Werror",
             "-dynamiclib",
+            "-DMT_CSI_NO_MAIN",
+            "-pthread",
             "-I",
             str(ROOT / "c"),
             str(ROOT / "tests/c_parity_bridge.c"),
@@ -112,6 +117,19 @@ class CounterDescriptor(ct.Structure):
         ("tick_ns", ct.c_uint),
         ("hardware_saturates", ct.c_bool),
     ]
+
+
+@pytest.mark.parametrize("stage", range(7))
+@pytest.mark.parametrize("mode", range(3))
+def test_native_csi_capture_stage_faults(native, stage, mode):
+    native.csi_capture_test.argtypes = [ct.c_uint, ct.c_uint, ct.c_uint]
+    assert native.csi_capture_test(stage, mode, 0) == 0
+
+
+@pytest.mark.parametrize("change", range(1, 6))
+def test_native_csi_capture_context_and_unsupported(native, change):
+    native.csi_capture_test.argtypes = [ct.c_uint, ct.c_uint, ct.c_uint]
+    assert native.csi_capture_test(0, 0, change) == 0
 
 
 class CsiReport(ct.Structure):
@@ -702,6 +720,7 @@ def build_probe(tmp_path_factory, source):
         source,
         "mt76_session.c",
         "mt76_csi.c",
+        "mt76_csi_session.c",
         "mt7921_radio.c",
         "mt7921_dev.c",
         "mt7921_mcu.c",

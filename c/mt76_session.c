@@ -306,6 +306,7 @@ void mt_session_snapshot(mt76_session_t *s, mt_session_stats_t *out) {
     if (!s || !out) return;
     pthread_mutex_lock(&s->lock); *out = s->stats; pthread_mutex_unlock(&s->lock);
 }
+int mt_session_chip(const mt76_session_t *s) { return s ? s->dev->usb.chip : -1; }
 int mt_session_stop(mt76_session_t *s, uint32_t timeout_ms) {
     if (!s) return -1;
     uint64_t end = now_ns() + (uint64_t)timeout_ms * 1000000;

@@ -47,6 +47,8 @@ int mt_session_call(mt76_session_t *s, int (*operation)(mt7921_dev_t *, void *),
 int mt_session_read(mt76_session_t *s, mt_session_packet_t *out, bool events,
                     uint32_t timeout_ms);
 void mt_session_snapshot(mt76_session_t *s, mt_session_stats_t *out);
+/* Immutable chip identity during session lifetime; -1 for NULL, no USB I/O. */
+int mt_session_chip(const mt76_session_t *s);
 /* Stop timeout leaves ownership attached. Retry later; do not free/close device.
  * Lifecycle calls (start/stop/destroy) must be serialized by the caller. */
 int mt_session_stop(mt76_session_t *s, uint32_t timeout_ms);

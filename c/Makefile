@@ -10,9 +10,12 @@ TEST_OBJS = test_rxd.o mt7921_rxd.o mt7921_rxd_connac3.o mt7921_mcu.o mt7921_usb
 SMOKE_OBJS += mt7921_radio.o mt76_csi.o
 TEST_OBJS += mt7921_radio.o mt76_csi.o
 
-all: mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_session
+all: mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_session test_csi_session
 
-mt76_csi_probe: mt76_csi_probe.o mt76_session.o $(filter-out mt7921_smoke.o,$(SMOKE_OBJS))
+test_csi_session: test_csi_session.o mt76_csi_session.o mt76_session.o $(filter-out mt7921_smoke.o,$(SMOKE_OBJS))
+	$(CC) $(CFLAGS) $(FRAMEWORKS) -pthread -o $@ $^
+
+mt76_csi_probe: mt76_csi_probe.o mt76_csi_session.o mt76_session.o $(filter-out mt7921_smoke.o,$(SMOKE_OBJS))
 	$(CC) $(CFLAGS) $(FRAMEWORKS) -pthread -o $@ $^
 
 mt76_session_probe: mt76_session_probe.o mt76_session.o $(filter-out mt7921_smoke.o,$(SMOKE_OBJS))
@@ -35,9 +38,10 @@ test_rxd: $(TEST_OBJS)
 
 -include $(wildcard *.d)
 
-test: test_rxd test_session
+test: test_rxd test_session test_csi_session
 	./test_rxd
 	./test_session
+	./test_csi_session
 
 sanitize:
 	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer -I. \
@@ -48,8 +52,12 @@ sanitize:
 		test_session.c mt76_session.c mt7921_mcu.c mt7921_dev.c mt7921_usb.c mt7921_chip.c \
 		$(FRAMEWORKS) -pthread -o test_session_sanitize
 	./test_session_sanitize
+	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer -I. \
+		test_csi_session.c mt76_csi_session.c mt76_csi.c mt76_session.c mt7921_mcu.c \
+		mt7921_dev.c mt7921_usb.c mt7921_chip.c $(FRAMEWORKS) -pthread -o test_csi_session_sanitize
+	./test_csi_session_sanitize
 
 clean:
-	rm -f *.o *.d mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_radio_sanitize test_session test_session_sanitize
+	rm -f *.o *.d mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_radio_sanitize test_session test_session_sanitize test_csi_session test_csi_session_sanitize
 
 .PHONY: all test sanitize clean

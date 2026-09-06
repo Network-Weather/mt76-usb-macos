@@ -8,10 +8,11 @@ remaining research, Python/C integration and acceptance gates.
 
 Execution order: sessions and raw named counters first (implemented below), then
 thermal, normal Group5 signal/TX-status timing, CSI, histograms, and final release
-qualification. Current next implementation slice is the separately gated beacon CSI API. Group5
+qualification. Current next research/integration slice is raw histograms. Group5
 raw decoding/guard is implemented; live enabled-phase reliability remains gated.
-CSI wire/parser parity and short native/Python coexistence/overflow/cancellation
-are now implemented; next extract its public session-bound lifetime helpers.
+CSI wire/parser and public session-bound lifetime parity are implemented, with
+stage-fault tests and short native/Python coexistence/overflow/cancellation evidence.
+Longer acceptance remains open; CSI is narrow and explicitly experimental.
 
 - [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
   `feat/measurement-api` (not main); baseline offline checks pass.

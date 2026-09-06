@@ -2,6 +2,7 @@
 /* Bounded native CSI/session qualification, not a public streaming interface.
  * Passive channel36/20MHz only; all identifiers/IQ/digests stay in memory. */
 #include "mt76_csi.h"
+#include "mt76_csi_session.h"
 #include "mt76_session.h"
 #include "mt7921_radio.h"
 #include "mt7921_rxd.h"
@@ -42,6 +43,8 @@ typedef struct {
     bool stopped;
     const uint8_t *selected;
     unsigned receivers;
+    mt_csi_capture_t *capture;
+    unsigned helper_accepted, capture_discarded;
     source_t sources[32];
     uint8_t iq_digest[512][CC_SHA256_DIGEST_LENGTH];
 } window_t;
@@ -72,6 +75,12 @@ static void event(window_t *w, const mt_session_packet_t *p) {
     if (p->received_ns < w->cutoff_ns) { w->preconfig++; return; }
     if (w->selected && memcmp(w->selected, report.transmitter, 6)) { w->unselected++; return; }
     if (report.rx_index >= w->receivers) { w->receiver_discarded++; return; }
+    if (w->capture) {
+        int rc = mt_csi_capture_accept(w->capture, p, &report);
+        if (rc < 0) { w->invalid++; return; }
+        if (rc) { w->capture_discarded++; return; }
+        w->helper_accepted++;
+    }
     w->accepted++; w->rx[report.rx_index]++;
     source_t *s = source(w, report.transmitter);
     if (s) s->reports++;
@@ -91,6 +100,7 @@ static int collect(mt76_session_t *s, const char *name, window_t *w, unsigned mi
     while (!stopping && mt_radio_monotonic_us() - start < milliseconds * UINT64_C(1000)) {
         mt_session_stats_t stats; mt_session_snapshot(s, &stats);
         if (stats.state != MT_SESSION_RUNNING) { result = -1; break; }
+        if (w->capture && !w->capture->ready) { result = -1; break; }
         if (mt_radio_monotonic_us() >= next_query) {
             if (mt_session_call(s, query, NULL, 3000, false)) { result = -1; break; }
             w->queries++; next_query = mt_radio_monotonic_us() + 250000;
@@ -108,10 +118,11 @@ static int collect(mt76_session_t *s, const char *name, window_t *w, unsigned mi
            "\"csi_reports\":%u,\"invalid_or_outside_profile\":%u,\"accepted_reports\":%u,"
            "\"preconfiguration_discarded\":%u,\"unselected_discarded\":%u,\"receiver_discarded\":%u,"
            "\"reports_after_stop\":%u,\"counter_thermal_pairs\":%u,\"rx0\":%u,\"rx1\":%u,"
-           "\"accepted_sources\":%u,\"iq_distinct\":%u,\"source_overflow\":%u,\"iq_overflow\":%u}\n",
+           "\"accepted_sources\":%u,\"iq_distinct\":%u,\"source_overflow\":%u,\"iq_overflow\":%u,"
+           "\"public_helper_accepted\":%u,\"capture_discarded\":%u}\n",
            name,w->frames,w->beacons,w->reports,w->invalid,w->accepted,w->preconfig,w->unselected,
            w->receiver_discarded,w->after_stop,w->queries,w->rx[0],w->rx[1],sources,w->iq_count,
-           w->source_overflow,w->iq_overflow);
+           w->source_overflow,w->iq_overflow,w->helper_accepted,w->capture_discarded);
     return result;
 }
 int main(int argc, char **argv) {
@@ -143,6 +154,7 @@ int main(int argc, char **argv) {
     setvbuf(stdout, NULL, _IOLBF, 0);
     int result = 1;
     mt76_session_t *s = NULL;
+    mt_csi_capture_t capture = {0};
     if (mt7921_bringup(&dev,patch,patch_len,ram,ram_len,quiet) || mt7921_set_monitor_mode(&dev) ||
         mt7921_set_sniffer(&dev,true,0) || mt7921_tune(&dev,"5GHz",36,36,20)) goto cleanup;
     s = mt_session_start(&dev,256,events);
@@ -162,13 +174,19 @@ int main(int argc, char **argv) {
     }
     if (!found) { puts("{\"event\":\"filter_gate\",\"reason\":\"no common CSI/beacon source\"}"); goto cleanup; }
     for (unsigned cycle=0; cycle<2 && !stopping; cycle++) {
-        if (command(s,MT_CSI_STOP,0,NULL) || command(s,MT_CSI_BEACON_SELECTOR,0,NULL) || command(s,MT_CSI_START,0,NULL) ||
-            (!after_filter && command(s,MT_CSI_RECEIVER_COUNT,1,NULL)) || command(s,MT_CSI_ADD_TRANSMITTER,0,selected) ||
-            (after_filter && command(s,MT_CSI_RECEIVER_COUNT,1,NULL))) goto cleanup;
+        if (after_filter) {
+            if (mt_csi_capture_start(s,&capture,selected,1)) goto cleanup;
+            printf("{\"event\":\"capture_started\",\"cycle\":%u}\n",cycle);
+        } else if (command(s,MT_CSI_STOP,0,NULL) || command(s,MT_CSI_BEACON_SELECTOR,0,NULL) || command(s,MT_CSI_START,0,NULL) ||
+                   command(s,MT_CSI_RECEIVER_COUNT,1,NULL) || command(s,MT_CSI_ADD_TRANSMITTER,0,selected)) goto cleanup;
         memset(&w,0,sizeof(w)); w.receivers=1; w.selected=selected; w.cutoff_ns=mt_radio_monotonic_us()*1000;
+        if (after_filter) { w.capture=&capture; w.cutoff_ns=capture.configured_ns; }
         if (stall_ms) usleep(stall_ms*1000);
         char name[32]; snprintf(name,sizeof(name),"filtered_restart_%u",cycle);
-        if (collect(s,name,&w,2000) || command(s,MT_CSI_REMOVE_TRANSMITTER,0,selected) || command(s,MT_CSI_STOP,0,NULL)) goto cleanup;
+        if (collect(s,name,&w,2000)) goto cleanup;
+        if (after_filter) {
+            if (mt_csi_capture_stop(&capture)) goto cleanup;
+        } else if (command(s,MT_CSI_REMOVE_TRANSMITTER,0,selected) || command(s,MT_CSI_STOP,0,NULL)) goto cleanup;
         memset(&w,0,sizeof(w)); w.stopped=true;
         snprintf(name,sizeof(name),"stopped_%u",cycle);
         if (collect(s,name,&w,500)) goto cleanup;
@@ -176,6 +194,9 @@ int main(int argc, char **argv) {
     if (command(s,MT_CSI_STOP,0,NULL)) goto cleanup;
     result=0;
 cleanup:
+    if (capture.active && mt_csi_capture_stop(&capture)) result=1;
+    printf("{\"event\":\"capture\",\"active\":%s,\"ready\":%s,\"needs_reload\":%s}\n",
+           capture.active ? "true":"false",capture.ready ? "true":"false",capture.needs_reload ? "true":"false");
     if (s) {
         if (mt_session_stop(s,4000)) { fputs("session retains USB ownership\n",stderr); return 1; }
         mt_session_stats_t st; mt_session_snapshot(s,&st);
