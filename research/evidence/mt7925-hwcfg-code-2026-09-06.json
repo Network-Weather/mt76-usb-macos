@@ -1,0 +1,31 @@
+{
+  "date_utc": "2026-09-06T02:34:58.839621+00:00",
+  "hwcfg_query_sent": false,
+  "transmissions": 0,
+  "code": [
+    {
+      "name": "handler",
+      "address": "0xe00a19fc",
+      "bytes": 128,
+      "sha256": "62996245726c7048b267b4dce885e3d8271dfa4d22477770484bf866ddf62e01",
+      "matches": true
+    },
+    {
+      "name": "wrapper",
+      "address": "0xe007dccc",
+      "bytes": 12,
+      "sha256": "40bf7703b8ba7fed690a9b330398152bd3438dec8724b3fbc0eb9b1b25e4201a",
+      "matches": true
+    },
+    {
+      "name": "unsupported_leaf",
+      "address": "0xe005f324",
+      "bytes": 12,
+      "sha256": "6fbd706c64f05f39b46112b57ead5cf35cba5b3b299e40c86a253b2bed774d98",
+      "matches": true
+    }
+  ],
+  "alive_after": true,
+  "cleanup_reload_alive": true,
+  "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+}

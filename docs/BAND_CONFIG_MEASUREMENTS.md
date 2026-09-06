@@ -5,6 +5,10 @@ queries, but its EDCCA enable reply is synthesized by a stub.** The receive-vect
 command family acknowledges off/on/off but did not produce a new record type
 on either dongle. No new normal-mode CFO/SNR interface is claimed.
 
+A separate [signed PHY comparison path](MT7925_PHY_COMPARISON.md) now exposes
+live2.4GHz input bytes and channel-dependent decision thresholds. Its5GHz
+freshness and selector controls prevent treating it as a general power sensor.
+
 Firmware pins are the same as [station CSI](STATION_CSI.md) and
 [MT7961 PHY counters](PHY_RX_COUNTERS.md). Protocol facts come from Motorola
 gen4m `8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec`,

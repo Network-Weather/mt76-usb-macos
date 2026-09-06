@@ -69,3 +69,31 @@ two-control activation, restoration and normal reload.
 122 record words. Its61-record cap ends before the next independently referenced
 RAM object at `0221c124`. It refuses out-of-range/changing counts and wrong code
 hashes. No TX or experimental register write; alive and normal reload pass.
+
+## Registered HWCFG0x4e discards an unsupported readout result
+
+Static follow-up on2026-09-06 finds another advertised-but-unimplemented path.
+Registered handler`e00a19fe` loads the original command buffer at outer+0x0c.
+Its body`e00a1a16..78` limits the u16 at buffer+0x3a to1200, allocates a1224-byte
+response object, and calls`e007dccc` with two u16 request values from+0x38/+0x3a
+and an output pointer at response-buffer+0x38. The code constructs EID0x4e
+regardless of that getter's result; these offsets are internal buffer offsets,
+not a validated public request recipe.
+
+The getter's body`e007dcce` calls`e005f326`, then **overwrites a0 with0** at
+`e007dcd2`. Callee`e005f326..32a` only constructs **0xc00000bb** and returns:
+it does not read hardware or fill the output buffer. Thus this pinned path
+suppresses the unsupported result. No output-buffer clearing is visible in
+these routines, but allocator initialization was not audited, so this is **not
+a demonstrated memory disclosure** or a claim about actual returned bytes.
+
+No HWCFG query was sent. There is no reason to export a large unfilled reply
+or interpret it as hardware configuration. The finding is a static maintainer
+pointer, using the retained loaded image and experimental Andes annotations;
+it is not runtime branch tracing or a validated parser. Unsupported two-byte
+entry/exit instructions are explicitly skipped, not assigned invented semantics.
+
+A separate [live code-only control](../research/evidence/mt7925-hwcfg-code-2026-09-06.json)
+matches all three exact windows,152 bytes total, to the retained loaded image.
+No HWCFG request is sent; alive and normal reload succeed. This verifies code
+identity, not actual response contents or runtime branch coverage.

@@ -1,0 +1,507 @@
+{
+  "schema_version": 1,
+  "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+  "runs": [
+    {
+      "date_utc": "2026-09-06T02:32:42.662356+00:00",
+      "transmissions": 0,
+      "experimental_register_writes": 0,
+      "verified": [
+        {
+          "name": "input_and_threshold_getters",
+          "address": "0xe005a338",
+          "bytes": 120,
+          "sha256": "775f95df00543e41c7267a5990593f8bd8f3a3ad9317843b6c9426bec1147f88",
+          "matches": true
+        },
+        {
+          "name": "signed_comparator",
+          "address": "0xe0078f2c",
+          "bytes": 160,
+          "sha256": "00c764e762f3aaf69e3518c1438f4191730c6b2aa1e8e459794e1c4bde05c81e",
+          "matches": true
+        },
+        {
+          "name": "selector_getter",
+          "address": "0xe005a404",
+          "bytes": 64,
+          "sha256": "2ff8b1aa2c40408977253863f9b5812635626ee6d52ecbfb4d9160627d8aca83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "dwells": [
+        {
+          "channel": 6,
+          "windows": 10,
+          "ordinary_good_per_window": [
+            5,
+            5,
+            6,
+            7,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "input_pairs_observed": [
+            [
+              -104,
+              -127
+            ],
+            [
+              -94,
+              -127
+            ],
+            [
+              -88,
+              -127
+            ],
+            [
+              -83,
+              -127
+            ],
+            [
+              -82,
+              -127
+            ],
+            [
+              -80,
+              -127
+            ],
+            [
+              -77,
+              -127
+            ],
+            [
+              -76,
+              -127
+            ],
+            [
+              -73,
+              -127
+            ],
+            [
+              -63,
+              -127
+            ]
+          ],
+          "input_pair_first": [
+            -104,
+            -127
+          ],
+          "input_pair_last": [
+            -88,
+            -127
+          ],
+          "threshold_pairs_observed": [
+            [
+              -51,
+              -51
+            ]
+          ],
+          "selector_values_observed": [
+            3,
+            7
+          ],
+          "available_points": 16,
+          "comparison_true_points": 0,
+          "changed_input_before_after_windows": 10,
+          "transfer_ceiling_windows": 0
+        },
+        {
+          "channel": 36,
+          "windows": 10,
+          "ordinary_good_per_window": [
+            13,
+            10,
+            14,
+            16,
+            10,
+            10,
+            11,
+            10,
+            9,
+            13
+          ],
+          "input_pairs_observed": [
+            [
+              -100,
+              -127
+            ]
+          ],
+          "input_pair_first": [
+            -100,
+            -127
+          ],
+          "input_pair_last": [
+            -100,
+            -127
+          ],
+          "threshold_pairs_observed": [
+            [
+              -56,
+              -56
+            ]
+          ],
+          "selector_values_observed": [
+            3,
+            9
+          ],
+          "available_points": 19,
+          "comparison_true_points": 0,
+          "changed_input_before_after_windows": 0,
+          "transfer_ceiling_windows": 0
+        },
+        {
+          "channel": 6,
+          "windows": 10,
+          "ordinary_good_per_window": [
+            5,
+            5,
+            5,
+            5,
+            6,
+            6,
+            6,
+            5,
+            5,
+            5
+          ],
+          "input_pairs_observed": [
+            [
+              -100,
+              -127
+            ],
+            [
+              -97,
+              -127
+            ],
+            [
+              -94,
+              -127
+            ],
+            [
+              -88,
+              -127
+            ],
+            [
+              -85,
+              -127
+            ],
+            [
+              -82,
+              -127
+            ],
+            [
+              -80,
+              -127
+            ],
+            [
+              -79,
+              -127
+            ],
+            [
+              -70,
+              -127
+            ],
+            [
+              -45,
+              -127
+            ],
+            [
+              -41,
+              -127
+            ]
+          ],
+          "input_pair_first": [
+            -100,
+            -127
+          ],
+          "input_pair_last": [
+            -45,
+            -127
+          ],
+          "threshold_pairs_observed": [
+            [
+              -51,
+              -51
+            ]
+          ],
+          "selector_values_observed": [
+            3,
+            7
+          ],
+          "available_points": 15,
+          "comparison_true_points": 1,
+          "changed_input_before_after_windows": 9,
+          "transfer_ceiling_windows": 0
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-06T02:33:28.443533+00:00",
+      "transmissions": 0,
+      "experimental_register_writes": 0,
+      "verified": [
+        {
+          "name": "input_and_threshold_getters",
+          "address": "0xe005a338",
+          "bytes": 120,
+          "sha256": "775f95df00543e41c7267a5990593f8bd8f3a3ad9317843b6c9426bec1147f88",
+          "matches": true
+        },
+        {
+          "name": "signed_comparator",
+          "address": "0xe0078f2c",
+          "bytes": 160,
+          "sha256": "00c764e762f3aaf69e3518c1438f4191730c6b2aa1e8e459794e1c4bde05c81e",
+          "matches": true
+        },
+        {
+          "name": "selector_getter",
+          "address": "0xe005a404",
+          "bytes": 64,
+          "sha256": "2ff8b1aa2c40408977253863f9b5812635626ee6d52ecbfb4d9160627d8aca83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "dwells": [
+        {
+          "channel": 6,
+          "windows": 10,
+          "ordinary_good_per_window": [
+            5,
+            5,
+            13,
+            7,
+            6,
+            6,
+            5,
+            5,
+            4,
+            5
+          ],
+          "input_pairs_observed": [
+            [
+              -104,
+              -127
+            ],
+            [
+              -97,
+              -127
+            ],
+            [
+              -88,
+              -127
+            ],
+            [
+              -85,
+              -127
+            ],
+            [
+              -83,
+              -127
+            ],
+            [
+              -82,
+              -127
+            ],
+            [
+              -77,
+              -127
+            ],
+            [
+              -66,
+              -127
+            ],
+            [
+              -51,
+              -127
+            ],
+            [
+              -46,
+              -127
+            ]
+          ],
+          "input_pair_first": [
+            -83,
+            -127
+          ],
+          "input_pair_last": [
+            -77,
+            -127
+          ],
+          "threshold_pairs_observed": [
+            [
+              -51,
+              -51
+            ]
+          ],
+          "selector_values_observed": [
+            3,
+            7
+          ],
+          "available_points": 16,
+          "comparison_true_points": 2,
+          "changed_input_before_after_windows": 10,
+          "transfer_ceiling_windows": 0
+        },
+        {
+          "channel": 36,
+          "windows": 10,
+          "ordinary_good_per_window": [
+            11,
+            14,
+            11,
+            10,
+            9,
+            13,
+            14,
+            10,
+            9,
+            9
+          ],
+          "input_pairs_observed": [
+            [
+              -77,
+              -127
+            ]
+          ],
+          "input_pair_first": [
+            -77,
+            -127
+          ],
+          "input_pair_last": [
+            -77,
+            -127
+          ],
+          "threshold_pairs_observed": [
+            [
+              -56,
+              -56
+            ]
+          ],
+          "selector_values_observed": [
+            3
+          ],
+          "available_points": 20,
+          "comparison_true_points": 0,
+          "changed_input_before_after_windows": 0,
+          "transfer_ceiling_windows": 0
+        },
+        {
+          "channel": 6,
+          "windows": 10,
+          "ordinary_good_per_window": [
+            5,
+            5,
+            5,
+            5,
+            4,
+            5,
+            5,
+            5,
+            5,
+            6
+          ],
+          "input_pairs_observed": [
+            [
+              -104,
+              -127
+            ],
+            [
+              -100,
+              -127
+            ],
+            [
+              -91,
+              -127
+            ],
+            [
+              -89,
+              -127
+            ],
+            [
+              -87,
+              -127
+            ],
+            [
+              -85,
+              -127
+            ],
+            [
+              -83,
+              -127
+            ],
+            [
+              -82,
+              -127
+            ],
+            [
+              -79,
+              -127
+            ],
+            [
+              -77,
+              -127
+            ],
+            [
+              -63,
+              -127
+            ]
+          ],
+          "input_pair_first": [
+            -77,
+            -127
+          ],
+          "input_pair_last": [
+            -82,
+            -127
+          ],
+          "threshold_pairs_observed": [
+            [
+              -51,
+              -51
+            ]
+          ],
+          "selector_values_observed": [
+            3,
+            7,
+            8
+          ],
+          "available_points": 13,
+          "comparison_true_points": 0,
+          "changed_input_before_after_windows": 10,
+          "transfer_ceiling_windows": 0
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Four sequential register reads are not an atomic detector snapshot.",
+    "No calibrated units or antenna mapping.",
+    "Software comparison is available only for source selector3; it is not measured hardware CCA or an interference verdict.",
+    "5GHz input holds and constant second input do not establish valid fresh samples.",
+    "No experimental activation, threshold changes, TX, or ambient identifiers."
+  ]
+}

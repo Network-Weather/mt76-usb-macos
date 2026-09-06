@@ -5,6 +5,18 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**New MT7925 normal-mode signed PHY comparison inputs:**
+[Exact getter/threshold/selector provenance](MT7925_PHY_COMPARISON.md) exposes a
+changing2.4GHz field without activation. Two channel6→36→6 controls receive443
+good records, with39/40 changed2.4GHz windows but stale5GHz inputs. Thresholds
+reverse−51→−56→−51; selector non3 is unavailable, not false. Second input stays
+−127 and has no calibrated interpretation. Both code checks and reloads pass.
+
+**Registered HWCFG0x4e is another unsupported readout:**
+[The getter discards its leaf's failure](MT7925_UNI_DISPATCH.md#registered-hwcfg0x4e-discards-an-unsupported-readout-result)
+and the leaf never fills output. No HWCFG request or payload read is attempted;
+allocator initialization remains unaudited, so no memory-disclosure claim.
+
 **Link-quality replies do not provide passive channel occupancy:** two fresh
 [six-query controls](MT7925_DIAGNOSTIC_STATS.md#link-quality-readiness-matters-busy-percentage-is-not-implemented)
 complete with stable command pools and working thermal controls, but all48 rows
