@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-06",
+  "base_commit": "9c33c52",
+  "purpose": "Bounded attempt to recover the RF-silent old dongle via its independently addressed USB port without resetting the shared hub or touching the A9000 port.",
+  "read_only_hub_descriptor": {
+    "hub_usb_id": "8087:5787",
+    "bus": 2,
+    "ports": [
+      2
+    ],
+    "target_downstream_port": 3,
+    "read_only": true,
+    "hub_descriptor_hex": "0c2a04090000000a90010000",
+    "downstream_ports": 4,
+    "hub_characteristics": 9,
+    "logical_power_switching_mode": 1,
+    "target_port_status_hex": "03020000"
+  },
+  "companion_verification": {
+    "read_only": true,
+    "hubs": [
+      {
+        "usb_id": "8087:5787",
+        "bus": 2,
+        "ports": [
+          2
+        ],
+        "bcd_usb": 800,
+        "hub_descriptor_hex": "0c2a04090000000a90010000",
+        "has_container_id": true,
+        "port3_status_hex": "03020000"
+      },
+      {
+        "usb_id": "2188:5805",
+        "bus": 2,
+        "ports": [
+          1
+        ],
+        "bcd_usb": 528,
+        "hub_descriptor_hex": "0929050d00af0020ff",
+        "has_container_id": true,
+        "port3_status_hex": "00010000"
+      }
+    ],
+    "matching_nonzero_container_ids": true
+  },
+  "cycle": {
+    "started_utc": "2026-09-06T22:14:03.593220+00:00",
+    "finished_utc": "2026-09-06T22:14:09.633581+00:00",
+    "target_port": 3,
+    "hub_locations": [
+      [
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        2,
+        [
+          1
+        ]
+      ]
+    ],
+    "shared_hub_reset": false,
+    "steps": [
+      {
+        "action": "clear_port3_power",
+        "hub": "8087:5787"
+      },
+      {
+        "action": "clear_port3_power",
+        "hub": "2188:5805"
+      },
+      {
+        "action": "off_readback",
+        "hub": "8087:5787",
+        "port3_status_hex": "a0000000"
+      },
+      {
+        "action": "off_readback",
+        "hub": "2188:5805",
+        "port3_status_hex": "00000000"
+      },
+      {
+        "action": "enumeration_while_off",
+        "old_radio_present": true,
+        "peer_present": true
+      },
+      {
+        "action": "set_port3_power",
+        "hub": "2188:5805",
+        "ok": true
+      },
+      {
+        "action": "set_port3_power",
+        "hub": "8087:5787",
+        "ok": true
+      },
+      {
+        "action": "on_readback",
+        "hub": "8087:5787",
+        "port3_status_hex": "03020000"
+      },
+      {
+        "action": "on_readback",
+        "hub": "2188:5805",
+        "port3_status_hex": "00010000"
+      },
+      {
+        "action": "final_enumeration",
+        "radios": [
+          {
+            "usb_id": "0e8d:7961",
+            "bus": 2,
+            "ports": [
+              2,
+              3
+            ],
+            "address": 9
+          },
+          {
+            "usb_id": "0846:9072",
+            "bus": 2,
+            "ports": [
+              2,
+              4,
+              5
+            ],
+            "address": 20
+          }
+        ]
+      }
+    ]
+  },
+  "passive_recheck": {
+    "started_utc": "2026-09-06T22:15:20.428814+00:00",
+    "usb_id": "0e8d:7961",
+    "channel": [
+      "2.4GHz",
+      6,
+      6,
+      20
+    ],
+    "requested_seconds": 10,
+    "after_target_port3_cycle": true,
+    "misc_before_bringup": 3,
+    "firmware_sha256": {
+      "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+      "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+    },
+    "temperature_c": 38,
+    "counters": {
+      "rx_mpdu": 0,
+      "rx_mdrdy": 0,
+      "primary_cca": 23
+    },
+    "session": {
+      "state": "running",
+      "error": null,
+      "epoch_ns": 1992979369365500,
+      "channel_generation": 0,
+      "requested_channel": [
+        "2.4GHz",
+        6,
+        6,
+        20
+      ],
+      "frame_depth": 0,
+      "event_depth": 0,
+      "counts": {
+        "read_timeouts": 187,
+        "transfers": 4,
+        "replies_matched": 4,
+        "commands_completed": 2
+      }
+    },
+    "frames_consumed": 0,
+    "decoded_frames": 0,
+    "register_alive_after": true
+  },
+  "peer_observed_after": {
+    "source": "live A9000 soak heartbeat notification",
+    "elapsed_seconds": 2940.403,
+    "frames_received": 355657,
+    "usb_errors": 0,
+    "resident_bytes": 13221888
+  },
+  "conclusions": {
+    "port_power_readbacks_restored": true,
+    "old_usb_address_changed": true,
+    "cold_firmware_reset_established": false,
+    "physical_vbus_drop_measured": false,
+    "old_rf_receive_recovered": false,
+    "rf_silence_cause": null,
+    "further_shared_hub_controls_attempted": false
+  },
+  "source_notes": {
+    "hub_request_and_characteristics": "https://github.com/mvp/uhubctl/blob/master/uhubctl.c",
+    "duality_and_vbus_limitation": "https://github.com/mvp/uhubctl#usb-30-duality-note",
+    "checked_date": "2026-09-06"
+  },
+  "limits": [
+    "Logical power-off/readback and USB re-enumeration do not prove supply power was cut.",
+    "The libusb enumeration while off still listed the old device; this was not treated as electrical measurement.",
+    "Pre-bring-up MT_CONN_ON_MISC remained3 and RX stayed silent after fresh firmware/calibration.",
+    "No container IDs, peripheral serials, ambient frame bytes or identifiers are exported.",
+    "Only port3 on the verified companion pair was addressed; no hub reset or other port-power request was issued."
+  ]
+}

@@ -28,6 +28,18 @@ cause in this experiment. The exact cause/onset remains unknown; this is not
 proof of a new API regression, firmware bug or permanent hardware damage.
 Cold-power/physical recovery and healthy old-radio RF acceptance remain open.
 
+A later [port-3-only software power-cycle attempt](../research/evidence/r32-old-radio-port-cycle-2026-09-06.json)
+did not recover reception. Read-only topology/BOS checks matched the USB2/USB3
+companion hubs and their individual-port switching descriptors; the selected
+subtree contained only the old dongle, with A9000 downstream of another port.
+Both logical power readbacks went off and were restored; the old USB address
+changed, while the A9000 continued receiving without reported USB errors.
+Nevertheless, pre-bring-up `MT_CONN_ON_MISC` remained3 and a fresh10s channel6
+capture had zero frames. This is not evidence of a real supply-power cut or a
+cold firmware reset. [uhubctl documents that distinction](https://github.com/mvp/uhubctl#usb-30-duality-note).
+No shared hub reset, other port-power control, physical voltage measurement or
+further power-cycle experiment was performed.
+
 The A9000's first native soak was interrupted solely for that coexistence control
 at508.316s:59,095 frames,16 retunes,50 counter rounds, no software drops/USB errors,
 roughly13.1MB current resident memory. It is not a two-hour pass. A fresh native
