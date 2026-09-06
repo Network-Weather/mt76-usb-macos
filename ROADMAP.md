@@ -19,17 +19,22 @@ and write radiotap pcap; the MT7925U also captures 160 MHz. Wider
 claims require wider evidence. The current sprint is in [TODO.md](TODO.md); measured
 negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
-## Priority decision, 2026-09-04
+## Priority decision, 2026-09-06
 
-The selected sprint is **R30: C acquisition parity with the Python research baseline**,
-now implemented, qualified, and merged into `main`.
-The next selected work is firmware/chip measurement and bounded transmit discovery.
-Continuous-acquisition work is preserved on its pushed feature branch; a longer soak
-is deferred, not a prerequisite for exploration. See [new PHY experiments](docs/PHY_TRANSMIT.md).
-The 2026-09-05 continuation unlocked [live MT7925 CSI](docs/STATION_CSI.md):
-64-tone I/Q reports, receiver-chain pairing and a traced MCU timer field. Next
-research should test measurement selectivity, bandwidth/PHY coverage and controlled
-stimulus, without conflating raw CSI with calibrated topology/location information.
+R30 C acquisition parity and PR #31 firmware research are merged into `main`, but
+not released. The proposed next delivery is **R32: measurement API integration**:
+turn a selected, qualified subset into callable Python and C primitives. The
+[next-release plan](docs/NEXT_RELEASE.md) maps remaining research to API contracts,
+ordered work packages and release gates. Research scripts on main are not themselves
+production API parity.
+
+Reconcile the existing pushed `feat/continuous-acquisition` branch rather than
+restart it. Deliver named counters, thermal readout, normal-mode signal fields and
+TX-status metadata first; target bounded MT7925 beacon CSI and raw histograms as
+independently gated experimental additions. Expanded transmit profiles require
+healthy independent RF controls. Long soak qualifies the continuous API for release;
+it is not a prerequisite for further exploration. Unknown IQ/ranging/calibration
+surfaces do not block the qualified subset.
 This is an instrument for network interrogation and bounded radio experiments, not
 baseline connectivity. A proper networking driver is a durable non-goal, not a
 deferred implementation project. R21 is a deferred iPad survey test spike; no iPad
@@ -92,7 +97,8 @@ on 2026-09-02 ([docs/TESTING.md](docs/TESTING.md#retune-frame-loss-2026-09-02)):
 commands totalling about 16 ms, and with the caller draining continuously it drops a median of one
 frame per hop and at most eight, at 100 to 250 frames per second. That is a 16 ms blind window per
 hop, not bulk loss. The device object now carries the drop counters, so any caller can attribute
-lost frames to the command that lost them; R5 turns that into a queue that loses nothing.
+lost frames to the command that lost them; R5 routes frames into a bounded queue
+with explicit overflow/drop accounting, not a promise of lossless capture.
 
 Done when one reader drains the endpoint and demultiplexes into an MCU-reply queue and a frame
 queue; startup, stop, retune, and device-loss behavior have explicit states; cancellation does
@@ -185,7 +191,11 @@ follow-ups fall out of it:
 R11 is now answered through MCU queries rather than the dead register path: MT7921 EXT offset 11
 and MT7925 UNI offset17 provide source-named primary CCA time; offset19 is CCA+NAV+TX
 (2026-09-05 source/ROM correction). R12 remains open: the noise-floor helper reads
-zero and the IPI sampler remains idle. The reproducible probes and negative paths are in
+zero and the original IPI sampler remains idle. Later research found working raw
+PHY histogram banks on both chips, not a calibrated noise-floor API; see
+[the findings ledger](docs/OVERNIGHT_EXPLORATION.md) and the
+[promotion gates](docs/NEXT_RELEASE.md#research-and-promotion-decisions).
+The reproducible probes and negative paths are in
 [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md) and [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 
 - **R11. Hardware CCA/channel-busy counters.** Determine whether the missing step is firmware
@@ -286,6 +296,17 @@ Done when malformed length/padding cases cannot overrun input, golden and proper
 cover multi-subframe inputs, and the capture output behavior is documented.
 
 ## Track C: researcher reference and discoverability
+
+### R32. Measurement API integration and next release (proposed)
+
+Promote selected post-R30 findings into shared Python/C measurement contracts,
+using the existing continuous-session branch where an event stream needs it.
+The [delivery plan](docs/NEXT_RELEASE.md) separates the release floor, opt-in
+experimental targets, required research controls and parked leads. Completion
+requires callable installed APIs, shared malformed-input fixtures, per-chip live
+evidence and honest capability/availability metadata. Research-only features do
+not count as public API parity. No version bump or publication is authorized by
+this roadmap entry.
 
 ### ~~R30. C acquisition parity~~ (implemented, qualified, and merged)
 

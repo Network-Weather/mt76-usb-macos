@@ -1,5 +1,23 @@
 # TODO: next sprint and prior backlog
 
+## Proposed next sprint: measurement API integration (R32)
+
+Planning checkpoint 2026-09-06: PR #31 is merged at `7eb35d1`; no new release
+was cut. The [next-release plan](docs/NEXT_RELEASE.md) is the active proposal for
+remaining research, Python/C integration and acceptance gates.
+
+- [ ] Reconcile the already implemented `feat/continuous-acquisition` branch and
+  define shared capability/measurement records; do not restart session work.
+- [ ] Deliver named MIB, thermal, Group5 signal and TX-status timing primitives in
+  both libraries, with research helpers consuming the promoted implementations.
+- [ ] Target bounded beacon CSI, then raw histograms, behind separate experimental
+  gates; defer either if its validity/cleanup/parity gate is not met.
+- [ ] Requalify healthy independent RF controls before any expanded TX profile.
+- [ ] Complete packaging, regression and bounded live/session qualification, then
+  update release/support/parity docs. No automatic version bump, tag or publication.
+
+## Completed C parity checkpoint
+
 Sprint selected and implemented 2026-09-04: C acquisition parity (R30). Items come from
 [ROADMAP.md](ROADMAP.md); check off only against the stated evidence. This is the
 completion record for the work merged into `main`, not a new release.
@@ -8,12 +26,12 @@ records 554 offline tests, live checks on both dongles, and the explicit limits.
 
 ## C parity sprint (R30)
 
-Current exploration priority: new firmware/chip measurement and transmit surfaces,
-with [autonomous continuation findings and next leads](docs/OVERNIGHT_EXPLORATION.md)
-tracked in draft PR #31. Keep committing/pushing; do not merge without direction.
-This takes priority over further acquisition infrastructure. [PHY transmit findings](docs/PHY_TRANSMIT.md)
-record bounded experiments and remaining leads. Continuous acquisition remains on
-its pushed branch; no two-hour soak was started.
+Subsequent firmware/chip measurement and transmit exploration merged in PR #31.
+[Autonomous continuation findings and next leads](docs/OVERNIGHT_EXPLORATION.md)
+and [PHY transmit findings](docs/PHY_TRANSMIT.md) retain the experiments and limits.
+Continuous acquisition remains on its pushed branch; its longer soak is still
+outstanding. The R32 proposal above supersedes this checkpoint's priority, not its
+historical acceptance evidence.
 
 Reference: Python driver and research tooling on `main` at `6081908`. The chipset
 primitives below are implemented, tested, and pushed in incremental commits.
