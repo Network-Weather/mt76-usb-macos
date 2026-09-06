@@ -55,15 +55,19 @@ int mt_mib_parse(int chip, const uint8_t *body, size_t len,
          * on a 16-bit boundary; reject duplicate/ambiguous entries rather than guessing. */
         for (size_t at = 0; at <= len && len - at >= 8; at += 2) {
             if (body[at] || body[at + 1]) continue;
+            unsigned size = body[at + 2] | (unsigned)body[at + 3] << 8;
+            if (size != 8 && size != 16) continue;
+            if (len - at < 16) return -1;
             uint32_t echoed = le32(body + at + 4);
             for (size_t i = 0; i < n; i++) {
                 if (echoed != offsets[i]) continue;
-                unsigned size = body[at + 2] | (unsigned)body[at + 3] << 8;
-                if (size != 8 && size != 16) continue;
-                if (len - at < 16 || found[i]) return -1;
+                if (found[i]) return -1;
                 parsed[i] = le64(body + at + 8);
                 found[i] = true;
             }
+            /* Never scan inside an entry's value for another TLV: raw values
+             * such as 8/16 can otherwise manufacture duplicate offset0 echoes. */
+            at += 14; /* loop increment completes the 16-byte wire entry */
         }
         for (size_t i = 0; i < n; i++) if (!found[i]) return -1;
     }

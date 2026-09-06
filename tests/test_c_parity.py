@@ -152,6 +152,55 @@ def test_named_counter_read_faults(native, chip, mode):
 
 
 @pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("action", [0, 1, 2])
+@pytest.mark.parametrize("mode", [0, 1, 2, 5, 6])
+def test_thermal_read_failures_and_getter(native, chip, action, mode):
+    native.parity_thermal_read.argtypes = [ct.c_int, ct.c_int, ct.c_int]
+    assert native.parity_thermal_read(chip, action, mode) == 0
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+def test_thermal_wire_parity_and_every_truncation(native, chip):
+    from tests.test_measurements import thermal_event
+
+    name = m.CHIP_MT7925 if chip else m.CHIP_MT7921
+    native.mt_thermal_request.argtypes = [ct.c_int, ct.c_int, ct.c_void_p, ct.c_size_t]
+    native.mt_thermal_parse.argtypes = [
+        ct.c_int,
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.c_uint8,
+        ct.POINTER(ct.c_uint32),
+    ]
+    for action in [0, 1] if chip else [0]:
+        output = ct.create_string_buffer(12)
+        length = native.mt_thermal_request(chip, action, output, len(output))
+        assert output.raw[:length] == mm.build_thermal_request(name, mm.ThermalAction(action))
+        raw = thermal_event(name, 0xFFFFFFFB)
+        for sample in [raw, raw + b"padding"] + [raw[:i] for i in range(len(raw))]:
+            value = ct.c_uint32(99)
+            result = native.mt_thermal_parse(chip, action, sample, len(sample), 9, ct.byref(value))
+            try:
+                expected = mm.parse_thermal_event(name, sample, 9, mm.ThermalAction(action))
+            except ValueError:
+                assert result < 0
+                assert value.value == 99
+            else:
+                assert result == 0
+                assert value.value == expected
+        for at in [0, 3, 37, 36, 48, 50, 52] if chip else [0, 3, 29]:
+            malformed = bytearray(raw)
+            malformed[at] ^= 8 if at == 3 else 1
+            value = ct.c_uint32(99)
+            result = native.mt_thermal_parse(
+                chip, action, bytes(malformed), len(malformed), 9, ct.byref(value)
+            )
+            assert result < 0
+            assert value.value == 99
+
+
+@pytest.mark.parametrize("chip", [0, 1])
 def test_production_mib_parsers_share_valid_and_malformed_bytes(native, chip):
     name = m.CHIP_MT7925 if chip else m.CHIP_MT7921
     offsets = (2, 17) if chip else (11,)
@@ -174,6 +223,18 @@ def test_production_mib_parsers_share_valid_and_malformed_bytes(native, chip):
         else:
             assert result == 0
             assert tuple(out) == parsed
+
+
+@pytest.mark.parametrize("count", [8, 16, 0x0000000000080000, 0x0000000000100000])
+@pytest.mark.parametrize("requested", [(2, 0), (0,)])
+def test_counter_values_cannot_manufacture_tlv_echoes(native, count, requested):
+    body = bytes(4) + struct.pack("<HHIQHHIQ", 0, 8, 2, count, 0, 8, 0, 42)
+    expected = (count, 42) if len(requested) == 2 else (42,)
+    offsets = (ct.c_uint32 * len(requested))(*requested)
+    values = (ct.c_uint64 * len(requested))()
+    assert mm.parse_mib_reply(m.CHIP_MT7925, body, requested) == expected
+    assert native.mt_mib_parse(1, body, len(body), offsets, len(requested), values) == 0
+    assert tuple(values) == expected
 
 
 def rx_fixture(c3, mask, timestamp=0xFFFFFFFE):

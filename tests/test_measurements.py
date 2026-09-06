@@ -143,3 +143,76 @@ def test_partial_serial_failure_is_not_a_sample():
     with pytest.raises(m.McuError):
         mm.read_counters(dev, (mm.Counter.RX_MPDU, mm.Counter.PRIMARY_CCA))
     assert len(dev.calls) == 2
+
+
+def thermal_event(chip, value=45):
+    body = (
+        struct.pack("<4xHH4xI", 0, 12, value)
+        if chip == m.CHIP_MT7925
+        else struct.pack("<II", 0, value)
+    )
+    raw = bytearray(event(chip, body))
+    raw[36 if chip == m.CHIP_MT7925 else 28] = 0x35 if chip == m.CHIP_MT7925 else 0xED
+    return bytes(raw)
+
+
+@pytest.mark.parametrize("chip", [m.CHIP_MT7921, m.CHIP_MT7925])
+def test_thermal_read_and_temperature_getter(chip):
+    class ThermalDevice:
+        CHIP = chip
+        msg_seq = 9
+        mcu_wait_dropped_frames = 0
+
+        def uni_option(self, cid, query):
+            assert (cid, query) == (0x35, True)
+            return 3
+
+        def mcu_uni(self, cid, payload, query, timeout):
+            assert (cid, query, timeout) == (0x35, True, 1000)
+            assert payload == mm.build_thermal_request(chip, mm.ThermalAction.TEMPERATURE)
+            return thermal_event(chip, 0xFFFFFFFB)
+
+        def mcu_cmd_word(self, cmd, payload, timeout):
+            assert cmd == m.MCU_EXT_CMD(0x2C)
+            assert payload == bytes(8)
+            assert timeout == 1000
+            return thermal_event(chip, 0xFFFFFFFB)
+
+    dev = ThermalDevice()
+    sample = mm.read_thermal(dev)
+    assert sample.raw == 0xFFFFFFFB
+    assert sample.reported_temperature_c == -5
+    assert sample.opened_us <= sample.closed_us
+    assert sample.legacy_dropped_frames == 0
+    if chip == m.CHIP_MT7925:
+        from mt7925u import Mt7925uDevice
+
+        assert Mt7925uDevice.get_temperature(dev) == -5
+
+
+@pytest.mark.parametrize("action", [0, 2, True, "temperature"])
+def test_thermal_action_type_is_explicit(action):
+    with pytest.raises(ValueError, match="ThermalAction"):
+        mm.build_thermal_request(m.CHIP_MT7925, action)
+
+
+def test_legacy_adc_refuses_before_io():
+    dev = FakeDevice(m.CHIP_MT7921)
+    with pytest.raises(ValueError, match="unsupported"):
+        mm.read_thermal(dev, mm.ThermalAction.RAW_ADC)
+    assert not dev.calls
+
+
+@pytest.mark.parametrize("chip", [m.CHIP_MT7921, m.CHIP_MT7925])
+def test_thermal_event_bounds_sequence_and_unsupported(chip):
+    raw = thermal_event(chip)
+    assert mm.parse_thermal_event(chip, raw + b"padding", 9, mm.ThermalAction.TEMPERATURE) == 45
+    for length in range(len(raw)):
+        with pytest.raises(ValueError, match=r"thermal|matching"):
+            mm.parse_thermal_event(chip, raw[:length], 9, mm.ThermalAction.TEMPERATURE)
+    with pytest.raises(ValueError, match="matching"):
+        mm.parse_thermal_event(chip, raw, 8, mm.ThermalAction.TEMPERATURE)
+    if chip == m.CHIP_MT7921:
+        unsupported = event(chip, struct.pack("<4I", 0x2C, 0xFE, 0, 0))
+        with pytest.raises(ValueError, match="unsupported"):
+            mm.parse_thermal_event(chip, unsupported, 9, mm.ThermalAction.TEMPERATURE)

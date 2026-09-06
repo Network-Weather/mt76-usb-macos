@@ -614,20 +614,75 @@ int mt7921_set_eeprom(mt7921_mcu_t *mcu) {
     return mt7921_mcu_cmd_word(mcu, MCU_EXT_CMD(MCU_EXT_CMD_EFUSE_BUFFER_MODE), req, 4, true, NULL, NULL, 3000);
 }
 
+int mt_thermal_request(int chip, int action, uint8_t *out, size_t cap) {
+    if (!out) return -1;
+    if ((chip != MT_CHIP_MT7921 && chip != MT_CHIP_MT7925) ||
+        (action != MT_THERMAL_TEMPERATURE && action != MT_THERMAL_RAW_ADC) ||
+        (chip == MT_CHIP_MT7921 && action != MT_THERMAL_TEMPERATURE)) return MT7921_ERR_UNSUPPORTED;
+    size_t len = chip == MT_CHIP_MT7925 ? 12 : 8;
+    if (cap < len) return -1;
+    memset(out, 0, len);
+    if (chip == MT_CHIP_MT7925) { out[6] = 8; out[9] = (uint8_t)action; }
+    return (int)len;
+}
+int mt_thermal_parse(int chip, int action, const uint8_t *raw, size_t len,
+                      uint8_t sequence, uint32_t *value) {
+    uint8_t request[12];
+    if (mt_thermal_request(chip, action, request, sizeof(request)) < 0) return MT7921_ERR_UNSUPPORTED;
+    const mt7921_chip_profile_t *prof = mt7921_chip_profile(chip);
+    if (!raw || !value || !sequence || sequence > 15 || len < prof->mcu_rxd_len) return -1;
+    uint32_t word = mcu_read_le32(raw), size = word & 0xFFFF;
+    if (size < prof->mcu_rxd_len || size > len || word >> 27 != PKT_TYPE_RX_EVENT ||
+        ((word >> RXD0_PKT_FLAG_SHIFT) & RXD0_PKT_FLAG_MASK) == PKT_FLAG_NORMAL_MCU ||
+        raw[prof->rxd_seq_offset] != sequence || (chip == MT_CHIP_MT7925 && raw[36] != 0x35)) return -1;
+    const uint8_t *body = raw + prof->mcu_rxd_len;
+    size_t body_len = size - prof->mcu_rxd_len;
+    if (chip == MT_CHIP_MT7925) {
+        const uint8_t prefix[12] = {0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0};
+        if (body_len != 16 || memcmp(body, prefix, sizeof(prefix))) return -1;
+        *value = mcu_read_le32(body + 12);
+    } else {
+        if (body_len < 8 || (body_len == 16 && mcu_read_le32(body) == 0x2c &&
+                            mcu_read_le32(body + 4) == 0xfe)) return -1;
+        *value = mcu_read_le32(body + 4);
+    }
+    return 0;
+}
+static uint64_t thermal_now_us(void) {
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return (uint64_t)now.tv_sec * 1000000 + (uint64_t)now.tv_nsec / 1000;
+}
+int mt_thermal_read(mt7921_mcu_t *mcu, int action, mt_thermal_sample_t *sample) {
+    if (!mcu || !mcu->prof || !sample) return -1;
+    int chip = mcu->prof->chip;
+    uint8_t request[12], reply[4096];
+    int length = mt_thermal_request(chip, action, request, sizeof(request));
+    if (length < 0) return length;
+    if (chip == MT_CHIP_MT7925 && mt7921_uni_option(mcu->prof, 0x35, true) != 3) return -1;
+    mt_thermal_sample_t result = {.chip = chip, .action = action};
+    uint32_t reply_len = sizeof(reply), dropped = mcu->dropped_frames;
+    result.opened_us = thermal_now_us();
+    int ret = chip == MT_CHIP_MT7925
+        ? mt7921_mcu_uni_query(mcu, 0x35, request, (uint32_t)length, true, reply, &reply_len, 1000)
+        : mt7921_mcu_cmd_word(mcu, MCU_EXT_CMD(0x2c), request, (uint32_t)length,
+                              true, reply, &reply_len, 1000);
+    result.closed_us = thermal_now_us();
+    result.dropped_frames = mcu->dropped_frames - dropped;
+    if (ret || mt_thermal_parse(chip, action, reply, reply_len, mcu->msg_seq, &result.raw)) return -1;
+    result.has_temperature = action == MT_THERMAL_TEMPERATURE;
+    if (result.has_temperature)
+        result.reported_temperature_c = result.raw <= INT32_MAX ? (int32_t)result.raw :
+            (int32_t)((int64_t)result.raw - INT64_C(4294967296));
+    *sample = result;
+    return 0;
+}
 int mt7921_get_temperature(mt7921_mcu_t *mcu, int32_t *temp_c) {
-    if (!mcu || !temp_c) return -1;
-    if (mcu->prof->chip != MT_CHIP_MT7921) return MT7921_ERR_UNSUPPORTED; /* MT7925: UNI THERMAL 0x35, not ported */
-    uint8_t req[8] = {0};
-    req[0] = THERMAL_SENSOR_TEMP_QUERY;
-
-    uint8_t resp[128];
-    uint32_t resp_len = sizeof(resp);
-    uint32_t cmd = MCU_EXT_CMD(MCU_EXT_CMD_THERMAL_CTRL);
-    int ret = mt7921_mcu_cmd_word(mcu, cmd, req, sizeof(req), true, resp, &resp_len, 3000);
-    if (ret != 0 || resp_len < mcu->prof->mcu_rxd_len + 8) return -1;
-
-    uint8_t *body = resp + mcu->prof->mcu_rxd_len;
-    *temp_c = (int32_t)mcu_read_le32(body + 4);
+    if (!temp_c) return -1;
+    mt_thermal_sample_t sample;
+    int ret = mt_thermal_read(mcu, MT_THERMAL_TEMPERATURE, &sample);
+    if (ret) return ret;
+    *temp_c = sample.reported_temperature_c;
     return 0;
 }
 

@@ -7,6 +7,11 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Query-only Python/C thermal measurements: reported signed Celsius on both chips
+  and separately labeled MT7925 raw ADC, with bounded matching-reply validation,
+  request intervals and unchanged native output on failure. Session probes can
+  interleave these reads with counters, RX and retunes. No thermal protection
+  overrides or ADC calibration; see [the contract](docs/MEASUREMENTS.md).
 - Named raw MCU counter APIs in installed `mt76_measurements` and native
   `mt_counter_*`: four MT7921 and ten MT7925 fields, with distinct wire/hardware/
   accumulator widths, unknown duration conversions, and explicit idle-saturation
@@ -131,6 +136,10 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Fixed
 
+- UNI MIB parsers no longer rescan bytes inside complete counter entries as TLV
+  headers. Values such as `8` could manufacture a false offset0 match, rejecting
+  valid batches or misleading loose research readers; those readers now reuse
+  the installed parser. Shared Python/C regression fixtures cover this case.
 - Offline `scripts/fw_triage.py --command-map` now reads candidate records as
   CID-then-handler and includes the final complete record. The old reversed order
   associated handlers with the next CID. Candidate matches or absence no longer

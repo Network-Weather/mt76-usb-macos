@@ -10,8 +10,13 @@ int parity_mcu_fault(int, int);
 int parity_rate_table(int, unsigned, unsigned *);
 int parity_vendor_timeout(unsigned);
 int parity_counter_read(int, int);
+int parity_thermal_read(int, int, int);
 
 int main(void) {
+    const int thermal_modes[] = {0, 1, 2, 5, 6};
+    for (int chip = 0; chip < 2; chip++) for (int action = 0; action < 3; action++)
+        for (unsigned i = 0; i < sizeof(thermal_modes)/sizeof(*thermal_modes); i++)
+            assert(!parity_thermal_read(chip, action, thermal_modes[i]));
     for (int chip = 0; chip < 2; chip++)
         for (int mode = 0; mode < 7; mode++) assert(!parity_counter_read(chip, mode));
     for (unsigned mode = 0; mode < 3; mode++) assert(!parity_vendor_timeout(mode));

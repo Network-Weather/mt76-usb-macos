@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
-"""Named, raw MCU counters for the repository's pinned firmware profiles.
+"""Named raw MCU counters and query-only thermal data for pinned firmware profiles.
 
 No direct MMIO reads, automatic percentage conversion, or register configuration.
 Use read_counters inside session.call when acquisition owns the device. Retain
@@ -33,6 +33,91 @@ class CounterUnit(IntEnum):
     COUNT = 0
     DURATION_TICKS = 1
     IDLE_SLOTS = 2
+
+
+class ThermalAction(IntEnum):
+    TEMPERATURE = 0
+    RAW_ADC = 1
+
+
+def build_thermal_request(chip: str, action: ThermalAction = ThermalAction.TEMPERATURE) -> bytes:
+    """Query only; no protection overrides or sensor/band sweep."""
+    if not isinstance(action, ThermalAction):
+        raise ValueError("use a ThermalAction")
+    if chip == m.CHIP_MT7925:
+        return struct.pack("<4xHH4B", 0, 8, 0, action, 0, 0)
+    if chip == m.CHIP_MT7921 and action == ThermalAction.TEMPERATURE:
+        return bytes(8)
+    raise ValueError("thermal action unsupported by pinned chip profile")
+
+
+def parse_thermal_event(chip: str, raw: bytes, sequence: int, action: ThermalAction) -> int:
+    """Return the raw u32 sensor result, not an ADC-to-temperature conversion."""
+    build_thermal_request(chip, action)
+    header = 44 if chip == m.CHIP_MT7925 else 36
+    seq_at = 37 if chip == m.CHIP_MT7925 else 29
+    if type(sequence) is not int or not 1 <= sequence <= 15 or len(raw) < header:
+        raise ValueError("short thermal MCU event or invalid sequence")
+    word = struct.unpack_from("<I", raw)[0]
+    size = word & 0xFFFF
+    if (
+        not header <= size <= len(raw)
+        or word >> 27 != m.PKT_TYPE_RX_EVENT
+        or (word >> m.RXD0_PKT_FLAG_SHIFT) & m.RXD0_PKT_FLAG_MASK == m.PKT_FLAG_NORMAL_MCU
+        or raw[seq_at] != sequence
+        or (chip == m.CHIP_MT7925 and raw[36] != 0x35)
+    ):
+        raise ValueError("not a matching thermal MCU event")
+    body = raw[header:size]
+    if chip == m.CHIP_MT7925:
+        if len(body) != 16 or body[:12] != struct.pack("<4xHH4x", 0, 12):
+            raise ValueError("unexpected thermal sensor response shape")
+        return struct.unpack_from("<I", body, 12)[0]
+    if len(body) < 8 or (len(body) == 16 and body[:8] == struct.pack("<II", 0x2C, 0xFE)):
+        raise ValueError("short or unsupported EXT thermal response")
+    return struct.unpack_from("<I", body, 4)[0]
+
+
+@dataclass(frozen=True)
+class ThermalSample:
+    chip: str
+    action: ThermalAction
+    raw: int
+    reported_temperature_c: int | None
+    opened_us: int
+    closed_us: int
+    legacy_dropped_frames: int
+
+
+def read_thermal(dev, action: ThermalAction = ThermalAction.TEMPERATURE) -> ThermalSample:
+    """Reported sensor temperature or MT7925 raw ADC; use inside session.call.
+
+    MT7925 is the analog-die sensor, not necessarily the same physical sensor
+    as MT7921. ADC codes are never labeled degrees. Unknown actions fail before
+    I/O; time windows and legacy-drop accounting follow read_counters.
+    """
+    request = build_thermal_request(dev.CHIP, action)
+    if dev.CHIP == m.CHIP_MT7925 and dev.uni_option(0x35, True) != 3:
+        raise ValueError("MT7925 requires QUERY_ACK option3")
+    dropped = dev.mcu_wait_dropped_frames
+    opened = time.monotonic_ns() // 1000
+    if dev.CHIP == m.CHIP_MT7925:
+        reply = dev.mcu_uni(0x35, request, query=True, timeout=1000)
+    else:
+        reply = dev.mcu_cmd_word(m.MCU_EXT_CMD(0x2C), request, timeout=1000)
+    value = parse_thermal_event(dev.CHIP, reply, dev.msg_seq, action)
+    temperature = None
+    if action == ThermalAction.TEMPERATURE:
+        temperature = value if value < 0x80000000 else value - 0x100000000
+    return ThermalSample(
+        dev.CHIP,
+        action,
+        value,
+        temperature,
+        opened,
+        time.monotonic_ns() // 1000,
+        dev.mcu_wait_dropped_frames - dropped,
+    )
 
 
 @dataclass(frozen=True)
@@ -126,13 +211,22 @@ def parse_mib_reply(chip: str, body: bytes, offsets) -> tuple[int, ...]:
             raise ValueError("short EXT MIB reply")
         return (struct.unpack_from("<I", body, 28)[0],)
     found = {}
-    for at in range(0, len(body) - 7, 2):
+    at = 0
+    while at + 8 <= len(body):
         tag, size, echoed = struct.unpack_from("<HHI", body, at)
-        if tag != 0 or size not in (8, 16) or echoed not in offsets:
+        if tag != 0 or size not in (8, 16):
+            at += 2
             continue
-        if at + 16 > len(body) or echoed in found:
+        if at + 16 > len(body):
+            raise ValueError("truncated UNI MIB entry")
+        if echoed in offsets and echoed in found:
             raise ValueError("truncated or ambiguous UNI MIB entry")
-        found[echoed] = struct.unpack_from("<Q", body, at + 8)[0]
+        if echoed in offsets:
+            found[echoed] = struct.unpack_from("<Q", body, at + 8)[0]
+        # A valid counter value can itself contain tag/length/offset-looking
+        # bytes (e.g. value8 can manufacture an offset0 match six bytes in).
+        # Consume the entire wire entry, even when its offset wasn't requested.
+        at += 16
     if len(found) != len(offsets):
         raise ValueError("missing UNI MIB entry")
     return tuple(found[o] for o in offsets)

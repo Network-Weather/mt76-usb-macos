@@ -37,6 +37,7 @@ sys.path.insert(0, REPO_ROOT)
 
 import usb.core  # noqa: E402
 
+import mt76_measurements as measurements  # noqa: E402
 import mt7921u as m  # noqa: E402
 
 #: mt76 mt76_connac_mcu.h:1333.
@@ -63,11 +64,10 @@ def parse_counter(body: bytes, offs: int) -> int | None:
     header the chip prepends, and returns nothing rather than a misaligned number when the
     offset is not echoed at all.
     """
-    for at in range(0, max(0, len(body) - 12), 2):
-        _tag, length, echoed = struct.unpack_from("<HHI", body, at)
-        if echoed == offs and length in (UNI_MIB_ENTRY_LEN, 16) and at + 16 <= len(body):
-            return struct.unpack_from("<Q", body, at + 8)[0]
-    return None
+    try:
+        return measurements.parse_mib_reply(m.CHIP_MT7925, body, (offs,))[0]
+    except ValueError:
+        return None
 
 
 def read_offset(dev, offs: int, band: int = 0) -> int | None:

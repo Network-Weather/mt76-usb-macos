@@ -2,8 +2,8 @@
 
 Implemented on `feat/measurement-api`, not yet released. Python
 `mt76_measurements` and C `mt7921_radio.h` expose the same finite raw-counter
-profile. This first slice does not include thermal, CSI, histograms or calibrated
-occupancy. Those retain their [separate delivery gates](NEXT_RELEASE.md).
+profile; `mt7921_mcu.h` also declares query-only thermal measurements. CSI,
+histograms and calibrated occupancy retain their [separate delivery gates](NEXT_RELEASE.md).
 
 ## Callable contract
 
@@ -13,6 +13,8 @@ occupancy. Those retain their [separate delivery gates](NEXT_RELEASE.md).
 | `build_mib_request`, `parse_mib_reply` | `mt_mib_request`, `mt_mib_parse` | Pure bounded wire helpers; EXT one entry, UNI up to 16, unique complete requested values |
 | `parse_mib_event` | validation in `mt_mib_read` | DMA length/type/sequence checks; USB padding cannot supply missing values |
 | `read_counters(dev, counters)` | `mt_counter_read(dev, names, count, &sample)` | Band0 MCU-only sample with outer host-monotonic microsecond interval; no MMIO fallback |
+| `build_thermal_request`, `parse_thermal_event` | `mt_thermal_request`, `mt_thermal_parse` | Query-only sensor wire helpers with DMA/type/sequence validation |
+| `read_thermal(dev, action)` | `mt_thermal_read(dev, action, &sample)` | Reported temperature on both chips; separately labeled raw ADC on MT7925 |
 
 The named read validates the entire request before I/O. MT7921 reads one offset
 per command; MT7925 uses one batch. Both return results in requested order.
@@ -58,6 +60,35 @@ Sources: [MIB mapping/ownership](MT7925_MIB.md),
 [idle/subchannel semantics](SUBCHANNEL_MEASUREMENTS.md), and
 [old-chip mapping](FIRMWARE_RECON.md). Inactive-width secondary fields and
 known-invalid offset94 are not in the named profile.
+
+## Query-only thermal measurements
+
+`ThermalAction.TEMPERATURE` returns a raw u32 and its signed reported Celsius
+value. `RAW_ADC` is MT7925-only and has no temperature conversion (`None` in
+Python, `has_temperature=false` in C). Neither API changes thermal protection,
+selects arbitrary sensors, or implies that the two chips measure the same physical
+location. Samples retain host-monotonic microsecond intervals and legacy MCU drops.
+
+The old chip uses EXT2c; MT7925 uses UNI35 QUERY_ACK option3, tag0, band0,
+actions0/1. Invalid actions fail before I/O. Parsers reject malformed lengths,
+sequence mismatches, and the known EXT unsupported-command reply rather than
+reporting its status254 as temperature. Native sample output stays unchanged on
+failure. The native convenience getter and MT7925 Python getter reuse this path;
+the older Python getter retains its compatibility implementation.
+
+Call `read_thermal` inside `session.call`, or `mt_thermal_read` inside an
+`mt_session_call` callback. Add `--thermal` to either session probe to interleave
+thermal reads with named counters and normal capture. The new-chip probe brackets
+each ADC query with two temperature queries; the old chip only queries temperature.
+
+[Thermal qualification evidence](../research/evidence/r32-thermal-2026-09-06.json)
+retains an initial native MT7925 mixed-run failure. Investigation reproduced a
+counter-parser bug in both languages: scanning inside a complete value could
+invent a second TLV. Both parsers now consume whole entries, and research readers
+reuse the corrected parser. The exact failed live reply was not saved, so that
+bug is a plausible explanation, not a proven attribution of that failure.
+Fixed-parser 15-second Python/C runs passed on both chips with RX, retunes,
+thermal and named-counter queries; they do not establish multi-hour stability.
 
 ## Use during capture
 

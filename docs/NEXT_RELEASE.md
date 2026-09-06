@@ -143,7 +143,10 @@ discovery or large type-system refactor is needed to complete this package.
   [raw named contract](MEASUREMENTS.md), with unknown conversions/accumulator
   widths retained. Live queries pass in both languages; old-chip weak RX is an
   explicit remaining RF qualification limit, not a release pass.
-- [ ] Thermal query/parse parity, then Group5 raw-signal and TX-status timing parity.
+- [x] Query-only thermal Python/C parity, shared malformed/failure fixtures and
+  short mixed-session qualification on both chips. Retain the initial failed
+  run and corrected counter-parser regression in [the contract](MEASUREMENTS.md).
+- [ ] Group5 raw-signal and TX-status timing parity.
 - [ ] Each slice includes synthetic golden bytes shared across implementations,
   malformed/unknown/truncated-input and failure tests, CLI reuse, and dated live
   qualification on the applicable dongle. Compare semantics in separate runs;

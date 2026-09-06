@@ -15,7 +15,7 @@ implements, so this module is a subclass that changes what differs:
 - NIC capability and efuse buffer mode are UNI commands with tag/length TLVs.
 - There is no CHANNEL_SWITCH command; the sniffer CONFIG TLV is the channel command.
 
-Passive receive only. Injection, thermal, and raw efuse reads are not ported.
+Passive receive and query-only thermal telemetry. Injection and raw efuse reads are not ported.
 """
 
 from __future__ import annotations
@@ -263,7 +263,10 @@ class Mt7925uDevice(m.Mt7921uDevice):
         )
 
     def get_temperature(self):
-        raise NotImplementedError("MT7925 thermal query is MCU_UNI_CMD(THERMAL) 0x35; not ported")
+        """Reported analog-die temperature, from the pinned UNI35 query-only path."""
+        from mt76_measurements import read_thermal
+
+        return read_thermal(self).reported_temperature_c
 
     def read_efuse(self, offset: int):
         raise NotImplementedError("MT7925 efuse read is UNI EFUSE_CTRL tag 1; not ported")

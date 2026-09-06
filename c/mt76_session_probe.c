@@ -15,6 +15,7 @@
 
 static volatile sig_atomic_t stopping;
 static bool named_counters;
+static bool thermal;
 static const char *selected_band = "5GHz";
 static void stop_handler(int sig) { (void)sig; stopping = 1; }
 static void quiet(const char *fmt, ...) { (void)fmt; }
@@ -62,6 +63,10 @@ typedef struct {
     uint64_t queries, retunes, max_mib_us, max_retune_us, legacy_discards;
     mt_probe_clock_t clock;
 } counts_t;
+static int thermal_query(mt7921_dev_t *dev, void *ctx) {
+    mt_thermal_sample_t *sample = ctx;
+    return mt_thermal_read(&dev->mcu, sample->action, sample);
+}
 static void consume(const mt_session_packet_t *p, int chip, unsigned channel, counts_t *counts) {
     counts->consumed++;
     mt7921_rxd_frame_t frame;
@@ -127,10 +132,11 @@ int main(int argc, char **argv) {
         if (!strcmp(argv[i], "--help")) {
             puts("mt76_session_probe --usb-id VID:PID --fw DIR [--seconds 1..14400] "
                  "[--hop-seconds 0..3600] [--mib-seconds 0..3600] [--frame-capacity 1..4096] "
-                 "[--named-counters] [--band 2.4GHz|5GHz]");
+                 "[--named-counters] [--thermal] [--band 2.4GHz|5GHz]");
             return 0;
         }
         if (!strcmp(argv[i], "--named-counters")) { named_counters = true; continue; }
+        if (!strcmp(argv[i], "--thermal")) { thermal = true; continue; }
         const char *key = argv[i];
         if (++i == argc) return 2;
         if (!strcmp(key, "--usb-id")) id = argv[i];
@@ -146,6 +152,7 @@ int main(int argc, char **argv) {
         else return 2;
     }
     if (!id || (strcmp(id, "0e8d:7961") && strcmp(id, "0846:9072"))) return 2;
+    if (thermal && !mib_seconds) return 2;
     int chip = !strcmp(id, "0846:9072") ? MT_CHIP_MT7925 : MT_CHIP_MT7921;
     const mt7921_chip_profile_t *prof = mt7921_chip_profile(chip);
     size_t patch_len = 0, ram_len = 0;
@@ -199,6 +206,22 @@ int main(int argc, char **argv) {
                     printf("%s\"%s\":%" PRIu64, i ? "," : "", sample.descriptors[i]->name,
                            sample.raw.values[i]);
                 puts("}}");
+            }
+            if (thermal) {
+                unsigned actions = chip == MT_CHIP_MT7925 ? 3 : 1;
+                for (unsigned a = 0; a < actions; a++) {
+                    mt_thermal_sample_t reading = {.action = a == 1 ? MT_THERMAL_RAW_ADC : MT_THERMAL_TEMPERATURE};
+                    if (mt_session_call(s, thermal_query, &reading, 3000, false)) { result = 1; break; }
+                    char temperature[32];
+                    if (reading.has_temperature) snprintf(temperature, sizeof(temperature), "%" PRId32, reading.reported_temperature_c);
+                    else snprintf(temperature, sizeof(temperature), "null");
+                    mt_session_snapshot(s, &stats);
+                    printf("{\"event\":\"thermal\",\"usb_id\":\"%s\",\"epoch_ns\":%" PRIu64
+                           ",\"action\":%d,\"raw\":%u,\"reported_temperature_c\":%s,\"opened_us\":%" PRIu64
+                           ",\"closed_us\":%" PRIu64 "}\n", id, stats.epoch_ns, reading.action, reading.raw,
+                           temperature, reading.opened_us, reading.closed_us);
+                }
+                if (result) break;
             }
             next_mib = mt_radio_monotonic_us() + mib_seconds * 1000000ULL;
         }

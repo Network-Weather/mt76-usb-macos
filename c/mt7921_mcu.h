@@ -65,6 +65,24 @@ typedef struct {
 } mt7921_mcu_t;
 
 void mt7921_mcu_init(mt7921_mcu_t *mcu, mt7921_usb_t *usb);
+
+enum { MT_THERMAL_TEMPERATURE = 0, MT_THERMAL_RAW_ADC = 1 };
+typedef struct {
+    uint32_t raw;
+    int32_t reported_temperature_c;
+    bool has_temperature;
+    int chip, action;
+    uint64_t opened_us, closed_us;
+    uint32_t dropped_frames; /* legacy MCU discards, not session queue overflow */
+} mt_thermal_sample_t;
+/* Pure query-only encoders/parsers. MT7921: temperature only, EXT2c.
+ * MT7925: UNI35 tag0 temperature/raw ADC, band0; ADC conversion uncalibrated.
+ * Output unchanged on failure; no sensor/protection controls. */
+int mt_thermal_request(int chip, int action, uint8_t *out, size_t capacity);
+int mt_thermal_parse(int chip, int action, const uint8_t *raw, size_t len,
+                      uint8_t sequence, uint32_t *value);
+int mt_thermal_read(mt7921_mcu_t *mcu, int action, mt_thermal_sample_t *sample);
+
 uint8_t mt7921_mcu_next_seq(mt7921_mcu_t *mcu);
 
 int mt7921_mcu_send(mt7921_mcu_t *mcu, uint8_t cid, const void *payload,

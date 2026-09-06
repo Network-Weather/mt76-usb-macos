@@ -4,6 +4,24 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 thermal integration and counter parser correction, 2026-09-06
+
+The [thermal contract](MEASUREMENTS.md#query-only-thermal-measurements) and
+[eight-run sanitized evidence](../research/evidence/r32-thermal-2026-09-06.json)
+cover Python/C temperature on both chips and raw ADC on MT7925. The final
+15-second mixed runs decoded Python/C 607/899 old-chip and 1,677/2,160 new-chip
+frames, with three retunes each and no USB errors, malformed transfers, queue
+drops or legacy MCU discards. Native stop was orderly and register reads remained
+alive. These separate-run frame counts are not a sensitivity comparison.
+
+The first native MT7925 run failed a counter sample after six successful thermal
+queries. Its matched reply was not saved. A subsequently reproduced MIB bug
+(value bytes rescanned as an entry header) is fixed in both parsers and covered by
+shared fixtures, but is not a proven explanation of that particular live failure.
+The failed run remains in the evidence. No thermal-control writes or new RF
+transmit profiles were used. Old-chip 5-GHz RX and multi-hour stability remain
+unqualified. Offline checkpoint: 1,788 Python tests and native ASan/UBSan pass.
+
 ## R32 named-counter integration, 2026-09-06
 
 The [measurement API contract](MEASUREMENTS.md) and

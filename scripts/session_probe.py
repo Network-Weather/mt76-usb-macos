@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import mt7921u as m
 from mt76_measurements import Counter as NamedCounter
-from mt76_measurements import counter_descriptors, read_counters
+from mt76_measurements import ThermalAction, counter_descriptors, read_counters, read_thermal
 from mt76_session import AcquisitionSession, SessionError
 
 
@@ -42,6 +42,11 @@ def main(argv=None):
     parser.add_argument("--fw", default=os.fspath(m.firmware_dir()))
     parser.add_argument("--band", choices=("2.4GHz", "5GHz"), default="5GHz")
     parser.add_argument(
+        "--thermal",
+        action="store_true",
+        help="query temperature and supported raw ADC alongside MIB",
+    )
+    parser.add_argument(
         "--named-counters", action="store_true", help="sample/export the raw named profile"
     )
     parser.add_argument("--seconds", type=int, default=60)
@@ -53,6 +58,8 @@ def main(argv=None):
         parser.error("duration 1..14400 and hop interval 0..3600 required")
     if not 0 <= args.mib_seconds <= 3600 or not 1 <= args.frame_capacity <= 65536:
         parser.error("MIB interval 0..3600 and frame capacity 1..65536 required")
+    if args.thermal and not args.mib_seconds:
+        parser.error("--thermal requires a positive --mib-seconds interval")
     stopping = False
 
     def stop(_sig, _frame):
@@ -157,6 +164,32 @@ def main(argv=None):
                         counts["max_mib_latency_us"],
                         latency,
                     )
+                    if args.thermal:
+                        actions = (ThermalAction.TEMPERATURE,)
+                        if dev.CHIP == m.CHIP_MT7925:
+                            actions = (
+                                ThermalAction.TEMPERATURE,
+                                ThermalAction.RAW_ADC,
+                                ThermalAction.TEMPERATURE,
+                            )
+                        for action in actions:
+                            reading = session.call(lambda d, a=action: read_thermal(d, a))
+                            counts["thermal_queries"] += 1
+                            print(
+                                json.dumps(
+                                    {
+                                        "event": "thermal",
+                                        "usb_id": args.usb_id,
+                                        "epoch_ns": session.snapshot()["epoch_ns"],
+                                        "action": int(action),
+                                        "raw": reading.raw,
+                                        "reported_temperature_c": reading.reported_temperature_c,
+                                        "opened_us": reading.opened_us,
+                                        "closed_us": reading.closed_us,
+                                    }
+                                ),
+                                flush=True,
+                            )
                     next_mib = time.monotonic() + args.mib_seconds
                 if now >= next_hop:
                     current = targets[1] if current == targets[0] else targets[0]

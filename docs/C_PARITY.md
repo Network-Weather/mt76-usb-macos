@@ -8,11 +8,12 @@ covers acquisition primitives; it does not move site analysis into the driver.
 
 R32 adds the [named MCU measurement contract](MEASUREMENTS.md) in Python and C.
 This additive slice and the integrated sessions are on `feat/measurement-api`,
-not yet released. New raw-counter parity is distinct from the earlier R30 table
+not yet released. New raw-counter and query-only thermal parity is distinct from the earlier R30 table
 and does not imply parity for the remaining research-only surfaces.
 
 | Python reference | C interface | Semantics and boundary |
 |---|---|---|
+| `mt76_measurements.read_thermal` | `mt_thermal_read` in `mt7921_mcu.h` | Reported signed temperature on both chips, separate raw ADC on MT7925; bounded matching-event parser, request intervals, unchanged native output on failure; no thermal-control writes |
 | `rxd.decode`, `rxd_connac3.decode` | `mt7921_rxd_decode*`, `mt7921_rxd_frame_t` | Group-2 timestamp with presence flag; local 32-bit microsecond counter, wrap-aware downstream, not wall time or ranging |
 | `research/rx_vector_probe.py:vectors` | `mt7921_rxd_groups`, frame `g3`/`g5` arrays | Group mask and explicit word counts; connac2 G3/G5 = 2/18 words, connac3 = 4/24; no Group-1 packet numbers or Group-4 addresses exported |
 | `scripts/mcu_stats.py`, `research/mib_offset_sweep.py` | `mt_mib_request`, `mt_mib_parse`, `mt_mib_read` | MT7921 EXT 0x5a, one offset per request, measured 32-bit counter at reply-body byte 28; no offset echo in this firmware |

@@ -256,7 +256,6 @@ def test_unported_operations_refuse_loudly():
     dev = m25.Mt7925uDevice()
     for call in (
         lambda: dev.set_chan_info(control_ch=1, center_ch=1, bw=0, band=0),
-        dev.get_temperature,
         lambda: dev.read_efuse(0),
         lambda: dev.inject(b"", 0),
     ):

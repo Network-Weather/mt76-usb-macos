@@ -8,9 +8,11 @@
 static uint8_t counter_payload[256];
 static unsigned counter_size, counter_writes;
 static int counter_chip, counter_failure;
+static int thermal_test_action = -1;
 static int counter_write(mt7921_usb_t *usb, uint8_t ep, const void *data, uint32_t len, uint32_t ms) {
     (void)usb; (void)ep; (void)ms;
     counter_writes++;
+    if (thermal_test_action >= 0 && counter_failure == 1) return -1;
     if (counter_failure == 1 && counter_writes == 2) return -1;
     unsigned prefix = 4 + (counter_chip == MT_CHIP_MT7925 ? MCU_UNI_TXD_LEN : MCU_TXD_LEN);
     if (len < prefix || len - prefix > sizeof(counter_payload)) return -1;
@@ -24,7 +26,14 @@ static int counter_reply(void *context, uint8_t seq, uint8_t cid, uint8_t *out,
     const mt7921_chip_profile_t *profile = mt7921_chip_profile(counter_chip);
     uint8_t raw[512] = {0};
     unsigned size = profile->mcu_rxd_len;
-    if (counter_chip == MT_CHIP_MT7921) {
+    if (thermal_test_action >= 0) {
+        uint32_t value = thermal_test_action == MT_THERMAL_TEMPERATURE ? UINT32_C(0xfffffffb) : 68;
+        unsigned at = size + (counter_chip == MT_CHIP_MT7925 ? 12 : 4);
+        for (unsigned i = 0; i < 4; i++) raw[at + i] = (uint8_t)(value >> (8 * i));
+        if (counter_chip == MT_CHIP_MT7925) raw[size + 6] = 12;
+        size += counter_chip == MT_CHIP_MT7925 ? 16 : 8;
+        raw[counter_chip == MT_CHIP_MT7925 ? 36 : 28] = counter_chip == MT_CHIP_MT7925 ? 0x35 : 0xed;
+    } else if (counter_chip == MT_CHIP_MT7921) {
         raw[size + 28] = (uint8_t)(100 + counter_payload[4]);
         size += 32;
     } else {
@@ -47,6 +56,7 @@ static int counter_reply(void *context, uint8_t seq, uint8_t cid, uint8_t *out,
 /* Exercises the real read wrapper/encoders with fake USB and matched reply bodies.
  * Failure cases must leave caller output untouched, including partial EXT reads. */
 int parity_counter_read(int chip, int mode) {
+    thermal_test_action = -1;
     mt7921_dev_t dev = {0};
     dev.usb.chip = chip;
     mt7921_mcu_init(&dev.mcu, &dev.usb);
@@ -72,6 +82,33 @@ int parity_counter_read(int chip, int mode) {
             if (sample.raw.values[i] != 100 + sample.descriptors[i]->offset ||
                 sample.raw.offsets[i] != sample.descriptors[i]->offset) return 5;
     }
+    return 0;
+}
+
+int parity_thermal_read(int chip, int action, int mode) {
+    mt7921_usb_t usb = {.chip = chip};
+    mt7921_mcu_t mcu;
+    mt7921_mcu_init(&mcu, &usb);
+    mcu.write_bulk = counter_write; mcu.session_wait = counter_reply;
+    counter_chip = chip; counter_failure = mode; counter_writes = 0;
+    thermal_test_action = action;
+    mt_thermal_sample_t sample, before;
+    memset(&sample, 0xa5, sizeof(sample)); memcpy(&before, &sample, sizeof(sample));
+    int result = mt_thermal_read(&mcu, action, &sample);
+    bool unsupported = (chip == MT_CHIP_MT7921 && action != MT_THERMAL_TEMPERATURE) || action > 1;
+    if (mode || unsupported) {
+        if (!result || memcmp(&sample, &before, sizeof(sample))) return 1;
+        if (unsupported && counter_writes) return 2;
+    } else {
+        if (result || counter_writes != 1 || sample.chip != chip || sample.action != action ||
+            sample.closed_us < sample.opened_us) return 3;
+        if (action == MT_THERMAL_TEMPERATURE) {
+            if (!sample.has_temperature || sample.reported_temperature_c != -5 || sample.raw != UINT32_C(0xfffffffb)) return 4;
+            int32_t value = 99;
+            if (mt7921_get_temperature(&mcu, &value) || value != -5) return 5;
+        } else if (sample.has_temperature || sample.raw != 68) return 6;
+    }
+    thermal_test_action = -1;
     return 0;
 }
 
