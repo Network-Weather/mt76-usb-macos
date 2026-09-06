@@ -8,7 +8,7 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 ### Added
 
 - Native C acquisition parity with the 2026-09-04 Python research: bounded hardware
-  timestamp and Group-3/5 export, MT7921 EXT and MT7925 atomic UNI MIB queries,
+  timestamp and Group-3/5 export, MT7921 EXT and MT7925 batched UNI MIB queries,
   opt-in reversible Group-5 reporting, controlled OFDM Probe Request transmission
   and attenuation, MT7925 fixed-rate setup/DIS_MAT, and per-chip TX-status decoding.
   `c/mt76_radio_probe` provides a gated, redacted native experiment CLI;
@@ -23,6 +23,33 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 - Native USB control transfers now honor explicit timeouts through IOKit's
   `DeviceRequestTO`; retries share a monotonic deadline. MCU waits use monotonic
   time, reject truncated reply buffers, and account for connac3 software frames.
+
+- Firmware measurement research from [PR #31](https://github.com/Network-Weather/mt76-usb-macos/pull/31),
+  with bounded reproducers, synthetic tests and sanitized hardware evidence.
+  This research does not change the production Python/C drivers or passive
+  defaults; it is not a further C-parity expansion or a supported measurement API.
+- MT7925 beacon-selected CSI with receiver-index pairing and transmitter
+  filtering; TMAC/RMAC ICS diagnostics on MT7925 and RMAC ICS on MT7961.
+  These expose additional PHY metadata, not calibrated channel matrices or ranging.
+  See [CSI](docs/STATION_CSI.md) and [ICS](docs/ICS_CAPTURE.md).
+- Firmware-traced histogram, PHY-error, NAV/subchannel, thermal and power-table
+  research readouts, including explicit counter-ownership, inactive-width and
+  stale-value controls. MT7961 gains research access to normal-mode in-band/
+  wideband signal fields and RF-mode CFO/SNR streaming; MT7925 gains raw signed
+  PHY comparison inputs with documented 5-GHz freshness limits. See the
+  [findings ledger](docs/OVERNIGHT_EXPLORATION.md),
+  [signal fields](docs/INBAND_WIDEBAND_SIGNAL.md), and
+  [PHY comparison](docs/MT7925_PHY_COMPARISON.md).
+- Bounded, independently received transmit experiments for selected HT/VHT/HE
+  formats, two streams, STBC, guard intervals, LDPC, HE extended range, HT40,
+  and short control/Data/QoS frames. TX-status and cross-radio timing controls
+  distinguish packet duration from clock offsets and service delay. Coverage is
+  configuration-specific; weak reverse-direction controls, unverified DCM and
+  upper106-tone modes, and lack of calibrated power/range remain explicit.
+  See [PHY transmit](docs/PHY_TRANSMIT.md) and [timing](docs/CROSS_RADIO_CLOCK.md).
+- Read-only loaded-firmware/ROM analysis tools and maintainer-facing provenance
+  for command dispatch and register fields. Firmware/ROM bytes and ambient
+  identities, packet payloads and raw IQ are not included in the new evidence.
 
 - `rxd.parse_multi_link` decodes the 802.11be Multi-Link element: the MLD address, the Basic
   variant's Common Info subfields, and each Per-STA Profile's link id and address, reassembling
@@ -54,14 +81,16 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 - `research/cross_measure.py` runs both adapters at once: two receivers on one channel to check
   they agree, and a bounded transmit burst measured against known airtime. It established that
-  injection radiates on 2.4 GHz — 60 of 60 frames decoded by an independent adapter — and not on
-  5 GHz, which the repository previously could not prove either way
-  ([docs/TESTING.md](docs/TESTING.md)).
+  CCK injection radiates on 2.4 GHz — 60 of 60 frames decoded by an independent adapter.
+  Its initial 5-GHz failure used CCK, not a valid general 5-GHz transmit test;
+  subsequent OFDM experiments established 5-GHz transmission, with later RF-performance
+  limitations retained ([docs/PHY_TRANSMIT.md](docs/PHY_TRANSMIT.md)).
 - MT7925 UNI MIB characterization tools identify delivered and detected receive counts,
-  CCK/OFDM-family receive duration, primary CCA and ED-active time through atomic counter reads,
+  CCK/OFDM-family receive duration, primary CCA and ED-active time through batched counter queries,
   controlled Wi-Fi perturbation and an independent MT7921 reference. The full counter map,
   confidence boundaries and wide-channel scope result are in
-  [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
+  [docs/MT7925_MIB.md](docs/MT7925_MIB.md). A single request does not establish
+  simultaneous hardware latching.
 
 ### Changed
 
@@ -71,12 +100,27 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Documentation
 
+- Maintainer-facing reproduction of a pinned MT7925 firmware defect: UNI23
+  diagnostic tag3 retains command objects; four reports can stall subsequent
+  commands until reload. The guarded research reproducer is not a polling API,
+  and no firmware fix is claimed. Link-quality busy percentage and HWCFG readout
+  also have traced unsupported/synthesized paths; zero/ACK is not measurement
+  availability. See [diagnostic statistics](docs/MT7925_DIAGNOSTIC_STATS.md) and
+  [UNI dispatch](docs/MT7925_UNI_DISPATCH.md).
+- Source/ROM-backed MT7925 counter naming correction: offset17 is primary CCA,
+  offset19 is CCA+NAV+TX, and offset7 counts idle slots rather than microseconds.
+  Overlapping counters, width-inapplicable fields and read-clear ownership must
+  not be interpreted as additive occupancy or non-Wi-Fi interference.
 - MT7921U regression on the 0.3.0 code with both adapters attached: both tools refuse an ambiguous
   open, both 43-channel sweeps pass on the ALFA, thermal and efuse answer, pcaps dissect
   ([docs/TESTING.md](docs/TESTING.md)).
 
 ### Fixed
 
+- Offline `scripts/fw_triage.py --command-map` now reads candidate records as
+  CID-then-handler and includes the final complete record. The old reversed order
+  associated handlers with the next CID. Candidate matches or absence no longer
+  claim dispatch reachability or implemented/unsupported features.
 - The Python pcap writer emits the radiotap VHT field at its full 12 bytes. It was writing 10,
   omitting `partial_aid`, so `it_len` under-counted what the present bitmap claimed and Wireshark
   rejected every VHT frame as malformed. User 0's coding bit now reports LDPC, matching the C
