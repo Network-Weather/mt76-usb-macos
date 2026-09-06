@@ -285,3 +285,47 @@ int parity_vendor_timeout(unsigned mode) {
     if (mode == 2) return ret == 2 ? 0 : 3;
     return ret == 4 && value == UINT32_MAX ? 0 : 4;
 }
+
+/* Bring-up boundary: emulate only the initial reset/register requests. Never
+ * open hardware. A deliberately unready power-on stops success controls before
+ * firmware download, so this does not pretend to test complete initialization. */
+static unsigned reset_mode, reset_done_reads, reset_power_calls, reset_usb_calls;
+static const mt7921_chip_profile_t *reset_profile;
+static IOReturn reset_device(void *self) {
+    (void)self; reset_usb_calls++; return kIOReturnSuccess;
+}
+static IOReturn reset_request(void *self, IOUSBDevRequestTO *r) {
+    (void)self;
+    uint32_t addr = ((uint32_t)r->wValue << 16) | r->wIndex;
+    uint32_t value = 0;
+    if (r->bRequest == MT_VEND_POWER_ON) reset_power_calls++;
+    if (r->bmRequestType & USB_DIR_IN) {
+        if (r->wLength != 4) return kIOReturnBadArgument;
+        if (r->bRequest == MT_VEND_READ_EXT && addr == MT_CONN_ON_MISC &&
+            !reset_power_calls && reset_mode != 2) value = MT_TOP_MISC2_FW_N9_RDY;
+        if (r->bRequest == MT_VEND_DEV_MODE && addr == reset_profile->wfsys_done_reg) {
+            reset_done_reads++;
+            value = reset_mode == 1 ? reset_profile->wfsys_done_val : 0;
+        }
+        value = CFSwapInt32HostToLittle(value);
+        memcpy(r->pData, &value, 4);
+    }
+    r->wLenDone = r->wLength;
+    return kIOReturnSuccess;
+}
+int parity_bringup_reset(int chip, unsigned mode) {
+    reset_profile = mt7921_chip_profile(chip);
+    if (!reset_profile || mode > 2) return 1;
+    reset_mode = mode; reset_done_reads = reset_power_calls = reset_usb_calls = 0;
+    IOUSBDeviceInterface182 interface = {0};
+    interface.ResetDevice = reset_device; interface.DeviceRequestTO = reset_request;
+    IOUSBDeviceInterface182 *pointer = &interface;
+    mt7921_dev_t dev = {0}; dev.usb.dev = &pointer; dev.usb.chip = chip;
+    mt7921_mcu_init(&dev.mcu, &dev.usb);
+    dev.session_ready = true; dev.tuned = true;
+    if (mt7921_bringup(&dev, NULL, 0, NULL, 0, NULL) != -1) return 2;
+    if (dev.session_ready || dev.tuned || reset_usb_calls != 1) return 3;
+    if (!mode) return reset_power_calls == 0 &&
+        reset_done_reads == MT792x_WFSYS_INIT_RETRY_COUNT ? 0 : 4;
+    return reset_power_calls == 1 && reset_done_reads == (mode == 1 ? 1U : 0U) ? 0 : 5;
+}

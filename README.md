@@ -317,7 +317,7 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only suite now has 2,008 offline tests for firmware parsing, MCU framing (both chips, with
+The macOS-only suite now has 2,014 offline tests for firmware parsing, MCU framing (both chips, with
 the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
 802.11 management parsing, PHY/airtime calculations, aggregation, pcap serialization,

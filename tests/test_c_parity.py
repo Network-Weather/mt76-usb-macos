@@ -99,6 +99,12 @@ def test_histogram_native_request_ack_status(native):
             assert value.value == 123
 
 
+@pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("mode", [0, 1, 2])
+def test_native_bringup_refuses_failed_reset(native, chip, mode):
+    assert native.parity_bringup_reset(chip, mode) == 0
+
+
 @pytest.fixture(scope="module")
 def native(tmp_path_factory):
     out = tmp_path_factory.mktemp("c-parity") / "parity.dylib"

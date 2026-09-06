@@ -5,6 +5,13 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+### Fixed
+
+- Native bring-up now aborts when a retained-firmware WFSYS reset times out,
+  matching Python's refusal to continue. Synthetic tests cover both chips,
+  timeout, completed reset and no-retained-firmware controls. This fixes an
+  ignored error return, not the unresolved old-radio RF-silence cause.
+
 ### Added
 
 - Small installed-API [Python/native measurement examples](docs/MEASUREMENT_EXAMPLES.md)

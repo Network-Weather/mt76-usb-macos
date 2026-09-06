@@ -12,8 +12,11 @@ int parity_rate_table(int, unsigned, unsigned *);
 int parity_vendor_timeout(unsigned);
 int parity_counter_read(int, int);
 int parity_thermal_read(int, int, int);
+int parity_bringup_reset(int, unsigned);
 
 int main(void) {
+    for (int chip = 0; chip < 2; chip++)
+        for (unsigned mode = 0; mode < 3; mode++) assert(!parity_bringup_reset(chip, mode));
     const int thermal_modes[] = {0, 1, 2, 5, 6};
     for (int chip = 0; chip < 2; chip++) for (int action = 0; action < 3; action++)
         for (unsigned i = 0; i < sizeof(thermal_modes)/sizeof(*thermal_modes); i++)

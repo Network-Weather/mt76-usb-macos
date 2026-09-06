@@ -165,7 +165,10 @@ int mt7921_bringup(mt7921_dev_t *dev, const uint8_t *patch_blob, size_t patch_le
     if (log_fn) log_fn("MT_CONN_ON_MISC = 0x%08x\n", misc);
     if (misc & MT_TOP_MISC2_FW_N9_RDY) {
         if (log_fn) log_fn("  retained FW_STATE bits; running WFSYS reset\n");
-        wfsys_reset(dev);
+        if (wfsys_reset(dev) != 0) {
+            if (log_fn) log_fn("  WFSYS reset did not complete; refusing firmware bring-up\n");
+            return -1;
+        }
         if (log_fn) log_fn("  MT_CONN_ON_MISC = 0x%08x\n", mt7921_rr(&dev->usb, MT_CONN_ON_MISC));
     }
 
