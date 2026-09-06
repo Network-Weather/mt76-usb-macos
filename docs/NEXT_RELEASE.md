@@ -1,8 +1,9 @@
 # Next measurement release: research to Python and C
 
 Planning baseline: `main` at `7eb35d1`, 2026-09-06, after PR #31 merged.
-This is the selected R32 delivery plan, not a release announcement or a claim
-that the APIs below already exist. The published version remains `0.3.0`;
+This is the selected R32 delivery plan, not a release announcement. The
+[current inclusion matrix](MEASUREMENT_RELEASE_SCOPE.md) separates implemented
+feature-branch APIs from outstanding qualification. The published version remains `0.3.0`;
 select the next version under the project's versioning policy at release prep.
 
 ## Outcome and scope
@@ -23,7 +24,13 @@ No proper networking driver, iPad implementation, calibrated ranging/noise/power
 mesh-topology algorithm, extcap, or upstream Linux implementation is required.
 Do not turn this into a wholesale driver rewrite or a port of every research script.
 
-## Where we actually are
+## Baseline and current execution
+
+The following baseline motivated the plan. Sessions, counters, thermal, Group5,
+TX-status timing, CSI and histogram contracts are now implemented on
+`feat/measurement-api`, not main. The [scope matrix](MEASUREMENT_RELEASE_SCOPE.md)
+is the current acceptance status. In particular, the MT7921 is now RF-silent in
+fresh baseline controls; A9000 long-session qualification is still running.
 
 - **Released:** 0.3.0. **Merged but unreleased:** R30 native acquisition parity,
   later capture/analysis changes, and PR #31's research, fixtures and evidence.
@@ -128,9 +135,10 @@ synthetic or redacted, with no ambient identifiers or coefficient arrays by defa
   fail-closed sequence matching and stop/callback lifetime rules already implemented.
   Integrated on `feat/measurement-api`; 1,687 tests and full offline checks pass.
   Main merge and new hardware qualification remain separate gates.
-- [ ] Define the selected measurement records and capability/profile matrix above;
+- [x] Define the selected measurement records and capability/profile matrix above;
   distinguish existing primitives, newly extracted APIs and experimental additions.
-- [ ] Update `C_PARITY.md`: parity is per selected capability, not per script count.
+  See the [explicit inclusion decisions](MEASUREMENT_RELEASE_SCOPE.md).
+- [x] Update `C_PARITY.md`: parity is per selected capability, not per script count.
   Correct historical "atomic" MIB language and separate wire/effective counter width.
 
 Exit: reviewed session integration and agreed shared fixtures/contracts. No hardware
@@ -152,7 +160,7 @@ discovery or large type-system refactor is needed to complete this package.
 - [x] TX-status timing parity: strict installed parser and research reuse, shared
   malformed/format/capacity fixtures,12/12 identical live status decodes. Missing
   independent OFDM receipts remain a TX-profile gate, not parser failure.
-- [ ] Each slice includes synthetic golden bytes shared across implementations,
+- [x] Each slice includes synthetic golden bytes shared across implementations,
   malformed/unknown/truncated-input and failure tests, CLI reuse, and dated live
   qualification on the applicable dongle. Compare semantics in separate runs;
   do not have Python and C steal the same hardware counters concurrently.
@@ -173,11 +181,14 @@ Exit: an application can consume the floor without importing `research/` or
 - [x] Histogram wire/record and guarded acquisition parity; [12 native/Python runs](HISTOGRAM_API.md)
   cover repeated windows/restoration and active cancellation. Coverage/cadence and
   physical power/view labels stay unavailable; pending modern timers need reload.
-- [ ] Decide each feature independently: included with a narrow explicit experimental
+- [x] Decide each feature independently: included with a narrow explicit experimental
   profile, or left research-only with the failing gate recorded. Do not ship a
   Python-only public feature while calling the release's selected scope C parity.
-- [ ] Only then consider a small TX profile extension, provided independent RF
+  CSI and histograms are narrow experimental candidates, still subject to final
+  acceptance; Group5 streaming is not qualified. See the scope matrix.
+- [x] Only then consider a small TX profile extension, provided independent RF
   controls and the existing broader-TX prerequisites pass. No open-ended rate sweep.
+  Deferred: current independent RF controls do not meet that prerequisite.
 
 Exit: an explicit included/deferred matrix, not every firmware mystery resolved.
 
@@ -229,3 +240,7 @@ source/ROM pointers and minimal sanitized reproducers. Separate facts derived fr
 Linux from new observations. No claim about current upstream absence without checking
 its current implementation; no outreach or driver patches implied. Maintainer
 acceptance is not a release gate. R21 remains a deferred iPad test spike.
+
+The [Linux measurement handoff](LINUX_MEASUREMENT_HANDOFF.md) is now drafted with
+an exact current upstream revision check, bounded reproducers and evidence links.
+It has not been sent upstream and contains no proposed driver implementation.

@@ -4,6 +4,29 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 current MT7921 RF failure and soak status, 2026-09-06
+
+The attached ALFA is now RF-silent in fresh2.4GHz baselines, not merely weak on
+5GHz. [Preserved failure evidence](../research/evidence/r32-mt7921-rf-silence-2026-09-06.json)
+records0 frames over164.531s on channels1/11 despite90 matched MCU replies,
+five retunes and no USB errors. That soak was intentionally cancelled (exit130),
+not passed. Existing non-session C channel6 and Python1/6/11 smoke tools also
+return0 transfers/frames and exit2/inconclusive. Three further normal/explicit
+WFSYS/normal-repeat bringups do not recover reception; firmware/calibration/thermal
+queries work, and histogram/Group5 enable masks read off.
+
+A fixed-old-receiver peer-idle/active/idle control gives0/0/0 old frames while the
+A9000 receives1,378. That does not support sustained peer USB activity as the
+cause in this experiment. The exact cause/onset remains unknown; this is not
+proof of a new API regression, firmware bug or permanent hardware damage.
+Cold-power/physical recovery and healthy old-radio RF acceptance remain open.
+
+The A9000's first native soak was interrupted solely for that coexistence control
+at508.316s:59,095 frames,16 retunes,50 counter rounds, no software drops/USB errors,
+roughly13.1MB current resident memory. It is not a two-hour pass. A fresh native
+two-hour run followed by Python two hours started2026-09-06T21:26:07UTC, using
+channels1/11,30s retunes,10s named-counter/thermal polls. Results are pending.
+
 ## R32 histogram acquisition parity, 2026-09-06
 
 All1,996 tests pass. Shared Python/native guard fixtures match operation traces,

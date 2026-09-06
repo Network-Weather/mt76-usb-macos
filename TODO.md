@@ -8,14 +8,18 @@ remaining research, Python/C integration and acceptance gates.
 
 Execution order: sessions and raw named counters first (implemented below), then
 thermal, normal Group5 signal/TX-status timing, CSI, histograms, and final release
-qualification. Current next research/integration slice is raw histograms. Group5
+qualification. The measurement implementations are now complete; Group5
 raw decoding/guard is implemented; live enabled-phase reliability remains gated.
 CSI wire/parser and public session-bound lifetime parity are implemented, with
 stage-fault tests and short native/Python coexistence/overflow/cancellation evidence.
 Longer acceptance remains open; CSI is narrow and explicitly experimental.
 Histogram wire/record and guarded acquisition parity now pass, including12 fresh
 native/Python live runs and shared faults. Next: release qualification, explicit
-included/deferred matrix, small composition examples and the Linux handoff notes.
+small composition examples and outstanding live acceptance. The
+[inclusion matrix](docs/MEASUREMENT_RELEASE_SCOPE.md) and
+[Linux handoff draft](docs/LINUX_MEASUREMENT_HANDOFF.md) are prepared; nothing has
+been sent upstream. MT7921 fresh baseline RX is currently silent, and A9000
+multi-hour qualification is in progress, not passed.
 
 - [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
   `feat/measurement-api` (not main); baseline offline checks pass.
@@ -28,7 +32,7 @@ included/deferred matrix, small composition examples and the Linux handoff notes
   both libraries, with research helpers consuming the promoted implementations.
   Group5 remains experimental with a failed live-reliability gate;12/12 live
   TX-status timing records match, but weak RF controls still prohibit new TX claims.
-- [ ] Target bounded beacon CSI, then raw histograms, behind separate experimental
+- [x] Target bounded beacon CSI, then raw histograms, behind separate experimental
   gates; defer either if its validity/cleanup/parity gate is not met.
 - [ ] Requalify healthy independent RF controls before any expanded TX profile.
 - [ ] Complete packaging, regression and bounded live/session qualification, then

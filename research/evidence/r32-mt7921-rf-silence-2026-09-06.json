@@ -1,0 +1,6583 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-06",
+  "branch": "feat/measurement-api",
+  "base_commit": "2074599",
+  "scope": "Unresolved attached MT7921 RF silence discovered while starting long-session acceptance. Preserve failures; no claim that successful MCU/reset is RF recovery.",
+  "assessment": {
+    "old_soak": "Stopped intentionally after164.531s,0frames across channels1/11,90matched MCU replies,16counter rounds,5retunes,0USBerrors,registeralive. Exit130 is cancellation, not a qualification pass.",
+    "new_soak": "First A9000 attempt interrupted after508.316s only for the bounded coexistence control:59095frames,50counter rounds,16retunes,0drops/errors and current RSS13.1MB. Not a two-hour pass. Full native/Python A9000 rerun launched21:26:07UTC.",
+    "baseline": "Existing native channel6/8s and Python1/6/11 five-second dwells also receive0frames/transfers, exit2inconclusive. No histogram or CSI enabled in those probes.",
+    "reset": "Three normal/forced-WFSYS/normal-repeat Python channel6 sessions remain silent. Firmware download, calibration push, MCU queries and temperature38C work. Forced WFSYS completes; normal bringup already performs it on retained firmware state.",
+    "controls": "Histogram control low3 and reset bit29 and Group5 enable bit23 read disabled. No evidence that the newly extracted controls are simply left enabled. All known-mask restoration/reload success remains distinct from RF health.",
+    "coexistence": "Old receiver sees0frames in5s peer-idle,15s peer-active,5s peer-idle without old retunes/resets between phases. A9000 receives1378frames. This does not support the peer-activity hypothesis in this control; it does not isolate every RF/USB coupling mechanism.",
+    "unknown": "Cause and exact onset remain unresolved. No attribution to new C code, histogram changes, firmware defect, antenna state or permanent damage is justified. Hardware/cold-power recovery and healthy independent RF controls remain open. Do not advertise old-chip release acceptance from responsive registers alone."
+  },
+  "first_soak_records": [
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "ready",
+        "usb_id": "0846:9072",
+        "requested_seconds": 7200,
+        "hop_seconds": 30,
+        "mib_seconds": 10,
+        "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "ready",
+        "usb_id": "0e8d:7961",
+        "requested_seconds": 7200,
+        "hop_seconds": 30,
+        "mib_seconds": 10,
+        "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1989331109961,
+        "closed_us": 1989331112083,
+        "values": {
+          "rx_mpdu": 977,
+          "rx_fcs_error": 98,
+          "rx_mdrdy": 1075,
+          "primary_cca": 2428311,
+          "cca_nav_tx": 2322516,
+          "cck_rx_duration": 1241137,
+          "ofdm_rx_duration": 8615,
+          "primary_ed": 2216629,
+          "nav": 26968,
+          "idle_slots": 65535
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989331126409,
+        "closed_us": 1989331128302
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989331129912,
+        "closed_us": 1989331131802
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989331134261,
+        "closed_us": 1989331137766
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1989331818098,
+        "closed_us": 1989331821842,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 33,
+          "cca_nav_tx": 33
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989331873468,
+        "closed_us": 1989331874488
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1989341186745,
+        "closed_us": 1989341188847,
+        "values": {
+          "rx_mpdu": 1773,
+          "rx_fcs_error": 166,
+          "rx_mdrdy": 1939,
+          "primary_cca": 4670331,
+          "cca_nav_tx": 4486045,
+          "cck_rx_duration": 2615367,
+          "ofdm_rx_duration": 16412,
+          "primary_ed": 4267619,
+          "nav": 52302,
+          "idle_slots": 131070
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989341189107,
+        "closed_us": 1989341191071
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989341192874,
+        "closed_us": 1989341194776
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989341217157,
+        "closed_us": 1989341219222
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1989341932244,
+        "closed_us": 1989341936164,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 33,
+          "cca_nav_tx": 33
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989341990243,
+        "closed_us": 1989341991326
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 30.107,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 2560,
+        "frames_delivered": 2559,
+        "frames_dropped": 0,
+        "frame_depth": 1,
+        "frame_high_water": 6,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 2569,
+        "read_timeouts": 244,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 9,
+        "unmatched_replies": 0,
+        "commands_completed": 9,
+        "decoded_frames": 2559,
+        "undecoded": 0,
+        "timestamp_frames": 2559,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 32530,
+        "mib_queries": 2,
+        "max_mib_latency_us": 2122,
+        "retunes": 1,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13123584,
+        "peak_resident_bytes": 13123584,
+        "timestamp_first": 904775,
+        "timestamp_last": 30848103,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 1,
+        "requested_control": 11,
+        "opened_us": 1989351225320,
+        "closed_us": 1989351227499,
+        "values": {
+          "rx_mpdu": 2564,
+          "rx_fcs_error": 211,
+          "rx_mdrdy": 2776,
+          "primary_cca": 6371122,
+          "cca_nav_tx": 6109268,
+          "cck_rx_duration": 3504534,
+          "ofdm_rx_duration": 26277,
+          "primary_ed": 5797404,
+          "nav": 79282,
+          "idle_slots": 196605
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989351228436,
+        "closed_us": 1989351230398
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989351242304,
+        "closed_us": 1989351244317
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989351294181,
+        "closed_us": 1989351296199
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 30.154,
+        "state": 0,
+        "epoch_ns": 1989321789288000,
+        "frames_received": 0,
+        "frames_delivered": 0,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 0,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 12,
+        "read_timeouts": 562,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 12,
+        "unmatched_replies": 0,
+        "commands_completed": 5,
+        "decoded_frames": 0,
+        "undecoded": 0,
+        "timestamp_frames": 0,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 0,
+        "mib_queries": 2,
+        "max_mib_latency_us": 3920,
+        "retunes": 1,
+        "max_retune_latency_us": 146573,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 8323072,
+        "peak_resident_bytes": 8323072,
+        "timestamp_first": 0,
+        "timestamp_last": 0,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 1,
+        "requested_control": 11,
+        "opened_us": 1989352046162,
+        "closed_us": 1989352050889,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 37,
+          "cca_nav_tx": 37
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989352103204,
+        "closed_us": 1989352104145
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 1,
+        "requested_control": 11,
+        "opened_us": 1989361314970,
+        "closed_us": 1989361317140,
+        "values": {
+          "rx_mpdu": 3977,
+          "rx_fcs_error": 673,
+          "rx_mdrdy": 4685,
+          "primary_cca": 10092289,
+          "cca_nav_tx": 9660154,
+          "cck_rx_duration": 5012451,
+          "ofdm_rx_duration": 93231,
+          "primary_ed": 9050006,
+          "nav": 122405,
+          "idle_slots": 262140
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989361328607,
+        "closed_us": 1989361330643
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989361331865,
+        "closed_us": 1989361333798
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989361345646,
+        "closed_us": 1989361347732
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 1,
+        "requested_control": 11,
+        "opened_us": 1989362153335,
+        "closed_us": 1989362157442,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 37,
+          "cca_nav_tx": 37
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989362212808,
+        "closed_us": 1989362213797
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 1,
+        "requested_control": 11,
+        "opened_us": 1989371362297,
+        "closed_us": 1989371364406,
+        "values": {
+          "rx_mpdu": 5381,
+          "rx_fcs_error": 1135,
+          "rx_mdrdy": 6592,
+          "primary_cca": 13813235,
+          "cca_nav_tx": 13218764,
+          "cck_rx_duration": 6594788,
+          "ofdm_rx_duration": 148163,
+          "primary_ed": 12310443,
+          "nav": 157144,
+          "idle_slots": 327675
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989371377441,
+        "closed_us": 1989371379445
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989371381094,
+        "closed_us": 1989371383170
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989371396965,
+        "closed_us": 1989371398993
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 1,
+        "requested_control": 11,
+        "opened_us": 1989372244070,
+        "closed_us": 1989372247954,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 37,
+          "cca_nav_tx": 37
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989372301850,
+        "closed_us": 1989372302777
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 60.028,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 6914,
+        "frames_delivered": 6914,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 6,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 6935,
+        "read_timeouts": 287,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 21,
+        "unmatched_replies": 0,
+        "commands_completed": 21,
+        "decoded_frames": 6914,
+        "undecoded": 0,
+        "timestamp_frames": 6914,
+        "transition_frames": 0,
+        "off_requested_channel": 1,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 5,
+        "max_mib_latency_us": 2179,
+        "retunes": 1,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13123584,
+        "peak_resident_bytes": 13123584,
+        "timestamp_first": 904775,
+        "timestamp_last": 60875417,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1989381429502,
+        "closed_us": 1989381431562,
+        "values": {
+          "rx_mpdu": 6942,
+          "rx_fcs_error": 1594,
+          "rx_mdrdy": 8639,
+          "primary_cca": 17527947,
+          "cca_nav_tx": 16758028,
+          "cck_rx_duration": 8306001,
+          "ofdm_rx_duration": 212512,
+          "primary_ed": 15544358,
+          "nav": 183954,
+          "idle_slots": 393210
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989381432001,
+        "closed_us": 1989381433974
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989381435709,
+        "closed_us": 1989381437631
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989381437890,
+        "closed_us": 1989381439826
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 60.056,
+        "state": 0,
+        "epoch_ns": 1989321789288000,
+        "frames_received": 0,
+        "frames_delivered": 0,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 0,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 27,
+        "read_timeouts": 1120,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 27,
+        "unmatched_replies": 0,
+        "commands_completed": 11,
+        "decoded_frames": 0,
+        "undecoded": 0,
+        "timestamp_frames": 0,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 0,
+        "mib_queries": 5,
+        "max_mib_latency_us": 4727,
+        "retunes": 1,
+        "max_retune_latency_us": 146573,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 8323072,
+        "peak_resident_bytes": 8323072,
+        "timestamp_first": 0,
+        "timestamp_last": 0,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1989382397797,
+        "closed_us": 1989382401643,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 41,
+          "cca_nav_tx": 41
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989382457261,
+        "closed_us": 1989382458208
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1989391467019,
+        "closed_us": 1989391469086,
+        "values": {
+          "rx_mpdu": 7661,
+          "rx_fcs_error": 1685,
+          "rx_mdrdy": 9450,
+          "primary_cca": 19635010,
+          "cca_nav_tx": 18772980,
+          "cck_rx_duration": 9196098,
+          "ofdm_rx_duration": 231323,
+          "primary_ed": 17446610,
+          "nav": 218713,
+          "idle_slots": 458745
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989391469500,
+        "closed_us": 1989391471394
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989391473217,
+        "closed_us": 1989391475094
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989391476793,
+        "closed_us": 1989391478687
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1989392541092,
+        "closed_us": 1989392544478,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 41,
+          "cca_nav_tx": 41
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989392599457,
+        "closed_us": 1989392600403
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1989401502196,
+        "closed_us": 1989401504355,
+        "values": {
+          "rx_mpdu": 8668,
+          "rx_fcs_error": 1758,
+          "rx_mdrdy": 10530,
+          "primary_cca": 22272258,
+          "cca_nav_tx": 21310574,
+          "cck_rx_duration": 10739904,
+          "ofdm_rx_duration": 239569,
+          "primary_ed": 19907978,
+          "nav": 242431,
+          "idle_slots": 524280
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989401505899,
+        "closed_us": 1989401507780
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989401508072,
+        "closed_us": 1989401509952
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989401561843,
+        "closed_us": 1989401563811
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1989402642074,
+        "closed_us": 1989402645975,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 41,
+          "cca_nav_tx": 41
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989402696580,
+        "closed_us": 1989402697607
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 90.029,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 9372,
+        "frames_delivered": 9372,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 7,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 9406,
+        "read_timeouts": 537,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 34,
+        "unmatched_replies": 0,
+        "commands_completed": 34,
+        "decoded_frames": 9372,
+        "undecoded": 0,
+        "timestamp_frames": 9372,
+        "transition_frames": 0,
+        "off_requested_channel": 2,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 8,
+        "max_mib_latency_us": 2179,
+        "retunes": 2,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 90822393,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 3,
+        "requested_control": 11,
+        "opened_us": 1989411620576,
+        "closed_us": 1989411622663,
+        "values": {
+          "rx_mpdu": 9422,
+          "rx_fcs_error": 1828,
+          "rx_mdrdy": 11355,
+          "primary_cca": 24188814,
+          "cca_nav_tx": 23112119,
+          "cck_rx_duration": 11613072,
+          "ofdm_rx_duration": 248093,
+          "primary_ed": 21597603,
+          "nav": 269609,
+          "idle_slots": 589815
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989411624214,
+        "closed_us": 1989411626307
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989411631914,
+        "closed_us": 1989411633880
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989411640209,
+        "closed_us": 1989411642143
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 90.077,
+        "state": 0,
+        "epoch_ns": 1989321789288000,
+        "frames_received": 0,
+        "frames_delivered": 0,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 0,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 44,
+        "read_timeouts": 1679,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 44,
+        "unmatched_replies": 0,
+        "commands_completed": 18,
+        "decoded_frames": 0,
+        "undecoded": 0,
+        "timestamp_frames": 0,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 0,
+        "mib_queries": 8,
+        "max_mib_latency_us": 4727,
+        "retunes": 2,
+        "max_retune_latency_us": 146573,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 8323072,
+        "peak_resident_bytes": 8323072,
+        "timestamp_first": 0,
+        "timestamp_last": 0,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 3,
+        "requested_control": 11,
+        "opened_us": 1989412731704,
+        "closed_us": 1989412735133,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 45,
+          "cca_nav_tx": 45
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989412789421,
+        "closed_us": 1989412790390
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 3,
+        "requested_control": 11,
+        "opened_us": 1989421661135,
+        "closed_us": 1989421663237,
+        "values": {
+          "rx_mpdu": 11161,
+          "rx_fcs_error": 2159,
+          "rx_mdrdy": 13456,
+          "primary_cca": 27391890,
+          "cca_nav_tx": 26165379,
+          "cck_rx_duration": 13549149,
+          "ofdm_rx_duration": 316954,
+          "primary_ed": 24114736,
+          "nav": 323281,
+          "idle_slots": 655350
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989421673439,
+        "closed_us": 1989421675431
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989421675810,
+        "closed_us": 1989421677833
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989421678906,
+        "closed_us": 1989421680884
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 3,
+        "requested_control": 11,
+        "opened_us": 1989422848421,
+        "closed_us": 1989422852756,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 45,
+          "cca_nav_tx": 45
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989422906599,
+        "closed_us": 1989422907548
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 3,
+        "requested_control": 11,
+        "opened_us": 1989431690804,
+        "closed_us": 1989431692994,
+        "values": {
+          "rx_mpdu": 12734,
+          "rx_fcs_error": 2446,
+          "rx_mdrdy": 15361,
+          "primary_cca": 30494670,
+          "cca_nav_tx": 29158294,
+          "cck_rx_duration": 15478720,
+          "ofdm_rx_duration": 355852,
+          "primary_ed": 26613673,
+          "nav": 395046,
+          "idle_slots": 720885
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989431694554,
+        "closed_us": 1989431696738
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989431698800,
+        "closed_us": 1989431700891
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989431702534,
+        "closed_us": 1989431705018
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 3,
+        "requested_control": 11,
+        "opened_us": 1989432975083,
+        "closed_us": 1989432978752,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 45,
+          "cca_nav_tx": 45
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989433029905,
+        "closed_us": 1989433030814
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 120.051,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 14343,
+        "frames_delivered": 14343,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 14390,
+        "read_timeouts": 567,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 47,
+        "unmatched_replies": 0,
+        "commands_completed": 47,
+        "decoded_frames": 14343,
+        "undecoded": 0,
+        "timestamp_frames": 14343,
+        "transition_frames": 1,
+        "off_requested_channel": 4,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 11,
+        "max_mib_latency_us": 2190,
+        "retunes": 3,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 120898660,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 4,
+        "requested_control": 1,
+        "opened_us": 1989441745346,
+        "closed_us": 1989441747714,
+        "values": {
+          "rx_mpdu": 14397,
+          "rx_fcs_error": 2725,
+          "rx_mdrdy": 17322,
+          "primary_cca": 33642858,
+          "cca_nav_tx": 32145398,
+          "cck_rx_duration": 17371760,
+          "ofdm_rx_duration": 415572,
+          "primary_ed": 29070860,
+          "nav": 427352,
+          "idle_slots": 786420
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989441748977,
+        "closed_us": 1989441751177
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989441802686,
+        "closed_us": 1989441804651
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989441845166,
+        "closed_us": 1989441847211
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 120.127,
+        "state": 0,
+        "epoch_ns": 1989321789288000,
+        "frames_received": 0,
+        "frames_delivered": 0,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 0,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 61,
+        "read_timeouts": 2238,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 61,
+        "unmatched_replies": 0,
+        "commands_completed": 25,
+        "decoded_frames": 0,
+        "undecoded": 0,
+        "timestamp_frames": 0,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 0,
+        "mib_queries": 11,
+        "max_mib_latency_us": 4727,
+        "retunes": 3,
+        "max_retune_latency_us": 146573,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 8323072,
+        "peak_resident_bytes": 8323072,
+        "timestamp_first": 0,
+        "timestamp_last": 0,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 4,
+        "requested_control": 1,
+        "opened_us": 1989443074255,
+        "closed_us": 1989443078574,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 49,
+          "cca_nav_tx": 49
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989443134192,
+        "closed_us": 1989443135271
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 4,
+        "requested_control": 1,
+        "opened_us": 1989451882726,
+        "closed_us": 1989451885305,
+        "values": {
+          "rx_mpdu": 15180,
+          "rx_fcs_error": 2805,
+          "rx_mdrdy": 18185,
+          "primary_cca": 35558404,
+          "cca_nav_tx": 33976670,
+          "cck_rx_duration": 18311275,
+          "ofdm_rx_duration": 419758,
+          "primary_ed": 30791786,
+          "nav": 460267,
+          "idle_slots": 851955
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989451887309,
+        "closed_us": 1989451889533
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989451942990,
+        "closed_us": 1989451944952
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989451982815,
+        "closed_us": 1989451984920
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 4,
+        "requested_control": 1,
+        "opened_us": 1989453141447,
+        "closed_us": 1989453145558,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 49,
+          "cca_nav_tx": 49
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989453197383,
+        "closed_us": 1989453198455
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 4,
+        "requested_control": 1,
+        "opened_us": 1989462020658,
+        "closed_us": 1989462022756,
+        "values": {
+          "rx_mpdu": 16156,
+          "rx_fcs_error": 2889,
+          "rx_mdrdy": 19245,
+          "primary_cca": 37980047,
+          "cca_nav_tx": 36322728,
+          "cck_rx_duration": 19841663,
+          "ofdm_rx_duration": 428310,
+          "primary_ed": 33023928,
+          "nav": 484344,
+          "idle_slots": 917490
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989462023849,
+        "closed_us": 1989462025744
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989462079553,
+        "closed_us": 1989462081548
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989462120064,
+        "closed_us": 1989462122007
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 4,
+        "requested_control": 1,
+        "opened_us": 1989463257606,
+        "closed_us": 1989463262452,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 49,
+          "cca_nav_tx": 49
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989463315415,
+        "closed_us": 1989463316477
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 150.075,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 16917,
+        "frames_delivered": 16917,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 16977,
+        "read_timeouts": 809,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 60,
+        "unmatched_replies": 0,
+        "commands_completed": 60,
+        "decoded_frames": 16917,
+        "undecoded": 0,
+        "timestamp_frames": 16917,
+        "transition_frames": 1,
+        "off_requested_channel": 5,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 14,
+        "max_mib_latency_us": 2579,
+        "retunes": 4,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 150922883,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 150.179,
+        "state": 0,
+        "epoch_ns": 1989321789288000,
+        "frames_received": 0,
+        "frames_delivered": 0,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 0,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 78,
+        "read_timeouts": 2797,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 78,
+        "unmatched_replies": 0,
+        "commands_completed": 32,
+        "decoded_frames": 0,
+        "undecoded": 0,
+        "timestamp_frames": 0,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 0,
+        "mib_queries": 14,
+        "max_mib_latency_us": 4846,
+        "retunes": 4,
+        "max_retune_latency_us": 146573,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 8323072,
+        "peak_resident_bytes": 8323072,
+        "timestamp_first": 0,
+        "timestamp_last": 0,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 5,
+        "requested_control": 11,
+        "opened_us": 1989472143591,
+        "closed_us": 1989472145766,
+        "values": {
+          "rx_mpdu": 17044,
+          "rx_fcs_error": 2974,
+          "rx_mdrdy": 20221,
+          "primary_cca": 39759934,
+          "cca_nav_tx": 37997718,
+          "cck_rx_duration": 20932585,
+          "ofdm_rx_duration": 443715,
+          "primary_ed": 34547375,
+          "nav": 508795,
+          "idle_slots": 983025
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989472158138,
+        "closed_us": 1989472160172
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989472160600,
+        "closed_us": 1989472162566
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989472163776,
+        "closed_us": 1989472165751
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 5,
+        "requested_control": 11,
+        "opened_us": 1989473371315,
+        "closed_us": 1989473375755,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 54,
+          "cca_nav_tx": 54
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989473426808,
+        "closed_us": 1989473427949
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 5,
+        "requested_control": 11,
+        "opened_us": 1989482177358,
+        "closed_us": 1989482178903,
+        "values": {
+          "rx_mpdu": 18648,
+          "rx_fcs_error": 3344,
+          "rx_mdrdy": 22228,
+          "primary_cca": 43220930,
+          "cca_nav_tx": 41331387,
+          "cck_rx_duration": 22637359,
+          "ofdm_rx_duration": 515593,
+          "primary_ed": 37432554,
+          "nav": 580147,
+          "idle_slots": 1048560
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989482190940,
+        "closed_us": 1989482192815
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989482193404,
+        "closed_us": 1989482195273
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989482196506,
+        "closed_us": 1989482198356
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321789288000,
+        "channel_generation": 5,
+        "requested_control": 11,
+        "opened_us": 1989483477876,
+        "closed_us": 1989483480687,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 54,
+          "cca_nav_tx": 54
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1989321789288000,
+        "action": 0,
+        "raw": 38,
+        "reported_temperature_c": 38,
+        "opened_us": 1989483534548,
+        "closed_us": 1989483535467
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "record": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 164.531,
+        "state": 2,
+        "epoch_ns": 1989321789288000,
+        "frames_received": 0,
+        "frames_delivered": 0,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 0,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 90,
+        "read_timeouts": 3064,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 90,
+        "unmatched_replies": 0,
+        "commands_completed": 37,
+        "decoded_frames": 0,
+        "undecoded": 0,
+        "timestamp_frames": 0,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 0,
+        "mib_queries": 16,
+        "max_mib_latency_us": 4846,
+        "retunes": 5,
+        "max_retune_latency_us": 146573,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 130,
+        "resident_bytes": 8273920,
+        "peak_resident_bytes": 8323072,
+        "timestamp_first": 0,
+        "timestamp_last": 0,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_exit",
+      "language": "native",
+      "usb_id": "0e8d:7961",
+      "returncode": 130,
+      "finished_utc": "2026-09-06T21:17:10.820944+00:00",
+      "stderr": ""
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 5,
+        "requested_control": 11,
+        "opened_us": 1989492228613,
+        "closed_us": 1989492230678,
+        "values": {
+          "rx_mpdu": 20005,
+          "rx_fcs_error": 3761,
+          "rx_mdrdy": 24052,
+          "primary_cca": 46694711,
+          "cca_nav_tx": 44671121,
+          "cck_rx_duration": 24256234,
+          "ofdm_rx_duration": 565423,
+          "primary_ed": 40471488,
+          "nav": 624156,
+          "idle_slots": 1114095
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989492235916,
+        "closed_us": 1989492237834
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989492251102,
+        "closed_us": 1989492253254
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989492258353,
+        "closed_us": 1989492260257
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 180.08,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 21453,
+        "frames_delivered": 21453,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 21526,
+        "read_timeouts": 841,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 73,
+        "unmatched_replies": 0,
+        "commands_completed": 73,
+        "decoded_frames": 21453,
+        "undecoded": 0,
+        "timestamp_frames": 21453,
+        "transition_frames": 1,
+        "off_requested_channel": 6,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 17,
+        "max_mib_latency_us": 2579,
+        "retunes": 5,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 180928955,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 6,
+        "requested_control": 1,
+        "opened_us": 1989502263024,
+        "closed_us": 1989502265048,
+        "values": {
+          "rx_mpdu": 21521,
+          "rx_fcs_error": 4146,
+          "rx_mdrdy": 25972,
+          "primary_cca": 50271662,
+          "cca_nav_tx": 48095949,
+          "cck_rx_duration": 25859932,
+          "ofdm_rx_duration": 661028,
+          "primary_ed": 43596161,
+          "nav": 643405,
+          "idle_slots": 1179630
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989502266720,
+        "closed_us": 1989502268581
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989502270309,
+        "closed_us": 1989502272185
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989502324184,
+        "closed_us": 1989502326089
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 6,
+        "requested_control": 1,
+        "opened_us": 1989512398040,
+        "closed_us": 1989512400724,
+        "values": {
+          "rx_mpdu": 22315,
+          "rx_fcs_error": 4235,
+          "rx_mdrdy": 26855,
+          "primary_cca": 52599846,
+          "cca_nav_tx": 50344069,
+          "cck_rx_duration": 26863693,
+          "ofdm_rx_duration": 671744,
+          "primary_ed": 45714174,
+          "nav": 671204,
+          "idle_slots": 1245165
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989512401102,
+        "closed_us": 1989512403096
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989512404491,
+        "closed_us": 1989512406494
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989512459016,
+        "closed_us": 1989512461017
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 6,
+        "requested_control": 1,
+        "opened_us": 1989522512421,
+        "closed_us": 1989522514661,
+        "values": {
+          "rx_mpdu": 23297,
+          "rx_fcs_error": 4322,
+          "rx_mdrdy": 27924,
+          "primary_cca": 55428995,
+          "cca_nav_tx": 53080279,
+          "cck_rx_duration": 28358983,
+          "ofdm_rx_duration": 690834,
+          "primary_ed": 48352463,
+          "nav": 689468,
+          "idle_slots": 1310700
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989522535586,
+        "closed_us": 1989522537651
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989522538031,
+        "closed_us": 1989522543092
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989522597410,
+        "closed_us": 1989522599513
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 210.081,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 23958,
+        "frames_delivered": 23958,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 24044,
+        "read_timeouts": 1057,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 86,
+        "unmatched_replies": 0,
+        "commands_completed": 86,
+        "decoded_frames": 23958,
+        "undecoded": 0,
+        "timestamp_frames": 23958,
+        "transition_frames": 1,
+        "off_requested_channel": 7,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 20,
+        "max_mib_latency_us": 2684,
+        "retunes": 6,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 210929145,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 7,
+        "requested_control": 11,
+        "opened_us": 1989532660128,
+        "closed_us": 1989532662186,
+        "values": {
+          "rx_mpdu": 24140,
+          "rx_fcs_error": 4457,
+          "rx_mdrdy": 28906,
+          "primary_cca": 57827148,
+          "cca_nav_tx": 55378007,
+          "cck_rx_duration": 29350278,
+          "ofdm_rx_duration": 704109,
+          "primary_ed": 50497515,
+          "nav": 725574,
+          "idle_slots": 1376235
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989532671426,
+        "closed_us": 1989532673326
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989532673723,
+        "closed_us": 1989532675600
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989532676201,
+        "closed_us": 1989532678081
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 7,
+        "requested_control": 11,
+        "opened_us": 1989542708802,
+        "closed_us": 1989542710853,
+        "values": {
+          "rx_mpdu": 25529,
+          "rx_fcs_error": 4879,
+          "rx_mdrdy": 30744,
+          "primary_cca": 61374513,
+          "cca_nav_tx": 58750885,
+          "cck_rx_duration": 31035641,
+          "ofdm_rx_duration": 770868,
+          "primary_ed": 53390349,
+          "nav": 763418,
+          "idle_slots": 1441770
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989542714903,
+        "closed_us": 1989542716799
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989542722360,
+        "closed_us": 1989542724248
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989542726852,
+        "closed_us": 1989542728708
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 7,
+        "requested_control": 11,
+        "opened_us": 1989552743800,
+        "closed_us": 1989552745890,
+        "values": {
+          "rx_mpdu": 26931,
+          "rx_fcs_error": 5300,
+          "rx_mdrdy": 32610,
+          "primary_cca": 64771137,
+          "cca_nav_tx": 61945638,
+          "cck_rx_duration": 32576670,
+          "ofdm_rx_duration": 835577,
+          "primary_ed": 56166577,
+          "nav": 778534,
+          "idle_slots": 1507305
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989552746265,
+        "closed_us": 1989552747318
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989552749393,
+        "closed_us": 1989552751244
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989552753573,
+        "closed_us": 1989552755442
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 240.085,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 27889,
+        "frames_delivered": 27889,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 27988,
+        "read_timeouts": 1096,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 99,
+        "unmatched_replies": 0,
+        "commands_completed": 99,
+        "decoded_frames": 27889,
+        "undecoded": 0,
+        "timestamp_frames": 27889,
+        "transition_frames": 2,
+        "off_requested_channel": 9,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 23,
+        "max_mib_latency_us": 2684,
+        "retunes": 7,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 240933568,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 8,
+        "requested_control": 1,
+        "opened_us": 1989562780856,
+        "closed_us": 1989562781954,
+        "values": {
+          "rx_mpdu": 28001,
+          "rx_fcs_error": 5714,
+          "rx_mdrdy": 34112,
+          "primary_cca": 67930631,
+          "cca_nav_tx": 64959514,
+          "cck_rx_duration": 33889747,
+          "ofdm_rx_duration": 862918,
+          "primary_ed": 58919941,
+          "nav": 809410,
+          "idle_slots": 1572840
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989562784557,
+        "closed_us": 1989562786399
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989562842711,
+        "closed_us": 1989562844600
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989562880782,
+        "closed_us": 1989562882651
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 8,
+        "requested_control": 1,
+        "opened_us": 1989572918354,
+        "closed_us": 1989572920351,
+        "values": {
+          "rx_mpdu": 28898,
+          "rx_fcs_error": 5774,
+          "rx_mdrdy": 35069,
+          "primary_cca": 69687122,
+          "cca_nav_tx": 66611675,
+          "cck_rx_duration": 34973948,
+          "ofdm_rx_duration": 865144,
+          "primary_ed": 60469427,
+          "nav": 832526,
+          "idle_slots": 1638375
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989572922055,
+        "closed_us": 1989572923905
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989572924007,
+        "closed_us": 1989572925980
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989572928323,
+        "closed_us": 1989572930171
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 8,
+        "requested_control": 1,
+        "opened_us": 1989582953507,
+        "closed_us": 1989582955524,
+        "values": {
+          "rx_mpdu": 29710,
+          "rx_fcs_error": 5842,
+          "rx_mdrdy": 35949,
+          "primary_cca": 71857517,
+          "cca_nav_tx": 68702164,
+          "cck_rx_duration": 36379085,
+          "ofdm_rx_duration": 870916,
+          "primary_ed": 62453005,
+          "nav": 850351,
+          "idle_slots": 1703910
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989582957185,
+        "closed_us": 1989582959056
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989583012848,
+        "closed_us": 1989583014732
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989583053391,
+        "closed_us": 1989583055253
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 270.087,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 30552,
+        "frames_delivered": 30552,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 30664,
+        "read_timeouts": 1337,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 112,
+        "unmatched_replies": 0,
+        "commands_completed": 112,
+        "decoded_frames": 30552,
+        "undecoded": 0,
+        "timestamp_frames": 30552,
+        "transition_frames": 2,
+        "off_requested_channel": 10,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 26,
+        "max_mib_latency_us": 2684,
+        "retunes": 8,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 270935492,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 9,
+        "requested_control": 11,
+        "opened_us": 1989593068961,
+        "closed_us": 1989593071223,
+        "values": {
+          "rx_mpdu": 30785,
+          "rx_fcs_error": 5957,
+          "rx_mdrdy": 37147,
+          "primary_cca": 73719532,
+          "cca_nav_tx": 70494953,
+          "cck_rx_duration": 37639006,
+          "ofdm_rx_duration": 877441,
+          "primary_ed": 64072860,
+          "nav": 895080,
+          "idle_slots": 1769445
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989593072740,
+        "closed_us": 1989593074887
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989593089318,
+        "closed_us": 1989593091337
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989593095415,
+        "closed_us": 1989593097474
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 9,
+        "requested_control": 11,
+        "opened_us": 1989603117427,
+        "closed_us": 1989603119651,
+        "values": {
+          "rx_mpdu": 31994,
+          "rx_fcs_error": 6411,
+          "rx_mdrdy": 38843,
+          "primary_cca": 77273050,
+          "cca_nav_tx": 73910084,
+          "cck_rx_duration": 39149294,
+          "ofdm_rx_duration": 916494,
+          "primary_ed": 67189018,
+          "nav": 949276,
+          "idle_slots": 1834980
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989603124908,
+        "closed_us": 1989603126924
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989603131065,
+        "closed_us": 1989603133008
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989603150230,
+        "closed_us": 1989603152267
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 9,
+        "requested_control": 11,
+        "opened_us": 1989613163752,
+        "closed_us": 1989613165543,
+        "values": {
+          "rx_mpdu": 33489,
+          "rx_fcs_error": 6891,
+          "rx_mdrdy": 40856,
+          "primary_cca": 80963693,
+          "cca_nav_tx": 77456962,
+          "cck_rx_duration": 40738809,
+          "ofdm_rx_duration": 985479,
+          "primary_ed": 70432453,
+          "nav": 1019482,
+          "idle_slots": 1900515
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989613166711,
+        "closed_us": 1989613168647
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989613194809,
+        "closed_us": 1989613196799
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989613227539,
+        "closed_us": 1989613229649
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 300.09,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 34404,
+        "frames_delivered": 34404,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 34529,
+        "read_timeouts": 1368,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 125,
+        "unmatched_replies": 0,
+        "commands_completed": 125,
+        "decoded_frames": 34404,
+        "undecoded": 0,
+        "timestamp_frames": 34404,
+        "transition_frames": 3,
+        "off_requested_channel": 12,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 29,
+        "max_mib_latency_us": 2684,
+        "retunes": 9,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 300939870,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 10,
+        "requested_control": 1,
+        "opened_us": 1989623243006,
+        "closed_us": 1989623245418,
+        "values": {
+          "rx_mpdu": 34579,
+          "rx_fcs_error": 7243,
+          "rx_mdrdy": 42318,
+          "primary_cca": 83949017,
+          "cca_nav_tx": 80304501,
+          "cck_rx_duration": 42133186,
+          "ofdm_rx_duration": 1020075,
+          "primary_ed": 73045095,
+          "nav": 1063071,
+          "idle_slots": 1966050
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989623263710,
+        "closed_us": 1989623265950
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989623282942,
+        "closed_us": 1989623285130
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989623296312,
+        "closed_us": 1989623298380
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 10,
+        "requested_control": 1,
+        "opened_us": 1989633333957,
+        "closed_us": 1989633336145,
+        "values": {
+          "rx_mpdu": 35635,
+          "rx_fcs_error": 7313,
+          "rx_mdrdy": 43444,
+          "primary_cca": 85556431,
+          "cca_nav_tx": 81860541,
+          "cck_rx_duration": 43391333,
+          "ofdm_rx_duration": 1021598,
+          "primary_ed": 74439321,
+          "nav": 1119523,
+          "idle_slots": 2031585
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989633337616,
+        "closed_us": 1989633339600
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989633394677,
+        "closed_us": 1989633396797
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989633433901,
+        "closed_us": 1989633435947
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 10,
+        "requested_control": 1,
+        "opened_us": 1989643450950,
+        "closed_us": 1989643453537,
+        "values": {
+          "rx_mpdu": 36439,
+          "rx_fcs_error": 7363,
+          "rx_mdrdy": 44298,
+          "primary_cca": 87187436,
+          "cca_nav_tx": 83435201,
+          "cck_rx_duration": 44757025,
+          "ofdm_rx_duration": 1023552,
+          "primary_ed": 75880352,
+          "nav": 1144527,
+          "idle_slots": 2097120
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989643468417,
+        "closed_us": 1989643470598
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989643471567,
+        "closed_us": 1989643473765
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989643476361,
+        "closed_us": 1989643479090
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 330.093,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 37281,
+        "frames_delivered": 37281,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 37419,
+        "read_timeouts": 1591,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 138,
+        "unmatched_replies": 0,
+        "commands_completed": 138,
+        "decoded_frames": 37281,
+        "undecoded": 0,
+        "timestamp_frames": 37281,
+        "transition_frames": 3,
+        "off_requested_channel": 13,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 32,
+        "max_mib_latency_us": 2684,
+        "retunes": 10,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 330942794,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 11,
+        "requested_control": 11,
+        "opened_us": 1989653487759,
+        "closed_us": 1989653488941,
+        "values": {
+          "rx_mpdu": 37578,
+          "rx_fcs_error": 7482,
+          "rx_mdrdy": 45566,
+          "primary_cca": 89414213,
+          "cca_nav_tx": 85593158,
+          "cck_rx_duration": 46161090,
+          "ofdm_rx_duration": 1034055,
+          "primary_ed": 77856656,
+          "nav": 1178698,
+          "idle_slots": 2162655
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989653506994,
+        "closed_us": 1989653508876
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989653509438,
+        "closed_us": 1989653511323
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989653512571,
+        "closed_us": 1989653514436
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 11,
+        "requested_control": 11,
+        "opened_us": 1989663526688,
+        "closed_us": 1989663528895,
+        "values": {
+          "rx_mpdu": 39023,
+          "rx_fcs_error": 7841,
+          "rx_mdrdy": 47403,
+          "primary_cca": 92651988,
+          "cca_nav_tx": 88669301,
+          "cck_rx_duration": 48061317,
+          "ofdm_rx_duration": 1077854,
+          "primary_ed": 80475742,
+          "nav": 1217991,
+          "idle_slots": 2228190
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989663538367,
+        "closed_us": 1989663540352
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989663542162,
+        "closed_us": 1989663544213
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989663545146,
+        "closed_us": 1989663547220
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 11,
+        "requested_control": 11,
+        "opened_us": 1989673555195,
+        "closed_us": 1989673557232,
+        "values": {
+          "rx_mpdu": 40821,
+          "rx_fcs_error": 8188,
+          "rx_mdrdy": 49584,
+          "primary_cca": 96027305,
+          "cca_nav_tx": 91856456,
+          "cck_rx_duration": 49961660,
+          "ofdm_rx_duration": 1145028,
+          "primary_ed": 83212413,
+          "nav": 1247243,
+          "idle_slots": 2293725
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989673558582,
+        "closed_us": 1989673560100
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989673562300,
+        "closed_us": 1989673564184
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989673566434,
+        "closed_us": 1989673568363
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 360.095,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 41950,
+        "frames_delivered": 41950,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 42101,
+        "read_timeouts": 1616,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 151,
+        "unmatched_replies": 0,
+        "commands_completed": 151,
+        "decoded_frames": 41950,
+        "undecoded": 0,
+        "timestamp_frames": 41950,
+        "transition_frames": 3,
+        "off_requested_channel": 13,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 35,
+        "max_mib_latency_us": 2684,
+        "retunes": 11,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 360945397,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 12,
+        "requested_control": 1,
+        "opened_us": 1989683609505,
+        "closed_us": 1989683611804,
+        "values": {
+          "rx_mpdu": 42159,
+          "rx_fcs_error": 8485,
+          "rx_mdrdy": 51247,
+          "primary_cca": 98938041,
+          "cca_nav_tx": 94640007,
+          "cck_rx_duration": 51668270,
+          "ofdm_rx_duration": 1168972,
+          "primary_ed": 85601882,
+          "nav": 1290148,
+          "idle_slots": 2359260
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989683612852,
+        "closed_us": 1989683615095
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989683616066,
+        "closed_us": 1989683618092
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989683668599,
+        "closed_us": 1989683670634
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 12,
+        "requested_control": 1,
+        "opened_us": 1989693711201,
+        "closed_us": 1989693713469,
+        "values": {
+          "rx_mpdu": 43223,
+          "rx_fcs_error": 8552,
+          "rx_mdrdy": 52379,
+          "primary_cca": 101216195,
+          "cca_nav_tx": 96833206,
+          "cck_rx_duration": 52931572,
+          "ofdm_rx_duration": 1174496,
+          "primary_ed": 87650548,
+          "nav": 1338361,
+          "idle_slots": 2424795
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989693746972,
+        "closed_us": 1989693748947
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989693749331,
+        "closed_us": 1989693751278
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989693753085,
+        "closed_us": 1989693755083
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 12,
+        "requested_control": 1,
+        "opened_us": 1989703784603,
+        "closed_us": 1989703786768,
+        "values": {
+          "rx_mpdu": 43987,
+          "rx_fcs_error": 8622,
+          "rx_mdrdy": 53212,
+          "primary_cca": 103426675,
+          "cca_nav_tx": 98955849,
+          "cck_rx_duration": 54233399,
+          "ofdm_rx_duration": 1187453,
+          "primary_ed": 89670905,
+          "nav": 1352731,
+          "idle_slots": 2490330
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989703788271,
+        "closed_us": 1989703790166
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989703845980,
+        "closed_us": 1989703847925
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989703885590,
+        "closed_us": 1989703887517
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 390.099,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 44541,
+        "frames_delivered": 44541,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 44705,
+        "read_timeouts": 1843,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 164,
+        "unmatched_replies": 0,
+        "commands_completed": 164,
+        "decoded_frames": 44541,
+        "undecoded": 0,
+        "timestamp_frames": 44541,
+        "transition_frames": 3,
+        "off_requested_channel": 14,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 38,
+        "max_mib_latency_us": 2684,
+        "retunes": 12,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 390948186,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 13,
+        "requested_control": 11,
+        "opened_us": 1989713900340,
+        "closed_us": 1989713902380,
+        "values": {
+          "rx_mpdu": 44970,
+          "rx_fcs_error": 8746,
+          "rx_mdrdy": 54327,
+          "primary_cca": 105937389,
+          "cca_nav_tx": 101367674,
+          "cck_rx_duration": 55380634,
+          "ofdm_rx_duration": 1219084,
+          "primary_ed": 91886423,
+          "nav": 1382063,
+          "idle_slots": 2555865
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989713903804,
+        "closed_us": 1989713905680
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989713907511,
+        "closed_us": 1989713909389
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989713914668,
+        "closed_us": 1989713916556
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 13,
+        "requested_control": 11,
+        "opened_us": 1989723940348,
+        "closed_us": 1989723942478,
+        "values": {
+          "rx_mpdu": 46576,
+          "rx_fcs_error": 9112,
+          "rx_mdrdy": 56326,
+          "primary_cca": 109448040,
+          "cca_nav_tx": 104686292,
+          "cck_rx_duration": 57235505,
+          "ofdm_rx_duration": 1298327,
+          "primary_ed": 94737386,
+          "nav": 1405608,
+          "idle_slots": 2621400
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989723944041,
+        "closed_us": 1989723945998
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989723958181,
+        "closed_us": 1989723960254
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989723961200,
+        "closed_us": 1989723963198
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 13,
+        "requested_control": 11,
+        "opened_us": 1989733973675,
+        "closed_us": 1989733975748,
+        "values": {
+          "rx_mpdu": 48029,
+          "rx_fcs_error": 9451,
+          "rx_mdrdy": 58160,
+          "primary_cca": 112642776,
+          "cca_nav_tx": 107745999,
+          "cck_rx_duration": 59098969,
+          "ofdm_rx_duration": 1342603,
+          "primary_ed": 97291483,
+          "nav": 1476144,
+          "idle_slots": 2686935
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989733977356,
+        "closed_us": 1989733979258
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989733989936,
+        "closed_us": 1989733991857
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989733992373,
+        "closed_us": 1989733994264
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 420.102,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 49304,
+        "frames_delivered": 49304,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 49481,
+        "read_timeouts": 1876,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 177,
+        "unmatched_replies": 0,
+        "commands_completed": 177,
+        "decoded_frames": 49304,
+        "undecoded": 0,
+        "timestamp_frames": 49304,
+        "transition_frames": 3,
+        "off_requested_channel": 15,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 41,
+        "max_mib_latency_us": 2684,
+        "retunes": 13,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 420951548,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 14,
+        "requested_control": 1,
+        "opened_us": 1989744024932,
+        "closed_us": 1989744027491,
+        "values": {
+          "rx_mpdu": 49512,
+          "rx_fcs_error": 9727,
+          "rx_mdrdy": 59934,
+          "primary_cca": 115438977,
+          "cca_nav_tx": 110382892,
+          "cck_rx_duration": 60633563,
+          "ofdm_rx_duration": 1408021,
+          "primary_ed": 99564516,
+          "nav": 1495754,
+          "idle_slots": 2752470
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989744027716,
+        "closed_us": 1989744035642
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989744038459,
+        "closed_us": 1989744040613
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989744064377,
+        "closed_us": 1989744066582
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 14,
+        "requested_control": 1,
+        "opened_us": 1989754122294,
+        "closed_us": 1989754124495,
+        "values": {
+          "rx_mpdu": 50371,
+          "rx_fcs_error": 9799,
+          "rx_mdrdy": 60865,
+          "primary_cca": 117581467,
+          "cca_nav_tx": 112437814,
+          "cck_rx_duration": 61784158,
+          "ofdm_rx_duration": 1420802,
+          "primary_ed": 101487260,
+          "nav": 1518091,
+          "idle_slots": 2818005
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989754165007,
+        "closed_us": 1989754166708
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989754168626,
+        "closed_us": 1989754171000
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989754226437,
+        "closed_us": 1989754228501
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 14,
+        "requested_control": 1,
+        "opened_us": 1989764262038,
+        "closed_us": 1989764264114,
+        "values": {
+          "rx_mpdu": 51422,
+          "rx_fcs_error": 9890,
+          "rx_mdrdy": 62008,
+          "primary_cca": 120382434,
+          "cca_nav_tx": 115154494,
+          "cck_rx_duration": 63361152,
+          "ofdm_rx_duration": 1440061,
+          "primary_ed": 104093936,
+          "nav": 1555731,
+          "idle_slots": 2883540
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989764284336,
+        "closed_us": 1989764286279
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989764300005,
+        "closed_us": 1989764302048
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989764302499,
+        "closed_us": 1989764304532
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 450.104,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 51944,
+        "frames_delivered": 51944,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 52134,
+        "read_timeouts": 2122,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 190,
+        "unmatched_replies": 0,
+        "commands_completed": 190,
+        "decoded_frames": 51944,
+        "undecoded": 0,
+        "timestamp_frames": 51944,
+        "transition_frames": 4,
+        "off_requested_channel": 17,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 44,
+        "max_mib_latency_us": 2684,
+        "retunes": 14,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 450954533,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 15,
+        "requested_control": 11,
+        "opened_us": 1989774324564,
+        "closed_us": 1989774326876,
+        "values": {
+          "rx_mpdu": 52462,
+          "rx_fcs_error": 10025,
+          "rx_mdrdy": 63190,
+          "primary_cca": 122931769,
+          "cca_nav_tx": 117620594,
+          "cck_rx_duration": 64650030,
+          "ofdm_rx_duration": 1460525,
+          "primary_ed": 106334952,
+          "nav": 1606788,
+          "idle_slots": 2949075
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989774328364,
+        "closed_us": 1989774330598
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989774336577,
+        "closed_us": 1989774338681
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989774339268,
+        "closed_us": 1989774341391
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 15,
+        "requested_control": 11,
+        "opened_us": 1989784360719,
+        "closed_us": 1989784368088,
+        "values": {
+          "rx_mpdu": 54281,
+          "rx_fcs_error": 10414,
+          "rx_mdrdy": 65425,
+          "primary_cca": 126438999,
+          "cca_nav_tx": 120946849,
+          "cck_rx_duration": 66678148,
+          "ofdm_rx_duration": 1527339,
+          "primary_ed": 109097390,
+          "nav": 1668751,
+          "idle_slots": 3014610
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989784376765,
+        "closed_us": 1989784378799
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989784379215,
+        "closed_us": 1989784381396
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989784382436,
+        "closed_us": 1989784383594
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 15,
+        "requested_control": 11,
+        "opened_us": 1989794416685,
+        "closed_us": 1989794417911,
+        "values": {
+          "rx_mpdu": 55583,
+          "rx_fcs_error": 10736,
+          "rx_mdrdy": 67085,
+          "primary_cca": 129413528,
+          "cca_nav_tx": 123780116,
+          "cck_rx_duration": 68352242,
+          "ofdm_rx_duration": 1563493,
+          "primary_ed": 111398969,
+          "nav": 1718670,
+          "idle_slots": 3080145
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989794420399,
+        "closed_us": 1989794422385
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989794432633,
+        "closed_us": 1989794434750
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989794438730,
+        "closed_us": 1989794440705
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "heartbeat",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 480.112,
+        "state": 0,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 56876,
+        "frames_delivered": 56876,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 57079,
+        "read_timeouts": 2150,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 203,
+        "unmatched_replies": 0,
+        "commands_completed": 203,
+        "decoded_frames": 56876,
+        "undecoded": 0,
+        "timestamp_frames": 56876,
+        "transition_frames": 5,
+        "off_requested_channel": 19,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 47,
+        "max_mib_latency_us": 7369,
+        "retunes": 15,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": null,
+        "exit_code": 0,
+        "resident_bytes": 13156352,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 480926794,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 16,
+        "requested_control": 1,
+        "opened_us": 1989804481209,
+        "closed_us": 1989804483495,
+        "values": {
+          "rx_mpdu": 57058,
+          "rx_fcs_error": 10999,
+          "rx_mdrdy": 68836,
+          "primary_cca": 132293233,
+          "cca_nav_tx": 126507979,
+          "cck_rx_duration": 69939714,
+          "ofdm_rx_duration": 1616312,
+          "primary_ed": 113641333,
+          "nav": 1773470,
+          "idle_slots": 3145680
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989804484987,
+        "closed_us": 1989804487016
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989804540377,
+        "closed_us": 1989804542327
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989804557899,
+        "closed_us": 1989804559887
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 16,
+        "requested_control": 1,
+        "opened_us": 1989814621961,
+        "closed_us": 1989814624159,
+        "values": {
+          "rx_mpdu": 57800,
+          "rx_fcs_error": 11075,
+          "rx_mdrdy": 69655,
+          "primary_cca": 134476869,
+          "cca_nav_tx": 128594018,
+          "cck_rx_duration": 70831904,
+          "ofdm_rx_duration": 1629032,
+          "primary_ed": 115610088,
+          "nav": 1797330,
+          "idle_slots": 3211215
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989814624357,
+        "closed_us": 1989814626468
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 67,
+        "reported_temperature_c": null,
+        "opened_us": 1989814628146,
+        "closed_us": 1989814630066
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 45,
+        "reported_temperature_c": 45,
+        "opened_us": 1989814675490,
+        "closed_us": 1989814677649
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "epoch_ns": 1989321056648000,
+        "channel_generation": 16,
+        "requested_control": 1,
+        "opened_us": 1989824740757,
+        "closed_us": 1989824742868,
+        "values": {
+          "rx_mpdu": 58783,
+          "rx_fcs_error": 11171,
+          "rx_mdrdy": 70735,
+          "primary_cca": 137314627,
+          "cca_nav_tx": 131333306,
+          "cck_rx_duration": 72337827,
+          "ofdm_rx_duration": 1640908,
+          "primary_ed": 118236393,
+          "nav": 1814799,
+          "idle_slots": 3276750
+        }
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989824762691,
+        "closed_us": 1989824764680
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 1,
+        "raw": 68,
+        "reported_temperature_c": null,
+        "opened_us": 1989824765135,
+        "closed_us": 1989824767019
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "thermal",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1989321056648000,
+        "action": 0,
+        "raw": 43,
+        "reported_temperature_c": 43,
+        "opened_us": 1989824768790,
+        "closed_us": 1989824770746
+      }
+    },
+    {
+      "event": "soak_record",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "record": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 508.316,
+        "state": 2,
+        "epoch_ns": 1989321056648000,
+        "frames_received": 59095,
+        "frames_delivered": 59095,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 10,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 59311,
+        "read_timeouts": 2360,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 216,
+        "unmatched_replies": 0,
+        "commands_completed": 216,
+        "decoded_frames": 59095,
+        "undecoded": 0,
+        "timestamp_frames": 59095,
+        "transition_frames": 5,
+        "off_requested_channel": 20,
+        "max_delivery_latency_us": 105481,
+        "mib_queries": 50,
+        "max_mib_latency_us": 7369,
+        "retunes": 16,
+        "max_retune_latency_us": 106392,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 130,
+        "resident_bytes": 13107200,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 904775,
+        "timestamp_last": 509117679,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "event": "soak_exit",
+      "language": "native",
+      "usb_id": "0846:9072",
+      "returncode": 130,
+      "finished_utc": "2026-09-06T21:22:53.872787+00:00",
+      "stderr": ""
+    }
+  ],
+  "native_baseline": {
+    "bands": {
+      "2.4GHz": {
+        "channels_attempted": 1,
+        "channels_with_frames": 0,
+        "channels_with_transfers": 0,
+        "decoded_frames": 0,
+        "frame_types": {
+          "control": 0,
+          "data": 0,
+          "management": 0,
+          "other": 0
+        },
+        "undecoded_transfers": 0,
+        "usb_errors": 0,
+        "usb_timeouts": 30,
+        "usb_transfers": 0
+      }
+    },
+    "device": {
+      "driver": "mt7921_c_iokit",
+      "temperature_c": 38,
+      "chip": "mt7921",
+      "usb_id": "0e8d:7961",
+      "usb_speed_code": 3,
+      "wifi_interface": 3
+    },
+    "duration_seconds": 10.994,
+    "firmware": {
+      "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+      "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+    },
+    "generated_at_utc": "2026-09-06T21:18:10Z",
+    "host": {
+      "machine": "arm64",
+      "macos": "26.6.1"
+    },
+    "plan": {
+      "channels": 1,
+      "dwell_seconds": 8,
+      "name": "channel",
+      "requested_bands": [
+        "2.4GHz"
+      ]
+    },
+    "schema_version": 1,
+    "software": {
+      "c_driver": "mt7921_c_iokit",
+      "mt76_usb_macos": "0.3.0"
+    },
+    "status": "inconclusive",
+    "totals": {
+      "decoded_frames": 0,
+      "undecoded_transfers": 0,
+      "usb_errors": 0,
+      "usb_timeouts": 30,
+      "usb_transfers": 0
+    }
+  },
+  "python_baseline": {
+    "command": "MT76_FW_DIR=PINNED_DIR python scripts/hardware_smoke.py --usb-id 0e8d:7961 --plan 2.4 --dwell 5",
+    "generated_at_utc": "2026-09-06T21:18:16.755926+00:00",
+    "duration_seconds": 18.272,
+    "exit_code": 2,
+    "status": "inconclusive",
+    "channels": [
+      1,
+      6,
+      11
+    ],
+    "totals": {
+      "decoded_frames": 0,
+      "usb_transfers": 0,
+      "usb_errors": 0,
+      "usb_timeouts": 57
+    }
+  },
+  "reset_controls": [
+    {
+      "mode": "normal",
+      "bringup_log": [
+        "resetting USB device",
+        "MT_CONN_ON_MISC = 0x00000003",
+        "  retained FW_STATE bits; running WFSYS reset",
+        "  MT_CONN_ON_MISC = 0x00000000",
+        "powering on MCU",
+        "  MT_CONN_ON_MISC = 0x00000001",
+        "initialising DMA",
+        "enabling firmware download path",
+        "restarting MCU before download",
+        "loading ROM patch",
+        "  patch 20260224110909a\n hw/sw 0x8a108a10, 1 region(s)",
+        "  section 0: addr=0x00900000 len=92,032 mode=0x80000000",
+        "  patch started",
+        "loading RAM firmware",
+        "  ram fw ____010000 built 20260224110949, 5 regions",
+        "  region 0: addr=0x00915000 len=363,536 mode=0x80000000",
+        "  region 1: addr=0x02015c00 len=272,400 mode=0x80000000",
+        "  region 2: addr=0x00404400 len=15,376 mode=0x80000000",
+        "  region 3: addr=0xe0270000 len=51,920 mode=0x80000000",
+        "  region 4: NON_DL, skipped (88,416 bytes)",
+        "  starting firmware: override=0x00915000 option=0x1",
+        "waiting for N9 ready",
+        "firmware is running",
+        "efuse pushed"
+      ],
+      "controls": {
+        "0x7c0600f0": 3,
+        "0x83082004": 0,
+        "0x83088230": 2147533506,
+        "0x83088234": 51380225,
+        "0x820e7000": 41366528
+      },
+      "mib": {
+        "rx_mpdu": 0,
+        "rx_mdrdy": 0,
+        "primary_cca": 59
+      },
+      "temperature_c": 38,
+      "counts": {},
+      "session": {
+        "state": "closed",
+        "error": null,
+        "epoch_ns": 1989691342653291,
+        "channel_generation": 0,
+        "requested_channel": [
+          "2.4GHz",
+          6,
+          6,
+          20
+        ],
+        "frame_depth": 0,
+        "event_depth": 0,
+        "counts": {
+          "read_timeouts": 96,
+          "transfers": 4,
+          "replies_matched": 4,
+          "commands_completed": 2
+        }
+      },
+      "alive": true
+    },
+    {
+      "mode": "forced_wfsys",
+      "bringup_log": [
+        "resetting USB device",
+        "MT_CONN_ON_MISC = 0x00000000",
+        "powering on MCU",
+        "  MT_CONN_ON_MISC = 0x00000001",
+        "initialising DMA",
+        "enabling firmware download path",
+        "restarting MCU before download",
+        "loading ROM patch",
+        "  patch 20260224110909a\n hw/sw 0x8a108a10, 1 region(s)",
+        "  section 0: addr=0x00900000 len=92,032 mode=0x80000000",
+        "  patch started",
+        "loading RAM firmware",
+        "  ram fw ____010000 built 20260224110949, 5 regions",
+        "  region 0: addr=0x00915000 len=363,536 mode=0x80000000",
+        "  region 1: addr=0x02015c00 len=272,400 mode=0x80000000",
+        "  region 2: addr=0x00404400 len=15,376 mode=0x80000000",
+        "  region 3: addr=0xe0270000 len=51,920 mode=0x80000000",
+        "  region 4: NON_DL, skipped (88,416 bytes)",
+        "  starting firmware: override=0x00915000 option=0x1",
+        "waiting for N9 ready",
+        "firmware is running",
+        "efuse pushed"
+      ],
+      "forced_reset_seconds": 0.11203466705046594,
+      "controls": {
+        "0x7c0600f0": 3,
+        "0x83082004": 0,
+        "0x83088230": 2147533506,
+        "0x83088234": 51380225,
+        "0x820e7000": 41366528
+      },
+      "mib": {
+        "rx_mpdu": 0,
+        "rx_mdrdy": 0,
+        "primary_cca": 46
+      },
+      "temperature_c": 38,
+      "counts": {},
+      "session": {
+        "state": "closed",
+        "error": null,
+        "epoch_ns": 1989698977712916,
+        "channel_generation": 0,
+        "requested_channel": [
+          "2.4GHz",
+          6,
+          6,
+          20
+        ],
+        "frame_depth": 0,
+        "event_depth": 0,
+        "counts": {
+          "read_timeouts": 95,
+          "transfers": 4,
+          "replies_matched": 4,
+          "commands_completed": 2
+        }
+      },
+      "alive": true
+    },
+    {
+      "mode": "normal_repeat",
+      "bringup_log": [
+        "resetting USB device",
+        "MT_CONN_ON_MISC = 0x00000003",
+        "  retained FW_STATE bits; running WFSYS reset",
+        "  MT_CONN_ON_MISC = 0x00000000",
+        "powering on MCU",
+        "  MT_CONN_ON_MISC = 0x00000001",
+        "initialising DMA",
+        "enabling firmware download path",
+        "restarting MCU before download",
+        "loading ROM patch",
+        "  patch 20260224110909a\n hw/sw 0x8a108a10, 1 region(s)",
+        "  section 0: addr=0x00900000 len=92,032 mode=0x80000000",
+        "  patch started",
+        "loading RAM firmware",
+        "  ram fw ____010000 built 20260224110949, 5 regions",
+        "  region 0: addr=0x00915000 len=363,536 mode=0x80000000",
+        "  region 1: addr=0x02015c00 len=272,400 mode=0x80000000",
+        "  region 2: addr=0x00404400 len=15,376 mode=0x80000000",
+        "  region 3: addr=0xe0270000 len=51,920 mode=0x80000000",
+        "  region 4: NON_DL, skipped (88,416 bytes)",
+        "  starting firmware: override=0x00915000 option=0x1",
+        "waiting for N9 ready",
+        "firmware is running",
+        "efuse pushed"
+      ],
+      "controls": {
+        "0x7c0600f0": 3,
+        "0x83082004": 0,
+        "0x83088230": 2147533506,
+        "0x83088234": 51380225,
+        "0x820e7000": 41366528
+      },
+      "mib": {
+        "rx_mpdu": 0,
+        "rx_mdrdy": 0,
+        "primary_cca": 153
+      },
+      "temperature_c": 38,
+      "counts": {},
+      "session": {
+        "state": "closed",
+        "error": null,
+        "epoch_ns": 1989706583782625,
+        "channel_generation": 0,
+        "requested_channel": [
+          "2.4GHz",
+          6,
+          6,
+          20
+        ],
+        "frame_depth": 0,
+        "event_depth": 0,
+        "counts": {
+          "read_timeouts": 96,
+          "transfers": 4,
+          "replies_matched": 4,
+          "commands_completed": 2
+        }
+      },
+      "alive": true
+    }
+  ],
+  "coexistence": {
+    "experiment": "MT7921 fixed-channel6 reception with A9000 USB acquisition off/on/off",
+    "old_alive": true,
+    "old_session": {
+      "channel_generation": 0,
+      "counts": {
+        "commands_completed": 3,
+        "read_timeouts": 504,
+        "replies_matched": 9,
+        "transfers": 9
+      },
+      "epoch_ns": 1989888729198791,
+      "error": null,
+      "event_depth": 0,
+      "frame_depth": 0,
+      "requested_channel": [
+        "2.4GHz",
+        6,
+        6,
+        20
+      ],
+      "state": "closed"
+    },
+    "peer_first_record": {
+      "event": "ready",
+      "hop_seconds": 0,
+      "mib_seconds": 1,
+      "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+      "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+      "requested_seconds": 15,
+      "usb_id": "0846:9072"
+    },
+    "peer_result": {
+      "records": [
+        {
+          "channel_generation": 0,
+          "closed_us": 1989896039470,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989896037337,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 140144,
+            "cck_rx_duration": 104942,
+            "idle_slots": 65535,
+            "nav": 4656,
+            "ofdm_rx_duration": 0,
+            "primary_cca": 146481,
+            "primary_ed": 122076,
+            "rx_fcs_error": 6,
+            "rx_mdrdy": 90,
+            "rx_mpdu": 84
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989896041806,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989896039721,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989896045334,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989896043396,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989896074441,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989896072548,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989897153800,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989897151640,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 390165,
+            "cck_rx_duration": 305840,
+            "idle_slots": 131070,
+            "nav": 22722,
+            "ofdm_rx_duration": 637,
+            "primary_cca": 392506,
+            "primary_ed": 350408,
+            "rx_fcs_error": 10,
+            "rx_mdrdy": 289,
+            "rx_mpdu": 279
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989897165987,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989897164008,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989897168077,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989897166126,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989897171830,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989897169850,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989898192223,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989898190147,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 506822,
+            "cck_rx_duration": 401193,
+            "idle_slots": 196605,
+            "nav": 23654,
+            "ofdm_rx_duration": 637,
+            "primary_cca": 515920,
+            "primary_ed": 456804,
+            "rx_fcs_error": 17,
+            "rx_mdrdy": 363,
+            "rx_mpdu": 346
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989898195751,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989898193833,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989898252985,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989898250897,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989898292198,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989898290156,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989899318778,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989899316678,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 611596,
+            "cck_rx_duration": 486111,
+            "idle_slots": 262140,
+            "nav": 25415,
+            "ofdm_rx_duration": 713,
+            "primary_cca": 629767,
+            "primary_ed": 544899,
+            "rx_fcs_error": 23,
+            "rx_mdrdy": 435,
+            "rx_mpdu": 412
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989899322162,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989899320254,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989899380722,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989899378708,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989899418494,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989899416530,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989900445198,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989900443039,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 751883,
+            "cck_rx_duration": 586006,
+            "idle_slots": 327675,
+            "nav": 29881,
+            "ofdm_rx_duration": 793,
+            "primary_cca": 779011,
+            "primary_ed": 678718,
+            "rx_fcs_error": 29,
+            "rx_mdrdy": 539,
+            "rx_mpdu": 510
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989900448772,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989900446700,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989900495683,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989900493640,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989900502725,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989900500675,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989901569130,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989901566955,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 945781,
+            "cck_rx_duration": 745817,
+            "idle_slots": 393210,
+            "nav": 37637,
+            "ofdm_rx_duration": 1009,
+            "primary_cca": 977876,
+            "primary_ed": 838834,
+            "rx_fcs_error": 41,
+            "rx_mdrdy": 666,
+            "rx_mpdu": 625
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989901571281,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989901569341,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989901575150,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989901573160,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989901633887,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989901631844,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989902637537,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989902635457,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 1246073,
+            "cck_rx_duration": 998204,
+            "idle_slots": 458745,
+            "nav": 38879,
+            "ofdm_rx_duration": 1212,
+            "primary_cca": 1285171,
+            "primary_ed": 1133134,
+            "rx_fcs_error": 47,
+            "rx_mdrdy": 888,
+            "rx_mpdu": 841
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989902639732,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989902637804,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989902641965,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989902640033,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989902644090,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989902642161,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989903719657,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989903717466,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 1425703,
+            "cck_rx_duration": 1143095,
+            "idle_slots": 524280,
+            "nav": 43533,
+            "ofdm_rx_duration": 1212,
+            "primary_cca": 1470273,
+            "primary_ed": 1301314,
+            "rx_fcs_error": 53,
+            "rx_mdrdy": 1017,
+            "rx_mpdu": 964
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989903722356,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989903719832,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989903725516,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989903723531,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989903755307,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989903753347,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989904845881,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989904843762,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 1553116,
+            "cck_rx_duration": 1244466,
+            "idle_slots": 589815,
+            "nav": 44560,
+            "ofdm_rx_duration": 1332,
+            "primary_cca": 1609141,
+            "primary_ed": 1421164,
+            "rx_fcs_error": 55,
+            "rx_mdrdy": 1117,
+            "rx_mpdu": 1062
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989904847408,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989904846207,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989904851963,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989904849969,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989904854080,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989904852139,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989905872331,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989905870258,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 1649246,
+            "cck_rx_duration": 1322616,
+            "idle_slots": 655350,
+            "nav": 45491,
+            "ofdm_rx_duration": 1332,
+            "primary_cca": 1715445,
+            "primary_ed": 1512537,
+            "rx_fcs_error": 59,
+            "rx_mdrdy": 1180,
+            "rx_mpdu": 1121
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989905875843,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989905873934,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989905933531,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989905931639,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989905972362,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989905970304,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989906998803,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989906996667,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 1761866,
+            "cck_rx_duration": 1410938,
+            "idle_slots": 720885,
+            "nav": 46112,
+            "ofdm_rx_duration": 2950,
+            "primary_cca": 1841179,
+            "primary_ed": 1613962,
+            "rx_fcs_error": 67,
+            "rx_mdrdy": 1253,
+            "rx_mpdu": 1186
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989907002250,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989907000384,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989907049515,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989907047615,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989907059079,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989907057087,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989908122821,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989908120639,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 1904196,
+            "cck_rx_duration": 1525256,
+            "idle_slots": 786420,
+            "nav": 50767,
+            "ofdm_rx_duration": 3677,
+            "primary_cca": 1991816,
+            "primary_ed": 1739468,
+            "rx_fcs_error": 76,
+            "rx_mdrdy": 1346,
+            "rx_mpdu": 1270
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989908125247,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989908123127,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989908129054,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989908127029,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989908187158,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989908185154,
+          "raw": 45,
+          "reported_temperature_c": 45,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_generation": 0,
+          "closed_us": 1989909249222,
+          "epoch_ns": 1989894950381000,
+          "event": "counters",
+          "opened_us": 1989909247075,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "usb_id": "0846:9072",
+          "values": {
+            "cca_nav_tx": 2009329,
+            "cck_rx_duration": 1608183,
+            "idle_slots": 851955,
+            "nav": 52939,
+            "ofdm_rx_duration": 3949,
+            "primary_cca": 2106309,
+            "primary_ed": 1832332,
+            "rx_fcs_error": 85,
+            "rx_mdrdy": 1420,
+            "rx_mpdu": 1335
+          }
+        },
+        {
+          "action": 0,
+          "closed_us": 1989909251442,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989909249480,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 1,
+          "closed_us": 1989909255198,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989909253218,
+          "raw": 68,
+          "reported_temperature_c": null,
+          "usb_id": "0846:9072"
+        },
+        {
+          "action": 0,
+          "closed_us": 1989909310320,
+          "epoch_ns": 1989894950381000,
+          "event": "thermal",
+          "opened_us": 1989909308029,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "usb_id": "0846:9072"
+        },
+        {
+          "channel_known": true,
+          "commands_completed": 52,
+          "decoded_frames": 1378,
+          "elapsed_seconds": 15.017,
+          "epoch_ns": 1989894950381000,
+          "event": "summary",
+          "event_depth": 0,
+          "event_high_water": 0,
+          "events_delivered": 0,
+          "events_dropped": 0,
+          "events_received": 0,
+          "exit_code": 0,
+          "frame_depth": 0,
+          "frame_high_water": 7,
+          "frames_delivered": 1378,
+          "frames_dropped": 0,
+          "frames_received": 1378,
+          "legacy_mcu_discarded_frames": 0,
+          "malformed": 0,
+          "max_delivery_latency_us": 102149,
+          "max_mib_latency_us": 2191,
+          "max_retune_latency_us": 0,
+          "mib_queries": 13,
+          "off_requested_channel": 0,
+          "peak_resident_bytes": 13172736,
+          "read_timeouts": 124,
+          "register_alive_after": true,
+          "replies_matched": 52,
+          "requested_band": "2.4GHz",
+          "requested_control": 1,
+          "resident_bytes": 13123584,
+          "retunes": 0,
+          "state": 2,
+          "timestamp_ambiguous_gaps": 0,
+          "timestamp_backsteps": 0,
+          "timestamp_first": 895165,
+          "timestamp_frames": 1378,
+          "timestamp_last": 15876128,
+          "timestamp_wrap_candidates": 0,
+          "tool": "c_session_probe",
+          "transfers": 1430,
+          "transition_frames": 0,
+          "undecoded": 0,
+          "unmatched_replies": 0,
+          "usb_errors": 0,
+          "usb_id": "0846:9072"
+        }
+      ],
+      "returncode": 0,
+      "stderr": ""
+    },
+    "rows": [
+      {
+        "counts": {},
+        "elapsed_seconds": 5.032757458975539,
+        "mib": {
+          "primary_cca": 33,
+          "rx_mdrdy": 0,
+          "rx_mpdu": 0
+        },
+        "phase": "peer_idle_before",
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 1,
+            "read_timeouts": 93,
+            "replies_matched": 3,
+            "transfers": 3
+          },
+          "epoch_ns": 1989888729198791,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "state": "running"
+        }
+      },
+      {
+        "counts": {},
+        "elapsed_seconds": 15.026429542107508,
+        "mib": {
+          "primary_cca": 33,
+          "rx_mdrdy": 0,
+          "rx_mpdu": 0
+        },
+        "phase": "peer_active",
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 2,
+            "read_timeouts": 410,
+            "replies_matched": 6,
+            "transfers": 6
+          },
+          "epoch_ns": 1989888729198791,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "state": "running"
+        }
+      },
+      {
+        "counts": {},
+        "elapsed_seconds": 5.0333025408908725,
+        "mib": {
+          "primary_cca": 33,
+          "rx_mdrdy": 0,
+          "rx_mpdu": 0
+        },
+        "phase": "peer_idle_after",
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 3,
+            "read_timeouts": 503,
+            "replies_matched": 9,
+            "transfers": 9
+          },
+          "epoch_ns": 1989888729198791,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "state": "running"
+        }
+      }
+    ],
+    "transmit": false
+  }
+}

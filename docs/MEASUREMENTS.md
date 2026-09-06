@@ -4,8 +4,11 @@ Implemented on `feat/measurement-api`, not yet released. Python
 `mt76_measurements` and C `mt7921_radio.h` expose the same finite raw-counter
 profile; `mt7921_mcu.h` also declares query-only thermal measurements. CSI,
 histograms and calibrated occupancy retain their [separate delivery gates](NEXT_RELEASE.md).
-CSI now has [pure wire/parser parity and a short coexistence gate](CSI_API.md);
-its public streaming lifecycle is not yet promoted.
+CSI now has [session-bound lifetime parity](CSI_API.md); raw histograms have
+[matched acquisition guards](HISTOGRAM_API.md). Both retain narrow experimental
+profiles, short live evidence and explicit longer-qualification limits.
+The attached MT7921's [new RF-silent baseline](TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06)
+blocks its current RF release acceptance despite responsive MCU measurements.
 
 ## Callable contract
 

@@ -27,8 +27,9 @@ and does not imply parity for the remaining research-only surfaces.
 | `research/mt7925_tx_probe.py` | `mt_probe_txwi`, `mt_probe_prepare`, `mt_probe_transmit` | Connac3 OFDM6/54, table slots 18/25, DIS_MAT enabled, codes 0/-8/-16/-32; no ACK, association, keys, or aggregation |
 | Both TX-status research parsers | `mt_tx_status_parse` | Chip-specific prefix/stride, raw rate/power/error fields; signed power representation is not calibrated dBm; TX count only for connac3 format 0 |
 
-All register/message layouts cite `openwrt/mt76` at
-`c5a3bd91aa735b669618610d5f0ebfa5786845a6` in the C sources. Measured semantics
+Linux-derived layouts cite `openwrt/mt76` at
+`c5a3bd91aa735b669618610d5f0ebfa5786845a6`; newly extracted CSI/histogram/MIB facts
+also use pinned vendor structures and the documented firmware/ROM traces. Measured semantics
 remain in [firmware reconnaissance](FIRMWARE_RECON.md),
 [MIB characterization](MT7925_MIB.md), [RX observability](RADIO_OBSERVABILITY.md),
 and [MT7925 TX](MT7925_TRANSMIT.md). Source-derived mechanisms are not claimed as
