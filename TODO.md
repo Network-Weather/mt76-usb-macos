@@ -1,9 +1,9 @@
 # TODO: next sprint and prior backlog
 
-## Proposed next sprint: measurement API integration (R32)
+## Active sprint: measurement API integration (R32)
 
 Planning checkpoint 2026-09-06: PR #31 is merged at `7eb35d1`; no new release
-was cut. The [next-release plan](docs/NEXT_RELEASE.md) is the active proposal for
+was cut. The [next-release plan](docs/NEXT_RELEASE.md) is the selected sequence for
 remaining research, Python/C integration and acceptance gates.
 
 - [ ] Reconcile the already implemented `feat/continuous-acquisition` branch and
@@ -16,7 +16,21 @@ remaining research, Python/C integration and acceptance gates.
 - [ ] Complete packaging, regression and bounded live/session qualification, then
   update release/support/parity docs. No automatic version bump, tag or publication.
 
-## Completed C parity checkpoint
+## Continuous acquisition sprint (R5)
+
+Integrated from `feat/continuous-acquisition` into `feat/measurement-api`, not main. See
+[the session contract](docs/CONTINUOUS_ACQUISITION.md).
+
+- [x] Python single-owner worker, bounded packet/event/command queues, failure latch.
+- [x] Native C worker, copied packet queues, ownership guards, safe callback lifetime.
+- [x] Shared routing replay, overflow/sequence/cancellation tests, ASan/UBSan and TSan.
+- [x] Initial passive MIB/retune hardware checks in both languages on both reference adapters.
+- [x] Five-minute native stress, Python/C cancellation, clean reinitialization and
+  [durable evidence](docs/TESTING.md#continuous-acquisition-sessions-2026-09-04).
+- [ ] Multi-hour passive soak; keep hot-unplug and warm adoption explicitly unqualified.
+- [ ] Review and merge after evidence gates, retaining honest retune/queue-loss limits.
+
+## Completed C parity sprint record
 
 Sprint selected and implemented 2026-09-04: C acquisition parity (R30). Items come from
 [ROADMAP.md](ROADMAP.md); check off only against the stated evidence. This is the

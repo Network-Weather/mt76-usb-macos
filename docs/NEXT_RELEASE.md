@@ -1,7 +1,7 @@
 # Next measurement release: research to Python and C
 
 Planning baseline: `main` at `7eb35d1`, 2026-09-06, after PR #31 merged.
-This is the proposed R32 delivery plan, not a release announcement or a claim
+This is the selected R32 delivery plan, not a release announcement or a claim
 that the APIs below already exist. The published version remains `0.3.0`;
 select the next version under the project's versioning policy at release prep.
 
@@ -123,9 +123,11 @@ synthetic or redacted, with no ambient identifiers or coefficient arrays by defa
 
 ### 1. Reconcile the baseline and freeze the small contract
 
-- [ ] Review the continuous-acquisition branch against current main; reconcile docs,
+- [x] Review the continuous-acquisition branch against current main; reconcile docs,
   packaging and tests without losing either branch's evidence. Preserve one-owner,
   fail-closed sequence matching and stop/callback lifetime rules already implemented.
+  Integrated on `feat/measurement-api`; 1,687 tests and full offline checks pass.
+  Main merge and new hardware qualification remain separate gates.
 - [ ] Define the selected measurement records and capability/profile matrix above;
   distinguish existing primitives, newly extracted APIs and experimental additions.
 - [ ] Update `C_PARITY.md`: parity is per selected capability, not per script count.

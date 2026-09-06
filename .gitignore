@@ -30,5 +30,8 @@ c/mt7921_smoke
 c/mt76_radio_probe
 c/test_rxd
 c/test_radio_sanitize
+c/test_session
+c/test_session_sanitize
+c/mt76_session_probe
 *.dSYM/
 .venv

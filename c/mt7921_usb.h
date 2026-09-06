@@ -37,6 +37,11 @@ typedef struct {
     UInt8 in_pipes[MT_N_BULK_IN];
     UInt8 out_pipes[MT_N_BULK_OUT];
     bool verbose;
+    /* Installed only by an acquisition session. Zero timeout rejects non-owner
+     * access or a stopped/expired operation before touching USB. */
+    void *session_context;
+    uint32_t (*session_timeout)(void *, uint32_t);
+    void (*session_fail)(void *);
 } mt7921_usb_t;
 
 /* Lifecycle */

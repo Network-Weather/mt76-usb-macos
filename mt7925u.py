@@ -236,6 +236,9 @@ class Mt7925uDevice(m.Mt7921uDevice):
     ) -> None:
         """mt7925_change_chanctx for a monitor vif: the sniffer CONFIG TLV is the channel
         command; there is no CHANNEL_SWITCH on this chip."""
+        if getattr(self, "_session", None):
+            self._session.check_owner()
+        self._capture_channel = None
         if band_name not in m.CHAN_BAND:
             raise ValueError(f"band must be one of {sorted(m.CHAN_BAND)}, got {band_name!r}")
         if width_mhz not in m.WIDTH_TO_SNIFFER_BW:
@@ -250,6 +253,7 @@ class Mt7925uDevice(m.Mt7921uDevice):
             band_name=band_name,
             bw=m.WIDTH_TO_SNIFFER_BW[width_mhz],
         )
+        self._capture_channel = (band_name, control_ch, center_ch, width_mhz)
 
     # ---- not ported --------------------------------------------------------
 

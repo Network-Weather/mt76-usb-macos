@@ -22,14 +22,15 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 ## Priority decision, 2026-09-06
 
 R30 C acquisition parity and PR #31 firmware research are merged into `main`, but
-not released. The proposed next delivery is **R32: measurement API integration**:
+not released. The selected next delivery is **R32: measurement API integration**:
 turn a selected, qualified subset into callable Python and C primitives. The
 [next-release plan](docs/NEXT_RELEASE.md) maps remaining research to API contracts,
 ordered work packages and release gates. Research scripts on main are not themselves
 production API parity.
 
-Reconcile the existing pushed `feat/continuous-acquisition` branch rather than
-restart it. Deliver named counters, thermal readout, normal-mode signal fields and
+The existing `feat/continuous-acquisition` work is integrated on `feat/measurement-api`,
+not yet main; see [the session contract](docs/CONTINUOUS_ACQUISITION.md).
+Deliver named counters, thermal readout, normal-mode signal fields and
 TX-status metadata first; target bounded MT7925 beacon CSI and raw histograms as
 independently gated experimental additions. Expanded transmit profiles require
 healthy independent RF controls. Long soak qualifies the continuous API for release;
@@ -106,6 +107,13 @@ not corrupt output; and queue depth, frames dropped (including frames dropped du
 USB errors, and current channel are observable. Cold boot, warm reattach, and recovery must be
 distinct transitions; a warm path must drain or classify buffered RX without accidentally
 accepting a stale MCU response.
+
+Implementation is on `feat/continuous-acquisition`. Short Python/C hardware runs, five-minute
+native stress and cancellation/reinitialization checks pass on both reference radios;
+multi-hour soak is not yet qualified. The first API requires
+explicit fresh bring-up and refuses warm adoption rather than accepting uncertain state.
+It removes deliberate command-time frame discards, not physical RF retune blind intervals;
+bounded consumer queues may still overflow, with explicit counters.
 
 ### R15. Channel lock, follow mode, and the roaming event log
 

@@ -64,6 +64,10 @@ and qualified on `main`; see [dated evidence](docs/TESTING.md#native-c-acquisiti
 A future iPad survey spike is deferred in [ROADMAP.md](ROADMAP.md);
 proper networking-driver and baseline-connectivity work are explicitly out of scope.
 
+Experimental [continuous acquisition sessions](docs/CONTINUOUS_ACQUISITION.md) provide
+single-owner Python/C capture with bounded queues and frame-preserving MCU waits.
+Short hardware checks are qualified; long-soak and recovery limits remain explicit.
+
 ## Requirements
 
 - A USB device whose ID is in `mt7921u.SUPPORTED_DEVICES`: `0e8d:7961` (MT7921AU, for

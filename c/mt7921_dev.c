@@ -20,6 +20,8 @@ int mt7921_dev_open(mt7921_dev_t *dev, const char *usb_id) {
 
 void mt7921_dev_close(mt7921_dev_t *dev) {
     if (!dev) return;
+    if (dev->usb.session_context) return; /* worker must stop before device teardown */
+    dev->session_ready = false;
     mt7921_usb_close(&dev->usb);
 }
 
@@ -149,6 +151,8 @@ static int wfsys_reset(mt7921_dev_t *dev) {
 int mt7921_bringup(mt7921_dev_t *dev, const uint8_t *patch_blob, size_t patch_len,
                    const uint8_t *ram_blob, size_t ram_len,
                    void (*log_fn)(const char *fmt, ...)) {
+    if (!dev || dev->usb.session_context) return -1;
+    dev->session_ready = false;
     dev->tuned = false;
     dev->experimental_rates = 0;
     dev->experimental_tx_count = 0;
@@ -218,6 +222,7 @@ int mt7921_bringup(mt7921_dev_t *dev, const uint8_t *patch_blob, size_t patch_le
     }
     if (log_fn) log_fn("efuse pushed\n");
     dev->experimental_tx_dirty = false;
+    dev->session_ready = true;
     return 0;
 }
 
@@ -324,6 +329,8 @@ int mt7921_set_chan_info(mt7921_dev_t *dev, uint8_t control_ch, uint8_t center_c
 int mt7921_tune(mt7921_dev_t *dev, const char *band_name, uint8_t control_ch, uint8_t center_ch,
                 uint16_t width_mhz) {
     if (!dev || !band_name) return -1;
+    if (dev->usb.session_timeout &&
+        !dev->usb.session_timeout(dev->usb.session_context, 3000)) return -1;
     dev->tuned = false;
     /* Width maps to two enums: CMD_CBW_* for CHANNEL_SWITCH and the sniffer TLV's own table,
      * in which 40 MHz is encoded as 20 with the offset carried by sco (mcu_config_sniffer
@@ -359,6 +366,7 @@ int mt7921_tune(mt7921_dev_t *dev, const char *band_name, uint8_t control_ch, ui
 }
 
 int mt7921_rx_read(mt7921_dev_t *dev, void *buf, uint32_t *len, uint32_t timeout_ms) {
+    if (dev->usb.session_context) return MT7921_ERR_IO; /* use session read */
     return mt7921_bulk_in(&dev->usb, MT_ROLE_PKT_RX, buf, len, timeout_ms);
 }
 
