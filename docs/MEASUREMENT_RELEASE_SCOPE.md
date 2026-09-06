@@ -31,8 +31,9 @@ including the initial thermal/MIB failure and the recent old-radio RF silence.
 - Recover/requalify the old reference receiver, or explicitly narrow the release
   claim with the unresolved limitation. Its successful register/temperature reads
   do not close that gate. No unattended physical recovery has been performed.
-- Add small installed-API Python/native composition examples and verify them
-  outside the checkout. Run current passive smoke and independent capture-file
+- Small [Python/native composition examples](MEASUREMENT_EXAMPLES.md) now pass
+  offline checks and outside-checkout packaging/build verification. Remaining:
+  run current passive smoke and independent capture-file
   validation on available healthy references; preserve failing controls.
 - Finish offline/docs/packaging checks and inspect the source/wheel contents at
   the final commit. Do not run the clean/rebuild script over a native executable

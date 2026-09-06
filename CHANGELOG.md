@@ -7,6 +7,11 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Small installed-API [Python/native measurement examples](docs/MEASUREMENT_EXAMPLES.md)
+  compose passive capture, named raw counters and reported temperature through
+  one session worker, with separate intervals, visible loss and unknown busy
+  conversion. Synthetic examples cover failure and changed-context rejection;
+  firmware/RF qualification remains separate.
 - Experimental pure Python/C histogram records: strict MT7925 one-shot request,
   ACK and two11-bin event arrays; separate MT7921 stopped-bank parser, wide totals
   and raw firmware threshold labels. Matching guarded acquisition and12 native/

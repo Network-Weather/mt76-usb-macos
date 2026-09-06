@@ -15,7 +15,8 @@ stage-fault tests and short native/Python coexistence/overflow/cancellation evid
 Longer acceptance remains open; CSI is narrow and explicitly experimental.
 Histogram wire/record and guarded acquisition parity now pass, including12 fresh
 native/Python live runs and shared faults. Next: release qualification, explicit
-small composition examples and outstanding live acceptance. The
+outstanding live acceptance. Small [composition examples](docs/MEASUREMENT_EXAMPLES.md)
+now pass offline and outside-checkout packaging checks. The
 [inclusion matrix](docs/MEASUREMENT_RELEASE_SCOPE.md) and
 [Linux handoff draft](docs/LINUX_MEASUREMENT_HANDOFF.md) are prepared; nothing has
 been sent upstream. MT7921 fresh baseline RX is currently silent, and A9000

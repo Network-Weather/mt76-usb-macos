@@ -164,8 +164,11 @@ discovery or large type-system refactor is needed to complete this package.
   malformed/unknown/truncated-input and failure tests, CLI reuse, and dated live
   qualification on the applicable dongle. Compare semantics in separate runs;
   do not have Python and C steal the same hardware counters concurrently.
-- [ ] A small Python/native capture-plus-measurement example proves the primitives
+- [x] A small Python/native capture-plus-measurement example proves the primitives
   compose and shows unavailable values honestly, without making topology claims.
+  [Examples](MEASUREMENT_EXAMPLES.md) pass synthetic failure/context/loss checks;
+  installed Python imports and source-distribution native builds pass outside
+  the checkout. They do not substitute for the remaining live acceptance runs.
 
 Exit: an application can consume the floor without importing `research/` or
 `scripts/`, and each advertised operation has Python and native C evidence.
