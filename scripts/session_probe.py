@@ -16,6 +16,7 @@ import signal
 import sys
 import time
 from collections import Counter
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -25,6 +26,50 @@ import mt7921u as m
 from mt76_measurements import Counter as NamedCounter
 from mt76_measurements import ThermalAction, counter_descriptors, read_counters, read_thermal
 from mt76_session import AcquisitionSession, SessionError
+
+
+@dataclass
+class ClockDiagnostics:
+    """Diagnostic candidates only, matching c/mt76_probe_metrics.h.
+
+    No timestamp extension, reset inference, ranging or shared clock claim.
+    Host gaps at least half the 32-bit microsecond range are ambiguous.
+    """
+
+    timestamp_first: int | None = None
+    timestamp_last: int | None = None
+    timestamp_wrap_candidates: int = 0
+    timestamp_backsteps: int = 0
+    timestamp_ambiguous_gaps: int = 0
+    _last_host_ns: int = 0
+
+    def observe(self, value, host_ns):
+        if self.timestamp_last is None:
+            self.timestamp_first = value
+        else:
+            elapsed_us = (
+                (host_ns - self._last_host_ns) // 1000
+                if host_ns >= self._last_host_ns
+                else (1 << 64) - 1
+            )
+            if elapsed_us >= 1 << 31:
+                self.timestamp_ambiguous_gaps += 1
+            if value < self.timestamp_last:
+                delta = (value - self.timestamp_last) & 0xFFFFFFFF
+                if (
+                    self.timestamp_last >= 0xF0000000
+                    and value <= 0x0FFFFFFF
+                    and elapsed_us < 60_000_000
+                    and delta <= elapsed_us + 5_000_000
+                ):
+                    self.timestamp_wrap_candidates += 1
+                else:
+                    self.timestamp_backsteps += 1
+        self.timestamp_last = value
+        self._last_host_ns = host_ns
+
+    def summary(self):
+        return {k: v for k, v in asdict(self).items() if not k.startswith("_")}
 
 
 def cca(dev):
@@ -77,8 +122,10 @@ def main(argv=None):
         "hop_seconds": args.hop_seconds,
         "mib_seconds": args.mib_seconds,
         "requested_band": args.band,
+        "probe_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
     }
     counts = Counter()
+    clock = ClockDiagnostics()
     session = None
     started = None
     exit_code = 1
@@ -105,6 +152,8 @@ def main(argv=None):
                 return
             counts["decoded_frames"] += 1
             counts["timestamp_frames"] += int("timestamp" in decoded)
+            if "timestamp" in decoded:
+                clock.observe(decoded["timestamp"], packet.received_ns)
             counts["transition_frames"] += int(packet.transitioning)
             counts["off_requested_channel"] += int(
                 decoded.get("band") != args.band or decoded.get("channel") != current
@@ -121,7 +170,17 @@ def main(argv=None):
             next_hop = started + args.hop_seconds if args.hop_seconds else float("inf")
             next_mib = started + args.mib_seconds if args.mib_seconds else float("inf")
             heartbeat = started + 30
-            print(json.dumps({"event": "ready", "usb_id": args.usb_id}), flush=True)
+            print(
+                json.dumps(
+                    {
+                        "event": "ready",
+                        "usb_id": args.usb_id,
+                        "probe_sha256": result["probe_sha256"],
+                        "firmware_sha256": result["firmware_sha256"],
+                    }
+                ),
+                flush=True,
+            )
             while not stopping and time.monotonic() < end:
                 packet = session.read(timeout=0.05)
                 if packet:
@@ -209,6 +268,7 @@ def main(argv=None):
                                 "elapsed_seconds": round(now - started, 2),
                                 "counts": dict(counts),
                                 "session": session.snapshot(),
+                                **clock.summary(),
                             }
                         ),
                         flush=True,
@@ -228,6 +288,7 @@ def main(argv=None):
             result["elapsed_seconds"] = round(time.monotonic() - started, 3) if started else None
             result["register_alive_after"] = dev.alive()
             result["counts"] = dict(counts)
+            result.update(clock.summary())
             result["legacy_mcu_discarded_frames"] = (
                 dev.mcu_wait_dropped_frames - legacy_drops_before
             )

@@ -3,7 +3,16 @@
 #include "mt7921_rxd.h"
 #include "mt7921_chip.h"
 #include "mt7921_radio.h"
+#include "mt76_probe_metrics.h"
 #include <string.h>
+
+void parity_probe_clock(const uint32_t *values, const uint64_t *host_ns,
+                        unsigned count, uint64_t out[5]) {
+    mt_probe_clock_t clock = {0};
+    for (unsigned i = 0; i < count; i++) mt_probe_clock_observe(&clock, values[i], host_ns[i]);
+    out[0] = clock.first; out[1] = clock.last; out[2] = clock.wrap_candidates;
+    out[3] = clock.backsteps; out[4] = clock.ambiguous_gaps;
+}
 
 static uint8_t counter_payload[256];
 static unsigned counter_size, counter_writes;

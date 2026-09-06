@@ -34,6 +34,18 @@ roughly13.1MB current resident memory. It is not a two-hour pass. A fresh native
 two-hour run followed by Python two hours started2026-09-06T21:26:07UTC, using
 channels1/11,30s retunes,10s named-counter/thermal polls. Results are pending.
 
+Before the queued Python run starts, its probe gained the same conservative
+timestamp wrap/backstep/ambiguous-gap diagnostics as native, with eleven shared
+synthetic cases and an emitted probe-source SHA-256. No running native executable
+was replaced. The supervisor's original `base_commit` records its launch-plan
+snapshot; the Python probe hash identifies the actual later script. Final
+evidence must distinguish these revisions rather than attribute both runs to
+the supervisor's original commit. Unknown Python first/last timestamps are null.
+The prepared Python probe hash is
+`3d2f87310040b2ca2e1dbc72e6ecf33633866f7ed99f5a81f2194b47598fffe5`;
+the full offline suite now passes 2,025 tests. This is preparation evidence,
+not a result from the not-yet-started Python soak.
+
 ## R32 histogram acquisition parity, 2026-09-06
 
 All1,996 tests pass. Shared Python/native guard fixtures match operation traces,

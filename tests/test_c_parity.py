@@ -24,6 +24,50 @@ ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="native IOKit C build")
 
 
+@pytest.mark.parametrize(
+    ("values", "hosts", "expected"),
+    [
+        ([], [], (0, 0, 0)),
+        ([0], [0], (0, 0, 0)),
+        ([10, 20], [0, 10_000], (0, 0, 0)),
+        ([0xFFFFFFF0, 0x20], [0, 48_000], (1, 0, 0)),
+        ([0xF0000000, 0], [0, 10_000], (0, 1, 0)),
+        ([0xFFFFFFF0, 0x10000000], [0, 10_000], (0, 1, 0)),
+        ([0xFFFFFFF0, 0x20], [0, 60_000_000_000], (0, 1, 0)),
+        ([10, 20], [0, (1 << 31) * 1000], (0, 0, 1)),
+        ([0xFFFFFFF0, 0x20], [1000, 0], (0, 1, 1)),
+        ([100, 90], [0, 10_000], (0, 1, 0)),
+        ([0xFFFFFFF0, 4, 100], [0, 20_000, 116_000], (1, 0, 0)),
+    ],
+)
+def test_probe_clock_diagnostic_parity(native, values, hosts, expected):
+    from scripts.session_probe import ClockDiagnostics
+
+    clock = ClockDiagnostics()
+    for value, host in zip(values, hosts, strict=True):
+        clock.observe(value, host)
+    summary = clock.summary()
+    py = [
+        summary["timestamp_first"] or 0,
+        summary["timestamp_last"] or 0,
+        summary["timestamp_wrap_candidates"],
+        summary["timestamp_backsteps"],
+        summary["timestamp_ambiguous_gaps"],
+    ]
+    assert tuple(py[2:]) == expected
+    output = (ct.c_uint64 * 5)()
+    native.parity_probe_clock(
+        (ct.c_uint32 * len(values))(*values),
+        (ct.c_uint64 * len(hosts))(*hosts),
+        len(values),
+        output,
+    )
+    assert list(output) == py
+    assert "_last_host_ns" not in summary
+    if not values:
+        assert summary["timestamp_first"] is None
+
+
 class HistogramBins(ct.Structure):
     _fields_ = [
         ("chip", ct.c_int),

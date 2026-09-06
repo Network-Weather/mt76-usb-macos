@@ -14,6 +14,10 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Python session-probe timestamp diagnostics now match the native conservative
+  wrap-candidate/backstep/ambiguous-gap checks and retain unknown first/last
+  timestamps when no timestamp-bearing frames arrive. Shared synthetic cases
+  verify the diagnostic rules; no extended clock or ranging claim is added.
 - Small installed-API [Python/native measurement examples](docs/MEASUREMENT_EXAMPLES.md)
   compose passive capture, named raw counters and reported temperature through
   one session worker, with separate intervals, visible loss and unknown busy
