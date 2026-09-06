@@ -29,6 +29,7 @@ import usb.core
 
 import mt7921u as m
 import rxd
+from mt76_measurements import Group5Guard
 from research.mt7925_mib_characterize import parse_target
 
 # mt792x_regs.h:MT_DMA_DCR0(0), MT_DMA_DCR0_RXD_G5_EN at c5a3bd91.
@@ -158,6 +159,7 @@ def dwell(dev, target, seconds):
     decode = m.decoder_for(dev)
     counts, masks, controls = collections.Counter(), collections.Counter(), collections.Counter()
     rows, he = [], []
+    raw_signals = collections.defaultdict(list)
     # Mapping stays in memory and is never serialized.
     advertised = {}
     started = time.monotonic()
@@ -184,6 +186,8 @@ def dwell(dev, target, seconds):
         masks[f"{v['mask']:02x}"] += 1
         counts["fcs_errors"] += bool(decoded.get("fcs_err"))
         phy = decoded.get("phy", {})
+        for name, value in decoded.get("raw_signal", {}).items():
+            raw_signals[name].append(value)
         if "g5" in v:
             rows.append((phy.get("mode_name", "unknown"), decoded.get("rssi"), v["g5"]))
             if dev.CHIP == m.CHIP_MT7925:
@@ -224,6 +228,10 @@ def dwell(dev, target, seconds):
         "group_masks": dict(masks),
         "control_subtypes": dict(controls),
         "group5_by_phy": summarize(rows),
+        "raw_signal": {
+            name: {"count": len(values), "min": min(values), "max": max(values)}
+            for name, values in raw_signals.items()
+        },
         "he_eht_candidates": fields_summary,
         "he_eht_color_vs_beacon": dict(color_checks),
         "he_eht_uplink_vs_frame_control": dict(direction_checks),
@@ -264,14 +272,17 @@ def main():
         for target in args.targets:
             dev.tune(*target)
             time.sleep(0.2)
-            original = dev.rr(DMA_DCR0) if args.g5_cycle else None
+            guard = Group5Guard(dev) if args.g5_cycle else None
             phases = ("baseline", "enabled", "restored") if args.g5_cycle else ("baseline",)
             try:
                 for phase in phases:
-                    if original is not None:
-                        dev.wr(DMA_DCR0, original | G5_ENABLE if phase == "enabled" else original)
+                    if guard is not None:
+                        if phase == "enabled":
+                            guard.begin()
+                        elif phase == "restored":
+                            guard.restore()
                     record = dwell(dev, target, args.seconds) | {"phase": phase}
-                    if original is not None:
+                    if guard is not None:
                         record["dcr0_readback"] = hex(dev.rr(DMA_DCR0))
                     result["runs"].append(record)
                     print(
@@ -287,9 +298,9 @@ def main():
                         flush=True,
                     )
             finally:
-                if original is not None:
-                    dev.wr(DMA_DCR0, original)
-                    result["restored_register"] = dev.rr(DMA_DCR0) == original
+                if guard is not None:
+                    guard.restore()
+                    result["restored_register"] = not guard.active
     text = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.write_text(text)

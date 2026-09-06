@@ -7,6 +7,12 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Opt-in MT7921 Group5 raw in-band/wideband receiver-index decoding in Python/C,
+  with complete-group/DMA bounds and explicit absence on MT7925. Python gains a
+  matching saved-bit/readback/restore guard; research readers reuse the decoder.
+  Live repeats reveal enabled-phase near-silence in both languages despite healthy
+  restored reception: dependable streaming remains unqualified, not a passed
+  release gate. See [the evidence and limitations](docs/MEASUREMENTS.md#experimental-raw-group5-fields).
 - Query-only Python/C thermal measurements: reported signed Celsius on both chips
   and separately labeled MT7925 raw ADC, with bounded matching-reply validation,
   request intervals and unchanged native output on failure. Session probes can

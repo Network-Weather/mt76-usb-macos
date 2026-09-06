@@ -4,6 +4,23 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 raw Group5 integration, 2026-09-06
+
+Shared Python/C tests cover all32 group masks on both chips, each DMA/USB
+truncation, signed-byte boundaries and fractional-bit extraction. The Python
+guard mirrors native failure/readback restoration semantics. All1,874 Python
+tests, native tests and ASan/UBSan pass.
+
+[Four six-second-per-phase cycles](../research/evidence/r32-group5-2026-09-06.json)
+retain the live qualification failure: initial Python baseline/enabled/restored
+RX350/324/302, then native with MIB308/0/301, native without MIB320/1/298,
+and repeated Python314/1/332. Baseline/restored reception was healthy; all guards
+restored. Native exit0 reports cleanup/transport success, **not** successful
+signal qualification. Odd single-frame values and a queued post-restore Group5
+frame remain visible. This narrows the API to experimental raw decoding, not
+dependable signal streaming. Root cause is open; no C-only attribution, calibrated
+RF units, or override of upstream's Group5 hardware warning is justified.
+
 ## R32 thermal integration and counter parser correction, 2026-09-06
 
 The [thermal contract](MEASUREMENTS.md#query-only-thermal-measurements) and

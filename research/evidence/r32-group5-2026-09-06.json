@@ -1,0 +1,945 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-06",
+  "branch": "feat/measurement-api",
+  "integration_base": "70b1ba8",
+  "scope": "Opt-in raw Group5 decoder/guard integration, passive only. No ICS, RF-test mode, raw ambient captures or identifiers.",
+  "commands": {
+    "python": "MT76_FW_DIR=PINNED_DIR python research/rx_vector_probe.py 2.4GHz:6 --usb-id 0e8d:7961 --seconds 6 --g5-cycle",
+    "native": "c/mt76_radio_probe --usb-id 0e8d:7961 --fw PINNED_DIR --seconds 6 --band 2.4GHz --channel 6 --g5-cycle [--mib]"
+  },
+  "qualification": {
+    "pure_decoders": "1874 Python tests including shared C fixtures, native tests and ASan/UBSan pass. Complete connac2 Group5 only; signed raw indices, no calibration.",
+    "live": "NOT consistently qualified. First Python enabled phase received324 populated frames; subsequent native cycles and repeated Python control received0/1 enabled-phase frames, with healthy baseline/restored RX. Not a C-only difference.",
+    "restore": "All four runs restored the reporting bit; native alive checks passed. First Python restored phase retained one queued Group5 frame.",
+    "interpretation": "Known upstream Group5 hardware warning remains relevant; root cause not established. A complete descriptor is structural presence, not a freshness/signal-validity guarantee. Odd single-frame raw indices retained, not calibrated measurements.",
+    "scope_limit": "Explicit experimental guard only, never automatic. Do not claim dependable Group5 streaming or long-duration validity. Do not carry guard across reload/reset."
+  },
+  "runs": [
+    {
+      "run": "python_initial",
+      "result": {
+        "chip": "mt7921",
+        "date_utc": "2026-09-06T19:47:48.067359+00:00",
+        "firmware_sha256": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "restored_register": true,
+        "runs": [
+          {
+            "control_subtypes": {},
+            "dcr0_readback": "0x2773400",
+            "elapsed_s": 6.003,
+            "group5_by_phy": {},
+            "group_masks": {
+              "07": 350
+            },
+            "he_eht_candidates": {
+              "bss_color": {},
+              "spatial_reuse": {},
+              "txop": {},
+              "uplink": {}
+            },
+            "he_eht_color_vs_beacon": {},
+            "he_eht_uplink_vs_frame_control": {},
+            "packets": {
+              "NORMAL": 350,
+              "fcs_errors": 0
+            },
+            "phase": "baseline",
+            "raw_signal": {},
+            "target": [
+              "2.4GHz",
+              6,
+              6,
+              20
+            ]
+          },
+          {
+            "control_subtypes": {},
+            "dcr0_readback": "0x2f73400",
+            "elapsed_s": 6.035,
+            "group5_by_phy": {
+              "CCK": {
+                "frames": 324,
+                "rssi_byte_correlations_exploratory": [
+                  {
+                    "byte": 1,
+                    "r": 0.9244,
+                    "word": 2
+                  },
+                  {
+                    "byte": 1,
+                    "r": 0.8331,
+                    "word": 5
+                  },
+                  {
+                    "byte": 0,
+                    "r": 0.9859,
+                    "word": 6
+                  },
+                  {
+                    "byte": 1,
+                    "r": 0.9977,
+                    "word": 6
+                  },
+                  {
+                    "byte": 0,
+                    "r": 0.9762,
+                    "word": 7
+                  },
+                  {
+                    "byte": 1,
+                    "r": 0.9862,
+                    "word": 7
+                  },
+                  {
+                    "byte": 3,
+                    "r": 0.9827,
+                    "word": 9
+                  },
+                  {
+                    "byte": 0,
+                    "r": 0.8505,
+                    "word": 14
+                  },
+                  {
+                    "byte": 1,
+                    "r": 0.8839,
+                    "word": 14
+                  }
+                ],
+                "words": [
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 0
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 1
+                  },
+                  {
+                    "distinct": 6,
+                    "nonzero": true,
+                    "word": 2
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 3
+                  },
+                  {
+                    "distinct": 32,
+                    "nonzero": true,
+                    "word": 4
+                  },
+                  {
+                    "distinct": 208,
+                    "nonzero": true,
+                    "word": 5
+                  },
+                  {
+                    "distinct": 21,
+                    "nonzero": true,
+                    "word": 6
+                  },
+                  {
+                    "distinct": 21,
+                    "nonzero": true,
+                    "word": 7
+                  },
+                  {
+                    "distinct": 15,
+                    "nonzero": true,
+                    "word": 8
+                  },
+                  {
+                    "distinct": 8,
+                    "nonzero": true,
+                    "word": 9
+                  },
+                  {
+                    "distinct": 2,
+                    "nonzero": true,
+                    "word": 10
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 11
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 12
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 13
+                  },
+                  {
+                    "distinct": 66,
+                    "nonzero": true,
+                    "word": 14
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 15
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 16
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 17
+                  }
+                ]
+              }
+            },
+            "group_masks": {
+              "17": 324
+            },
+            "he_eht_candidates": {
+              "bss_color": {},
+              "spatial_reuse": {},
+              "txop": {},
+              "uplink": {}
+            },
+            "he_eht_color_vs_beacon": {},
+            "he_eht_uplink_vs_frame_control": {},
+            "packets": {
+              "NORMAL": 324,
+              "fcs_errors": 0
+            },
+            "phase": "enabled",
+            "raw_signal": {
+              "fagc_ib0_raw_s8": {
+                "count": 324,
+                "max": -92,
+                "min": -104
+              },
+              "fagc_ib1_raw_s8": {
+                "count": 324,
+                "max": -92,
+                "min": -101
+              },
+              "fagc_wb0_raw_s8": {
+                "count": 324,
+                "max": -68,
+                "min": -68
+              },
+              "fagc_wb1_raw_s8": {
+                "count": 324,
+                "max": -71,
+                "min": -79
+              }
+            },
+            "target": [
+              "2.4GHz",
+              6,
+              6,
+              20
+            ]
+          },
+          {
+            "control_subtypes": {},
+            "dcr0_readback": "0x2773400",
+            "elapsed_s": 6.032,
+            "group5_by_phy": {
+              "CCK": {
+                "frames": 1,
+                "rssi_byte_correlations_exploratory": [],
+                "words": [
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 0
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 1
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 2
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 3
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 4
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 5
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 6
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 7
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 8
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 9
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 10
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 11
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 12
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 13
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 14
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 15
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 16
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": false,
+                    "word": 17
+                  }
+                ]
+              }
+            },
+            "group_masks": {
+              "17": 1,
+              "07": 301
+            },
+            "he_eht_candidates": {
+              "bss_color": {},
+              "spatial_reuse": {},
+              "txop": {},
+              "uplink": {}
+            },
+            "he_eht_color_vs_beacon": {},
+            "he_eht_uplink_vs_frame_control": {},
+            "packets": {
+              "NORMAL": 302,
+              "fcs_errors": 0
+            },
+            "phase": "restored",
+            "raw_signal": {
+              "fagc_ib0_raw_s8": {
+                "count": 1,
+                "max": -94,
+                "min": -94
+              },
+              "fagc_ib1_raw_s8": {
+                "count": 1,
+                "max": -94,
+                "min": -94
+              },
+              "fagc_wb0_raw_s8": {
+                "count": 1,
+                "max": -68,
+                "min": -68
+              },
+              "fagc_wb1_raw_s8": {
+                "count": 1,
+                "max": -71,
+                "min": -71
+              }
+            },
+            "target": [
+              "2.4GHz",
+              6,
+              6,
+              20
+            ]
+          }
+        ],
+        "tool": "rx_vector_probe",
+        "usb_id": "0e8d:7961"
+      }
+    },
+    {
+      "run": "native_with_mib",
+      "records": [
+        {
+          "event": "ready",
+          "chip": "mt7921",
+          "usb_id": "0e8d:7961",
+          "band": "2.4GHz",
+          "channel": 6,
+          "width_mhz": 20,
+          "power_code": 0,
+          "rate_code": 1,
+          "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        {
+          "event": "dwell",
+          "phase": "baseline",
+          "elapsed_us": 6068862,
+          "frames": 308,
+          "timestamps": 308,
+          "first_timestamp": 1748607,
+          "last_timestamp": 7790099,
+          "group5_frames": 0,
+          "timeouts": 0,
+          "usb_errors": 0,
+          "decode_errors": 0,
+          "submitted": 0,
+          "synthetic_marker_frames": 0,
+          "synthetic_exact": 0,
+          "synthetic_unique": 0,
+          "synthetic_rate_matches": 0,
+          "synthetic_mean_rssi": null,
+          "raw_signal": {},
+          "group_masks": {
+            "07": 308
+          },
+          "mib_before": {
+            "opened_us": 1984186158398,
+            "closed_us": 1984186158837,
+            "counter_bits": 32,
+            "dropped_frames": 0,
+            "values": {
+              "11": 5184
+            }
+          },
+          "mib_after": {
+            "opened_us": 1984192227701,
+            "closed_us": 1984192228818,
+            "counter_bits": 32,
+            "dropped_frames": 0,
+            "values": {
+              "11": 890054
+            }
+          },
+          "mib_ok": true,
+          "counter_window_us": 6069642
+        },
+        {
+          "event": "dwell",
+          "phase": "enabled",
+          "elapsed_us": 6044520,
+          "frames": 0,
+          "timestamps": 0,
+          "first_timestamp": 0,
+          "last_timestamp": 0,
+          "group5_frames": 0,
+          "timeouts": 58,
+          "usb_errors": 0,
+          "decode_errors": 0,
+          "submitted": 0,
+          "synthetic_marker_frames": 0,
+          "synthetic_exact": 0,
+          "synthetic_unique": 0,
+          "synthetic_rate_matches": 0,
+          "synthetic_mean_rssi": null,
+          "raw_signal": {},
+          "group_masks": {},
+          "mib_before": {
+            "opened_us": 1984192230896,
+            "closed_us": 1984192231904,
+            "counter_bits": 32,
+            "dropped_frames": 1,
+            "values": {
+              "11": 892447
+            }
+          },
+          "mib_after": {
+            "opened_us": 1984198276426,
+            "closed_us": 1984198277349,
+            "counter_bits": 32,
+            "dropped_frames": 0,
+            "values": {
+              "11": 1985133
+            }
+          },
+          "mib_ok": true,
+          "counter_window_us": 6045487.5
+        },
+        {
+          "event": "dwell",
+          "phase": "restored",
+          "elapsed_us": 6031780,
+          "frames": 301,
+          "timestamps": 301,
+          "first_timestamp": 14241419,
+          "last_timestamp": 19873344,
+          "group5_frames": 0,
+          "timeouts": 3,
+          "usb_errors": 0,
+          "decode_errors": 0,
+          "submitted": 0,
+          "synthetic_marker_frames": 0,
+          "synthetic_exact": 0,
+          "synthetic_unique": 0,
+          "synthetic_rate_matches": 0,
+          "synthetic_mean_rssi": null,
+          "raw_signal": {},
+          "group_masks": {
+            "07": 301
+          },
+          "mib_before": {
+            "opened_us": 1984198278264,
+            "closed_us": 1984198279209,
+            "counter_bits": 32,
+            "dropped_frames": 0,
+            "values": {
+              "11": 1985133
+            }
+          },
+          "mib_after": {
+            "opened_us": 1984204310991,
+            "closed_us": 1984204312110,
+            "counter_bits": 32,
+            "dropped_frames": 0,
+            "values": {
+              "11": 2897871
+            }
+          },
+          "mib_ok": true,
+          "counter_window_us": 6032814
+        },
+        {
+          "event": "cleanup",
+          "g5_restored": true,
+          "alive_before_cleanup": true,
+          "firmware_reloaded": false,
+          "exit_code": 0
+        }
+      ],
+      "exit_code": 0
+    },
+    {
+      "run": "native_without_mib",
+      "records": [
+        {
+          "event": "ready",
+          "chip": "mt7921",
+          "usb_id": "0e8d:7961",
+          "band": "2.4GHz",
+          "channel": 6,
+          "width_mhz": 20,
+          "power_code": 0,
+          "rate_code": 1,
+          "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        {
+          "event": "dwell",
+          "phase": "baseline",
+          "elapsed_us": 6016574,
+          "frames": 320,
+          "timestamps": 320,
+          "first_timestamp": 1764760,
+          "last_timestamp": 7732757,
+          "group5_frames": 0,
+          "timeouts": 0,
+          "usb_errors": 0,
+          "decode_errors": 0,
+          "submitted": 0,
+          "synthetic_marker_frames": 0,
+          "synthetic_exact": 0,
+          "synthetic_unique": 0,
+          "synthetic_rate_matches": 0,
+          "synthetic_mean_rssi": null,
+          "raw_signal": {},
+          "group_masks": {
+            "07": 320
+          },
+          "mib_before": {
+            "opened_us": 0,
+            "closed_us": 0,
+            "counter_bits": 0,
+            "dropped_frames": 0,
+            "values": {}
+          },
+          "mib_after": {
+            "opened_us": 0,
+            "closed_us": 0,
+            "counter_bits": 0,
+            "dropped_frames": 0,
+            "values": {}
+          },
+          "mib_ok": true,
+          "counter_window_us": null
+        },
+        {
+          "event": "dwell",
+          "phase": "enabled",
+          "elapsed_us": 6001794,
+          "frames": 1,
+          "timestamps": 1,
+          "first_timestamp": 7735353,
+          "last_timestamp": 7735353,
+          "group5_frames": 1,
+          "timeouts": 57,
+          "usb_errors": 0,
+          "decode_errors": 0,
+          "submitted": 0,
+          "synthetic_marker_frames": 0,
+          "synthetic_exact": 0,
+          "synthetic_unique": 0,
+          "synthetic_rate_matches": 0,
+          "synthetic_mean_rssi": null,
+          "raw_signal": {
+            "fagc_ib0_raw_s8": {
+              "count": 1,
+              "min": 48,
+              "max": 48
+            },
+            "fagc_ib1_raw_s8": {
+              "count": 1,
+              "min": 0,
+              "max": 0
+            },
+            "fagc_wb0_raw_s8": {
+              "count": 1,
+              "min": 3,
+              "max": 3
+            },
+            "fagc_wb1_raw_s8": {
+              "count": 1,
+              "min": -60,
+              "max": -60
+            }
+          },
+          "group_masks": {
+            "17": 1
+          },
+          "mib_before": {
+            "opened_us": 0,
+            "closed_us": 0,
+            "counter_bits": 0,
+            "dropped_frames": 0,
+            "values": {}
+          },
+          "mib_after": {
+            "opened_us": 0,
+            "closed_us": 0,
+            "counter_bits": 0,
+            "dropped_frames": 0,
+            "values": {}
+          },
+          "mib_ok": true,
+          "counter_window_us": null
+        },
+        {
+          "event": "dwell",
+          "phase": "restored",
+          "elapsed_us": 6049527,
+          "frames": 298,
+          "timestamps": 298,
+          "first_timestamp": 14155204,
+          "last_timestamp": 19787227,
+          "group5_frames": 0,
+          "timeouts": 4,
+          "usb_errors": 0,
+          "decode_errors": 0,
+          "submitted": 0,
+          "synthetic_marker_frames": 0,
+          "synthetic_exact": 0,
+          "synthetic_unique": 0,
+          "synthetic_rate_matches": 0,
+          "synthetic_mean_rssi": null,
+          "raw_signal": {},
+          "group_masks": {
+            "07": 298
+          },
+          "mib_before": {
+            "opened_us": 0,
+            "closed_us": 0,
+            "counter_bits": 0,
+            "dropped_frames": 0,
+            "values": {}
+          },
+          "mib_after": {
+            "opened_us": 0,
+            "closed_us": 0,
+            "counter_bits": 0,
+            "dropped_frames": 0,
+            "values": {}
+          },
+          "mib_ok": true,
+          "counter_window_us": null
+        },
+        {
+          "event": "cleanup",
+          "g5_restored": true,
+          "alive_before_cleanup": true,
+          "firmware_reloaded": false,
+          "exit_code": 0
+        }
+      ],
+      "exit_code": 0
+    },
+    {
+      "run": "python_repeat",
+      "result": {
+        "chip": "mt7921",
+        "date_utc": "2026-09-06T19:50:32.235831+00:00",
+        "firmware_sha256": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "restored_register": true,
+        "runs": [
+          {
+            "control_subtypes": {},
+            "dcr0_readback": "0x2773400",
+            "elapsed_s": 6.014,
+            "group5_by_phy": {},
+            "group_masks": {
+              "07": 314
+            },
+            "he_eht_candidates": {
+              "bss_color": {},
+              "spatial_reuse": {},
+              "txop": {},
+              "uplink": {}
+            },
+            "he_eht_color_vs_beacon": {},
+            "he_eht_uplink_vs_frame_control": {},
+            "packets": {
+              "NORMAL": 314,
+              "fcs_errors": 0
+            },
+            "phase": "baseline",
+            "raw_signal": {},
+            "target": [
+              "2.4GHz",
+              6,
+              6,
+              20
+            ]
+          },
+          {
+            "control_subtypes": {
+              "BeamformReport": 1
+            },
+            "dcr0_readback": "0x2f73400",
+            "elapsed_s": 6.009,
+            "group5_by_phy": {
+              "CCK": {
+                "frames": 1,
+                "rssi_byte_correlations_exploratory": [],
+                "words": [
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 0
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 1
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 2
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 3
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 4
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 5
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 6
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 7
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 8
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 9
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 10
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 11
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 12
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 13
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 14
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 15
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 16
+                  },
+                  {
+                    "distinct": 1,
+                    "nonzero": true,
+                    "word": 17
+                  }
+                ]
+              }
+            },
+            "group_masks": {
+              "17": 1
+            },
+            "he_eht_candidates": {
+              "bss_color": {},
+              "spatial_reuse": {},
+              "txop": {},
+              "uplink": {}
+            },
+            "he_eht_color_vs_beacon": {},
+            "he_eht_uplink_vs_frame_control": {},
+            "packets": {
+              "NORMAL": 1,
+              "fcs_errors": 0,
+              "timeouts": 37
+            },
+            "phase": "enabled",
+            "raw_signal": {
+              "fagc_ib0_raw_s8": {
+                "count": 1,
+                "max": 48,
+                "min": 48
+              },
+              "fagc_ib1_raw_s8": {
+                "count": 1,
+                "max": 0,
+                "min": 0
+              },
+              "fagc_wb0_raw_s8": {
+                "count": 1,
+                "max": 3,
+                "min": 3
+              },
+              "fagc_wb1_raw_s8": {
+                "count": 1,
+                "max": -60,
+                "min": -60
+              }
+            },
+            "target": [
+              "2.4GHz",
+              6,
+              6,
+              20
+            ]
+          },
+          {
+            "control_subtypes": {},
+            "dcr0_readback": "0x2773400",
+            "elapsed_s": 6.042,
+            "group5_by_phy": {},
+            "group_masks": {
+              "07": 332
+            },
+            "he_eht_candidates": {
+              "bss_color": {},
+              "spatial_reuse": {},
+              "txop": {},
+              "uplink": {}
+            },
+            "he_eht_color_vs_beacon": {},
+            "he_eht_uplink_vs_frame_control": {},
+            "packets": {
+              "NORMAL": 332,
+              "fcs_errors": 0
+            },
+            "phase": "restored",
+            "raw_signal": {},
+            "target": [
+              "2.4GHz",
+              6,
+              6,
+              20
+            ]
+          }
+        ],
+        "tool": "rx_vector_probe",
+        "usb_id": "0e8d:7961"
+      }
+    }
+  ]
+}

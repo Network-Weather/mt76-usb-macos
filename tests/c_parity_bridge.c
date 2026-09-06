@@ -129,6 +129,17 @@ int parity_rx(const unsigned char *raw, unsigned len, int chip, unsigned *v) {
     return 0;
 }
 
+int parity_raw_signal(const unsigned char *raw, unsigned len, int chip, int *v) {
+    mt7921_rxd_frame_t frame;
+    int result = mt7921_rxd_decoder_for_chip(chip)(raw, len, &frame);
+    v[0] = !result && frame.has_raw_signal;
+    if (v[0]) {
+        v[1] = frame.fagc_ib_raw_s8[0]; v[2] = frame.fagc_ib_raw_s8[1];
+        v[3] = frame.fagc_wb_raw_s8[0]; v[4] = frame.fagc_wb_raw_s8[1];
+    }
+    return result;
+}
+
 typedef struct { uint32_t reg; int step, fail; } fake_reg_t;
 static int fake_read(void *ctx, uint32_t addr, uint32_t *v) {
     (void)addr;

@@ -8,7 +8,8 @@ remaining research, Python/C integration and acceptance gates.
 
 Execution order: sessions and raw named counters first (implemented below), then
 thermal, normal Group5 signal/TX-status timing, CSI, histograms, and final release
-qualification. Current next implementation slice is Group5 signal/TX-status timing.
+qualification. Current next implementation slice is TX-status timing. Group5
+raw decoding/guard is implemented; live enabled-phase reliability remains gated.
 
 - [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
   `feat/measurement-api` (not main); baseline offline checks pass.

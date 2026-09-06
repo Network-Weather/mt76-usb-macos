@@ -5,6 +5,8 @@ Band0 cached C-RXV word7/8 -> output26/27/30/31 (FAGC names).
 PHY register bank0/1 upper bytes -> output10..13 and34/35/38/39.
 """
 
+from rxd import decode_fagc
+
 
 def u32(word):
     if type(word) is not int or not 0 <= word <= 0xFFFFFFFF:
@@ -23,15 +25,7 @@ def instantaneous(word):
 
 
 def fagc_band0(word7, word8):
-    word7, word8 = u32(word7), u32(word8)
-    # Fractional low bits in the reconstructed9-bit values are discarded by
-    # the firmware's logical >>1 BEFORE signed8 interpretation.
-    return {
-        "fagc_ib0_raw_s8": s8(word7),
-        "fagc_ib1_raw_s8": s8(word7 >> 8),
-        "fagc_wb0_raw_s8": s8(word8 >> 5),
-        "fagc_wb1_raw_s8": s8(word8 >> 14),
-    }
+    return decode_fagc(word7, word8)
 
 
 def expected_statistics(fagc, bank0, bank1):

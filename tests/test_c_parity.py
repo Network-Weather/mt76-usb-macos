@@ -304,6 +304,42 @@ def test_rx_bounds_and_absence(native, c3):
     assert tuple(output[:2]) == (0, 0)
 
 
+@pytest.mark.parametrize("mask", range(32))
+@pytest.mark.parametrize("c3", [False, True])
+def test_raw_signal_presence_and_bounds(native, mask, c3):
+    native.parity_raw_signal.argtypes = [ct.c_char_p, ct.c_uint, ct.c_int, ct.POINTER(ct.c_int)]
+    raw = rx_fixture(c3, mask)
+    decode = rxd_connac3.decode if c3 else rxd.decode
+    expected = rxd.decode_fagc(0x10203047, 0x10203048)
+    output = (ct.c_int * 5)()
+    for end in range(len(raw) + 1):
+        # Exercise USB truncation and short declared DMA with bytes still present.
+        declared = bytearray(raw)
+        struct.pack_into("<H", declared, 0, end)
+        for sample in (raw[:end], bytes(declared)):
+            native.parity_raw_signal(sample, len(sample), int(c3), output)
+            decoded = decode(sample) or {}
+            assert bool(output[0]) == ("raw_signal" in decoded)
+            if output[0]:
+                assert decoded["raw_signal"] == expected
+                assert list(output[1:]) == list(expected.values())
+    assert bool(output[0]) == (not c3 and mask & 20 == 20)
+
+
+@pytest.mark.parametrize("value", [0, 1, 127, 128, 255])
+def test_raw_signal_signed_fractional_fields(native, value):
+    native.parity_raw_signal.argtypes = [ct.c_char_p, ct.c_uint, ct.c_int, ct.POINTER(ct.c_int)]
+    raw = bytearray(rx_fixture(False, 20))
+    word7 = value | value << 8
+    word8 = value << 5 | value << 14 | 1 << 4 | 1 << 13
+    struct.pack_into("<2I", raw, 24 + 8 + 28, word7, word8)
+    output = (ct.c_int * 5)()
+    assert native.parity_raw_signal(bytes(raw), len(raw), 0, output) == 0
+    expected = value if value < 128 else value - 256
+    assert list(output) == [1, expected, expected, expected, expected]
+    assert list(rxd.decode(raw)["raw_signal"].values()) == [expected] * 4
+
+
 @pytest.mark.parametrize("chip", [0, 1])
 def test_mib_shared_bytes(native, chip):
     from research import mt7925_mib_characterize as mib

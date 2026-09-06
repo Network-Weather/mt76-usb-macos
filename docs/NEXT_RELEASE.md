@@ -146,7 +146,10 @@ discovery or large type-system refactor is needed to complete this package.
 - [x] Query-only thermal Python/C parity, shared malformed/failure fixtures and
   short mixed-session qualification on both chips. Retain the initial failed
   run and corrected counter-parser regression in [the contract](MEASUREMENTS.md).
-- [ ] Group5 raw-signal and TX-status timing parity.
+- [x] Implement Group5 raw-signal decoder/guard parity with shared bounds/failure
+  fixtures. Live reliability gate remains open: [four cycles](MEASUREMENTS.md#experimental-raw-group5-fields)
+  reproduce enabled-phase near-silence in both languages; retain experimental scope.
+- [ ] TX-status timing parity.
 - [ ] Each slice includes synthetic golden bytes shared across implementations,
   malformed/unknown/truncated-input and failure tests, CLI reuse, and dated live
   qualification on the applicable dongle. Compare semantics in separate runs;

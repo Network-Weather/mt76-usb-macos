@@ -90,6 +90,36 @@ bug is a plausible explanation, not a proven attribution of that failure.
 Fixed-parser 15-second Python/C runs passed on both chips with RX, retunes,
 thermal and named-counter queries; they do not establish multi-hour stability.
 
+## Experimental raw Group5 fields
+
+The ordinary MT7921 `rxd.decode` result adds `raw_signal` only when the complete
+18-word Group5 is inside both DMA and USB bounds, with Group3 present. C
+`mt7921_rxd_frame_t` exposes `has_raw_signal` and two signed-byte arrays,
+`fagc_ib_raw_s8[2]` / `fagc_wb_raw_s8[2]`. Python names are
+`fagc_ib0_raw_s8`, `fagc_ib1_raw_s8`, `fagc_wb0_raw_s8`, `fagc_wb1_raw_s8`.
+MT7925 does not use this layout and never receives these fields. Keep each
+frame's PHY/FCS context. Presence establishes structural completeness, not sensor
+freshness or a valid measurement across every PHY mode. These are firmware
+receiver indices, not antenna labels, dBm, SNR or an interference classifier.
+The [source/earlier controls](INBAND_WIDEBAND_SIGNAL.md) document the extraction;
+research readers now reuse `rxd.decode_fagc`.
+
+`Group5Guard(dev).begin()` / `.restore()` mirror native `mt_g5_*`: opt-in,
+saved-bit/readback, preservation of unrelated bits, active-on-failure for retry.
+Call restore in `finally` even if begin fails. While a session owns the device,
+serialize these operations through its callback queue. Do not stack guards or
+reset firmware during their lifetime. No ICS or RF-test mode is enabled.
+Reporting is off by default; upstream's hardware-issue warning is not resolved.
+
+[Four live cycles](../research/evidence/r32-group5-2026-09-06.json) expose an
+important qualification limit: the first Python enabled phase received324
+populated frames, but both native repeats and another Python run nearly stopped
+receiving while enabled, recovering after restoration. This is not established
+as a C bug; the cause remains unknown. One queued Group5 frame also survived
+restoration in the first run. The raw decoder/guard is implemented and offline
+tested, but dependable live Group5 acquisition is **not qualified**. No sensor
+validity should be inferred from the isolated odd values in the failing runs.
+
 ## Use during capture
 
 After explicit pinned-firmware bring-up, monitor/sniffer configuration and tune:

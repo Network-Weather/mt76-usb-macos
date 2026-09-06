@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 """Named raw MCU counters and query-only thermal data for pinned firmware profiles.
 
-No direct MMIO reads, automatic percentage conversion, or register configuration.
+No read-clear MMIO counters or automatic percentage conversion. Group5Guard
+is an explicit opt-in reporting-bit guard, never enabled by measurement reads.
 Use read_counters inside session.call when acquisition owns the device. Retain
 the session epoch/channel generation alongside samples before comparing them.
 """
@@ -38,6 +39,46 @@ class CounterUnit(IntEnum):
 class ThermalAction(IntEnum):
     TEMPERATURE = 0
     RAW_ADC = 1
+
+
+class Group5Guard:
+    """MT7921-only opt-in Group5 reporting, matching C mt_g5_*.
+
+    Upstream warns of hardware issues with Group5 enabled. Use begin/restore in
+    try/finally, even if begin raises: a failed write may have reached hardware.
+    Restore failure keeps active true for retry. Preserve other register bits.
+    Serialize with session.call while a session owns the device; never carry a
+    guard across reset/reload or use concurrent guards for the same register.
+    """
+
+    REGISTER = 0x820E7000
+    BIT = 1 << 23
+
+    def __init__(self, dev):
+        self.dev = dev
+        self.active = False
+        self.saved_bit = 0
+
+    def begin(self):
+        if self.dev.CHIP != m.CHIP_MT7921:
+            raise ValueError("Group5 guard supports MT7921 only")
+        if self.active:
+            raise RuntimeError("Group5 guard already active")
+        original = self.dev.rr(self.REGISTER)
+        self.saved_bit = original & self.BIT
+        self.active = True
+        self.dev.wr(self.REGISTER, original | self.BIT)
+        if not self.dev.rr(self.REGISTER) & self.BIT:
+            raise RuntimeError("Group5 enable readback mismatch")
+
+    def restore(self):
+        if not self.active:
+            return
+        current = self.dev.rr(self.REGISTER)
+        self.dev.wr(self.REGISTER, (current & ~self.BIT) | self.saved_bit)
+        if self.dev.rr(self.REGISTER) & self.BIT != self.saved_bit:
+            raise RuntimeError("Group5 restore readback mismatch")
+        self.active = False
 
 
 def build_thermal_request(chip: str, action: ThermalAction = ThermalAction.TEMPERATURE) -> bytes:
