@@ -9,8 +9,11 @@ int parity_g5_fault(int, int);
 int parity_mcu_fault(int, int);
 int parity_rate_table(int, unsigned, unsigned *);
 int parity_vendor_timeout(unsigned);
+int parity_counter_read(int, int);
 
 int main(void) {
+    for (int chip = 0; chip < 2; chip++)
+        for (int mode = 0; mode < 7; mode++) assert(!parity_counter_read(chip, mode));
     for (unsigned mode = 0; mode < 3; mode++) assert(!parity_vendor_timeout(mode));
     for (int initial = 0; initial < 2; initial++)
         for (int fail = 0; fail < 7; fail++) assert(!parity_g5_fault(fail, initial));

@@ -305,7 +305,7 @@ cover multi-subframe inputs, and the capture output behavior is documented.
 
 ## Track C: researcher reference and discoverability
 
-### R32. Measurement API integration and next release (proposed)
+### R32. Measurement API integration and next release (in progress)
 
 Promote selected post-R30 findings into shared Python/C measurement contracts,
 using the existing continuous-session branch where an event stream needs it.

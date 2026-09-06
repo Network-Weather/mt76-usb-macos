@@ -5,6 +5,76 @@
 #include "mt7921_radio.h"
 #include <string.h>
 
+static uint8_t counter_payload[256];
+static unsigned counter_size, counter_writes;
+static int counter_chip, counter_failure;
+static int counter_write(mt7921_usb_t *usb, uint8_t ep, const void *data, uint32_t len, uint32_t ms) {
+    (void)usb; (void)ep; (void)ms;
+    counter_writes++;
+    if (counter_failure == 1 && counter_writes == 2) return -1;
+    unsigned prefix = 4 + (counter_chip == MT_CHIP_MT7925 ? MCU_UNI_TXD_LEN : MCU_TXD_LEN);
+    if (len < prefix || len - prefix > sizeof(counter_payload)) return -1;
+    counter_size = len - prefix;
+    memcpy(counter_payload, (const uint8_t *)data + prefix, counter_size);
+    return 0;
+}
+static int counter_reply(void *context, uint8_t seq, uint8_t cid, uint8_t *out,
+                           uint32_t *len, uint32_t ms) {
+    (void)context; (void)cid; (void)ms;
+    const mt7921_chip_profile_t *profile = mt7921_chip_profile(counter_chip);
+    uint8_t raw[512] = {0};
+    unsigned size = profile->mcu_rxd_len;
+    if (counter_chip == MT_CHIP_MT7921) {
+        raw[size + 28] = (uint8_t)(100 + counter_payload[4]);
+        size += 32;
+    } else {
+        for (unsigned at = 4; at + 8 <= counter_size && counter_payload[at + 2] == 8; at += 8) {
+            memcpy(raw + size, counter_payload + at, 8);
+            raw[size + 8] = (uint8_t)(100 + counter_payload[at + 4]);
+            size += 16;
+        }
+    }
+    if (counter_failure == 2) size = profile->mcu_rxd_len + 1;
+    raw[0] = (uint8_t)size; raw[1] = (uint8_t)(size >> 8);
+    raw[3] = PKT_TYPE_RX_EVENT << 3;
+    raw[profile->rxd_seq_offset] = seq;
+    if (counter_failure == 5) raw[0] = 1; /* valid bytes outside declared DMA */
+    if (counter_failure == 6) raw[profile->rxd_seq_offset] = (uint8_t)(seq % 15 + 1);
+    if (*len < size) return -1;
+    memcpy(out, raw, size); *len = size;
+    return 0;
+}
+/* Exercises the real read wrapper/encoders with fake USB and matched reply bodies.
+ * Failure cases must leave caller output untouched, including partial EXT reads. */
+int parity_counter_read(int chip, int mode) {
+    mt7921_dev_t dev = {0};
+    dev.usb.chip = chip;
+    mt7921_mcu_init(&dev.mcu, &dev.usb);
+    dev.mcu.write_bulk = counter_write;
+    dev.mcu.session_wait = counter_reply;
+    counter_chip = chip; counter_failure = mode; counter_writes = 0;
+    int names[MT_MIB_MAX]; size_t count = 0;
+    for (int c = MT_COUNTER_RX_MPDU; c <= MT_COUNTER_IDLE_SLOTS; c++)
+        if (mt_counter_descriptor(chip, c)) names[count++] = c;
+    if (mode == 3) names[count++] = 999; /* reject entire list before writing */
+    if (mode == 4) names[count++] = names[0];
+    mt_counter_sample_t sample, before;
+    memset(&sample, 0xA5, sizeof(sample)); memcpy(&before, &sample, sizeof(sample));
+    int result = mt_counter_read(&dev, names, count, &sample);
+    bool failed = mode >= 2 || (mode == 1 && chip == MT_CHIP_MT7921);
+    if (failed) {
+        if (!result || memcmp(&sample, &before, sizeof(sample))) return 1;
+        if ((mode == 3 || mode == 4) && counter_writes) return 2;
+    } else {
+        if (result || sample.raw.count != count || sample.raw.closed_us < sample.raw.opened_us) return 3;
+        if (counter_writes != (chip == MT_CHIP_MT7925 ? 1U : count)) return 4;
+        for (size_t i = 0; i < count; i++)
+            if (sample.raw.values[i] != 100 + sample.descriptors[i]->offset ||
+                sample.raw.offsets[i] != sample.descriptors[i]->offset) return 5;
+    }
+    return 0;
+}
+
 /* Fixed scalar output keeps Python tests independent of C struct padding. */
 int parity_rx(const unsigned char *raw, unsigned len, int chip, unsigned *v) {
     mt7921_rxd_frame_t frame;

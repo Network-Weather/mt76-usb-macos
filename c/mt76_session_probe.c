@@ -14,6 +14,8 @@
 #include <string.h>
 
 static volatile sig_atomic_t stopping;
+static bool named_counters;
+static const char *selected_band = "5GHz";
 static void stop_handler(int sig) { (void)sig; stopping = 1; }
 static void quiet(const char *fmt, ...) { (void)fmt; }
 static int number(const char *s, long low, long high, unsigned *out) {
@@ -43,11 +45,17 @@ static uint8_t *firmware(const char *dir, const char *name, const char *pin, siz
 }
 static int tune(mt7921_dev_t *dev, void *ctx) {
     uint8_t channel = *(unsigned *)ctx;
-    return mt7921_tune(dev, "5GHz", channel, channel, 20);
+    return mt7921_tune(dev, selected_band, channel, channel, 20);
 }
 static int query(mt7921_dev_t *dev, void *ctx) {
-    uint32_t offset = dev->usb.chip == MT_CHIP_MT7925 ? 19 : 11;
-    return mt_mib_read(dev, &offset, 1, ctx);
+    int names[MT_MIB_MAX] = {MT_COUNTER_PRIMARY_CCA};
+    size_t count = 1;
+    if (named_counters) {
+        count = 0;
+        for (int c = MT_COUNTER_RX_MPDU; c <= MT_COUNTER_IDLE_SLOTS; c++)
+            if (mt_counter_descriptor(dev->usb.chip, c)) names[count++] = c;
+    }
+    return mt_counter_read(dev, names, count, ctx);
 }
 typedef struct {
     uint64_t consumed, decoded, undecoded, timestamps, transitioning, off_channel, max_latency_us;
@@ -63,7 +71,7 @@ static void consume(const mt_session_packet_t *p, int chip, unsigned channel, co
     counts->decoded++; counts->timestamps += frame.has_timestamp;
     if (frame.has_timestamp) mt_probe_clock_observe(&counts->clock, frame.timestamp, p->received_ns);
     counts->transitioning += p->transitioning;
-    counts->off_channel += strcmp(frame.band, "5GHz") || frame.channel != channel;
+    counts->off_channel += strcmp(frame.band, selected_band) || frame.channel != channel;
     uint64_t latency = mt_radio_monotonic_us() - p->received_ns / 1000;
     if (latency > counts->max_latency_us) counts->max_latency_us = latency;
 }
@@ -84,7 +92,7 @@ static void report(const char *event, mt76_session_t *s, const counts_t *c, uint
     if (usage_ok) snprintf(peak, sizeof(peak), "%" PRIu64, (uint64_t)usage.ru_maxrss);
     else snprintf(peak, sizeof(peak), "null");
     printf("{\"event\":\"%s\",\"tool\":\"c_session_probe\",\"usb_id\":\"%s\","
-           "\"elapsed_seconds\":%.3f,\"state\":%d,\"epoch_ns\":%" PRIu64 ","
+           "\"requested_band\":\"%s\",\"elapsed_seconds\":%.3f,\"state\":%d,\"epoch_ns\":%" PRIu64 ","
            "\"frames_received\":%" PRIu64 ",\"frames_delivered\":%" PRIu64 ","
            "\"frames_dropped\":%" PRIu64 ",\"frame_depth\":%u,\"frame_high_water\":%" PRIu64 ","
            "\"events_received\":%" PRIu64 ",\"events_delivered\":%" PRIu64 ","
@@ -101,7 +109,7 @@ static void report(const char *event, mt76_session_t *s, const counts_t *c, uint
            "\"resident_bytes\":%s,\"peak_resident_bytes\":%s,\"timestamp_first\":%u,\"timestamp_last\":%u,"
            "\"timestamp_wrap_candidates\":%" PRIu64 ",\"timestamp_backsteps\":%" PRIu64 ","
            "\"timestamp_ambiguous_gaps\":%" PRIu64 "}\n",
-           event, id, (mt_radio_monotonic_us() - started) / 1e6, st.state, st.epoch_ns,
+           event, id, selected_band, (mt_radio_monotonic_us() - started) / 1e6, st.state, st.epoch_ns,
            st.frames_received, st.frames_delivered, st.frames_dropped, st.frame_depth, st.frames_high_water,
            st.events_received, st.events_delivered, st.events_dropped, st.event_depth, st.events_high_water,
            st.transfers, st.read_timeouts, st.usb_errors, st.malformed, st.replies_matched,
@@ -118,13 +126,19 @@ int main(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--help")) {
             puts("mt76_session_probe --usb-id VID:PID --fw DIR [--seconds 1..14400] "
-                 "[--hop-seconds 0..3600] [--mib-seconds 0..3600] [--frame-capacity 1..4096]");
+                 "[--hop-seconds 0..3600] [--mib-seconds 0..3600] [--frame-capacity 1..4096] "
+                 "[--named-counters] [--band 2.4GHz|5GHz]");
             return 0;
         }
+        if (!strcmp(argv[i], "--named-counters")) { named_counters = true; continue; }
         const char *key = argv[i];
         if (++i == argc) return 2;
         if (!strcmp(key, "--usb-id")) id = argv[i];
         else if (!strcmp(key, "--fw")) dir = argv[i];
+        else if (!strcmp(key, "--band")) {
+            if (strcmp(argv[i], "2.4GHz") && strcmp(argv[i], "5GHz")) return 2;
+            selected_band = argv[i];
+        }
         else if (!strcmp(key, "--seconds")) { if (number(argv[i], 1, 14400, &seconds)) return 2; }
         else if (!strcmp(key, "--hop-seconds")) { if (number(argv[i], 0, 3600, &hop_seconds)) return 2; }
         else if (!strcmp(key, "--mib-seconds")) { if (number(argv[i], 0, 3600, &mib_seconds)) return 2; }
@@ -142,7 +156,9 @@ int main(int argc, char **argv) {
     if (mt7921_dev_open(&dev, id)) { free(patch); free(ram); return 1; }
     signal(SIGINT, stop_handler); signal(SIGTERM, stop_handler); signal(SIGPIPE, SIG_IGN);
     setvbuf(stdout, NULL, _IOLBF, 0);
-    unsigned channel = 36;
+    unsigned first_channel = !strcmp(selected_band, "2.4GHz") ? 1 : 36;
+    unsigned second_channel = !strcmp(selected_band, "2.4GHz") ? 11 : 149;
+    unsigned channel = first_channel;
     int result = 1;
     mt76_session_t *s = NULL;
     counts_t counts = {0};
@@ -168,15 +184,26 @@ int main(int argc, char **argv) {
         if (stats.state != MT_SESSION_RUNNING) { result = 1; break; }
         uint64_t now = mt_radio_monotonic_us();
         if (now >= next_mib) {
-            mt_mib_sample_t sample;
+            mt_counter_sample_t sample;
             if (mt_session_call(s, query, &sample, 3000, false)) { result = 1; break; }
             counts.queries++;
-            uint64_t latency = sample.closed_us - sample.opened_us;
+            uint64_t latency = sample.raw.closed_us - sample.raw.opened_us;
             if (latency > counts.max_mib_us) counts.max_mib_us = latency;
+            if (named_counters) {
+                mt_session_snapshot(s, &stats);
+                printf("{\"event\":\"counters\",\"usb_id\":\"%s\",\"requested_band\":\"%s\",\"epoch_ns\":%" PRIu64
+                       ",\"channel_generation\":%u,\"requested_control\":%u,\"opened_us\":%" PRIu64
+                       ",\"closed_us\":%" PRIu64 ",\"values\":{", id, selected_band, stats.epoch_ns,
+                       stats.generation, channel, sample.raw.opened_us, sample.raw.closed_us);
+                for (size_t i = 0; i < sample.raw.count; i++)
+                    printf("%s\"%s\":%" PRIu64, i ? "," : "", sample.descriptors[i]->name,
+                           sample.raw.values[i]);
+                puts("}}");
+            }
             next_mib = mt_radio_monotonic_us() + mib_seconds * 1000000ULL;
         }
         if (now >= next_hop) {
-            channel = channel == 36 ? 149 : 36;
+            channel = channel == first_channel ? second_channel : first_channel;
             uint64_t tune_started = mt_radio_monotonic_us();
             if (mt_session_call(s, tune, &channel, 3000, true)) { result = 1; break; }
             uint64_t tune_elapsed = mt_radio_monotonic_us() - tune_started;

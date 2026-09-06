@@ -100,8 +100,11 @@ swallowed errors, write failure, too-small reply buffers and stop/callback races
 
 ## Passive qualification commands
 
-Both probes print redacted NDJSON and have no transmit path. The current hardware
-envelope is 5 GHz control channels 36/149 at 20 MHz, one process per reference adapter.
+Both probes print redacted NDJSON and have no transmit path. Targets are 5 GHz
+control channels 36/149 (default), or `--band 2.4GHz` channels 1/11, at 20 MHz,
+one process per reference adapter. R32 adds `--named-counters` to sample the
+[finite raw profile](MEASUREMENTS.md); old-chip weak 5-GHz reception is retained
+as a qualification limit, not attributed to a successful command round trip.
 Set `--hop-seconds 0` for a locked-channel run, or `--mib-seconds 0` for capture alone.
 `--seconds` accepts up to four hours. Never run two processes against the same dongle.
 

@@ -6,8 +6,15 @@ Planning checkpoint 2026-09-06: PR #31 is merged at `7eb35d1`; no new release
 was cut. The [next-release plan](docs/NEXT_RELEASE.md) is the selected sequence for
 remaining research, Python/C integration and acceptance gates.
 
-- [ ] Reconcile the already implemented `feat/continuous-acquisition` branch and
-  define shared capability/measurement records; do not restart session work.
+Execution order: sessions and raw named counters first (implemented below), then
+thermal, normal Group5 signal/TX-status timing, CSI, histograms, and final release
+qualification. Current next implementation slice is thermal query/parse parity.
+
+- [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
+  `feat/measurement-api` (not main); baseline offline checks pass.
+- [x] Implement [named raw-counter records](docs/MEASUREMENTS.md) in Python/C,
+  shared wire/failure tests and session probe reuse. Conversion/accumulator widths
+  stay unknown; weak MT7921 reception remains an RF qualification limit.
 - [ ] Deliver named MIB, thermal, Group5 signal and TX-status timing primitives in
   both libraries, with research helpers consuming the promoted implementations.
 - [ ] Target bounded beacon CSI, then raw histograms, behind separate experimental

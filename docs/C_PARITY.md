@@ -6,6 +6,11 @@ covers acquisition primitives; it does not move site analysis into the driver.
 
 ## Port contract
 
+R32 adds the [named MCU measurement contract](MEASUREMENTS.md) in Python and C.
+This additive slice and the integrated sessions are on `feat/measurement-api`,
+not yet released. New raw-counter parity is distinct from the earlier R30 table
+and does not imply parity for the remaining research-only surfaces.
+
 | Python reference | C interface | Semantics and boundary |
 |---|---|---|
 | `rxd.decode`, `rxd_connac3.decode` | `mt7921_rxd_decode*`, `mt7921_rxd_frame_t` | Group-2 timestamp with presence flag; local 32-bit microsecond counter, wrap-aware downstream, not wall time or ranging |

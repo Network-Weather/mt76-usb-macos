@@ -120,6 +120,7 @@ def native_probe(tmp_path_factory):
         ["--usb-id", "0e8d:7961", "--seconds", "0"],
         ["--usb-id", "0e8d:7961", "--hop-seconds", "-1"],
         ["--usb-id", "0e8d:7961", "--mib-seconds", "99999"],
+        ["--usb-id", "0e8d:7961", "--named-counters", "--band", "6GHz"],
     ],
 )
 def test_native_probe_invalid_arguments_refuse_before_usb(native_probe, args):

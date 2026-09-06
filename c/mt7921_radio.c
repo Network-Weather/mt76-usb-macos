@@ -92,6 +92,15 @@ int mt_mib_read(mt7921_dev_t *dev, const uint32_t *offsets, size_t n,
     sample->closed_us = mt_radio_monotonic_us();
     sample->dropped_frames = dev->mcu.dropped_frames - dropped;
     if (ret) return ret;
+    /* Legacy non-session MCU waits do not trim USB padding. Validate the record
+     * here too, so bytes outside DMA length can never manufacture a counter. */
+    if (reply_len < dev->mcu.prof->mcu_rxd_len) return -1;
+    uint32_t word = le32(reply), size = word & 0xFFFF;
+    if (size < dev->mcu.prof->mcu_rxd_len || size > reply_len || size > sizeof(reply) ||
+        word >> 27 != PKT_TYPE_RX_EVENT ||
+        ((word >> RXD0_PKT_FLAG_SHIFT) & RXD0_PKT_FLAG_MASK) == PKT_FLAG_NORMAL_MCU ||
+        reply[dev->mcu.prof->rxd_seq_offset] != dev->mcu.msg_seq) return -1;
+    reply_len = size;
     uint32_t body_len = 0;
     const uint8_t *body = mt7921_mcu_reply_body(&dev->mcu, reply, reply_len, &body_len);
     if (mt_mib_parse(dev->usb.chip, body, body_len, offsets, n, sample->values)) return -1;
@@ -109,6 +118,67 @@ bool mt_mib_delta(uint64_t before, uint64_t after, unsigned bits,
     if (value > max_delta) return false;
     *delta = value;
     return true;
+}
+
+/* Keep wire/field/accumulator widths distinct. Shared Python/C fixture tests
+ * verify this finite profile. Duration tick conversion remains unqualified. */
+static const mt_counter_descriptor_t counters_7921[] = {
+    {"rx_mpdu", MT_COUNTER_RX_MPDU, 2, MT_COUNTER_COUNT, 32, 0, 0, 0, false},
+    {"rx_mdrdy", MT_COUNTER_RX_MDRDY, 7, MT_COUNTER_COUNT, 32, 0, 0, 0, false},
+    {"primary_cca", MT_COUNTER_PRIMARY_CCA, 11, MT_COUNTER_DURATION_TICKS, 32, 0, 0, 0, false},
+    {"cca_nav_tx", MT_COUNTER_CCA_NAV_TX, 14, MT_COUNTER_DURATION_TICKS, 32, 0, 0, 0, false},
+};
+static const mt_counter_descriptor_t counters_7925[] = {
+    {"rx_mpdu", MT_COUNTER_RX_MPDU, 2, MT_COUNTER_COUNT, 64, 32, 0, 0, false},
+    {"rx_fcs_error", MT_COUNTER_RX_FCS_ERROR, 0, MT_COUNTER_COUNT, 64, 32, 0, 0, false},
+    {"rx_mdrdy", MT_COUNTER_RX_MDRDY, 11, MT_COUNTER_COUNT, 64, 32, 0, 0, false},
+    {"primary_cca", MT_COUNTER_PRIMARY_CCA, 17, MT_COUNTER_DURATION_TICKS, 64, 32, 0, 0, false},
+    {"cca_nav_tx", MT_COUNTER_CCA_NAV_TX, 19, MT_COUNTER_DURATION_TICKS, 64, 24, 0, 0, false},
+    {"cck_rx_duration", MT_COUNTER_CCK_RX_DURATION, 12, MT_COUNTER_DURATION_TICKS, 64, 32, 0, 0, false},
+    {"ofdm_rx_duration", MT_COUNTER_OFDM_RX_DURATION, 13, MT_COUNTER_DURATION_TICKS, 64, 32, 0, 0, false},
+    {"primary_ed", MT_COUNTER_PRIMARY_ED, 20, MT_COUNTER_DURATION_TICKS, 64, 24, 0, 0, false},
+    {"nav", MT_COUNTER_NAV, 52, MT_COUNTER_DURATION_TICKS, 64, 24, 0, 0, false},
+    {"idle_slots", MT_COUNTER_IDLE_SLOTS, 7, MT_COUNTER_SLOTS, 64, 16, 0, 9000, true},
+};
+const mt_counter_descriptor_t *mt_counter_descriptor(int chip, int counter) {
+    const mt_counter_descriptor_t *table;
+    size_t count;
+    if (chip == MT_CHIP_MT7921) {
+        table = counters_7921; count = sizeof(counters_7921) / sizeof(*table);
+    } else if (chip == MT_CHIP_MT7925) {
+        table = counters_7925; count = sizeof(counters_7925) / sizeof(*table);
+    } else return NULL;
+    for (size_t i = 0; i < count; i++) if (table[i].counter == counter) return &table[i];
+    return NULL;
+}
+int mt_counter_read(mt7921_dev_t *dev, const int *counters, size_t count,
+                     mt_counter_sample_t *sample) {
+    if (!dev || !counters || !sample || !count || count > MT_MIB_MAX) return -1;
+    mt_counter_sample_t result = {0};
+    uint32_t offsets[MT_MIB_MAX];
+    for (size_t i = 0; i < count; i++) {
+        result.descriptors[i] = mt_counter_descriptor(dev->usb.chip, counters[i]);
+        if (!result.descriptors[i]) return MT7921_ERR_UNSUPPORTED;
+        offsets[i] = result.descriptors[i]->offset;
+        for (size_t j = 0; j < i; j++) if (counters[j] == counters[i]) return -1;
+    }
+    if (dev->usb.chip == MT_CHIP_MT7925) {
+        if (mt_mib_read(dev, offsets, count, &result.raw)) return -1;
+    } else {
+        for (size_t i = 0; i < count; i++) {
+            mt_mib_sample_t one;
+            if (mt_mib_read(dev, offsets + i, 1, &one)) return -1;
+            if (!i) result.raw.opened_us = one.opened_us;
+            result.raw.closed_us = one.closed_us;
+            result.raw.dropped_frames += one.dropped_frames;
+            result.raw.values[i] = one.values[0];
+            result.raw.offsets[i] = offsets[i];
+        }
+        result.raw.count = count;
+        result.raw.counter_bits = 32; /* compatibility field: wire width only */
+    }
+    *sample = result;
+    return 0;
 }
 
 /* mt792x_regs.h MT_DMA_DCR0(0), MT_DMA_DCR0_RXD_G5_EN, c5a3bd91. */

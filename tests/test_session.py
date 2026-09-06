@@ -308,6 +308,7 @@ def test_stop_deadline_validation(value):
         [],
         ["--usb-id", "ffff:ffff"],
         ["--usb-id", "0e8d:7961", "--seconds", "0"],
+        ["--usb-id", "0e8d:7961", "--named-counters", "--band", "6GHz"],
         ["--usb-id", "0e8d:7961", "--hop-seconds", "-1"],
         ["--usb-id", "0e8d:7961", "--mib-seconds", "99999"],
     ],

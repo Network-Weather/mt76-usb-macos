@@ -138,8 +138,11 @@ discovery or large type-system refactor is needed to complete this package.
 
 ### 2. Deliver the release floor in vertical slices
 
-- [ ] Named MIB sample/descriptor helpers in Python and C; resolve conversion and
-  ownership gates or leave affected derived values unavailable.
+- [x] Named MIB sample/descriptor helpers in Python and C; resolve conversion and
+  ownership gates or leave affected derived values unavailable. First slice:
+  [raw named contract](MEASUREMENTS.md), with unknown conversions/accumulator
+  widths retained. Live queries pass in both languages; old-chip weak RX is an
+  explicit remaining RF qualification limit, not a release pass.
 - [ ] Thermal query/parse parity, then Group5 raw-signal and TX-status timing parity.
 - [ ] Each slice includes synthetic golden bytes shared across implementations,
   malformed/unknown/truncated-input and failure tests, CLI reuse, and dated live

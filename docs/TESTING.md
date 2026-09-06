@@ -4,6 +4,18 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 named-counter integration, 2026-09-06
+
+The [measurement API contract](MEASUREMENTS.md) and
+[sanitized eight-run evidence](../research/evidence/r32-named-counters-2026-09-06.json)
+record short Python/native named-query qualification on both reference dongles.
+The 2.4-GHz channel1/11/1 runs receive frames, complete all named queries and stop
+cleanly in both languages. MT7925 also receives normally on channel36; MT7921
+is weak/silent there, including on an unchanged-main control. This is not a pass
+for current MT7921 5-GHz RF performance, multi-hour soak, or calibrated units.
+The integrated suite passes 1,738 pytest tests, native tests and ASan/UBSan;
+new named-read failure paths are included in the sanitizer target.
+
 ## Offline test suite
 
 ### PHY transmit and station testmode exploration, 2026-09-04

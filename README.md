@@ -68,6 +68,10 @@ Experimental [continuous acquisition sessions](docs/CONTINUOUS_ACQUISITION.md) p
 single-owner Python/C capture with bounded queues and frame-preserving MCU waits.
 Short hardware checks are qualified; long-soak and recovery limits remain explicit.
 
+The unreleased [named measurement APIs](docs/MEASUREMENTS.md) expose MCU counter
+samples in Python and C, including raw units, width uncertainty and saturation
+limits. Research-only CSI/histogram work is not yet part of this API.
+
 ## Requirements
 
 - A USB device whose ID is in `mt7921u.SUPPORTED_DEVICES`: `0e8d:7961` (MT7921AU, for

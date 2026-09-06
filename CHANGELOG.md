@@ -7,6 +7,14 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Named raw MCU counter APIs in installed `mt76_measurements` and native
+  `mt_counter_*`: four MT7921 and ten MT7925 fields, with distinct wire/hardware/
+  accumulator widths, unknown duration conversions, and explicit idle-saturation
+  limits. Shared fixtures and strict event bounds/sequence validation prevent
+  malformed replies or USB padding from manufacturing measurements. Session probes
+  now reuse these APIs and can export redacted named totals. See the
+  [measurement contract](docs/MEASUREMENTS.md); current MT7921 weak-RX and remaining
+  calibration/soak limits are not treated as passed hardware qualification.
 - Experimental Python/C continuous acquisition sessions: one USB owner, bounded
   frame/event queues, frame-preserving MCU waits, serialized commands, explicit
   failure and shutdown states, requested-channel metadata and redacted passive probes.

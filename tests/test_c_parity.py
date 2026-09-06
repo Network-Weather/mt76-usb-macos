@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+import mt76_measurements as mm
 import mt7921u as m
 import rxd
 import rxd_connac3
@@ -96,6 +97,83 @@ def native(tmp_path_factory):
     ]
     lib.parity_txs.argtypes = [ct.c_int, ct.c_char_p, ct.c_uint, ct.POINTER(ct.c_int)]
     return lib
+
+
+class CounterDescriptor(ct.Structure):
+    _fields_ = [
+        ("name", ct.c_char_p),
+        ("counter", ct.c_int),
+        ("offset", ct.c_uint32),
+        ("unit", ct.c_int),
+        ("wire_bits", ct.c_uint),
+        ("hardware_bits", ct.c_uint),
+        ("accumulator_bits", ct.c_uint),
+        ("tick_ns", ct.c_uint),
+        ("hardware_saturates", ct.c_bool),
+    ]
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+def test_named_counter_descriptors_and_requests_match_python(native, chip):
+    name = m.CHIP_MT7925 if chip else m.CHIP_MT7921
+    native.mt_counter_descriptor.argtypes = [ct.c_int, ct.c_int]
+    native.mt_counter_descriptor.restype = ct.POINTER(CounterDescriptor)
+    expected = {d.counter: d for d in mm.counter_descriptors(name)}
+    for counter in mm.Counter:
+        pointer = native.mt_counter_descriptor(chip, counter)
+        if counter not in expected:
+            assert not pointer
+            continue
+        actual, descriptor = pointer.contents, expected[counter]
+        assert actual.name.decode() == descriptor.name
+        for field in (
+            "counter",
+            "offset",
+            "unit",
+            "wire_bits",
+            "hardware_bits",
+            "accumulator_bits",
+            "tick_ns",
+            "hardware_saturates",
+        ):
+            assert getattr(actual, field) == (getattr(descriptor, field) or 0)
+        offsets = (ct.c_uint32 * 1)(descriptor.offset)
+        output = ct.create_string_buffer(132)
+        length = native.mt_mib_request(chip, 0, offsets, 1, output, len(output))
+        assert output.raw[:length] == mm.build_mib_request(name, (descriptor.offset,))
+    assert not native.mt_counter_descriptor(42, mm.Counter.PRIMARY_CCA)
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("mode", range(7))
+def test_named_counter_read_faults(native, chip, mode):
+    native.parity_counter_read.argtypes = [ct.c_int, ct.c_int]
+    assert native.parity_counter_read(chip, mode) == 0
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+def test_production_mib_parsers_share_valid_and_malformed_bytes(native, chip):
+    name = m.CHIP_MT7925 if chip else m.CHIP_MT7921
+    offsets = (2, 17) if chip else (11,)
+    values = (0xFFFFFFFF, 0x100000002) if chip else (0xFFFFFFFF,)
+    body = (
+        bytes(12)
+        + b"".join(struct.pack("<HHIQ", 0, 8, o, v) for o, v in zip(offsets, values, strict=True))
+        if chip
+        else bytes(28) + struct.pack("<I", values[0])
+    )
+    offset_array = (ct.c_uint32 * len(offsets))(*offsets)
+    for raw in [body, body + body] + [body[:i] for i in range(len(body))]:
+        out = (ct.c_uint64 * len(offsets))(*([99] * len(offsets)))
+        result = native.mt_mib_parse(chip, raw, len(raw), offset_array, len(offsets), out)
+        try:
+            parsed = mm.parse_mib_reply(name, raw, offsets)
+        except ValueError:
+            assert result == -1
+            assert tuple(out) == (99,) * len(offsets)
+        else:
+            assert result == 0
+            assert tuple(out) == parsed
 
 
 def rx_fixture(c3, mask, timestamp=0xFFFFFFFE):

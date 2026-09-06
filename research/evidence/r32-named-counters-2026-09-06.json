@@ -1,0 +1,921 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-06",
+  "branch": "feat/measurement-api",
+  "integration_base": "34c9e0d",
+  "scope": "R32 named-counter integration; passive only, no direct read-clear MMIO, TX or ambient identifiers. Source accompanies this evidence in the same commit.",
+  "commands": {
+    "python": "python scripts/session_probe.py --usb-id VID:PID --fw PINNED_DIR --seconds 8 --hop-seconds 0 --mib-seconds 1 --named-counters",
+    "c": "c/mt76_session_probe --usb-id VID:PID --fw PINNED_DIR --seconds 8 --hop-seconds 0 --mib-seconds 1 --named-counters",
+    "followup_24": "Same probes with --band 2.4GHz --seconds 12 --hop-seconds 4; one owner per radio; Python/C run separately."
+  },
+  "qualification": {
+    "transport_and_orderly_stop": "passed both chips and implementations",
+    "normal_rx_24": "passed both chips and implementations for this short 1/11/1 channel sequence",
+    "normal_rx_5_mt7925": "passed short channel36 run",
+    "normal_rx_5_mt7921": "not qualified: no frames in final runs; unchanged main also silent on channel36",
+    "duration_conversion": "unqualified; raw duration ticks only",
+    "accumulator_width": "unknown; do not use reply width as rollover width",
+    "idle": "firmware total can exceed 65535 while each hardware interval saturates",
+    "hot_unplug": "not tested",
+    "multi_hour_soak": "not tested",
+    "power_or_interference_calibration": "not performed"
+  },
+  "runs": [
+    {
+      "run": "python_mt7921",
+      "process_exit_code": 0,
+      "requested_band": "5GHz",
+      "requested_seconds": 8,
+      "hop_seconds": 0,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0e8d:7961"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974232365897458,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974233445169,
+        "closed_us": 1974233449031,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 17,
+          "cca_nav_tx": 17
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974232365897458,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974239847298,
+        "closed_us": 1974239852330,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 3,
+          "primary_cca": 4487,
+          "cca_nav_tx": 4487
+        }
+      },
+      "counter_sample_count": 7,
+      "summary": {
+        "counts": {
+          "max_mib_latency_us": 5922,
+          "mib_queries": 7
+        },
+        "elapsed_seconds": 8.066,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "hop_seconds": 0,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_seconds": 8,
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 7,
+            "read_timeouts": 150,
+            "replies_matched": 28,
+            "transfers": 28
+          },
+          "epoch_ns": 1974232365897458,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T17:02:52.991272+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0e8d:7961"
+      }
+    },
+    {
+      "run": "python_mt7925",
+      "process_exit_code": 0,
+      "requested_band": "5GHz",
+      "requested_seconds": 8,
+      "hop_seconds": 0,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0846:9072"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974236584092708,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974237584876,
+        "closed_us": 1974237587375,
+        "values": {
+          "rx_mpdu": 113,
+          "rx_fcs_error": 69,
+          "rx_mdrdy": 184,
+          "primary_cca": 33070,
+          "cca_nav_tx": 29297,
+          "cck_rx_duration": 0,
+          "ofdm_rx_duration": 25901,
+          "primary_ed": 697,
+          "nav": 3226,
+          "idle_slots": 65535
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974236584092708,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974243706724,
+        "closed_us": 1974243709159,
+        "values": {
+          "rx_mpdu": 1024,
+          "rx_fcs_error": 465,
+          "rx_mdrdy": 1609,
+          "primary_cca": 252901,
+          "cca_nav_tx": 245003,
+          "cck_rx_duration": 0,
+          "ofdm_rx_duration": 187065,
+          "primary_ed": 8285,
+          "nav": 55775,
+          "idle_slots": 458745
+        }
+      },
+      "counter_sample_count": 7,
+      "summary": {
+        "counts": {
+          "decoded_frames": 1210,
+          "max_delivery_latency_us": 2949,
+          "max_mib_latency_us": 2512,
+          "mib_queries": 7,
+          "off_requested_channel": 0,
+          "packets_consumed": 1210,
+          "timestamp_frames": 1210,
+          "transition_frames": 0
+        },
+        "elapsed_seconds": 8.025,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        "hop_seconds": 0,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_seconds": 8,
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 7,
+            "frames_delivered": 1210,
+            "frames_high_water": 3,
+            "frames_received": 1210,
+            "replies_matched": 7,
+            "transfers": 1217
+          },
+          "epoch_ns": 1974236584092708,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T17:02:58.100228+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0846:9072"
+      }
+    },
+    {
+      "run": "c_mt7921",
+      "process_exit_code": 0,
+      "requested_band": "5GHz",
+      "requested_seconds": 8,
+      "hop_seconds": 0,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0e8d:7961",
+        "requested_seconds": 8,
+        "hop_seconds": 0,
+        "mib_seconds": 1,
+        "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974296130539000,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974297150066,
+        "closed_us": 1974297154441,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 25,
+          "cca_nav_tx": 25
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974296130539000,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974303502166,
+        "closed_us": 1974303506069,
+        "values": {
+          "rx_mpdu": 0,
+          "rx_mdrdy": 0,
+          "primary_cca": 25,
+          "cca_nav_tx": 25
+        }
+      },
+      "counter_sample_count": 7,
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "elapsed_seconds": 8.066,
+        "state": 2,
+        "epoch_ns": 1974296130539000,
+        "frames_received": 0,
+        "frames_delivered": 0,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 0,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 28,
+        "read_timeouts": 150,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 28,
+        "unmatched_replies": 0,
+        "commands_completed": 7,
+        "decoded_frames": 0,
+        "undecoded": 0,
+        "timestamp_frames": 0,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 0,
+        "mib_queries": 7,
+        "max_mib_latency_us": 4642,
+        "retunes": 0,
+        "max_retune_latency_us": 0,
+        "channel_known": true,
+        "requested_control": 36,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 8273920,
+        "peak_resident_bytes": 8323072,
+        "timestamp_first": 0,
+        "timestamp_last": 0,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "run": "c_mt7925",
+      "process_exit_code": 0,
+      "requested_band": "5GHz",
+      "requested_seconds": 8,
+      "hop_seconds": 0,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0846:9072",
+        "requested_seconds": 8,
+        "hop_seconds": 0,
+        "mib_seconds": 1,
+        "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974304189900000,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974305200374,
+        "closed_us": 1974305202575,
+        "values": {
+          "rx_mpdu": 139,
+          "rx_fcs_error": 149,
+          "rx_mdrdy": 322,
+          "primary_cca": 38627,
+          "cca_nav_tx": 40687,
+          "cck_rx_duration": 0,
+          "ofdm_rx_duration": 26346,
+          "primary_ed": 1533,
+          "nav": 14818,
+          "idle_slots": 65535
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974304189900000,
+        "channel_generation": 0,
+        "requested_control": 36,
+        "opened_us": 1974311315474,
+        "closed_us": 1974311317592,
+        "values": {
+          "rx_mpdu": 728,
+          "rx_fcs_error": 807,
+          "rx_mdrdy": 1727,
+          "primary_cca": 232589,
+          "cca_nav_tx": 229613,
+          "cck_rx_duration": 0,
+          "ofdm_rx_duration": 166027,
+          "primary_ed": 7603,
+          "nav": 64148,
+          "idle_slots": 458745
+        }
+      },
+      "counter_sample_count": 7,
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "elapsed_seconds": 8.005,
+        "state": 2,
+        "epoch_ns": 1974304189900000,
+        "frames_received": 786,
+        "frames_delivered": 786,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 3,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 793,
+        "read_timeouts": 3,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 7,
+        "unmatched_replies": 0,
+        "commands_completed": 7,
+        "decoded_frames": 786,
+        "undecoded": 0,
+        "timestamp_frames": 786,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 2525,
+        "mib_queries": 7,
+        "max_mib_latency_us": 2426,
+        "retunes": 0,
+        "max_retune_latency_us": 0,
+        "channel_known": true,
+        "requested_control": 36,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 13058048,
+        "peak_resident_bytes": 13107200,
+        "timestamp_first": 1091461,
+        "timestamp_last": 9094467,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "run": "python_mt7921_24",
+      "process_exit_code": 0,
+      "requested_band": "2.4GHz",
+      "requested_seconds": 12,
+      "hop_seconds": 4,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0e8d:7961"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974514581718541,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1974515613090,
+        "closed_us": 1974515618245,
+        "values": {
+          "rx_mpdu": 84,
+          "rx_mdrdy": 84,
+          "primary_cca": 99962,
+          "cca_nav_tx": 110873
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974514581718541,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1974526053244,
+        "closed_us": 1974526057335,
+        "values": {
+          "rx_mpdu": 499,
+          "rx_mdrdy": 503,
+          "primary_cca": 595112,
+          "cca_nav_tx": 615967
+        }
+      },
+      "counter_sample_count": 11,
+      "summary": {
+        "counts": {
+          "decoded_frames": 534,
+          "max_delivery_latency_us": 136327,
+          "max_mib_latency_us": 7337,
+          "max_retune_latency_us": 138938,
+          "mib_queries": 11,
+          "off_requested_channel": 1,
+          "packets_consumed": 534,
+          "retunes": 2,
+          "timestamp_frames": 534,
+          "transition_frames": 0
+        },
+        "elapsed_seconds": 12.086,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "hop_seconds": 4,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_band": "2.4GHz",
+        "requested_seconds": 12,
+        "session": {
+          "channel_generation": 2,
+          "counts": {
+            "commands_completed": 13,
+            "frames_delivered": 534,
+            "frames_high_water": 5,
+            "frames_received": 534,
+            "read_timeouts": 138,
+            "replies_matched": 48,
+            "transfers": 582
+          },
+          "epoch_ns": 1974514581718541,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            1,
+            1,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T17:07:35.583635+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0e8d:7961"
+      }
+    },
+    {
+      "run": "python_mt7925_24",
+      "process_exit_code": 0,
+      "requested_band": "2.4GHz",
+      "requested_seconds": 12,
+      "hop_seconds": 4,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0846:9072"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974520441516208,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1974521448080,
+        "closed_us": 1974521450940,
+        "values": {
+          "rx_mpdu": 84,
+          "rx_fcs_error": 11,
+          "rx_mdrdy": 95,
+          "primary_cca": 328828,
+          "cca_nav_tx": 321912,
+          "cck_rx_duration": 165101,
+          "ofdm_rx_duration": 5790,
+          "primary_ed": 310699,
+          "nav": 3924,
+          "idle_slots": 65535
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974520441516208,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1974531892970,
+        "closed_us": 1974531895695,
+        "values": {
+          "rx_mpdu": 1476,
+          "rx_fcs_error": 235,
+          "rx_mdrdy": 1717,
+          "primary_cca": 4010006,
+          "cca_nav_tx": 3949570,
+          "cck_rx_duration": 2165452,
+          "ofdm_rx_duration": 27560,
+          "primary_ed": 3734086,
+          "nav": 95419,
+          "idle_slots": 693839
+        }
+      },
+      "counter_sample_count": 11,
+      "summary": {
+        "counts": {
+          "decoded_frames": 1561,
+          "max_delivery_latency_us": 106674,
+          "max_mib_latency_us": 3315,
+          "max_retune_latency_us": 147011,
+          "mib_queries": 11,
+          "off_requested_channel": 4,
+          "packets_consumed": 1561,
+          "retunes": 2,
+          "timestamp_frames": 1561,
+          "transition_frames": 2
+        },
+        "elapsed_seconds": 12.002,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        "hop_seconds": 4,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_band": "2.4GHz",
+        "requested_seconds": 12,
+        "session": {
+          "channel_generation": 2,
+          "counts": {
+            "commands_completed": 13,
+            "frames_delivered": 1561,
+            "frames_high_water": 3,
+            "frames_received": 1561,
+            "read_timeouts": 64,
+            "replies_matched": 13,
+            "transfers": 1574
+          },
+          "epoch_ns": 1974520441516208,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            1,
+            1,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T17:07:42.172788+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0846:9072"
+      }
+    },
+    {
+      "run": "c_mt7921_24",
+      "process_exit_code": 0,
+      "requested_band": "2.4GHz",
+      "requested_seconds": 12,
+      "hop_seconds": 4,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0e8d:7961",
+        "requested_seconds": 12,
+        "hop_seconds": 4,
+        "mib_seconds": 1,
+        "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974560142643000,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1974561151691,
+        "closed_us": 1974561156428,
+        "values": {
+          "rx_mpdu": 103,
+          "rx_mdrdy": 107,
+          "primary_cca": 286684,
+          "cca_nav_tx": 287287
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0e8d:7961",
+        "epoch_ns": 1974560142643000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1974571465868,
+        "closed_us": 1974571470490,
+        "values": {
+          "rx_mpdu": 700,
+          "rx_mdrdy": 747,
+          "primary_cca": 1063450,
+          "cca_nav_tx": 1086267
+        }
+      },
+      "counter_sample_count": 11,
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 12.005,
+        "state": 2,
+        "epoch_ns": 1974560142643000,
+        "frames_received": 768,
+        "frames_delivered": 768,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 4,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 816,
+        "read_timeouts": 118,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 48,
+        "unmatched_replies": 0,
+        "commands_completed": 13,
+        "decoded_frames": 768,
+        "undecoded": 0,
+        "timestamp_frames": 768,
+        "transition_frames": 0,
+        "off_requested_channel": 5,
+        "max_delivery_latency_us": 140146,
+        "mib_queries": 11,
+        "max_mib_latency_us": 4969,
+        "retunes": 2,
+        "max_retune_latency_us": 137056,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 12517376,
+        "peak_resident_bytes": 12566528,
+        "timestamp_first": 1772992,
+        "timestamp_last": 13718270,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "run": "c_mt7925_24",
+      "process_exit_code": 0,
+      "requested_band": "2.4GHz",
+      "requested_seconds": 12,
+      "hop_seconds": 4,
+      "mib_seconds": 1,
+      "ready": {
+        "event": "ready",
+        "usb_id": "0846:9072",
+        "requested_seconds": 12,
+        "hop_seconds": 4,
+        "mib_seconds": 1,
+        "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      },
+      "first_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974565040529000,
+        "channel_generation": 0,
+        "requested_control": 1,
+        "opened_us": 1974566041653,
+        "closed_us": 1974566043812,
+        "values": {
+          "rx_mpdu": 81,
+          "rx_fcs_error": 10,
+          "rx_mdrdy": 91,
+          "primary_cca": 227535,
+          "cca_nav_tx": 218102,
+          "cck_rx_duration": 84378,
+          "ofdm_rx_duration": 520,
+          "primary_ed": 209427,
+          "nav": 3106,
+          "idle_slots": 65535
+        }
+      },
+      "last_counter_sample": {
+        "event": "counters",
+        "usb_id": "0846:9072",
+        "epoch_ns": 1974565040529000,
+        "channel_generation": 2,
+        "requested_control": 1,
+        "opened_us": 1974576380886,
+        "closed_us": 1974576382917,
+        "values": {
+          "rx_mpdu": 1339,
+          "rx_fcs_error": 201,
+          "rx_mdrdy": 1550,
+          "primary_cca": 3290987,
+          "cca_nav_tx": 3191000,
+          "cck_rx_duration": 1675008,
+          "ofdm_rx_duration": 47394,
+          "primary_ed": 2990045,
+          "nav": 62428,
+          "idle_slots": 710667
+        }
+      },
+      "counter_sample_count": 11,
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 12.027,
+        "state": 2,
+        "epoch_ns": 1974565040529000,
+        "frames_received": 1388,
+        "frames_delivered": 1388,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 3,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 1401,
+        "read_timeouts": 72,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 13,
+        "unmatched_replies": 0,
+        "commands_completed": 13,
+        "decoded_frames": 1388,
+        "undecoded": 0,
+        "timestamp_frames": 1388,
+        "transition_frames": 0,
+        "off_requested_channel": 1,
+        "max_delivery_latency_us": 5919,
+        "mib_queries": 11,
+        "max_mib_latency_us": 2408,
+        "retunes": 2,
+        "max_retune_latency_us": 110909,
+        "channel_known": true,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 13139968,
+        "peak_resident_bytes": 13189120,
+        "timestamp_first": 932986,
+        "timestamp_last": 12883387,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    }
+  ],
+  "unchanged_main_control": {
+    "commit": "7eb35d1",
+    "command": "python scripts/hardware_smoke.py --usb-id 0e8d:7961 --plan quick --dwell 2",
+    "process_exit_code": 2,
+    "result": {
+      "bands": {
+        "2.4GHz": {
+          "channels_attempted": 1,
+          "channels_with_frames": 1,
+          "channels_with_transfers": 1,
+          "decoded_frames": 150,
+          "frame_types": {
+            "control": 13,
+            "data": 52,
+            "management": 85,
+            "other": 0
+          },
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 0,
+          "usb_transfers": 150
+        },
+        "5GHz": {
+          "channels_attempted": 1,
+          "channels_with_frames": 0,
+          "channels_with_transfers": 0,
+          "decoded_frames": 0,
+          "frame_types": {
+            "control": 0,
+            "data": 0,
+            "management": 0,
+            "other": 0
+          },
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 8,
+          "usb_transfers": 0
+        },
+        "6GHz": {
+          "channels_attempted": 1,
+          "channels_with_frames": 0,
+          "channels_with_transfers": 0,
+          "decoded_frames": 0,
+          "frame_types": {
+            "control": 0,
+            "data": 0,
+            "management": 0,
+            "other": 0
+          },
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 8,
+          "usb_transfers": 0
+        }
+      },
+      "device": {
+        "chip": "mt7921",
+        "usb_id": "0e8d:7961",
+        "usb_speed_code": 4,
+        "wifi_interface": 3
+      },
+      "duration_seconds": 10.04,
+      "firmware": {
+        "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      },
+      "generated_at_utc": "2026-09-06T17:04:34.637332+00:00",
+      "host": {
+        "machine": "arm64",
+        "macos": "26.6.1"
+      },
+      "plan": {
+        "channels": 3,
+        "dwell_seconds": 2,
+        "name": "quick",
+        "requested_bands": [
+          "2.4GHz",
+          "5GHz",
+          "6GHz"
+        ]
+      },
+      "schema_version": 1,
+      "software": {
+        "mt76_usb_macos": "0.3.0",
+        "python": "3.14.7",
+        "pyusb": "1.3.1"
+      },
+      "status": "inconclusive",
+      "totals": {
+        "decoded_frames": 150,
+        "undecoded_transfers": 0,
+        "usb_errors": 0,
+        "usb_timeouts": 16,
+        "usb_transfers": 150
+      }
+    }
+  }
+}
