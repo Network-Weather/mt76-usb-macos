@@ -170,9 +170,9 @@ Exit: an application can consume the floor without importing `research/` or
 - [x] Extract matching public session-bound CSI lifecycle and stage-failure/epoch
   tests; public-helper normal/overflow/cancellation runs pass in both languages.
   Longer-session acceptance remains separate; see [lifetime contract](CSI_API.md).
-- [ ] Histograms next: one-shot ownership/cleanup and coverage, then Python/C parity.
-  [Pure wire/record parity](HISTOGRAM_API.md) and repeated Python session windows
-  are implemented; native live and reusable lifetime/fault tests remain open.
+- [x] Histogram wire/record and guarded acquisition parity; [12 native/Python runs](HISTOGRAM_API.md)
+  cover repeated windows/restoration and active cancellation. Coverage/cadence and
+  physical power/view labels stay unavailable; pending modern timers need reload.
 - [ ] Decide each feature independently: included with a narrow explicit experimental
   profile, or left research-only with the failing gate recorded. Do not ship a
   Python-only public feature while calling the release's selected scope C parity.

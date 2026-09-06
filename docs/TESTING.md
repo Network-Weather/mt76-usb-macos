@@ -4,6 +4,25 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 histogram acquisition parity, 2026-09-06
+
+All1,996 tests pass. Shared Python/native guard fixtures match operation traces,
+inject transport failures at every begin/finish/restore stage (including writes
+that reach hardware before failing), preserve failed native outputs, reject
+pre-enabled/invalid controls and verify pending-timer cleanup refuses without I/O.
+Native builds/tests and ASan/UBSan pass, including the guard fault harness and
+20,000 malformed histogram cases. The wheel imports outside the checkout and
+the source archive contains the new guard, native probe and test fixtures.
+
+[Twelve public-guard hardware runs](../research/evidence/r32-histogram-guard-2026-09-06.json)
+cover both implementations/chips on6/36 plus cancellation during acquisition.
+All completed windows freeze/read, match modern event/banks, remain stable100ms
+later and restore. All12 reload successfully; no USB errors/queue overflow were
+reported. MT7921 remains bin0-only with weak/intermittent5GHz RX (13 total frames
+in Python36, zero in native36). The cancellation guards intentionally remain
+marked pending before the authoritative full reload, not falsely "restored".
+No combined CSI/histogram, multi-hour or calibrated power/coverage claim.
+
 ## R32 histogram records and repeated acquisition, 2026-09-06
 
 All1,975 tests pass, including matching native/Python request/ACK/record fixtures,
@@ -16,8 +35,8 @@ cover both chips on6/36 and cancellation during the first active acquisition.
 Repeated reset/start/event-or-freeze/stopped-repeat checks pass, with counter and
 thermal queries and normal RX (except the already weak MT7921 channel36 path).
 All runs reload successfully; cancelled pending acquisitions use full reload
-instead of a masked restore that could race a firmware timer. Public acquisition
-lifetimes and native live orchestration remain open; see [histogram status](HISTOGRAM_API.md).
+instead of a masked restore that could race a firmware timer. This earlier
+checkpoint predates the acquisition parity above; see [histogram status](HISTOGRAM_API.md).
 
 ## R32 CSI lifetime integration, 2026-09-06
 

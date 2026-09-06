@@ -104,6 +104,7 @@ def native(tmp_path_factory):
     out = tmp_path_factory.mktemp("c-parity") / "parity.dylib"
     sources = [
         "mt76_histogram.c",
+        "mt76_histogram_acquisition.c",
         "mt76_csi.c",
         "mt76_csi_session.c",
         "mt76_session.c",
@@ -790,10 +791,34 @@ def native_csi_probe(tmp_path_factory):
     return build_probe(tmp_path_factory, "mt76_csi_probe.c")
 
 
+@pytest.fixture(scope="module")
+def native_histogram_probe(tmp_path_factory):
+    return build_probe(tmp_path_factory, "mt76_histogram_probe.c")
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        [],
+        ["--chip", "bad"],
+        ["--chip", "mt7925", "--fw", "/unused"],
+        ["--chip", "mt7921", "--fw", "/unused", "--channel", "149", "--reset-shared-histogram"],
+    ],
+)
+def test_native_histogram_probe_refuses_before_usb(native_histogram_probe, extra):
+    result = subprocess.run(  # noqa: S603 -- fixed local probe and refusal fixtures
+        [str(native_histogram_probe), *extra], capture_output=True, text=True, timeout=5
+    )
+    assert result.returncode == 2
+    assert not result.stdout
+
+
 def build_probe(tmp_path_factory, source):
     out = tmp_path_factory.mktemp("c-probe") / "probe"
     sources = [
         source,
+        "mt76_histogram.c",
+        "mt76_histogram_acquisition.c",
         "mt76_session.c",
         "mt76_csi.c",
         "mt76_csi_session.c",

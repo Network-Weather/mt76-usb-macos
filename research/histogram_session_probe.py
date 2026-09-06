@@ -25,7 +25,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import mt7921u as m
-from mt76_histogram import parse_histogram_ack, parse_legacy_histogram
+from mt76_histogram import parse_legacy_histogram
+from mt76_histogram_acquisition import HistogramGuard
 from mt76_measurements import Counter, read_counters, read_thermal
 from mt76_session import AcquisitionSession
 from research import legacy_noise_hist_probe as old
@@ -64,6 +65,7 @@ def main(argv=None):
         "windows": [],
     }
     session = None
+    guard = None
     changed = pending = False
     saved = {}
     with m.open_device("0846:9072" if modern else "0e8d:7961") as dev:
@@ -108,7 +110,7 @@ def main(argv=None):
                 temperature = read_thermal(d)
                 return {"counters": asdict(sample), "thermal": asdict(temperature)}
 
-            def drain(seconds, expect=False):
+            def drain(seconds, expect=False, raw_reports=None):
                 counts = collections.Counter()
                 reports = []
                 started = time.monotonic()
@@ -134,6 +136,8 @@ def main(argv=None):
                             report = new.summarize(packet.raw)
                             report["received_ns"] = packet.received_ns
                             reports.append(report)
+                            if raw_reports is not None:
+                                raw_reports.append(packet.raw)
                     if expect and reports:
                         break
                     if counts["normal_frames"] + counts["events_consumed"] >= 4096:
@@ -153,28 +157,16 @@ def main(argv=None):
                     break
                 row = {"index": index, "requested_host_s": None if modern else duration}
                 result["windows"].append(row)
-
-                def begin(d, row=row):
-                    nonlocal changed, pending
-                    changed = pending = True
-                    row["command_open_ns"] = time.monotonic_ns()
-                    if modern:
-                        raw = d.mcu_uni(0x36, new.request(), timeout=1000)
-                        if parse_histogram_ack(d.CHIP, raw, d.msg_seq):
-                            raise RuntimeError("histogram ACK rejected or malformed")
-                    else:
-                        old.set_bits(d, old.CONTROL, 0)
-                        old.reset(d)
-                        row["after_reset"] = old.bins(d)
-                        if any(row["after_reset"]):
-                            raise RuntimeError("legacy histogram did not reset")
-                        old.set_bits(d, old.OPTIONS, 0x30000)
-                        old.set_bits(d, old.CONTROL, 5)
-                    row["command_closed_ns"] = time.monotonic_ns()
-
-                session.call(begin)
+                guard = HistogramGuard(dev)
+                changed = pending = True
+                session.call(lambda _d, guard=guard: guard.begin())
+                row["command_open_ns"] = guard.command_open_us * 1000
+                row["command_closed_ns"] = guard.command_closed_us * 1000
                 print(json.dumps({"event": "histogram_started", "index": index}), flush=True)
-                row["collection"] = drain(2 if modern else duration, expect=modern)
+                raw_reports = []
+                row["collection"] = drain(
+                    2 if modern else duration, expect=modern, raw_reports=raw_reports
+                )
                 if stopping:
                     break
                 if modern:
@@ -182,10 +174,12 @@ def main(argv=None):
                     if len(reports) != 1:
                         raise RuntimeError("missing or duplicate histogram event")
                     row["event_latency_ns"] = reports[0]["received_ns"] - row["command_open_ns"]
-                else:
-                    row["stop_open_ns"] = time.monotonic_ns()
-                    session.call(lambda d: old.set_bits(d, old.CONTROL, 0))
-                    row["stop_closed_ns"] = time.monotonic_ns()
+                sample = session.call(
+                    lambda _d, guard=guard, raw=raw_reports[0] if modern else None: guard.finish(
+                        raw
+                    )
+                )
+                row["sample"] = asdict(sample)
                 row["stopped"] = session.call(snapshot)
                 if any(
                     bits
@@ -207,6 +201,8 @@ def main(argv=None):
                     ):
                         if row["stopped"]["banks"][name] != reports[0][key]:
                             raise RuntimeError("histogram event/bank mismatch")
+                session.call(lambda _d, guard=guard: guard.restore())
+                row["guard_restored"] = not guard.active
                 print(
                     json.dumps(
                         {
@@ -222,6 +218,13 @@ def main(argv=None):
             result["error_type"] = type(exc).__name__
             result["error"] = str(exc)
         finally:
+            if guard is not None:
+                result["guard"] = {
+                    "active": guard.active,
+                    "pending": guard.pending,
+                    "ready": guard.ready,
+                    "needs_reload": guard.needs_reload,
+                }
             if session is not None:
                 session.stop(timeout=4)
                 result["session"] = session.snapshot()

@@ -9,9 +9,10 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 - Experimental pure Python/C histogram records: strict MT7925 one-shot request,
   ACK and two11-bin event arrays; separate MT7921 stopped-bank parser, wide totals
-  and raw firmware threshold labels. Repeated Python session acquisitions coexist
-  with normal RX/counter/thermal queries. Acquisition lifetime/native live gates
-  remain open; no calibrated noise, antenna labels or coverage conversion.
+  and raw firmware threshold labels. Matching guarded acquisition and12 native/
+  Python live runs cover RX/query coexistence, repeated windows, restoration and
+  active cancellation. Pending firmware timers require full reload after worker
+  stop; no calibrated noise, antenna labels or coverage conversion.
   See [histogram status](docs/HISTOGRAM_API.md).
 - Experimental MT7925 CSI wire/parser parity in `mt76_csi` and native
   `mt76_csi.h`: version22,64 signed I/Q pairs, strict dimensions/sequence/DMA
