@@ -33,5 +33,6 @@ c/test_radio_sanitize
 c/test_session
 c/test_session_sanitize
 c/mt76_session_probe
+c/mt76_csi_probe
 *.dSYM/
 .venv

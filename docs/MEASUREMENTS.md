@@ -4,6 +4,8 @@ Implemented on `feat/measurement-api`, not yet released. Python
 `mt76_measurements` and C `mt7921_radio.h` expose the same finite raw-counter
 profile; `mt7921_mcu.h` also declares query-only thermal measurements. CSI,
 histograms and calibrated occupancy retain their [separate delivery gates](NEXT_RELEASE.md).
+CSI now has [pure wire/parser parity and a short coexistence gate](CSI_API.md);
+its public streaming lifecycle is not yet promoted.
 
 ## Callable contract
 

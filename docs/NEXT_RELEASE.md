@@ -164,8 +164,11 @@ Exit: an application can consume the floor without importing `research/` or
 
 ### 3. Promote bounded experimental measurements
 
-- [ ] CSI first: pure parser parity, then session event routing and safe filtered
-  lifecycle; qualify capture/CSI/query coexistence and limits on the current fixture.
+- [x] CSI pure parser/control-wire parity and short Python/C coexistence, negative
+  ordering controls and explicit event overflow. [CSI contract](CSI_API.md):
+  transmitter filter must precede the final receiver-count command.
+- [ ] Extract the matching public session-bound CSI lifecycle and stage-failure/
+  epoch tests; wire parity alone is not a public streaming API.
 - [ ] Histograms next: one-shot ownership/cleanup and coverage, then Python/C parity.
 - [ ] Decide each feature independently: included with a narrow explicit experimental
   profile, or left research-only with the failing gate recorded. Do not ship a

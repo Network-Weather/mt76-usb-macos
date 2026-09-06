@@ -4,6 +4,25 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 CSI wire parity and session gate, 2026-09-06
+
+All1,914 Python tests pass, including shared Python/C CSI requests, ACK status,
+strict version/profile parsing, every truncation, unsupported shapes, native
+output preservation and CLI refusal tests. Native builds/tests and ASan/UBSan
+also pass. [CSI contract](CSI_API.md) and [dated evidence](../research/evidence/r32-csi-session-2026-09-06.json)
+retain six short coexistence/ordering/overflow runs plus two active-CSI SIGTERM
+checks. Public streaming lifetime helpers are not yet promoted.
+
+Both implementations complete routine counter/thermal queries while receiving
+normal frames and filtered CSI. Count1 before ADD produces both receiver indices;
+ADD before count1 produces only receiver0 in fresh Python/C controls. Host-side
+preconfiguration/source/index checks remain necessary. Both one-event overflow
+tests expose event drops without USB failures or normal-frame queue overflow.
+Both cancellation runs exit130, acknowledge STOP and reload successfully. Native
+cancellation retains11 frame/2 event queue records at destruction, now explicitly
+reported rather than mislabeled as overflow or complete delivery. Short tests do
+not establish multi-hour stability, hot-unplug or calibrated RF quantities.
+
 ## R32 TX-status timing integration, 2026-09-06
 
 All1,891 Python tests, native tests, ASan/UBSan and sdist/wheel build pass. Shared

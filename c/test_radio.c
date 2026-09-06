@@ -2,6 +2,7 @@
 /* Sanitizer target: deterministic malformed binary input and fault paths. */
 #include "mt7921_radio.h"
 #include "mt7921_rxd.h"
+#include "mt76_csi.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -47,6 +48,10 @@ int main(void) {
             mt_tx_status_t statuses[16];
             mt7921_rxd_decoder_for_chip(chip)(raw, len, &f);
             mt_tx_status_parse(chip, raw, len, statuses, 16);
+            mt_beacon_csi_report_t csi;
+            mt_beacon_csi_parse(chip, raw, len, &csi);
+            uint32_t csi_status;
+            mt_csi_ack(chip, raw, len, 3, &csi_status);
             uint32_t offsets[] = {11, 19, 20}; uint64_t values[3];
             mt_mib_parse(chip, raw, len, offsets, chip ? 3 : 1, values);
             mt_probe_txwi(chip, raw, len, trial % 4096, 1, 0, txwi);

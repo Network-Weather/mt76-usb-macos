@@ -28,6 +28,7 @@ pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="native IOKit C
 def native(tmp_path_factory):
     out = tmp_path_factory.mktemp("c-parity") / "parity.dylib"
     sources = [
+        "mt76_csi.c",
         "mt7921_rxd.c",
         "mt7921_rxd_connac3.c",
         "mt7921_chip.c",
@@ -111,6 +112,126 @@ class CounterDescriptor(ct.Structure):
         ("tick_ns", ct.c_uint),
         ("hardware_saturates", ct.c_bool),
     ]
+
+
+class CsiReport(ct.Structure):
+    _fields_ = [
+        (name, ct.c_uint32)
+        for name in (
+            "version",
+            "data_count",
+            "rx_index",
+            "tx_index",
+            "rx_mode_raw",
+            "rx_rate_raw",
+            "channel_index_raw",
+        )
+    ] + [
+        ("rssi_raw_s8", ct.c_int32),
+        ("snr_raw", ct.c_uint32),
+        ("mcu_gpt_raw", ct.c_uint32),
+        ("transmitter", ct.c_uint8 * 6),
+        ("i", ct.c_int16 * 64),
+        ("q", ct.c_int16 * 64),
+    ]
+
+
+def test_csi_profile_shared_complete_and_malformed_bytes(native):
+    import mt76_csi as csi
+    from tests.test_csi_measurements import malformed_reports, report, report_fields
+
+    native.mt_beacon_csi_parse.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.POINTER(CsiReport),
+    ]
+    valid = [
+        report(),
+        report(tail=b""),
+        report() + b"private USB padding",
+        report(report_fields() | {18: struct.pack("<I", 1)}),
+        report(report_fields() | {63: b"unknown-data"}, tail=b""),
+    ]
+    for chip in (0, 1):
+        for raw in valid + list(malformed_reports()):
+            output = CsiReport()
+            ct.memset(ct.byref(output), 0xA5, ct.sizeof(output))
+            before = bytes(output)
+            result = native.mt_beacon_csi_parse(chip, raw, len(raw), ct.byref(output))
+            try:
+                expected = csi.parse_beacon_csi("mt7925" if chip else "mt7921", raw)
+            except ValueError:
+                assert result == -1
+                assert bytes(output) == before
+                continue
+            assert result == 0
+            for name, _ in CsiReport._fields_:
+                value = getattr(output, name)
+                if name == "transmitter":
+                    value = bytes(value)
+                elif name in ("i", "q"):
+                    value = tuple(value)
+                assert value == getattr(expected, name)
+
+
+def test_csi_request_and_ack_shared_bytes(native):
+    import mt76_csi as csi
+    from tests.test_csi_measurements import event
+
+    native.mt_csi_request.argtypes = [
+        ct.c_int,
+        ct.c_int,
+        ct.c_uint,
+        ct.c_char_p,
+        ct.c_void_p,
+        ct.c_size_t,
+    ]
+    native.mt_csi_ack.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.c_uint8,
+        ct.POINTER(ct.c_uint32),
+    ]
+    for chip in (0, 1):
+        name = "mt7925" if chip else "mt7921"
+        for action in csi.CsiAction:
+            for receivers in (0, 1, 2, 3):
+                for ta in (
+                    None,
+                    bytes(6),
+                    bytes.fromhex("010000000001"),
+                    bytes.fromhex("020000000001"),
+                ):
+                    for cap in (0, 7, 8, 11, 12, 14, 15, 16):
+                        output = ct.create_string_buffer(b"x" * 16, 16)
+                        result = native.mt_csi_request(chip, action, receivers, ta, output, cap)
+                        try:
+                            expected = csi.build_csi_request(
+                                name, action, receivers=receivers, transmitter=ta
+                            )
+                        except ValueError:
+                            expected = None
+                        if expected is None or len(expected) > cap:
+                            assert result == -1
+                            assert output.raw == b"x" * 16
+                        else:
+                            assert output.raw[:result] == expected
+        for status in (0, 0xC00000BB, 0xFFFFFFFF):
+            raw = event(struct.pack("<II", 0x4A, status), 1, 9)
+            for seq in (0, 8, 9, 16):
+                for end in range(len(raw) + 1):
+                    output = ct.c_uint32(99)
+                    result = native.mt_csi_ack(chip, raw, end, seq, ct.byref(output))
+                    try:
+                        expected = csi.parse_csi_ack(name, raw[:end], seq)
+                    except ValueError:
+                        assert result == -1
+                        assert output.value == 99
+                    else:
+                        assert result == 0
+                        assert output.value == expected
 
 
 @pytest.mark.parametrize("chip", [0, 1])
@@ -567,9 +688,20 @@ def test_rate_table_write_and_faults(native, rate, mode):
 
 @pytest.fixture(scope="module")
 def native_probe(tmp_path_factory):
+    return build_probe(tmp_path_factory, "mt76_radio_probe.c")
+
+
+@pytest.fixture(scope="module")
+def native_csi_probe(tmp_path_factory):
+    return build_probe(tmp_path_factory, "mt76_csi_probe.c")
+
+
+def build_probe(tmp_path_factory, source):
     out = tmp_path_factory.mktemp("c-probe") / "probe"
     sources = [
-        "mt76_radio_probe.c",
+        source,
+        "mt76_session.c",
+        "mt76_csi.c",
         "mt7921_radio.c",
         "mt7921_dev.c",
         "mt7921_mcu.c",
@@ -585,6 +717,7 @@ def native_probe(tmp_path_factory):
             "-Wall",
             "-Wextra",
             "-Werror",
+            "-pthread",
             *(str(ROOT / "c" / name) for name in sources),
             "-framework",
             "IOKit",
@@ -597,6 +730,32 @@ def native_probe(tmp_path_factory):
         capture_output=True,
     )
     return out
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        [],
+        ["--unknown"],
+        ["--event-capacity", "2"],
+        ["--stall-ms", "-1"],
+        ["--receiver-order", "guessed"],
+    ],
+)
+def test_csi_cli_rejects_before_usb(native_csi_probe, extra):
+    result = subprocess.run(  # noqa: S603 -- fixed local executable and bounded arguments
+        [str(native_csi_probe), *extra], capture_output=True, text=True, timeout=5
+    )
+    assert result.returncode == 2
+    assert not result.stdout
+
+
+def test_csi_cli_help_is_offline(native_csi_probe):
+    result = subprocess.run(  # noqa: S603 -- fixed local executable
+        [str(native_csi_probe), "--help"], capture_output=True, text=True, timeout=5
+    )
+    assert result.returncode == 0
+    assert "mt76_csi_probe" in result.stdout
 
 
 @pytest.mark.parametrize(

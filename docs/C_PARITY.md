@@ -13,6 +13,7 @@ and does not imply parity for the remaining research-only surfaces.
 
 | Python reference | C interface | Semantics and boundary |
 |---|---|---|
+| `mt76_csi` pure controls, ACK and beacon parser | `mt76_csi.h` | Narrow version22/band0/20MHz/64-tone profile, signed owned arrays, malformed/unsupported rejection; short native/Python session coexistence passes, public stream lifecycle remains gated ([contract](CSI_API.md)) |
 | `mt76_measurements.parse_tx_status` | expanded `mt_tx_status_t` / `mt_tx_status_parse` | Strict complete TXS records; MT7925 raw delay/timestamp and format0-only front-time/count; qualified format0 tick scales separate from raw layout, no old-chip timing or synchronized clock/ranging claim |
 | `rxd.decode` raw_signal, `rxd.decode_fagc`, `Group5Guard` | frame `has_raw_signal`, `fagc_ib_raw_s8[2]` / `fagc_wb_raw_s8[2]`, `mt_g5_*` | Complete connac2 Group5 only; raw signed firmware indices, not calibrated RF units; shared parser/guard fixtures pass, but current live Group5 reliability is not qualified in either language |
 | `mt76_measurements.read_thermal` | `mt_thermal_read` in `mt7921_mcu.h` | Reported signed temperature on both chips, separate raw ADC on MT7925; bounded matching-event parser, request intervals, unchanged native output on failure; no thermal-control writes |

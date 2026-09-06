@@ -7,6 +7,13 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Experimental MT7925 CSI wire/parser parity in `mt76_csi` and native
+  `mt76_csi.h`: version22,64 signed I/Q pairs, strict dimensions/sequence/DMA
+  bounds and narrow band0 beacon/20MHz profile. Stale CCK layouts are rejected.
+  Python/C session probes demonstrate capture/query coexistence and visible
+  event overflow, and reproduce a new ordering requirement: add the transmitter
+  filter before the final receiver-count command. Public streaming lifetime
+  helpers and longer qualification remain gated; see [CSI API status](docs/CSI_API.md).
 - Strict installed Python/native TX-status decoding with MT7925 raw timestamp,
   delay, bandwidth and STBC, format0-only front-time/TX count and explicit tick
   scale availability. Research readers reuse the bounded parser;12 live status

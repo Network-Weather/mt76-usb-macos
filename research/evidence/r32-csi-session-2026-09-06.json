@@ -1,0 +1,1630 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-06",
+  "branch": "feat/measurement-api",
+  "integration_base": "e878a8b",
+  "scope": "Narrow CSI wire/parser parity and bounded session coexistence/restart/overflow/cancellation gates, not a public stream-lifecycle API or release. Passive MT7925 channel36/20MHz, no TX/ICS/RF-test mode.",
+  "commands": {
+    "python": "python research/csi_session_probe.py --fw PINNED_DIR [--receiver-order before-filter|after-filter] [--event-capacity 1 --stall-ms 250]",
+    "native": "c/mt76_csi_probe --fw PINNED_DIR [--receiver-order before-filter|after-filter] [--event-capacity 1 --stall-ms 250]",
+    "initial_python_order": "Initial and Python overflow runs precede the --receiver-order flag and used before-filter. The subsequent explicit after-filter run uses the corrected default.",
+    "cancellation": "Launch each probe as an owned subprocess, send SIGTERM immediately after its unfiltered-window progress record, wait for explicit stop/reload and exit130. Never signal unrelated processes."
+  },
+  "qualification": {
+    "offline": "1914 Python tests, C build/tests and ASan/UBSan pass; source/wheel packaging checked separately",
+    "profile": "Version22, band0,20MHz OFDM6,64 signed I/Q pairs; stale CCK count13/storage64, wider/segmented/unknown/truncated reports rejected. No calibration.",
+    "coexistence": "Normal RX, matched named-counter/temperature queries and filtered CSI work in both languages with one USB owner.",
+    "new_ordering_result": "After START, count1 then ADD emits RX0/1 in both Python/C controls; ADD then count1 produces RX0 only in both. Host filters enforce source/index and reject queued preconfiguration/late-STOP reports.",
+    "overflow": "Drop-newest event queues count loss without blocking RX/MCU work. Python before-filter capacity1 run dropped137 events; native after-filter capacity1 run dropped101. Different sequences/traffic, not a sensitivity comparison.",
+    "cancellation": "Both probes exited130 with STOP acknowledged and firmware reload alive. Native cancellation exposes11 frames and2 events still queued at destruction; earlier native runs predate this added queue-depth telemetry.",
+    "remaining": "Public session-bound ownership/start/accept/stop helpers, per-stage failure/epoch tests, and longer acceptance remain open. No multi-hour/physical unplug/sleep-wake/calibrated CSI claim."
+  },
+  "python_runs": [
+    {
+      "run": "before_filter",
+      "result": {
+        "cleanup_reload_alive": true,
+        "cleanup_stop_ack": true,
+        "date_utc": "2026-09-06T20:08:02.997471+00:00",
+        "event_capacity": 64,
+        "exit_code": 0,
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 51,
+            "events_delivered": 272,
+            "events_high_water": 2,
+            "events_received": 272,
+            "frames_delivered": 1054,
+            "frames_high_water": 12,
+            "frames_received": 1057,
+            "replies_matched": 83,
+            "transfers": 1412,
+            "unmatched_replies": 272
+          },
+          "epoch_ns": 1985341448616375,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 3,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "stall_ms": 0,
+        "stopped_ack": true,
+        "tool": "csi_session_probe",
+        "windows": [
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 50,
+              "counter_thermal_pairs": 4,
+              "normal_frames": 135
+            },
+            "elapsed_s": 1.004,
+            "iq_distinct": 0,
+            "name": "stopped_baseline",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 5,
+                "frames_delivered": 135,
+                "frames_high_water": 6,
+                "frames_received": 135,
+                "replies_matched": 9,
+                "transfers": 144
+              },
+              "epoch_ns": 1985341448616375,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 5,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 192,
+              "beacons": 96,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 192,
+              "events_consumed": 192,
+              "normal_frames": 312
+            },
+            "elapsed_s": 2.005,
+            "iq_distinct": 192,
+            "name": "unfiltered",
+            "rx_indices": {
+              "0": 96,
+              "1": 96
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 16,
+                "events_delivered": 192,
+                "events_high_water": 2,
+                "events_received": 192,
+                "frames_delivered": 447,
+                "frames_high_water": 6,
+                "frames_received": 447,
+                "replies_matched": 28,
+                "transfers": 667,
+                "unmatched_replies": 192
+              },
+              "epoch_ns": 1985341448616375,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 1,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 19,
+              "beacons": 98,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 38,
+              "events_consumed": 38,
+              "normal_frames": 243,
+              "receiver_discarded": 19
+            },
+            "elapsed_s": 2.005,
+            "iq_distinct": 19,
+            "name": "filtered_restart_0",
+            "rx_indices": {
+              "0": 19
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 29,
+                "events_delivered": 230,
+                "events_high_water": 2,
+                "events_received": 230,
+                "frames_delivered": 690,
+                "frames_high_water": 12,
+                "frames_received": 690,
+                "replies_matched": 49,
+                "transfers": 969,
+                "unmatched_replies": 230
+              },
+              "epoch_ns": 1985341448616375,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 25,
+              "counter_thermal_pairs": 2,
+              "csi_reports": 2,
+              "events_consumed": 2,
+              "normal_frames": 61,
+              "reports_after_stop": 2
+            },
+            "elapsed_s": 0.5,
+            "iq_distinct": 0,
+            "name": "stopped_0",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 33,
+                "events_delivered": 232,
+                "events_high_water": 2,
+                "events_received": 232,
+                "frames_delivered": 751,
+                "frames_high_water": 12,
+                "frames_received": 751,
+                "replies_matched": 55,
+                "transfers": 1038,
+                "unmatched_replies": 232
+              },
+              "epoch_ns": 1985341448616375,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 1,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 19,
+              "beacons": 97,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 38,
+              "events_consumed": 38,
+              "normal_frames": 242,
+              "receiver_discarded": 19
+            },
+            "elapsed_s": 2.003,
+            "iq_distinct": 19,
+            "name": "filtered_restart_1",
+            "rx_indices": {
+              "0": 19
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 46,
+                "events_delivered": 270,
+                "events_high_water": 2,
+                "events_received": 270,
+                "frames_delivered": 993,
+                "frames_high_water": 12,
+                "frames_received": 993,
+                "replies_matched": 76,
+                "transfers": 1339,
+                "unmatched_replies": 270
+              },
+              "epoch_ns": 1985341448616375,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 24,
+              "counter_thermal_pairs": 2,
+              "csi_reports": 2,
+              "events_consumed": 2,
+              "normal_frames": 61,
+              "reports_after_stop": 2
+            },
+            "elapsed_s": 0.501,
+            "iq_distinct": 0,
+            "name": "stopped_1",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 50,
+                "events_delivered": 272,
+                "events_high_water": 2,
+                "events_received": 272,
+                "frames_delivered": 1054,
+                "frames_high_water": 12,
+                "frames_received": 1054,
+                "replies_matched": 82,
+                "transfers": 1408,
+                "unmatched_replies": 272
+              },
+              "epoch_ns": 1985341448616375,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "run": "before_filter_overflow",
+      "result": {
+        "cleanup_reload_alive": true,
+        "cleanup_stop_ack": true,
+        "date_utc": "2026-09-06T20:09:04.650065+00:00",
+        "event_capacity": 1,
+        "exit_code": 0,
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 51,
+            "events_delivered": 136,
+            "events_dropped": 137,
+            "events_high_water": 1,
+            "events_received": 273,
+            "frames_delivered": 1154,
+            "frames_high_water": 38,
+            "frames_received": 1156,
+            "replies_matched": 83,
+            "transfers": 1512,
+            "unmatched_replies": 273
+          },
+          "epoch_ns": 1985403125746666,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 2,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "stall_ms": 250,
+        "stopped_ack": true,
+        "tool": "csi_session_probe",
+        "windows": [
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 48,
+              "counter_thermal_pairs": 4,
+              "normal_frames": 212
+            },
+            "elapsed_s": 1,
+            "iq_distinct": 0,
+            "name": "stopped_baseline",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 5,
+                "frames_delivered": 212,
+                "frames_high_water": 5,
+                "frames_received": 212,
+                "replies_matched": 9,
+                "transfers": 221
+              },
+              "epoch_ns": 1985403125746666,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 5,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 96,
+              "beacons": 96,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 96,
+              "events_consumed": 96,
+              "normal_frames": 283
+            },
+            "elapsed_s": 2.002,
+            "iq_distinct": 96,
+            "name": "unfiltered",
+            "rx_indices": {
+              "0": 94,
+              "1": 2
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 16,
+                "events_delivered": 96,
+                "events_dropped": 92,
+                "events_high_water": 1,
+                "events_received": 188,
+                "frames_delivered": 495,
+                "frames_high_water": 5,
+                "frames_received": 495,
+                "replies_matched": 28,
+                "transfers": 711,
+                "unmatched_replies": 188
+              },
+              "epoch_ns": 1985403125746666,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 1,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 18,
+              "beacons": 108,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 20,
+              "events_consumed": 20,
+              "normal_frames": 287,
+              "preconfiguration_discarded": 1,
+              "receiver_discarded": 1
+            },
+            "elapsed_s": 2.007,
+            "iq_distinct": 18,
+            "name": "filtered_restart_0",
+            "rx_indices": {
+              "0": 18
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 29,
+                "events_delivered": 116,
+                "events_dropped": 115,
+                "events_high_water": 1,
+                "events_received": 231,
+                "frames_delivered": 782,
+                "frames_high_water": 38,
+                "frames_received": 782,
+                "replies_matched": 49,
+                "transfers": 1062,
+                "unmatched_replies": 231
+              },
+              "epoch_ns": 1985403125746666,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 21,
+              "counter_thermal_pairs": 2,
+              "normal_frames": 57
+            },
+            "elapsed_s": 0.504,
+            "iq_distinct": 0,
+            "name": "stopped_0",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 33,
+                "events_delivered": 116,
+                "events_dropped": 115,
+                "events_high_water": 1,
+                "events_received": 231,
+                "frames_delivered": 839,
+                "frames_high_water": 38,
+                "frames_received": 839,
+                "replies_matched": 55,
+                "transfers": 1125,
+                "unmatched_replies": 231
+              },
+              "epoch_ns": 1985403125746666,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 1,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 19,
+              "beacons": 102,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 19,
+              "events_consumed": 19,
+              "normal_frames": 257
+            },
+            "elapsed_s": 2.001,
+            "iq_distinct": 19,
+            "name": "filtered_restart_1",
+            "rx_indices": {
+              "0": 19
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 46,
+                "events_delivered": 135,
+                "events_dropped": 136,
+                "events_high_water": 1,
+                "events_received": 271,
+                "frames_delivered": 1096,
+                "frames_high_water": 38,
+                "frames_received": 1096,
+                "replies_matched": 76,
+                "transfers": 1443,
+                "unmatched_replies": 271
+              },
+              "epoch_ns": 1985403125746666,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 24,
+              "counter_thermal_pairs": 2,
+              "csi_reports": 1,
+              "events_consumed": 1,
+              "normal_frames": 58,
+              "reports_after_stop": 1
+            },
+            "elapsed_s": 0.506,
+            "iq_distinct": 0,
+            "name": "stopped_1",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 50,
+                "events_delivered": 136,
+                "events_dropped": 137,
+                "events_high_water": 1,
+                "events_received": 273,
+                "frames_delivered": 1154,
+                "frames_high_water": 38,
+                "frames_received": 1154,
+                "replies_matched": 82,
+                "transfers": 1509,
+                "unmatched_replies": 273
+              },
+              "epoch_ns": 1985403125746666,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "run": "after_filter",
+      "result": {
+        "cleanup_reload_alive": true,
+        "cleanup_stop_ack": true,
+        "date_utc": "2026-09-06T20:10:16.485380+00:00",
+        "event_capacity": 64,
+        "exit_code": 0,
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "receiver_order": "after-filter",
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 51,
+            "events_delivered": 232,
+            "events_high_water": 3,
+            "events_received": 232,
+            "frames_delivered": 986,
+            "frames_high_water": 8,
+            "frames_received": 988,
+            "replies_matched": 83,
+            "transfers": 1303,
+            "unmatched_replies": 232
+          },
+          "epoch_ns": 1985474903857000,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 2,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "stall_ms": 0,
+        "stopped_ack": true,
+        "tool": "csi_session_probe",
+        "windows": [
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 47,
+              "counter_thermal_pairs": 4,
+              "normal_frames": 116
+            },
+            "elapsed_s": 1.007,
+            "iq_distinct": 0,
+            "name": "stopped_baseline",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 5,
+                "frames_delivered": 116,
+                "frames_high_water": 4,
+                "frames_received": 116,
+                "replies_matched": 9,
+                "transfers": 125
+              },
+              "epoch_ns": 1985474903857000,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 5,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 190,
+              "beacons": 97,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 190,
+              "events_consumed": 190,
+              "normal_frames": 234
+            },
+            "elapsed_s": 2.005,
+            "iq_distinct": 190,
+            "name": "unfiltered",
+            "rx_indices": {
+              "0": 95,
+              "1": 95
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 16,
+                "events_delivered": 190,
+                "events_high_water": 2,
+                "events_received": 190,
+                "frames_delivered": 350,
+                "frames_high_water": 4,
+                "frames_received": 350,
+                "replies_matched": 28,
+                "transfers": 568,
+                "unmatched_replies": 190
+              },
+              "epoch_ns": 1985474903857000,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 1,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 20,
+              "beacons": 98,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 22,
+              "events_consumed": 22,
+              "normal_frames": 249,
+              "preconfiguration_discarded": 2
+            },
+            "elapsed_s": 2.001,
+            "iq_distinct": 20,
+            "name": "filtered_restart_0",
+            "rx_indices": {
+              "0": 20
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 29,
+                "events_delivered": 212,
+                "events_high_water": 3,
+                "events_received": 212,
+                "frames_delivered": 599,
+                "frames_high_water": 7,
+                "frames_received": 599,
+                "replies_matched": 49,
+                "transfers": 860,
+                "unmatched_replies": 212
+              },
+              "epoch_ns": 1985474903857000,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 25,
+              "counter_thermal_pairs": 2,
+              "csi_reports": 2,
+              "events_consumed": 2,
+              "normal_frames": 60,
+              "reports_after_stop": 2
+            },
+            "elapsed_s": 0.501,
+            "iq_distinct": 0,
+            "name": "stopped_0",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 33,
+                "events_delivered": 214,
+                "events_high_water": 3,
+                "events_received": 214,
+                "frames_delivered": 659,
+                "frames_high_water": 7,
+                "frames_received": 659,
+                "replies_matched": 55,
+                "transfers": 928,
+                "unmatched_replies": 214
+              },
+              "epoch_ns": 1985474903857000,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 1,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 18,
+              "beacons": 97,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 18,
+              "events_consumed": 18,
+              "normal_frames": 259
+            },
+            "elapsed_s": 2.002,
+            "iq_distinct": 18,
+            "name": "filtered_restart_1",
+            "rx_indices": {
+              "0": 18
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 46,
+                "events_delivered": 232,
+                "events_high_water": 3,
+                "events_received": 232,
+                "frames_delivered": 918,
+                "frames_high_water": 8,
+                "frames_received": 918,
+                "replies_matched": 76,
+                "transfers": 1226,
+                "unmatched_replies": 232
+              },
+              "epoch_ns": 1985474903857000,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 25,
+              "counter_thermal_pairs": 2,
+              "normal_frames": 68
+            },
+            "elapsed_s": 0.507,
+            "iq_distinct": 0,
+            "name": "stopped_1",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 50,
+                "events_delivered": 232,
+                "events_high_water": 3,
+                "events_received": 232,
+                "frames_delivered": 986,
+                "frames_high_water": 8,
+                "frames_received": 986,
+                "replies_matched": 82,
+                "transfers": 1300,
+                "unmatched_replies": 232
+              },
+              "epoch_ns": 1985474903857000,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "native_runs": [
+    {
+      "run": "after_filter",
+      "records": [
+        {
+          "event": "ready",
+          "tool": "c_csi_probe",
+          "event_capacity": 64,
+          "stall_ms": 0,
+          "receiver_order": "after-filter",
+          "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        {
+          "event": "window",
+          "name": "stopped_baseline",
+          "normal_frames": 110,
+          "beacons": 45,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 4,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "unfiltered",
+          "normal_frames": 243,
+          "beacons": 98,
+          "csi_reports": 194,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 194,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 97,
+          "rx1": 97,
+          "accepted_sources": 5,
+          "iq_distinct": 194,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "filtered_restart_0",
+          "normal_frames": 235,
+          "beacons": 99,
+          "csi_reports": 21,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 19,
+          "preconfiguration_discarded": 2,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 19,
+          "rx1": 0,
+          "accepted_sources": 1,
+          "iq_distinct": 19,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "stopped_0",
+          "normal_frames": 62,
+          "beacons": 25,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 2,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "filtered_restart_1",
+          "normal_frames": 249,
+          "beacons": 96,
+          "csi_reports": 19,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 19,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 19,
+          "rx1": 0,
+          "accepted_sources": 1,
+          "iq_distinct": 19,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "stopped_1",
+          "normal_frames": 57,
+          "beacons": 24,
+          "csi_reports": 2,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 2,
+          "counter_thermal_pairs": 2,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "session",
+          "state": 2,
+          "frames_received": 958,
+          "frames_dropped": 0,
+          "events_received": 236,
+          "events_dropped": 0,
+          "usb_errors": 0,
+          "malformed": 0,
+          "replies_matched": 83,
+          "commands_completed": 51
+        },
+        {
+          "event": "cleanup",
+          "stop_ack": true,
+          "reload_alive": true,
+          "exit_code": 0
+        }
+      ],
+      "exit_code": 0
+    },
+    {
+      "run": "before_filter",
+      "records": [
+        {
+          "event": "ready",
+          "tool": "c_csi_probe",
+          "event_capacity": 64,
+          "stall_ms": 0,
+          "receiver_order": "before-filter",
+          "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        {
+          "event": "window",
+          "name": "stopped_baseline",
+          "normal_frames": 125,
+          "beacons": 49,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 4,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "unfiltered",
+          "normal_frames": 236,
+          "beacons": 95,
+          "csi_reports": 186,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 186,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 93,
+          "rx1": 93,
+          "accepted_sources": 5,
+          "iq_distinct": 186,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "filtered_restart_0",
+          "normal_frames": 238,
+          "beacons": 95,
+          "csi_reports": 38,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 18,
+          "preconfiguration_discarded": 2,
+          "unselected_discarded": 0,
+          "receiver_discarded": 18,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 18,
+          "rx1": 0,
+          "accepted_sources": 1,
+          "iq_distinct": 18,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "stopped_0",
+          "normal_frames": 57,
+          "beacons": 25,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 2,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "filtered_restart_1",
+          "normal_frames": 234,
+          "beacons": 93,
+          "csi_reports": 38,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 19,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 19,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 19,
+          "rx1": 0,
+          "accepted_sources": 1,
+          "iq_distinct": 19,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "stopped_1",
+          "normal_frames": 81,
+          "beacons": 24,
+          "csi_reports": 2,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 2,
+          "counter_thermal_pairs": 2,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "session",
+          "state": 2,
+          "frames_received": 973,
+          "frames_dropped": 0,
+          "events_received": 264,
+          "events_dropped": 0,
+          "usb_errors": 0,
+          "malformed": 0,
+          "replies_matched": 83,
+          "commands_completed": 51
+        },
+        {
+          "event": "cleanup",
+          "stop_ack": true,
+          "reload_alive": true,
+          "exit_code": 0
+        }
+      ],
+      "exit_code": 0
+    },
+    {
+      "run": "after_filter_overflow",
+      "records": [
+        {
+          "event": "ready",
+          "tool": "c_csi_probe",
+          "event_capacity": 1,
+          "stall_ms": 250,
+          "receiver_order": "after-filter",
+          "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        {
+          "event": "window",
+          "name": "stopped_baseline",
+          "normal_frames": 116,
+          "beacons": 48,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 4,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "unfiltered",
+          "normal_frames": 243,
+          "beacons": 99,
+          "csi_reports": 99,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 99,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 97,
+          "rx1": 2,
+          "accepted_sources": 5,
+          "iq_distinct": 99,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "filtered_restart_0",
+          "normal_frames": 370,
+          "beacons": 106,
+          "csi_reports": 19,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 19,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 19,
+          "rx1": 0,
+          "accepted_sources": 1,
+          "iq_distinct": 19,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "stopped_0",
+          "normal_frames": 69,
+          "beacons": 25,
+          "csi_reports": 1,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 1,
+          "counter_thermal_pairs": 2,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "filtered_restart_1",
+          "normal_frames": 265,
+          "beacons": 109,
+          "csi_reports": 20,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 20,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 20,
+          "rx1": 0,
+          "accepted_sources": 1,
+          "iq_distinct": 20,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "stopped_1",
+          "normal_frames": 56,
+          "beacons": 25,
+          "csi_reports": 1,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 1,
+          "counter_thermal_pairs": 2,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "session",
+          "state": 2,
+          "frames_received": 1121,
+          "frames_dropped": 0,
+          "events_received": 241,
+          "events_dropped": 101,
+          "usb_errors": 0,
+          "malformed": 0,
+          "replies_matched": 83,
+          "commands_completed": 51
+        },
+        {
+          "event": "cleanup",
+          "stop_ack": true,
+          "reload_alive": true,
+          "exit_code": 0
+        }
+      ],
+      "exit_code": 0
+    }
+  ],
+  "cancellation": [
+    {
+      "tool": "c/mt76_csi_probe",
+      "signalled": true,
+      "exit_code": 130,
+      "result": [
+        {
+          "event": "ready",
+          "tool": "c_csi_probe",
+          "event_capacity": 64,
+          "stall_ms": 0,
+          "receiver_order": "after-filter",
+          "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        {
+          "event": "window",
+          "name": "stopped_baseline",
+          "normal_frames": 113,
+          "beacons": 39,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 4,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "unfiltered",
+          "normal_frames": 248,
+          "beacons": 98,
+          "csi_reports": 194,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 194,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 8,
+          "rx0": 97,
+          "rx1": 97,
+          "accepted_sources": 5,
+          "iq_distinct": 194,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "filtered_restart_0",
+          "normal_frames": 0,
+          "beacons": 0,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 0,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "window",
+          "name": "stopped_0",
+          "normal_frames": 0,
+          "beacons": 0,
+          "csi_reports": 0,
+          "invalid_or_outside_profile": 0,
+          "accepted_reports": 0,
+          "preconfiguration_discarded": 0,
+          "unselected_discarded": 0,
+          "receiver_discarded": 0,
+          "reports_after_stop": 0,
+          "counter_thermal_pairs": 0,
+          "rx0": 0,
+          "rx1": 0,
+          "accepted_sources": 0,
+          "iq_distinct": 0,
+          "source_overflow": 0,
+          "iq_overflow": 0
+        },
+        {
+          "event": "session",
+          "state": 2,
+          "frames_received": 372,
+          "frames_dropped": 0,
+          "events_received": 196,
+          "events_dropped": 0,
+          "usb_errors": 0,
+          "malformed": 0,
+          "replies_matched": 36,
+          "commands_completed": 24,
+          "frames_delivered": 361,
+          "events_delivered": 194,
+          "frame_depth_at_destroy": 11,
+          "event_depth_at_destroy": 2
+        },
+        {
+          "event": "cleanup",
+          "stop_ack": true,
+          "reload_alive": true,
+          "exit_code": 130
+        }
+      ]
+    },
+    {
+      "tool": "/Users/dew/dev/mt76-usb-macos/.venv/bin/python",
+      "signalled": true,
+      "exit_code": 130,
+      "result": {
+        "cancelled": true,
+        "cleanup_reload_alive": true,
+        "cleanup_stop_ack": true,
+        "date_utc": "2026-09-06T20:19:08.647695+00:00",
+        "event_capacity": 64,
+        "exit_code": 130,
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "receiver_order": "after-filter",
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 17,
+            "events_delivered": 184,
+            "events_high_water": 2,
+            "events_received": 184,
+            "frames_delivered": 373,
+            "frames_high_water": 8,
+            "frames_received": 375,
+            "replies_matched": 29,
+            "transfers": 588,
+            "unmatched_replies": 184
+          },
+          "epoch_ns": 1986007171940958,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 2,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "stall_ms": 0,
+        "tool": "csi_session_probe",
+        "windows": [
+          {
+            "accepted_sources": 0,
+            "beacon_sources": 5,
+            "counts": {
+              "beacons": 50,
+              "counter_thermal_pairs": 4,
+              "normal_frames": 135
+            },
+            "elapsed_s": 1.001,
+            "iq_distinct": 0,
+            "name": "stopped_baseline",
+            "rx_indices": {},
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 5,
+                "frames_delivered": 135,
+                "frames_high_water": 3,
+                "frames_received": 135,
+                "replies_matched": 9,
+                "transfers": 144
+              },
+              "epoch_ns": 1986007171940958,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          },
+          {
+            "accepted_sources": 5,
+            "beacon_sources": 5,
+            "counts": {
+              "accepted_reports": 184,
+              "beacons": 93,
+              "counter_thermal_pairs": 8,
+              "csi_reports": 184,
+              "events_consumed": 184,
+              "normal_frames": 238
+            },
+            "elapsed_s": 2.001,
+            "iq_distinct": 184,
+            "name": "unfiltered",
+            "rx_indices": {
+              "0": 92,
+              "1": 92
+            },
+            "session": {
+              "channel_generation": 0,
+              "counts": {
+                "commands_completed": 16,
+                "events_delivered": 184,
+                "events_high_water": 2,
+                "events_received": 184,
+                "frames_delivered": 373,
+                "frames_high_water": 8,
+                "frames_received": 373,
+                "replies_matched": 28,
+                "transfers": 585,
+                "unmatched_replies": 184
+              },
+              "epoch_ns": 1986007171940958,
+              "error": null,
+              "event_depth": 0,
+              "frame_depth": 0,
+              "requested_channel": [
+                "5GHz",
+                36,
+                36,
+                20
+              ],
+              "state": "running"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
