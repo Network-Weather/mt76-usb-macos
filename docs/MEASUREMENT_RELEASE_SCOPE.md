@@ -35,8 +35,9 @@ including the initial thermal/MIB failure and the recent old-radio RF silence.
   offline checks and outside-checkout packaging/build verification. Remaining:
   run current passive smoke and independent capture-file
   validation on available healthy references; preserve failing controls.
-- Finish offline/docs/packaging checks and inspect the source/wheel contents at
-  the final commit. Do not run the clean/rebuild script over a native executable
+- Offline/docs/packaging checks now pass locally on Python 3.10/3.14 and across
+  the four-job CI matrix at `b4b1315`; see [the evidence](../research/evidence/r32-offline-ci-matrix-2026-09-06.json).
+  Recheck after implementation changes. Do not run the clean/rebuild script over a native executable
   currently participating in a soak; use a separate build directory or wait.
   A subsequent native reset-timeout error-return fix passes synthetic controls
   and sanitizers. Fresh old-chip bring-up/thermal reads pass, but RX remains

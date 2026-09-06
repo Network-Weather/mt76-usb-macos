@@ -27,9 +27,14 @@ The corrected tests give worker startup the normal outer deadline and explicitly
 expire the MCU reply wait after a write, retaining the one-write/no-sequence-reuse
 assertion. A separate event-gated blocked-worker test proves queued expiration
 allocates no sequence and issues no write. This changes tests, not production
-timeouts or session behavior. The local suite now passes2,027 tests; the renewed
-CI matrix remains a separate gate. Optional tshark checks can be skipped on
-CI runners without that tool; local Wireshark-backed tests are not skipped.
+timeouts or session behavior. The local suite now passes 2,027 tests. The
+[renewed CI matrix](https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064809583)
+passes all four jobs at `b4b1315`, each with 2,022 passes and 5 optional tshark
+skips. The two targeted timeout scenarios also pass 80 repetitions across local
+Python 3.10/3.14. [Structured evidence](../research/evidence/r32-offline-ci-matrix-2026-09-06.json)
+retains the initial failure and corrected results. The four compressed-BlockAck
+and one EHT pcap tshark checks are skipped on CI runners without that tool;
+all five run locally with Wireshark installed.
 
 ## R32 current MT7921 RF failure and soak status, 2026-09-06
 

@@ -197,10 +197,15 @@ Exit: an explicit included/deferred matrix, not every firmware mystery resolved.
 
 ### 4. Qualify and prepare, without automatically publishing
 
-- [ ] Full offline suite, formatting/lint/docs checks, native build/tests and
+- [x] Full offline suite, formatting/lint/docs checks, native build/tests and
   sanitizers; repeat session race checks after changes to dispatch or lifetime.
-- [ ] Build/install sdist and wheel outside the checkout; verify new Python modules,
+  [Local dual-Python and four-job CI evidence](../research/evidence/r32-offline-ci-matrix-2026-09-06.json)
+  passes after separating queued expiry from reply-timeout tests; production
+  session behavior is unchanged. Recheck if implementation changes afterward.
+- [x] Build/install sdist and wheel outside the checkout; verify new Python modules,
   C sources/headers and shared fixtures are included and examples import correctly.
+  Fresh archived-source checks, installed imports and CI distribution builds pass
+  for this checkpoint. This does not authorize publication or close live gates.
 - [ ] Current passive smoke and independent capture-file validation for both
   reference dongles; short Python/C measurement and cancellation/reload runs for
   every included profile, with firmware hashes and not-tested cases recorded.
@@ -210,7 +215,7 @@ Exit: an explicit included/deferred matrix, not every firmware mystery resolved.
   the newly merged continuous API, not a prerequisite to further chip research or
   a reason to build more monitoring infrastructure. Failure narrows/defer sessions
   and stream features; it does not erase the existing bounded capture capability.
-- [ ] Offline disconnect/timeout coverage is mandatory; physical hot-unplug and
+- [x] Offline disconnect/timeout coverage is mandatory; physical hot-unplug and
   sleep/wake remain explicitly unqualified unless exercised. No warm-adoption or
   automatic recovery claim. Restoration failure must be visible and require fresh
   bring-up, never silently return the device to a reusable state.
