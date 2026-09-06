@@ -36,5 +36,7 @@ c/mt76_session_probe
 c/mt76_csi_probe
 c/test_csi_session
 c/test_csi_session_sanitize
+c/test_histogram
+c/test_histogram_sanitize
 *.dSYM/
 .venv

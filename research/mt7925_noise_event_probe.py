@@ -18,6 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from mt76_histogram import build_histogram_request, parse_histogram_event
 from research import mt7925_noise_hist_probe as hist
 from research import mt7925_uni_dispatch_probe as dispatch
 from research.txpower_register_probe import check_image, m, read_words
@@ -26,7 +27,7 @@ MASKS = {0x83082004: 7, 0x83088230: 1 << 29, 0x83092004: 7, 0x83098230: 1 << 29}
 
 
 def request():
-    return struct.pack("<4xHH", 2, 4)
+    return build_histogram_request("mt7925")
 
 
 def masked(address, word, bits):
@@ -68,20 +69,18 @@ def event_body(raw):
 
 
 def summarize(raw):
-    parsed = event_body(raw)
-    if parsed is None or parsed[:2] != (0x36, 0):
-        raise ValueError("not a matching asynchronous noise event")
-    body = parsed[2]
-    if len(body) != 96 or body[:4] != bytes(4) or struct.unpack_from("<HH", body, 4) != (2, 92):
-        raise ValueError("unexpected noise event shape")
+    try:
+        report = parse_histogram_event("mt7925", raw)
+    except ValueError as exc:
+        raise ValueError("unexpected noise event") from exc
     return {
         "event_id": 0x36,
         "sequence": 0,
         "body_bytes": 96,
         "tag": 2,
         "tag_length": 92,
-        "timer_index0": list(struct.unpack_from("<11I", body, 8)),
-        "timer_index1": list(struct.unpack_from("<11I", body, 52)),
+        "timer_index0": list(report.bins[0]),
+        "timer_index1": list(report.bins[1]),
     }
 
 

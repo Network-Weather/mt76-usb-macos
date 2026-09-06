@@ -7,10 +7,13 @@ FRAMEWORKS = -framework IOKit -framework CoreFoundation
 
 SMOKE_OBJS = mt7921_smoke.o mt7921_dev.o mt7921_mcu.o mt7921_usb.o mt7921_rxd.o mt7921_rxd_connac3.o mt7921_chip.o
 TEST_OBJS = test_rxd.o mt7921_rxd.o mt7921_rxd_connac3.o mt7921_mcu.o mt7921_usb.o mt7921_dev.o mt7921_chip.o
-SMOKE_OBJS += mt7921_radio.o mt76_csi.o
-TEST_OBJS += mt7921_radio.o mt76_csi.o
+SMOKE_OBJS += mt7921_radio.o mt76_csi.o mt76_histogram.o
+TEST_OBJS += mt7921_radio.o mt76_csi.o mt76_histogram.o
 
-all: mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_session test_csi_session
+all: mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_session test_csi_session test_histogram
+
+test_histogram: test_histogram.o mt76_histogram.o
+	$(CC) $(CFLAGS) -o $@ $^
 
 test_csi_session: test_csi_session.o mt76_csi_session.o mt76_session.o $(filter-out mt7921_smoke.o,$(SMOKE_OBJS))
 	$(CC) $(CFLAGS) $(FRAMEWORKS) -pthread -o $@ $^
@@ -38,12 +41,15 @@ test_rxd: $(TEST_OBJS)
 
 -include $(wildcard *.d)
 
-test: test_rxd test_session test_csi_session
+test: test_rxd test_session test_csi_session test_histogram
 	./test_rxd
 	./test_session
 	./test_csi_session
+	./test_histogram
 
 sanitize:
+	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer test_histogram.c mt76_histogram.c -o test_histogram_sanitize
+	./test_histogram_sanitize
 	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer -I. \
 		test_radio.c ../tests/c_parity_bridge.c mt7921_radio.c mt76_csi.c mt7921_rxd.c mt7921_rxd_connac3.c \
 		mt7921_mcu.c mt7921_dev.c mt7921_usb.c mt7921_chip.c $(FRAMEWORKS) -o test_radio_sanitize
@@ -58,6 +64,6 @@ sanitize:
 	./test_csi_session_sanitize
 
 clean:
-	rm -f *.o *.d mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_radio_sanitize test_session test_session_sanitize test_csi_session test_csi_session_sanitize
+	rm -f *.o *.d mt7921_smoke mt76_radio_probe mt76_session_probe mt76_csi_probe test_rxd test_radio_sanitize test_session test_session_sanitize test_csi_session test_csi_session_sanitize test_histogram test_histogram_sanitize
 
 .PHONY: all test sanitize clean

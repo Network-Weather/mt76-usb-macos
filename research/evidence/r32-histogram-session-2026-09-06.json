@@ -1,0 +1,5470 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-06",
+  "branch": "feat/measurement-api",
+  "integration_base": "e659da7",
+  "scope": "Pure Python/C histogram wire parity plus Python-only repeated session/cleanup investigation. Native live and shared public lifetime remain open. No calibrated noise/coverage/TX claim.",
+  "commands": {
+    "normal": "python research/histogram_session_probe.py --chip mt7921|mt7925 --fw PINNED_DIR --channel 6|36 --reset-shared-histogram",
+    "cancellation": "Owned subprocess only: SIGTERM immediately after histogram_started, then wait for worker stop, full firmware reload and exit130. Separate dongles may run concurrently; never two owners of one radio."
+  },
+  "qualification": {
+    "offline": "1975 tests, native tests, ASan/UBSan including20,000 histogram malformed-input cases pass.",
+    "positive": "Three sequential MT7925 one-shots per channel, each matching event and stopped timer banks, stable100ms repeated reads; MT7921 reset-separated250/500/1000ms host windows reset, accumulate and freeze. Normal RX/counter/thermal coexistence on channel6 both chips and channel36 MT7925. No session USB or queue-overflow errors.",
+    "negative": "MT7921 channel36 normal RX stays absent as in prior controls, despite accumulating bin0 samples. No healthy5GHz RF qualification inferred.",
+    "cancellation": "Both helpers cancel during first active acquisition and exit130 after full reload alive. Pending timer/host acquisition deliberately does not use masked-only restore; shared histogram history is not recoverable.",
+    "limitations": "MT7921 stays bin0-only; MT7925 timer-view totals agree but distributions depend on channel/receiver state. Ordinary index1 differs. Neither raw threshold labels nor wall-time coverage are calibrated. Channel6 runs precede installed parser reuse; channel36/cancellation runs use promoted parser helpers."
+  },
+  "runs": [
+    {
+      "chip": "mt7921",
+      "case": "channel6",
+      "returncode": 0,
+      "result": {
+        "baseline": {
+          "counts": {
+            "normal_frames": 16
+          },
+          "elapsed_s": 0.2568143750540912,
+          "queries": [
+            {
+              "counters": {
+                "chip": "mt7921",
+                "closed_us": 1987565688834,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987565686612,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 11,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 32
+                    },
+                    "raw": 9413
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 32
+                    },
+                    "raw": 2
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7921",
+                "closed_us": 1987565689906,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987565688853,
+                "raw": 38,
+                "reported_temperature_c": 38
+              }
+            },
+            {
+              "counters": {
+                "chip": "mt7921",
+                "closed_us": 1987565907786,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987565905325,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 11,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 32
+                    },
+                    "raw": 50090
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 32
+                    },
+                    "raw": 15
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7921",
+                "closed_us": 1987565909034,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987565907800,
+                "raw": 38,
+                "reported_temperature_c": 38
+              }
+            }
+          ],
+          "reports": []
+        },
+        "baseline_after": {
+          "banks": {
+            "legacy_index0": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83088234": 0
+          }
+        },
+        "baseline_before": {
+          "banks": {
+            "legacy_index0": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83088234": 0
+          }
+        },
+        "calibrated_power": false,
+        "channel": 6,
+        "chip": "mt7921",
+        "cleanup_reload_alive": true,
+        "coverage_fraction": null,
+        "date_utc": "2026-09-06T20:45:06.664632+00:00",
+        "event_capacity": 64,
+        "exit_code": 0,
+        "firmware_sha256": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "restored": {
+          "0x83082004": true,
+          "0x83088230": true,
+          "0x83088234": true
+        },
+        "saved_masks": {
+          "0x83082004": 0,
+          "0x83088230": 0,
+          "0x83088234": 0
+        },
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 29,
+            "frames_delivered": 133,
+            "frames_high_water": 3,
+            "frames_received": 135,
+            "read_timeouts": 26,
+            "replies_matched": 45,
+            "transfers": 180
+          },
+          "epoch_ns": 1987565635266375,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 2,
+          "requested_channel": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "state": "closed"
+        },
+        "tool": "histogram_session_probe",
+        "windows": [
+          {
+            "after_reset": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "collection": {
+              "counts": {
+                "normal_frames": 15
+              },
+              "elapsed_s": 0.25461466680280864,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987566003585,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566001344,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 59446
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 19
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987566004648,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566003594,
+                    "raw": 38,
+                    "reported_temperature_c": 38
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987566215009,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566212572,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 92256
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 30
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987566216350,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566215022,
+                    "raw": 38,
+                    "reported_temperature_c": 38
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987566000975208,
+            "command_open_ns": 1987565986460875,
+            "index": 0,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 8
+              },
+              "elapsed_s": 0.1067715419922024,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987566304327,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566302138,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 101644
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 34
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987566305407,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566304333,
+                    "raw": 38,
+                    "reported_temperature_c": 38
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": 0.25,
+            "stop_closed_ns": 1987566271097375,
+            "stop_open_ns": 1987566255775208,
+            "stopped": {
+              "banks": {
+                "legacy_index0": [
+                  29063,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "legacy_index0": [
+                  29063,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            }
+          },
+          {
+            "after_reset": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "collection": {
+              "counts": {
+                "normal_frames": 26
+              },
+              "elapsed_s": 0.5038910829462111,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987566500689,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566498348,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 122519
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 41
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987566501901,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566500701,
+                    "raw": 38,
+                    "reported_temperature_c": 38
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987566709401,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566706316,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 151067
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 52
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987566710619,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566709419,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987566916034,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566913317,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 182573
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 63
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987566917252,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566916052,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987566495903083,
+            "command_open_ns": 1987566480892458,
+            "index": 1,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 8
+              },
+              "elapsed_s": 0.1023394160438329,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987567027711,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567025031,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 196640
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 68
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987567029081,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567027723,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": 0.5,
+            "stop_closed_ns": 1987567013750750,
+            "stop_open_ns": 1987567000072041,
+            "stopped": {
+              "banks": {
+                "legacy_index0": [
+                  54695,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "legacy_index0": [
+                  54695,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            }
+          },
+          {
+            "after_reset": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "collection": {
+              "counts": {
+                "normal_frames": 52
+              },
+              "elapsed_s": 1.0027244160883129,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987567215099,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567212457,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 218596
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 75
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987567216328,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567215114,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987567423573,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567420715,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 249525
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 87
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987567424942,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567423590,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987567630775,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567627804,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 279897
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 98
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987567632161,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567630794,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987567837793,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567834873,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 309173
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 108
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987567839150,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567837811,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987568059024,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568056061,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 342436
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 119
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987568060806,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568059043,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987567159602541,
+            "command_open_ns": 1987567142300666,
+            "index": 2,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 8
+              },
+              "elapsed_s": 0.10430616699159145,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987568256393,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568251766,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 365443
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 128
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987568257781,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568256410,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": 1,
+            "stop_closed_ns": 1987568222143125,
+            "stop_open_ns": 1987568162433833,
+            "stopped": {
+              "banks": {
+                "legacy_index0": [
+                  113946,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "legacy_index0": [
+                  113946,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "chip": "mt7925",
+      "case": "channel6",
+      "returncode": 0,
+      "result": {
+        "baseline": {
+          "counts": {
+            "normal_frames": 196
+          },
+          "elapsed_s": 0.2685762080363929,
+          "queries": [
+            {
+              "counters": {
+                "chip": "mt7925",
+                "closed_us": 1987566566803,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987566543939,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 17,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 64
+                    },
+                    "raw": 165087
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 64
+                    },
+                    "raw": 148
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7925",
+                "closed_us": 1987566568776,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987566566819,
+                "raw": 49,
+                "reported_temperature_c": 49
+              }
+            },
+            {
+              "counters": {
+                "chip": "mt7925",
+                "closed_us": 1987566809094,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987566806006,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 17,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 64
+                    },
+                    "raw": 211337
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 64
+                    },
+                    "raw": 196
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7925",
+                "closed_us": 1987566811742,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987566809125,
+                "raw": 49,
+                "reported_temperature_c": 49
+              }
+            }
+          ],
+          "reports": []
+        },
+        "baseline_after": {
+          "banks": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83092004": 0,
+            "0x83098230": 0
+          }
+        },
+        "baseline_before": {
+          "banks": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83092004": 0,
+            "0x83098230": 0
+          }
+        },
+        "calibrated_power": false,
+        "channel": 6,
+        "chip": "mt7925",
+        "cleanup_reload_alive": true,
+        "code_checks": [
+          {
+            "address": "0xe00532bc",
+            "bytes": 116,
+            "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+            "matches": true,
+            "name": "initializer",
+            "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0"
+          },
+          {
+            "address": "0xe0053784",
+            "bytes": 24,
+            "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+            "matches": true,
+            "name": "dispatcher",
+            "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646"
+          },
+          {
+            "address": "0xe0054118",
+            "bytes": 204,
+            "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+            "matches": true,
+            "name": "callback_and_event",
+            "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0"
+          },
+          {
+            "address": "0xe005ae5c",
+            "bytes": 256,
+            "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+            "matches": true,
+            "name": "histogram_helpers",
+            "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83"
+          },
+          {
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true,
+            "name": "instruction_table",
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153"
+          }
+        ],
+        "coverage_fraction": null,
+        "date_utc": "2026-09-06T20:45:07.517825+00:00",
+        "event_capacity": 64,
+        "exit_code": 0,
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "restored": {
+          "0x83082004": true,
+          "0x83088230": true,
+          "0x83092004": true,
+          "0x83098230": true
+        },
+        "saved_masks": {
+          "0x83082004": 0,
+          "0x83088230": 0,
+          "0x83092004": 0,
+          "0x83098230": 0
+        },
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 25,
+            "events_delivered": 3,
+            "events_high_water": 1,
+            "events_received": 3,
+            "frames_delivered": 492,
+            "frames_high_water": 148,
+            "frames_received": 494,
+            "read_timeouts": 1,
+            "replies_matched": 31,
+            "transfers": 528,
+            "unmatched_replies": 3
+          },
+          "epoch_ns": 1987566510081291,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 2,
+          "requested_channel": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "state": "closed"
+        },
+        "tool": "histogram_session_probe",
+        "windows": [
+          {
+            "collection": {
+              "counts": {
+                "events_consumed": 1,
+                "normal_frames": 114
+              },
+              "elapsed_s": 0.507927207974717,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987566904283,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566901898,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 225660
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 205
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987566906464,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987566904301,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987567120108,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567117873,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 269878
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 287
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987567122186,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567120121,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987567341640,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567339174,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 322260
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 308
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987567343932,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567341661,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                }
+              ],
+              "reports": [
+                {
+                  "body_bytes": 96,
+                  "event_id": 54,
+                  "received_ns": 1987567363942541,
+                  "sequence": 0,
+                  "tag": 2,
+                  "tag_length": 92,
+                  "timer_index0": [
+                    2,
+                    0,
+                    1,
+                    27,
+                    1,
+                    0,
+                    17,
+                    48927,
+                    457,
+                    0,
+                    3
+                  ],
+                  "timer_index1": [
+                    6,
+                    0,
+                    0,
+                    22,
+                    0,
+                    20,
+                    49381,
+                    0,
+                    3,
+                    0,
+                    3
+                  ]
+                }
+              ]
+            },
+            "command_closed_ns": 1987566856082083,
+            "command_open_ns": 1987566851547916,
+            "event_latency_ns": 512394625,
+            "index": 0,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 12
+              },
+              "elapsed_s": 0.10192116699181497,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987567424011,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567421612,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 331656
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 313
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987567426248,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567424027,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": null,
+            "stopped": {
+              "banks": {
+                "ordinary_getter": [
+                  410,
+                  0,
+                  1,
+                  24,
+                  1,
+                  0,
+                  3,
+                  48519,
+                  477,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63574
+                ],
+                "timer_getter": [
+                  2,
+                  0,
+                  1,
+                  27,
+                  1,
+                  0,
+                  17,
+                  48927,
+                  457,
+                  0,
+                  3
+                ],
+                "timer_index1": [
+                  6,
+                  0,
+                  0,
+                  22,
+                  0,
+                  20,
+                  49381,
+                  0,
+                  3,
+                  0,
+                  3
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "ordinary_getter": [
+                  410,
+                  0,
+                  1,
+                  24,
+                  1,
+                  0,
+                  3,
+                  48519,
+                  477,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63574
+                ],
+                "timer_getter": [
+                  2,
+                  0,
+                  1,
+                  27,
+                  1,
+                  0,
+                  17,
+                  48927,
+                  457,
+                  0,
+                  3
+                ],
+                "timer_index1": [
+                  6,
+                  0,
+                  0,
+                  22,
+                  0,
+                  20,
+                  49381,
+                  0,
+                  3,
+                  0,
+                  3
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            }
+          },
+          {
+            "collection": {
+              "counts": {
+                "events_consumed": 1,
+                "normal_frames": 82
+              },
+              "elapsed_s": 0.5124339170288295,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987567624738,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567622192,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 364826
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 329
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987567627067,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567624756,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987567834323,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567829821,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 410705
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 382
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987567836746,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987567834342,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987568042281,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568039829,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 453708
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 400
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987568044644,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568042299,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                }
+              ],
+              "reports": [
+                {
+                  "body_bytes": 96,
+                  "event_id": 54,
+                  "received_ns": 1987568081622250,
+                  "sequence": 0,
+                  "tag": 2,
+                  "tag_length": 92,
+                  "timer_index0": [
+                    4,
+                    0,
+                    0,
+                    28,
+                    0,
+                    1,
+                    40,
+                    52614,
+                    441,
+                    0,
+                    5
+                  ],
+                  "timer_index1": [
+                    2,
+                    1,
+                    1,
+                    30,
+                    0,
+                    759,
+                    52220,
+                    1,
+                    112,
+                    2,
+                    5
+                  ]
+                }
+              ]
+            },
+            "command_closed_ns": 1987567572361083,
+            "command_open_ns": 1987567569574416,
+            "event_latency_ns": 512047834,
+            "index": 1,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 9
+              },
+              "elapsed_s": 0.10053199995309114,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987568142526,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568139933,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 473806
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 407
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987568144739,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568142541,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": null,
+            "stopped": {
+              "banks": {
+                "ordinary_getter": [
+                  342,
+                  1,
+                  0,
+                  23,
+                  1,
+                  1,
+                  29,
+                  52293,
+                  443,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63524
+                ],
+                "timer_getter": [
+                  4,
+                  0,
+                  0,
+                  28,
+                  0,
+                  1,
+                  40,
+                  52614,
+                  441,
+                  0,
+                  5
+                ],
+                "timer_index1": [
+                  2,
+                  1,
+                  1,
+                  30,
+                  0,
+                  759,
+                  52220,
+                  1,
+                  112,
+                  2,
+                  5
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "ordinary_getter": [
+                  342,
+                  1,
+                  0,
+                  23,
+                  1,
+                  1,
+                  29,
+                  52293,
+                  443,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63524
+                ],
+                "timer_getter": [
+                  4,
+                  0,
+                  0,
+                  28,
+                  0,
+                  1,
+                  40,
+                  52614,
+                  441,
+                  0,
+                  5
+                ],
+                "timer_index1": [
+                  2,
+                  1,
+                  1,
+                  30,
+                  0,
+                  759,
+                  52220,
+                  1,
+                  112,
+                  2,
+                  5
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            }
+          },
+          {
+            "collection": {
+              "counts": {
+                "events_consumed": 1,
+                "normal_frames": 59
+              },
+              "elapsed_s": 0.5095512080006301,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987568296515,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568294016,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 504408
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 421
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987568298983,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568296534,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987568524521,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568522014,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 546635
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 443
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987568526773,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568524539,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987568740938,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568738263,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 586922
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 466
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987568743396,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568740956,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                }
+              ],
+              "reports": [
+                {
+                  "body_bytes": 96,
+                  "event_id": 54,
+                  "received_ns": 1987568795158541,
+                  "sequence": 0,
+                  "tag": 2,
+                  "tag_length": 92,
+                  "timer_index0": [
+                    5,
+                    2,
+                    0,
+                    23,
+                    0,
+                    0,
+                    18,
+                    47928,
+                    298,
+                    1,
+                    4
+                  ],
+                  "timer_index1": [
+                    11,
+                    0,
+                    0,
+                    15,
+                    0,
+                    67,
+                    48168,
+                    4,
+                    6,
+                    3,
+                    5
+                  ]
+                }
+              ]
+            },
+            "command_closed_ns": 1987568287450416,
+            "command_open_ns": 1987568283535458,
+            "event_latency_ns": 511623083,
+            "index": 2,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 20
+              },
+              "elapsed_s": 0.10306049999780953,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987568843560,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568841582,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 620620
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 484
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987568845757,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987568843567,
+                    "raw": 49,
+                    "reported_temperature_c": 49
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": null,
+            "stopped": {
+              "banks": {
+                "ordinary_getter": [
+                  255,
+                  3,
+                  1,
+                  19,
+                  0,
+                  0,
+                  9,
+                  47690,
+                  302,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63568
+                ],
+                "timer_getter": [
+                  5,
+                  2,
+                  0,
+                  23,
+                  0,
+                  0,
+                  18,
+                  47928,
+                  298,
+                  1,
+                  4
+                ],
+                "timer_index1": [
+                  11,
+                  0,
+                  0,
+                  15,
+                  0,
+                  67,
+                  48168,
+                  4,
+                  6,
+                  3,
+                  5
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "ordinary_getter": [
+                  255,
+                  3,
+                  1,
+                  19,
+                  0,
+                  0,
+                  9,
+                  47690,
+                  302,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63568
+                ],
+                "timer_getter": [
+                  5,
+                  2,
+                  0,
+                  23,
+                  0,
+                  0,
+                  18,
+                  47928,
+                  298,
+                  1,
+                  4
+                ],
+                "timer_index1": [
+                  11,
+                  0,
+                  0,
+                  15,
+                  0,
+                  67,
+                  48168,
+                  4,
+                  6,
+                  3,
+                  5
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "chip": "mt7921",
+      "case": "channel36",
+      "signal_sent": false,
+      "returncode": 0,
+      "result": {
+        "baseline": {
+          "counts": {},
+          "elapsed_s": 0.2574152499437332,
+          "queries": [
+            {
+              "counters": {
+                "chip": "mt7921",
+                "closed_us": 1987929190281,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987929188311,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 11,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 32
+                    },
+                    "raw": 195
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 32
+                    },
+                    "raw": 0
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7921",
+                "closed_us": 1987929191236,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987929190286,
+                "raw": 36,
+                "reported_temperature_c": 36
+              }
+            }
+          ],
+          "reports": []
+        },
+        "baseline_after": {
+          "banks": {
+            "legacy_index0": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83088234": 0
+          }
+        },
+        "baseline_before": {
+          "banks": {
+            "legacy_index0": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83088234": 0
+          }
+        },
+        "calibrated_power": false,
+        "channel": 36,
+        "chip": "mt7921",
+        "cleanup_reload_alive": true,
+        "coverage_fraction": null,
+        "date_utc": "2026-09-06T20:51:09.703330+00:00",
+        "event_capacity": 64,
+        "exit_code": 0,
+        "firmware_sha256": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "restored": {
+          "0x83082004": true,
+          "0x83088230": true,
+          "0x83088234": true
+        },
+        "saved_masks": {
+          "0x83082004": 0,
+          "0x83088230": 0,
+          "0x83088234": 0
+        },
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 27,
+            "read_timeouts": 54,
+            "replies_matched": 39,
+            "transfers": 39
+          },
+          "epoch_ns": 1987929075559791,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "tool": "histogram_session_probe",
+        "windows": [
+          {
+            "after_reset": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "collection": {
+              "counts": {},
+              "elapsed_s": 0.2501492081210017,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987929527082,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929524983,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987929528109,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929527089,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987929472484125,
+            "command_open_ns": 1987929459277250,
+            "index": 0,
+            "post_stop": {
+              "counts": {},
+              "elapsed_s": 0.10563237499445677,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987929856282,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929854310,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987929857192,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929856287,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": 0.25,
+            "stop_closed_ns": 1987929742751333,
+            "stop_open_ns": 1987929722709708,
+            "stopped": {
+              "banks": {
+                "legacy_index0": [
+                  33743,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "legacy_index0": [
+                  33743,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            }
+          },
+          {
+            "after_reset": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "collection": {
+              "counts": {},
+              "elapsed_s": 0.5033470839262009,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987930083690,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930081816,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987930084629,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930083692,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987930299760,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930297792,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987930300719,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930299763,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987930516978,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930515066,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987930517894,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930516981,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987930029578166,
+            "command_open_ns": 1987930016666083,
+            "index": 1,
+            "post_stop": {
+              "counts": {},
+              "elapsed_s": 0.10126670799218118,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987930689709,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930687695,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987930690815,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930689719,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": 0.5,
+            "stop_closed_ns": 1987930571053791,
+            "stop_open_ns": 1987930532979041,
+            "stopped": {
+              "banks": {
+                "legacy_index0": [
+                  67679,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "legacy_index0": [
+                  67679,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            }
+          },
+          {
+            "after_reset": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "collection": {
+              "counts": {},
+              "elapsed_s": 1.001146708149463,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987930871489,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930869623,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987930872399,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930871492,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987931086659,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931084411,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987931087749,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931086667,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987931302427,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931299779,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987931303714,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931302444,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987931524969,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931521698,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987931526389,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931524989,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987931740951,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931738095,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987931742429,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931740969,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987930818534000,
+            "command_open_ns": 1987930806759458,
+            "index": 2,
+            "post_stop": {
+              "counts": {},
+              "elapsed_s": 0.10593637521378696,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987931974386,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931971588,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 195
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 0
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987931975643,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931974419,
+                    "raw": 36,
+                    "reported_temperature_c": 36
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": 1,
+            "stop_closed_ns": 1987931855986208,
+            "stop_open_ns": 1987931819798000,
+            "stopped": {
+              "banks": {
+                "legacy_index0": [
+                  129631,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "legacy_index0": [
+                  129631,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83088234": 196608
+              }
+            }
+          }
+        ]
+      },
+      "stderr": ""
+    },
+    {
+      "chip": "mt7925",
+      "case": "channel36",
+      "signal_sent": false,
+      "returncode": 0,
+      "result": {
+        "baseline": {
+          "counts": {
+            "normal_frames": 158
+          },
+          "elapsed_s": 0.2523971670307219,
+          "queries": [
+            {
+              "counters": {
+                "chip": "mt7925",
+                "closed_us": 1987928883107,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987928870043,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 17,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 64
+                    },
+                    "raw": 20002
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 64
+                    },
+                    "raw": 123
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7925",
+                "closed_us": 1987928884996,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987928883113,
+                "raw": 47,
+                "reported_temperature_c": 47
+              }
+            },
+            {
+              "counters": {
+                "chip": "mt7925",
+                "closed_us": 1987929089490,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987929087485,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 17,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 64
+                    },
+                    "raw": 62074
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 64
+                    },
+                    "raw": 154
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7925",
+                "closed_us": 1987929091558,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987929089496,
+                "raw": 47,
+                "reported_temperature_c": 47
+              }
+            }
+          ],
+          "reports": []
+        },
+        "baseline_after": {
+          "banks": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83092004": 0,
+            "0x83098230": 0
+          }
+        },
+        "baseline_before": {
+          "banks": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83092004": 0,
+            "0x83098230": 0
+          }
+        },
+        "calibrated_power": false,
+        "channel": 36,
+        "chip": "mt7925",
+        "cleanup_reload_alive": true,
+        "code_checks": [
+          {
+            "address": "0xe00532bc",
+            "bytes": 116,
+            "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+            "matches": true,
+            "name": "initializer",
+            "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0"
+          },
+          {
+            "address": "0xe0053784",
+            "bytes": 24,
+            "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+            "matches": true,
+            "name": "dispatcher",
+            "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646"
+          },
+          {
+            "address": "0xe0054118",
+            "bytes": 204,
+            "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+            "matches": true,
+            "name": "callback_and_event",
+            "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0"
+          },
+          {
+            "address": "0xe005ae5c",
+            "bytes": 256,
+            "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+            "matches": true,
+            "name": "histogram_helpers",
+            "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83"
+          },
+          {
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true,
+            "name": "instruction_table",
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153"
+          }
+        ],
+        "coverage_fraction": null,
+        "date_utc": "2026-09-06T20:51:09.703345+00:00",
+        "event_capacity": 64,
+        "exit_code": 0,
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "restored": {
+          "0x83082004": true,
+          "0x83088230": true,
+          "0x83092004": true,
+          "0x83098230": true
+        },
+        "saved_masks": {
+          "0x83082004": 0,
+          "0x83088230": 0,
+          "0x83092004": 0,
+          "0x83098230": 0
+        },
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 25,
+            "events_delivered": 3,
+            "events_high_water": 1,
+            "events_received": 3,
+            "frames_delivered": 495,
+            "frames_high_water": 124,
+            "frames_received": 497,
+            "replies_matched": 31,
+            "transfers": 531,
+            "unmatched_replies": 3
+          },
+          "epoch_ns": 1987928842305875,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 2,
+          "requested_channel": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "state": "closed"
+        },
+        "tool": "histogram_session_probe",
+        "windows": [
+          {
+            "collection": {
+              "counts": {
+                "events_consumed": 1,
+                "normal_frames": 79
+              },
+              "elapsed_s": 0.5138905420899391,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987929165179,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929163250,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 63859
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 165
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987929166671,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929165182,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987929390565,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929388535,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 68521
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 195
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987929392671,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929390569,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987929607137,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929604973,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 73158
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 226
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987929609229,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929607150,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                }
+              ],
+              "reports": [
+                {
+                  "body_bytes": 96,
+                  "event_id": 54,
+                  "received_ns": 1987929670436666,
+                  "sequence": 0,
+                  "tag": 2,
+                  "tag_length": 92,
+                  "timer_index0": [
+                    61155,
+                    12,
+                    22,
+                    843,
+                    0,
+                    0,
+                    9,
+                    0,
+                    1,
+                    0,
+                    0
+                  ],
+                  "timer_index1": [
+                    61956,
+                    46,
+                    32,
+                    4,
+                    0,
+                    0,
+                    3,
+                    0,
+                    1,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            "command_closed_ns": 1987929161355208,
+            "command_open_ns": 1987929159490958,
+            "event_latency_ns": 510945708,
+            "index": 0,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 20
+              },
+              "elapsed_s": 0.10721137491054833,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987929725221,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929723181,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 76678
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 246
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987929727924,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929725227,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": null,
+            "stopped": {
+              "banks": {
+                "ordinary_getter": [
+                  61169,
+                  15,
+                  18,
+                  837,
+                  0,
+                  0,
+                  3,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63545
+                ],
+                "timer_getter": [
+                  61155,
+                  12,
+                  22,
+                  843,
+                  0,
+                  0,
+                  9,
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                "timer_index1": [
+                  61956,
+                  46,
+                  32,
+                  4,
+                  0,
+                  0,
+                  3,
+                  0,
+                  1,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "ordinary_getter": [
+                  61169,
+                  15,
+                  18,
+                  837,
+                  0,
+                  0,
+                  3,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63545
+                ],
+                "timer_getter": [
+                  61155,
+                  12,
+                  22,
+                  843,
+                  0,
+                  0,
+                  9,
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                "timer_index1": [
+                  61956,
+                  46,
+                  32,
+                  4,
+                  0,
+                  0,
+                  3,
+                  0,
+                  1,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            }
+          },
+          {
+            "collection": {
+              "counts": {
+                "events_consumed": 1,
+                "normal_frames": 95
+              },
+              "elapsed_s": 0.5106498328968883,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987929875485,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929873519,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 79589
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 262
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987929877554,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987929875489,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987930082620,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930080657,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 85014
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 303
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987930084720,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930082624,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987930291709,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930289701,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 90023
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 333
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987930293786,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930291712,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                }
+              ],
+              "reports": [
+                {
+                  "body_bytes": 96,
+                  "event_id": 54,
+                  "received_ns": 1987930377414916,
+                  "sequence": 0,
+                  "tag": 2,
+                  "tag_length": 92,
+                  "timer_index0": [
+                    61134,
+                    0,
+                    0,
+                    741,
+                    0,
+                    0,
+                    4,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "timer_index1": [
+                    61853,
+                    26,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            "command_closed_ns": 1987929868294208,
+            "command_open_ns": 1987929866382166,
+            "event_latency_ns": 511032750,
+            "index": 1,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 26
+              },
+              "elapsed_s": 0.10429691593162715,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987930411873,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930409907,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 93004
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 356
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987930413973,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930411876,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": null,
+            "stopped": {
+              "banks": {
+                "ordinary_getter": [
+                  61149,
+                  0,
+                  0,
+                  730,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63544
+                ],
+                "timer_getter": [
+                  61134,
+                  0,
+                  0,
+                  741,
+                  0,
+                  0,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "timer_index1": [
+                  61853,
+                  26,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "ordinary_getter": [
+                  61149,
+                  0,
+                  0,
+                  730,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63544
+                ],
+                "timer_getter": [
+                  61134,
+                  0,
+                  0,
+                  741,
+                  0,
+                  0,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "timer_index1": [
+                  61853,
+                  26,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            }
+          },
+          {
+            "collection": {
+              "counts": {
+                "events_consumed": 1,
+                "normal_frames": 92
+              },
+              "elapsed_s": 0.5149703330826014,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987930557386,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930555864,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 97005
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 383
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987930558787,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930557389,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987930783416,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930781279,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 102492
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 421
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987930785451,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930783422,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                },
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987930996348,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930994096,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 107874
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 460
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987930998466,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987930996362,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                }
+              ],
+              "reports": [
+                {
+                  "body_bytes": 96,
+                  "event_id": 54,
+                  "received_ns": 1987931056549166,
+                  "sequence": 0,
+                  "tag": 2,
+                  "tag_length": 92,
+                  "timer_index0": [
+                    61081,
+                    1,
+                    1,
+                    826,
+                    0,
+                    0,
+                    24,
+                    0,
+                    2,
+                    0,
+                    0
+                  ],
+                  "timer_index1": [
+                    61878,
+                    33,
+                    3,
+                    4,
+                    0,
+                    0,
+                    17,
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            "command_closed_ns": 1987930546807541,
+            "command_open_ns": 1987930544938083,
+            "event_latency_ns": 511611083,
+            "index": 2,
+            "post_stop": {
+              "counts": {
+                "normal_frames": 25
+              },
+              "elapsed_s": 0.10056650009937584,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987931100506,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931097784,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 110601
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 480
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987931102612,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987931100519,
+                    "raw": 47,
+                    "reported_temperature_c": 47
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "requested_host_s": null,
+            "stopped": {
+              "banks": {
+                "ordinary_getter": [
+                  61100,
+                  0,
+                  2,
+                  813,
+                  0,
+                  0,
+                  20,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63609
+                ],
+                "timer_getter": [
+                  61081,
+                  1,
+                  1,
+                  826,
+                  0,
+                  0,
+                  24,
+                  0,
+                  2,
+                  0,
+                  0
+                ],
+                "timer_index1": [
+                  61878,
+                  33,
+                  3,
+                  4,
+                  0,
+                  0,
+                  17,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            },
+            "stopped_repeat": {
+              "banks": {
+                "ordinary_getter": [
+                  61100,
+                  0,
+                  2,
+                  813,
+                  0,
+                  0,
+                  20,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "ordinary_index1": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  63609
+                ],
+                "timer_getter": [
+                  61081,
+                  1,
+                  1,
+                  826,
+                  0,
+                  0,
+                  24,
+                  0,
+                  2,
+                  0,
+                  0
+                ],
+                "timer_index1": [
+                  61878,
+                  33,
+                  3,
+                  4,
+                  0,
+                  0,
+                  17,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "controls": {
+                "0x83082004": 0,
+                "0x83088230": 0,
+                "0x83092004": 0,
+                "0x83098230": 0
+              }
+            }
+          }
+        ]
+      },
+      "stderr": ""
+    },
+    {
+      "chip": "mt7921",
+      "case": "cancellation",
+      "signal_sent": true,
+      "returncode": 130,
+      "result": {
+        "baseline": {
+          "counts": {
+            "normal_frames": 15
+          },
+          "elapsed_s": 0.25050054187886417,
+          "queries": [
+            {
+              "counters": {
+                "chip": "mt7921",
+                "closed_us": 1987935451055,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935449160,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 11,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 32
+                    },
+                    "raw": 7172
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 32
+                    },
+                    "raw": 3
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7921",
+                "closed_us": 1987935452016,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935451061,
+                "raw": 38,
+                "reported_temperature_c": 38
+              }
+            },
+            {
+              "counters": {
+                "chip": "mt7921",
+                "closed_us": 1987935676043,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935674162,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 11,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 32
+                    },
+                    "raw": 39666
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": null,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 32
+                    },
+                    "raw": 14
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7921",
+                "closed_us": 1987935676969,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935676049,
+                "raw": 38,
+                "reported_temperature_c": 38
+              }
+            }
+          ],
+          "reports": []
+        },
+        "baseline_after": {
+          "banks": {
+            "legacy_index0": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83088234": 0
+          }
+        },
+        "baseline_before": {
+          "banks": {
+            "legacy_index0": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83088234": 0
+          }
+        },
+        "calibrated_power": false,
+        "channel": 6,
+        "chip": "mt7921",
+        "cleanup_reload_alive": true,
+        "coverage_fraction": null,
+        "date_utc": "2026-09-06T20:51:16.432799+00:00",
+        "event_capacity": 64,
+        "exit_code": 130,
+        "firmware_sha256": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "restore_policy": "pending acquisition: full reload, no timer-racing masked restore",
+        "saved_masks": {
+          "0x83082004": 0,
+          "0x83088230": 0,
+          "0x83088234": 0
+        },
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 6,
+            "frames_delivered": 16,
+            "frames_high_water": 3,
+            "frames_received": 19,
+            "read_timeouts": 3,
+            "replies_matched": 9,
+            "transfers": 28
+          },
+          "epoch_ns": 1987935438750583,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 3,
+          "requested_channel": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "state": "closed"
+        },
+        "tool": "histogram_session_probe",
+        "windows": [
+          {
+            "after_reset": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "collection": {
+              "counts": {
+                "normal_frames": 1
+              },
+              "elapsed_s": 0.0029577079694718122,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7921",
+                    "closed_us": 1987935765422,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987935763543,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 11,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 32
+                        },
+                        "raw": 49371
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": null,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 32
+                        },
+                        "raw": 18
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7921",
+                    "closed_us": 1987935766358,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987935765425,
+                    "raw": 38,
+                    "reported_temperature_c": 38
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987935763399875,
+            "command_open_ns": 1987935750225750,
+            "index": 0,
+            "requested_host_s": 0.25
+          }
+        ]
+      },
+      "stderr": ""
+    },
+    {
+      "chip": "mt7925",
+      "case": "cancellation",
+      "signal_sent": true,
+      "returncode": 130,
+      "result": {
+        "baseline": {
+          "counts": {
+            "normal_frames": 159
+          },
+          "elapsed_s": 0.2518382500857115,
+          "queries": [
+            {
+              "counters": {
+                "chip": "mt7925",
+                "closed_us": 1987935565954,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935552553,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 17,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 64
+                    },
+                    "raw": 256516
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 64
+                    },
+                    "raw": 137
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7925",
+                "closed_us": 1987935567886,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935565960,
+                "raw": 45,
+                "reported_temperature_c": 45
+              }
+            },
+            {
+              "counters": {
+                "chip": "mt7925",
+                "closed_us": 1987935778648,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935776601,
+                "readings": [
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 4,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 17,
+                      "tick_ns": null,
+                      "unit": 1,
+                      "wire_bits": 64
+                    },
+                    "raw": 318882
+                  },
+                  {
+                    "descriptor": {
+                      "accumulator_bits": null,
+                      "counter": 1,
+                      "hardware_bits": 32,
+                      "hardware_saturates": false,
+                      "offset": 2,
+                      "tick_ns": null,
+                      "unit": 0,
+                      "wire_bits": 64
+                    },
+                    "raw": 153
+                  }
+                ]
+              },
+              "thermal": {
+                "action": 0,
+                "chip": "mt7925",
+                "closed_us": 1987935780642,
+                "legacy_dropped_frames": 0,
+                "opened_us": 1987935778653,
+                "raw": 45,
+                "reported_temperature_c": 45
+              }
+            }
+          ],
+          "reports": []
+        },
+        "baseline_after": {
+          "banks": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83092004": 0,
+            "0x83098230": 0
+          }
+        },
+        "baseline_before": {
+          "banks": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "controls": {
+            "0x83082004": 0,
+            "0x83088230": 0,
+            "0x83092004": 0,
+            "0x83098230": 0
+          }
+        },
+        "calibrated_power": false,
+        "channel": 6,
+        "chip": "mt7925",
+        "cleanup_reload_alive": true,
+        "code_checks": [
+          {
+            "address": "0xe00532bc",
+            "bytes": 116,
+            "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+            "matches": true,
+            "name": "initializer",
+            "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0"
+          },
+          {
+            "address": "0xe0053784",
+            "bytes": 24,
+            "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+            "matches": true,
+            "name": "dispatcher",
+            "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646"
+          },
+          {
+            "address": "0xe0054118",
+            "bytes": 204,
+            "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+            "matches": true,
+            "name": "callback_and_event",
+            "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0"
+          },
+          {
+            "address": "0xe005ae5c",
+            "bytes": 256,
+            "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+            "matches": true,
+            "name": "histogram_helpers",
+            "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83"
+          },
+          {
+            "address": "0x9171e8",
+            "bytes": 4096,
+            "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+            "matches": true,
+            "name": "instruction_table",
+            "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153"
+          }
+        ],
+        "coverage_fraction": null,
+        "date_utc": "2026-09-06T20:51:16.437157+00:00",
+        "event_capacity": 64,
+        "exit_code": 130,
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "restore_policy": "pending acquisition: full reload, no timer-racing masked restore",
+        "saved_masks": {
+          "0x83082004": 0,
+          "0x83088230": 0,
+          "0x83092004": 0,
+          "0x83098230": 0
+        },
+        "session": {
+          "channel_generation": 0,
+          "counts": {
+            "commands_completed": 6,
+            "frames_delivered": 160,
+            "frames_high_water": 138,
+            "frames_received": 198,
+            "read_timeouts": 1,
+            "replies_matched": 7,
+            "transfers": 205
+          },
+          "epoch_ns": 1987935524960125,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 38,
+          "requested_channel": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "state": "closed"
+        },
+        "tool": "histogram_session_probe",
+        "windows": [
+          {
+            "collection": {
+              "counts": {
+                "normal_frames": 1
+              },
+              "elapsed_s": 0.010476707946509123,
+              "queries": [
+                {
+                  "counters": {
+                    "chip": "mt7925",
+                    "closed_us": 1987935866121,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987935864050,
+                    "readings": [
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 4,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 17,
+                          "tick_ns": null,
+                          "unit": 1,
+                          "wire_bits": 64
+                        },
+                        "raw": 336637
+                      },
+                      {
+                        "descriptor": {
+                          "accumulator_bits": null,
+                          "counter": 1,
+                          "hardware_bits": 32,
+                          "hardware_saturates": false,
+                          "offset": 2,
+                          "tick_ns": null,
+                          "unit": 0,
+                          "wire_bits": 64
+                        },
+                        "raw": 196
+                      }
+                    ]
+                  },
+                  "thermal": {
+                    "action": 0,
+                    "chip": "mt7925",
+                    "closed_us": 1987935868100,
+                    "legacy_dropped_frames": 0,
+                    "opened_us": 1987935866124,
+                    "raw": 45,
+                    "reported_temperature_c": 45
+                  }
+                }
+              ],
+              "reports": []
+            },
+            "command_closed_ns": 1987935857639291,
+            "command_open_ns": 1987935853969458,
+            "index": 0,
+            "requested_host_s": null
+          }
+        ]
+      },
+      "stderr": ""
+    }
+  ]
+}

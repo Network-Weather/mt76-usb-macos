@@ -171,6 +171,8 @@ Exit: an application can consume the floor without importing `research/` or
   tests; public-helper normal/overflow/cancellation runs pass in both languages.
   Longer-session acceptance remains separate; see [lifetime contract](CSI_API.md).
 - [ ] Histograms next: one-shot ownership/cleanup and coverage, then Python/C parity.
+  [Pure wire/record parity](HISTOGRAM_API.md) and repeated Python session windows
+  are implemented; native live and reusable lifetime/fault tests remain open.
 - [ ] Decide each feature independently: included with a narrow explicit experimental
   profile, or left research-only with the failing gate recorded. Do not ship a
   Python-only public feature while calling the release's selected scope C parity.

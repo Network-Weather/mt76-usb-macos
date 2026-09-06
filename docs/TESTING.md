@@ -4,6 +4,21 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 histogram records and repeated acquisition, 2026-09-06
+
+All1,975 tests pass, including matching native/Python request/ACK/record fixtures,
+every event truncation, malformed profiles, wide totals and unchanged native
+outputs on failure. Native tests and ASan/UBSan pass, including20,000 additional
+malformed histogram cases. Source/wheel build uses installed dependencies.
+
+[Six Python hardware runs](../research/evidence/r32-histogram-session-2026-09-06.json)
+cover both chips on6/36 and cancellation during the first active acquisition.
+Repeated reset/start/event-or-freeze/stopped-repeat checks pass, with counter and
+thermal queries and normal RX (except the already weak MT7921 channel36 path).
+All runs reload successfully; cancelled pending acquisitions use full reload
+instead of a masked restore that could race a firmware timer. Public acquisition
+lifetimes and native live orchestration remain open; see [histogram status](HISTOGRAM_API.md).
+
 ## R32 CSI lifetime integration, 2026-09-06
 
 All1,963 tests pass, including real Python/native session workers with synthetic

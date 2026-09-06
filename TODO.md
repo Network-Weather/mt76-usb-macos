@@ -13,6 +13,8 @@ raw decoding/guard is implemented; live enabled-phase reliability remains gated.
 CSI wire/parser and public session-bound lifetime parity are implemented, with
 stage-fault tests and short native/Python coexistence/overflow/cancellation evidence.
 Longer acceptance remains open; CSI is narrow and explicitly experimental.
+Histogram wire/record parity and repeated Python capture/query coexistence now
+pass; next implement/qualify the matched acquisition lifetime and native backend.
 
 - [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
   `feat/measurement-api` (not main); baseline offline checks pass.

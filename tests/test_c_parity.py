@@ -24,10 +24,86 @@ ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="native IOKit C build")
 
 
+class HistogramBins(ct.Structure):
+    _fields_ = [
+        ("chip", ct.c_int),
+        ("source", ct.c_int),
+        ("view_count", ct.c_uint),
+        ("bins", (ct.c_uint32 * 11) * 2),
+        ("totals", ct.c_uint64 * 2),
+        ("threshold_labels_raw", ct.c_int8 * 10),
+    ]
+
+
+def test_histogram_native_parity_and_unchanged_failures(native):
+    import mt76_histogram as hist
+    from tests.test_histogram import bad_histogram_events, histogram_event
+
+    for modern in (False, True):
+        chip = "mt7925" if modern else "mt7921"
+        raw = histogram_event() if modern else struct.pack("<11I", *([0xFFFFFFFF] * 11))
+        parse = hist.parse_histogram_event if modern else hist.parse_legacy_histogram
+        native_parse = native.mt_histogram_event if modern else native.mt_histogram_legacy
+        native_parse.argtypes = [ct.c_int, ct.c_void_p, ct.c_size_t, ct.POINTER(HistogramBins)]
+        expected = parse(chip, raw)
+        out = HistogramBins()
+        assert native_parse(int(modern), raw, len(raw), ct.byref(out)) == 0
+        assert out.chip == int(modern)
+        assert out.source == int(modern)
+        assert tuple(tuple(out.bins[i]) for i in range(out.view_count)) == expected.bins
+        assert tuple(out.totals)[: out.view_count] == expected.totals
+        assert tuple(out.threshold_labels_raw) == expected.threshold_labels_raw
+        bads = (
+            list(bad_histogram_events()) if modern else [raw[:n] for n in range(44)] + [raw + b"x"]
+        )
+        for bad in bads:
+            ct.memset(ct.byref(out), 0xA5, ct.sizeof(out))
+            before = bytes(out)
+            assert native_parse(int(modern), bad, len(bad), ct.byref(out)) == -1
+            assert bytes(out) == before
+        assert native_parse(int(not modern), raw, len(raw), ct.byref(out)) == -1
+
+
+def test_histogram_native_request_ack_status(native):
+    import mt76_histogram as hist
+    from tests.test_csi_measurements import event
+
+    native.mt_histogram_request.argtypes = [ct.c_int, ct.c_void_p, ct.c_size_t]
+    native.mt_histogram_ack.argtypes = [
+        ct.c_int,
+        ct.c_void_p,
+        ct.c_size_t,
+        ct.c_uint8,
+        ct.POINTER(ct.c_uint32),
+    ]
+    out = (ct.c_uint8 * 8)()
+    assert native.mt_histogram_request(1, out, 8) == 8
+    assert bytes(out) == hist.build_histogram_request("mt7925")
+    for chip, capacity in ((0, 8), (1, 7), (-1, 8)):
+        before = bytes(out)
+        assert native.mt_histogram_request(chip, out, capacity) == -1
+        assert bytes(out) == before
+    for status in (0, 1, 0xC00000BB, 0xFFFFFFFF):
+        raw = event(struct.pack("<II", 0x36, status), eid=1, sequence=9)
+        value = ct.c_uint32(123)
+        assert native.mt_histogram_ack(1, raw, len(raw), 9, ct.byref(value)) == 0
+        assert value.value == status
+        for chip, seq, size in (
+            (0, 9, len(raw)),
+            (1, 0, len(raw)),
+            (1, 8, len(raw)),
+            (1, 9, len(raw) - 1),
+        ):
+            value.value = 123
+            assert native.mt_histogram_ack(chip, raw, size, seq, ct.byref(value)) == -1
+            assert value.value == 123
+
+
 @pytest.fixture(scope="module")
 def native(tmp_path_factory):
     out = tmp_path_factory.mktemp("c-parity") / "parity.dylib"
     sources = [
+        "mt76_histogram.c",
         "mt76_csi.c",
         "mt76_csi_session.c",
         "mt76_session.c",
