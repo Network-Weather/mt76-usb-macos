@@ -33,7 +33,8 @@ new Linux capabilities.
 - Counter widths are 32 bits on the MT7921 path and 64 bits on the MT7925 path.
   `mt_mib_delta` requires a caller-supplied plausible maximum and the same firmware
   epoch. Wrap and reset cannot always be distinguished from two observations.
-- CCA offsets 11/19 concern the primary 20 MHz. MT7925 offset 20 is overlapping
+- MT7921 CCA offset11 and MT7925 primary-CCA17 / CCA+NAV+TX19 concern the primary
+  20MHz (2026-09-05 source/ROM naming correction). MT7925 offset20 is overlapping
   ED-active time, not non-Wi-Fi time. The CLI emits raw counters, not misleading
   busy-minus-decoded residuals or a noise-floor estimate.
 - Extended vector words remain raw. HE/EHT interpretation, clock fitting, and

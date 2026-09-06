@@ -1,0 +1,526 @@
+{
+  "scope": "MT7925 ROM-resolved SR RMAC reads, immediate-repeat controls, no direct writes; accumulator query separate",
+  "runs": [
+    {
+      "tool": "sr_rmac_probe",
+      "date_utc": "2026-09-05T12:17:31.614161+00:00",
+      "channel": 36,
+      "registers": [
+        "0x820e5198",
+        "0x820e519c",
+        "0x820e51a0"
+      ],
+      "rows": [
+        {
+          "receive_span_ns": 114653334,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 7
+          },
+          "transfers": 7,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x7",
+              "0x7",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 7,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 7,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1834041
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1857792
+          }
+        },
+        {
+          "receive_span_ns": 103905875,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 14
+          },
+          "transfers": 14,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0xb",
+              "0xe",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 11,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 14,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1879167
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1853292
+          }
+        },
+        {
+          "receive_span_ns": 113980917,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 8
+          },
+          "transfers": 8,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x8",
+              "0x8",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 8,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 8,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 2029791
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1882250
+          }
+        },
+        {
+          "receive_span_ns": 118907667,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 8
+          },
+          "transfers": 8,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x7",
+              "0x8",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 7,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 8,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1867292
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1862792
+          }
+        },
+        {
+          "receive_span_ns": 119193250,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 7
+          },
+          "transfers": 7,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x7",
+              "0x7",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 7,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 7,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1880333
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1841833
+          }
+        }
+      ],
+      "initial_read": {
+        "words": [
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "fields_raw": {
+          "non_srg_valid": 0,
+          "srg_valid": 0,
+          "intra_bss_ppdu": 0,
+          "inter_bss_ppdu": 0,
+          "non_srg_ppdu_valid": 0,
+          "srg_ppdu_valid": 0
+        },
+        "read_span_ns": 559208
+      },
+      "firmware_query": {
+        "request_tag": 203,
+        "events": [
+          {
+            "eid": 37,
+            "sequence": 0,
+            "body_bytes": 28,
+            "event_tag": 201,
+            "indicators_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0,
+              "sr_ampdu_mpdu": 0,
+              "sr_ampdu_mpdu_acked": 0
+            }
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 29
+        },
+        "transfers": 30,
+        "transfer_limit_reached": false
+      },
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "sr_rmac_probe",
+      "date_utc": "2026-09-05T12:17:36.617250+00:00",
+      "channel": 1,
+      "registers": [
+        "0x820e5198",
+        "0x820e519c",
+        "0x820e51a0"
+      ],
+      "rows": [
+        {
+          "receive_span_ns": 104211708,
+          "good_fcs_frames_by_phy_mode": {
+            "0": 16,
+            "2": 1,
+            "1": 13
+          },
+          "transfers": 30,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x0",
+              "0x1f",
+              "0x10"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 31,
+              "non_srg_ppdu_valid": 16,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1876792
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x2",
+              "0x2"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 2,
+              "non_srg_ppdu_valid": 2,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1850208
+          }
+        },
+        {
+          "receive_span_ns": 114182750,
+          "good_fcs_frames_by_phy_mode": {
+            "0": 18,
+            "1": 22,
+            "2": 1
+          },
+          "transfers": 41,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x1",
+              "0x28",
+              "0x10"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 1,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 40,
+              "non_srg_ppdu_valid": 16,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1834625
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1870250
+          }
+        },
+        {
+          "receive_span_ns": 114106084,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 7,
+            "0": 10
+          },
+          "transfers": 17,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x2",
+              "0xf",
+              "0x6"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 2,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 15,
+              "non_srg_ppdu_valid": 6,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1883417
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1877875
+          }
+        },
+        {
+          "receive_span_ns": 100090917,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 24,
+            "0": 11
+          },
+          "transfers": 35,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x1",
+              "0x24",
+              "0xa"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 1,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 36,
+              "non_srg_ppdu_valid": 10,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1872458
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x1",
+              "0x1"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 1,
+              "non_srg_ppdu_valid": 1,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1843709
+          }
+        },
+        {
+          "receive_span_ns": 100947500,
+          "good_fcs_frames_by_phy_mode": {
+            "1": 16,
+            "0": 19
+          },
+          "transfers": 35,
+          "transfer_limit_reached": false,
+          "first": {
+            "words": [
+              "0x1",
+              "0x21",
+              "0x1b"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 1,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 33,
+              "non_srg_ppdu_valid": 27,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1848875
+          },
+          "immediate_repeat": {
+            "words": [
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "fields_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0
+            },
+            "read_span_ns": 1872584
+          }
+        }
+      ],
+      "initial_read": {
+        "words": [
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "fields_raw": {
+          "non_srg_valid": 0,
+          "srg_valid": 0,
+          "intra_bss_ppdu": 0,
+          "inter_bss_ppdu": 0,
+          "non_srg_ppdu_valid": 0,
+          "srg_ppdu_valid": 0
+        },
+        "read_span_ns": 493208
+      },
+      "firmware_query": {
+        "request_tag": 203,
+        "events": [
+          {
+            "eid": 37,
+            "sequence": 0,
+            "body_bytes": 28,
+            "event_tag": 201,
+            "indicators_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0,
+              "sr_ampdu_mpdu": 0,
+              "sr_ampdu_mpdu_acked": 0
+            }
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 104,
+          "0": 22,
+          "2": 1
+        },
+        "transfers": 128,
+        "transfer_limit_reached": true
+      },
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

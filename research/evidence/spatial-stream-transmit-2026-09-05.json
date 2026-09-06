@@ -1,0 +1,1157 @@
+{
+  "date": "2026-09-05",
+  "source_pin": "c5a3bd91aa735b669618610d5f0ebfa5786845a6",
+  "runs": [
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 36,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:49:45.201977+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "gap_s": 0.05,
+      "per_phase": 6,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 36,
+            "distinct_metadata": 5
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        }
+      ],
+      "submitted": 36,
+      "suite": "streams",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7961"
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 36,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:49:56.649312+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": true,
+      "gap_s": 0.05,
+      "per_phase": 6,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [
+                {
+                  "count": 1,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 11,
+                    "mode_name": "OFDM",
+                    "nss": 1,
+                    "rate_mbps": 6
+                  }
+                }
+              ],
+              "rate_code": 75,
+              "unique_exact_frames": 1
+            },
+            {
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht8_2ss",
+              "phy": [
+                {
+                  "count": 6,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "rate_mbps": 13
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 6
+            },
+            {
+              "name": "vht0_2ss",
+              "phy": [
+                {
+                  "count": 6,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 0,
+                    "mode_name": "VHT",
+                    "nss": 2,
+                    "rate_mbps": 13
+                  }
+                }
+              ],
+              "rate_code": 1280,
+              "unique_exact_frames": 6
+            },
+            {
+              "name": "he0_2ss",
+              "phy": [
+                {
+                  "count": 6,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 0,
+                    "mode_name": "HE-SU",
+                    "nss": 2,
+                    "rate_mbps": 17.2
+                  }
+                }
+              ],
+              "rate_code": 1536,
+              "unique_exact_frames": 6
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 36,
+            "distinct_metadata": 36
+          }
+        }
+      ],
+      "submitted": 36,
+      "suite": "streams",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7925"
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 149,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:51:12.286646+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "gap_s": 0.05,
+      "per_phase": 4,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht0",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht7",
+              "phy": [],
+              "rate_code": 135,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "vht0",
+              "phy": [],
+              "rate_code": 256,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "he0",
+              "phy": [],
+              "rate_code": 512,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 24,
+            "distinct_metadata": 5
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht0",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht7",
+              "phy": [],
+              "rate_code": 135,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "vht0",
+              "phy": [],
+              "rate_code": 256,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "he0",
+              "phy": [],
+              "rate_code": 512,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        }
+      ],
+      "submitted": 24,
+      "suite": "baseline",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7961"
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 149,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:51:23.005257+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": true,
+      "gap_s": 0.05,
+      "per_phase": 4,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht0",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht7",
+              "phy": [],
+              "rate_code": 135,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "vht0",
+              "phy": [],
+              "rate_code": 256,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "he0",
+              "phy": [],
+              "rate_code": 512,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {},
+          "phases": [
+            {
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht0",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ht7",
+              "phy": [],
+              "rate_code": 135,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "vht0",
+              "phy": [],
+              "rate_code": 256,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "he0",
+              "phy": [],
+              "rate_code": 512,
+              "unique_exact_frames": 0
+            },
+            {
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 24,
+            "distinct_metadata": 24
+          }
+        }
+      ],
+      "submitted": 24,
+      "suite": "baseline",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7925"
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 36,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:52:30.519577+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "gap_s": 0.05,
+      "per_phase": 4,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 26,
+            "frames_seen": 1
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 24,
+            "distinct_metadata": 5
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 622,
+            "frames_seen": 288
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        }
+      ],
+      "submitted": 24,
+      "suite": "streams",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7961",
+      "unique_run_payload": true
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 36,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:52:41.279349+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": true,
+      "gap_s": 0.05,
+      "per_phase": 4,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 17,
+            "frames_seen": 15
+          },
+          "phases": [
+            {
+              "median_rssi_raw": -103,
+              "name": "ofdm_before",
+              "phy": [
+                {
+                  "count": 1,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 11,
+                    "mode_name": "OFDM",
+                    "nss": 1,
+                    "rate_mbps": 6
+                  }
+                }
+              ],
+              "rate_code": 75,
+              "unique_exact_frames": 1
+            },
+            {
+              "median_rssi_raw": -102,
+              "name": "ht0_control",
+              "phy": [
+                {
+                  "count": 1,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 0,
+                    "mode_name": "HT",
+                    "nss": 1,
+                    "rate_mbps": 6.5
+                  }
+                }
+              ],
+              "rate_code": 128,
+              "unique_exact_frames": 1
+            },
+            {
+              "median_rssi_raw": -98.5,
+              "name": "ht8_2ss",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "rate_mbps": 13
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -100,
+              "name": "vht0_2ss",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 0,
+                    "mode_name": "VHT",
+                    "nss": 2,
+                    "rate_mbps": 13
+                  }
+                }
+              ],
+              "rate_code": 1280,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -99.5,
+              "name": "he0_2ss",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 0,
+                    "mode_name": "HE-SU",
+                    "nss": 2,
+                    "rate_mbps": 17.2
+                  }
+                }
+              ],
+              "rate_code": 1536,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 454,
+            "frames_seen": 323
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 24,
+            "distinct_metadata": 24
+          }
+        }
+      ],
+      "submitted": 24,
+      "suite": "streams",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7925",
+      "unique_run_payload": true
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 36,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:53:50.079457+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "gap_s": 0.05,
+      "per_phase": 4,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 24
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 24,
+            "distinct_metadata": 5
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 198,
+            "frames_seen": 189
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        }
+      ],
+      "submitted": 24,
+      "suite": "streams",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7961",
+      "unique_run_payload": true
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 36,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T07:55:32.187218+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "gap_s": 0.05,
+      "per_phase": 3,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 18
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 18,
+            "distinct_metadata": 5
+          }
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 189,
+            "frames_seen": 173
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht0_control",
+              "phy": [],
+              "rate_code": 128,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ht8_2ss",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "vht0_2ss",
+              "phy": [],
+              "rate_code": 1280,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "he0_2ss",
+              "phy": [],
+              "rate_code": 1536,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "ofdm_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": {
+            "records": 0,
+            "distinct_metadata": 0
+          }
+        }
+      ],
+      "submitted": 18,
+      "suite": "streams",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7961",
+      "unique_run_payload": true
+    }
+  ]
+}

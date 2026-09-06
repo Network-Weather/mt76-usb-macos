@@ -220,6 +220,11 @@ Unsupported BA variants are explicit; trailing zero bitmap positions are not cal
 
 Next experiments, in order of new evidence they could provide:
 
+Follow-up: [HE-LTF origin validation](HE_LTF_RX_ORIGIN.md) now verifies Group5
+word0 bits18:17 on MT7961 against48 controlled HE receipts, and provides a
+current-upstream MT7921 HE-radiotap pointer lead. This is a decoded PHY format
+field, not a calibrated signal-quality metric.
+
 1. Validate extended RXV fields across more transmitters and conditions; investigate
    per-chain quality with documented layouts, not arbitrary byte correlations.
 2. Test cross-channel clock biases with a known timing reference, longer drift, and

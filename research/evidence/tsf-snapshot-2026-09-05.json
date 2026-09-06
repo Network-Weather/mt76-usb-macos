@@ -1,0 +1,202 @@
+{
+  "scope": "Upstream OMAC0 TSF snapshot returns only zero in monitor mode on both radios; read-mode3 is retained, not a busy flag",
+  "initial_guard_trial": {
+    "date_utc": "2026-09-05T16:51:21.926115+00:00",
+    "radios": [
+      {
+        "samples": [],
+        "chip": "mt7921",
+        "firmware_sha256": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "error_type": "ValueError",
+        "cleanup_reload_alive": true
+      },
+      {
+        "samples": [],
+        "chip": "mt7925",
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "error_type": "ValueError",
+        "cleanup_reload_alive": true
+      }
+    ]
+  },
+  "diagnostic_trial": {
+    "date_utc": "2026-09-05T16:51:59.889064+00:00",
+    "radios": [
+      {
+        "samples": [],
+        "chip": "mt7921",
+        "firmware_sha256": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "error_type": "ValueError",
+        "error_detail": "TSF snapshot command did not complete",
+        "diagnostic_registers": {
+          "0x820eb0a8": "0x1640003",
+          "0x820eb080": "0x0",
+          "0x820eb084": "0x0"
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      },
+      {
+        "samples": [],
+        "chip": "mt7925",
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "error_type": "ValueError",
+        "error_detail": "invalid or busy TSF snapshot control",
+        "diagnostic_registers": {
+          "0x820eb0a8": "0x1640003",
+          "0x820eb080": "0x0",
+          "0x820eb084": "0x0"
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      }
+    ]
+  },
+  "source_faithful_trial": {
+    "date_utc": "2026-09-05T16:52:52.688282+00:00",
+    "radios": [
+      {
+        "samples": [
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640000",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887232.018895583,
+            "host_write_done_seconds": 1887232.019099666,
+            "host_after_seconds": 1887232.019720416
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887232.075337625,
+            "host_write_done_seconds": 1887232.076138583,
+            "host_after_seconds": 1887232.077475541
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887232.130848375,
+            "host_write_done_seconds": 1887232.131801583,
+            "host_after_seconds": 1887232.133388708
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887232.187230166,
+            "host_write_done_seconds": 1887232.188233708,
+            "host_after_seconds": 1887232.189992458
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887232.242572916,
+            "host_write_done_seconds": 1887232.243185833,
+            "host_after_seconds": 1887232.244933125
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887232.300077666,
+            "host_write_done_seconds": 1887232.301096958,
+            "host_after_seconds": 1887232.302979708
+          }
+        ],
+        "chip": "mt7921",
+        "firmware_sha256": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      },
+      {
+        "samples": [
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887234.8046635,
+            "host_write_done_seconds": 1887234.804917125,
+            "host_after_seconds": 1887234.8061305
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887234.861730541,
+            "host_write_done_seconds": 1887234.862643041,
+            "host_after_seconds": 1887234.865474666
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887234.92057075,
+            "host_write_done_seconds": 1887234.921239291,
+            "host_after_seconds": 1887234.92309725
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887234.976390916,
+            "host_write_done_seconds": 1887234.977009208,
+            "host_after_seconds": 1887234.978892416
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887235.034403125,
+            "host_write_done_seconds": 1887235.0349865,
+            "host_after_seconds": 1887235.036870833
+          },
+          {
+            "tsf_raw": 0,
+            "control_before": "0x1640003",
+            "control_after": "0x1640003",
+            "read_mode_retained": true,
+            "host_before_seconds": 1887235.090038166,
+            "host_write_done_seconds": 1887235.090710416,
+            "host_after_seconds": 1887235.092713125
+          }
+        ],
+        "chip": "mt7925",
+        "firmware_sha256": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ],
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      }
+    ]
+  }
+}

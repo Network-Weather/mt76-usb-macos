@@ -1,0 +1,301 @@
+{
+  "scope": "Fixed vendor GET_NOISE b1260001 only, no setter or TX; mismatched old response data/debug words excluded. Two correct-envelope runs and one bounded tag-table trace. MT7925 query branch hard-codes zero; no physical noise measurement.",
+  "runs": [
+    {
+      "date_utc": "2026-09-05T20:09:04.893055+00:00",
+      "radios": [
+        {
+          "usb_id": "0e8d:7961",
+          "samples": [
+            {
+              "channel": 6,
+              "queries": []
+            }
+          ],
+          "firmware_sha256": [
+            "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+            "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+          ],
+          "error_type": "UnexpectedNoiseEvent",
+          "unexpected_event": {
+            "parser_reason": "noise-average query ID mismatch",
+            "usb_bytes": 308,
+            "event_id": 23,
+            "sequence": 6,
+            "body_bytes": 264,
+            "returned_query_id": "0x0"
+          },
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "usb_id": "0846:9072",
+          "samples": [
+            {
+              "channel": 6,
+              "queries": [
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                },
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                }
+              ]
+            },
+            {
+              "channel": 36,
+              "queries": [
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                },
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                }
+              ]
+            },
+            {
+              "channel": 6,
+              "queries": [
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                },
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                }
+              ]
+            }
+          ],
+          "firmware_sha256": [
+            "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+            "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "date_utc": "2026-09-05T20:11:18.123353+00:00",
+      "radios": [
+        {
+          "usb_id": "0e8d:7961",
+          "samples": [
+            {
+              "channel": 6,
+              "queries": []
+            }
+          ],
+          "firmware_sha256": [
+            "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+            "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+          ],
+          "error_type": "UnexpectedNoiseEvent",
+          "unexpected_event": {
+            "parser_reason": "noise-average query ID mismatch",
+            "usb_bytes": 308,
+            "event_id": 23,
+            "sequence": 6,
+            "body_bytes": 264,
+            "returned_query_id": "0x0"
+          },
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "usb_id": "0846:9072",
+          "samples": [
+            {
+              "channel": 6,
+              "queries": [
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                },
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                }
+              ]
+            },
+            {
+              "channel": 36,
+              "queries": [
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                },
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                }
+              ]
+            },
+            {
+              "channel": 6,
+              "queries": [
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                },
+                {
+                  "event_id": 7,
+                  "body_bytes": 16,
+                  "query_id": "0xb1260001",
+                  "average_power_raw_i16": [
+                    0,
+                    0
+                  ],
+                  "calibrated": false
+                }
+              ]
+            }
+          ],
+          "firmware_sha256": [
+            "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+            "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+          ],
+          "code": [
+            {
+              "name": "chip_dispatcher",
+              "address": "0xe0046e00",
+              "bytes": 112,
+              "sha256": "dedf8897206b22151c6cc9c08cbddf86f152cd667a05406294b3741fd18e6d71",
+              "expected_sha256": "dedf8897206b22151c6cc9c08cbddf86f152cd667a05406294b3741fd18e6d71",
+              "matches": true
+            },
+            {
+              "name": "sw_debug_branch",
+              "address": "0xe00470a8",
+              "bytes": 32,
+              "sha256": "1614d1ddd0f3e8bf27a5d9aaa2180b028840ae93e72066c8f20c3977973d0617",
+              "expected_sha256": "1614d1ddd0f3e8bf27a5d9aaa2180b028840ae93e72066c8f20c3977973d0617",
+              "matches": true
+            },
+            {
+              "name": "query_zero_reply",
+              "address": "0xe0047230",
+              "bytes": 120,
+              "sha256": "dd5ab49b34364ba18fc3876df1368535a5812c08f40f526f5aa0a8c84e9ad52f",
+              "expected_sha256": "dd5ab49b34364ba18fc3876df1368535a5812c08f40f526f5aa0a8c84e9ad52f",
+              "matches": true
+            },
+            {
+              "name": "instruction_table",
+              "address": "0x9171e8",
+              "bytes": 4096,
+              "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+              "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+              "matches": true
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "code": {
+        "address": "0xe0046e00",
+        "size": 112,
+        "sha256": "dedf8897206b22151c6cc9c08cbddf86f152cd667a05406294b3741fd18e6d71",
+        "expected": "dedf8897206b22151c6cc9c08cbddf86f152cd667a05406294b3741fd18e6d71"
+      },
+      "records": [
+        {
+          "address": "0x2216034",
+          "tag": 0,
+          "handler": "0xe00470a8"
+        },
+        {
+          "address": "0x221603c",
+          "tag": 1,
+          "handler": "0xe0046ba2"
+        },
+        {
+          "address": "0x2216044",
+          "tag": 2,
+          "handler": "0xe004681c"
+        },
+        {
+          "address": "0x221604c",
+          "tag": 3,
+          "handler": "0xe0046820"
+        }
+      ],
+      "alive": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

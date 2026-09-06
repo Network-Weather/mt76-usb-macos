@@ -1,0 +1,150 @@
+{
+  "scope": "Firmware-derived SR cache and accumulator read cross-check; no direct writes; GET drains accumulator",
+  "runs": [
+    {
+      "tool": "sr_state_read_controls",
+      "date_utc": "2026-09-05T12:11:49.804162+00:00",
+      "channel": 1,
+      "indicator_pointer_slot": "0x0222e138",
+      "indicator_pointer": "0x225f828",
+      "capability_state_address": "0x0225faf0",
+      "capability_both_bands_all_boolean": true,
+      "capability_state_bands": [
+        [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1
+        ]
+      ],
+      "indicator_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "query": {
+        "request_tag": 203,
+        "events": [
+          {
+            "eid": 37,
+            "sequence": 0,
+            "body_bytes": 28,
+            "event_tag": 201,
+            "indicators_raw": {
+              "non_srg_valid": 0,
+              "srg_valid": 0,
+              "intra_bss_ppdu": 0,
+              "inter_bss_ppdu": 0,
+              "non_srg_ppdu_valid": 0,
+              "srg_ppdu_valid": 0,
+              "sr_ampdu_mpdu": 0,
+              "sr_ampdu_mpdu_acked": 0
+            }
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 62,
+          "0": 48,
+          "2": 17
+        },
+        "transfers": 128,
+        "transfer_limit_reached": true
+      },
+      "indicator_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cap_query": {
+        "request_tag": 192,
+        "events": [
+          {
+            "eid": 37,
+            "sequence": 0,
+            "body_bytes": 28,
+            "event_tag": 192,
+            "capabilities_raw": {
+              "sr_enable": 1,
+              "srg_enable": 0,
+              "non_srg_enable": 1,
+              "single_mpdu_rtscts_enable": 1,
+              "header_duration_enable": 1,
+              "txop_duration_enable": 0,
+              "non_srg_inter_ppdu_preserve": 0,
+              "srg_inter_ppdu_preserve": 0,
+              "single_mpdu_no_trigger_enable": 1,
+              "srg_bssid_order": 0,
+              "cts_after_rts": 1,
+              "srp_old_rxv_enable": 1,
+              "srp_new_rxv_enable": 0,
+              "srp_data_only_enable": 0,
+              "fixed_rate_sr_receive_enable": 1,
+              "wtbl_sr_receive_enable": 1,
+              "sr_remaining_time_enable": 1,
+              "protection_in_sr_window_disable": 1,
+              "txcmd_dl_rate_select_enable": 0,
+              "ampdu_tx_count_enable": 1
+            }
+          }
+        ],
+        "good_fcs_frames_by_phy_mode": {
+          "1": 73,
+          "0": 36,
+          "2": 18
+        },
+        "transfers": 128,
+        "transfer_limit_reached": true
+      },
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

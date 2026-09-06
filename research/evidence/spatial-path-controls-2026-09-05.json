@@ -1,0 +1,171 @@
+{
+  "tool": "spatial_path_controls",
+  "runs": [
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "channel": 36,
+      "cleanup_reload_alive": true,
+      "date_utc": "2026-09-05T08:46:50.896948+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "gap_s": 0.05,
+      "per_phase": 6,
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 30
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "spe0_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe1",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe0_middle",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe24_duplicate",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe0_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": [
+            {
+              "count": 30,
+              "fields": {
+                "ack_error_bits": 0,
+                "format": 0,
+                "pid": 3,
+                "rate": 75,
+                "tx_power_raw": 44
+              }
+            }
+          ]
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 205,
+            "frames_seen": 202
+          },
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "spe0_before",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe1",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe0_middle",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe24_duplicate",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "spe0_after",
+              "phy": [],
+              "rate_code": 75,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": []
+        }
+      ],
+      "spatial_codes": [
+        0,
+        1,
+        0,
+        24,
+        0
+      ],
+      "submitted": 30,
+      "suite": "spatial",
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7961",
+      "unique_run_payload": true
+    },
+    {
+      "tool": "mt7925_fixed_rate_table_control",
+      "date_utc": "2026-09-05T08:47:41.827533+00:00",
+      "request_bytes": 20,
+      "event": {
+        "eid": 1,
+        "sequence": 13,
+        "body_bytes": 32,
+        "status": 3221225473
+      },
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_fixed_rate_table_control",
+      "date_utc": "2026-09-05T08:48:04.903427+00:00",
+      "gi_ltf": [
+        1,
+        1
+      ],
+      "request_bytes": 20,
+      "event": {
+        "eid": 1,
+        "sequence": 13,
+        "body_bytes": 32,
+        "status": 3221225473
+      },
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

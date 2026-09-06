@@ -1,0 +1,262 @@
+{
+  "tool": "mt7925_beamforming_read_controls",
+  "runs": [
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:26:36.804575+00:00",
+      "tag": 5,
+      "profile": 0,
+      "bfer": 0,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 72,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 68,
+          "tlv_tag": 5,
+          "tlv_bytes": 64,
+          "recognized_profile_reply": true,
+          "payload_bytes": 56,
+          "payload_nonzero_bytes": 1,
+          "payload_distinct_bytes": 2,
+          "payload_sha256": "2421ef3ffcf280fa51fb9234fb94423b1d1eabbdde08380971ead80426235b77",
+          "bfer_raw": 0
+        }
+      ],
+      "transfers": 1,
+      "request_sequence": 13,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:27:06.624700+00:00",
+      "tag": 7,
+      "profile": 0,
+      "bfer": 0,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 16,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 280,
+          "tlv_tag": 7,
+          "tlv_bytes": 276,
+          "recognized_profile_reply": true,
+          "payload_bytes": 268,
+          "payload_nonzero_bytes": 28,
+          "payload_distinct_bytes": 20,
+          "payload_sha256": "1016f81fbdf38745bb42c489b50492c14c8abd85c0908d1cc613052c95ac22be",
+          "subcarrier_raw": 0
+        }
+      ],
+      "transfers": 1,
+      "request_sequence": 13,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:27:11.422070+00:00",
+      "tag": 5,
+      "profile": 0,
+      "bfer": 1,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 72,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 68,
+          "tlv_tag": 5,
+          "tlv_bytes": 64,
+          "recognized_profile_reply": true,
+          "payload_bytes": 56,
+          "payload_nonzero_bytes": 4,
+          "payload_distinct_bytes": 5,
+          "payload_sha256": "b6085a1d63f69cb76840e9035f87dee39f66f455c6533c84b9fde4139d2bf446",
+          "bfer_raw": 1
+        }
+      ],
+      "transfers": 1,
+      "request_sequence": 13,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:27:16.233143+00:00",
+      "tag": 7,
+      "profile": 0,
+      "bfer": 1,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 16,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 280,
+          "tlv_tag": 7,
+          "tlv_bytes": 276,
+          "recognized_profile_reply": true,
+          "payload_bytes": 268,
+          "payload_nonzero_bytes": 4,
+          "payload_distinct_bytes": 5,
+          "payload_sha256": "2103390eeb48609d6b8a8edd88534a69a351e0fe4d7e3c848b7fccd2a24963a2",
+          "subcarrier_raw": 0
+        }
+      ],
+      "transfers": 1,
+      "request_sequence": 13,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:29:19.206674+00:00",
+      "tag": 5,
+      "profile": 0,
+      "bfer": 0,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 72,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 68,
+          "tlv_tag": 5,
+          "tlv_bytes": 64,
+          "recognized_profile_reply": true,
+          "payload_bytes": 56,
+          "payload_nonzero_bytes": 1,
+          "payload_distinct_bytes": 2,
+          "payload_sha256": "2421ef3ffcf280fa51fb9234fb94423b1d1eabbdde08380971ead80426235b77",
+          "bfer_raw": 0,
+          "candidate_profile_fields": {
+            "profile_id_raw": 0,
+            "explicit_bf_raw": 1,
+            "bandwidth_code_raw": 0,
+            "mode_code_raw": 0,
+            "mu_raw": 0,
+            "nrow_raw": 0,
+            "ncol_raw": 0,
+            "invalid_profile_bit": false,
+            "snr_sts_bytes_raw": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "transfers": 1,
+      "request_sequence": 13,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:29:24.008616+00:00",
+      "tag": 5,
+      "profile": 0,
+      "bfer": 1,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 72,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 68,
+          "tlv_tag": 5,
+          "tlv_bytes": 64,
+          "recognized_profile_reply": true,
+          "payload_bytes": 56,
+          "payload_nonzero_bytes": 4,
+          "payload_distinct_bytes": 5,
+          "payload_sha256": "b6085a1d63f69cb76840e9035f87dee39f66f455c6533c84b9fde4139d2bf446",
+          "bfer_raw": 1,
+          "candidate_profile_fields": {
+            "profile_id_raw": 0,
+            "explicit_bf_raw": 0,
+            "bandwidth_code_raw": 0,
+            "mode_code_raw": 0,
+            "mu_raw": 0,
+            "nrow_raw": 0,
+            "ncol_raw": 0,
+            "invalid_profile_bit": true,
+            "snr_sts_bytes_raw": [
+              234,
+              42,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "transfers": 1,
+      "request_sequence": 13,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "beamforming_read_probe",
+      "date_utc": "2026-09-05T08:29:28.808936+00:00",
+      "tag": 7,
+      "profile": 0,
+      "bfer": 0,
+      "band": 0,
+      "subcarrier": 0,
+      "uni_option": 6,
+      "request_bytes": 16,
+      "events": [
+        {
+          "eid": 51,
+          "sequence": 0,
+          "sequence_matches": false,
+          "body_bytes": 280,
+          "tlv_tag": 7,
+          "tlv_bytes": 276,
+          "recognized_profile_reply": true,
+          "payload_bytes": 268,
+          "payload_nonzero_bytes": 27,
+          "payload_distinct_bytes": 18,
+          "payload_sha256": "9e6bd601fcc071aac53d8789acbc2dc14816b0a3bb764f5e92c92b2f717f05df",
+          "subcarrier_raw": 0
+        }
+      ],
+      "transfers": 1,
+      "request_sequence": 13,
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

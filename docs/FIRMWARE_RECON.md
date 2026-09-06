@@ -67,9 +67,10 @@ Consequences that shape everything downstream:
 - Both images end with a `NON_DL` region at load address 0 that is never sent to the chip.
   It is packed, and it is not firmware in any executable sense.
 
-So the string-reading route works on the MT7921 and cannot work on the MT7925. Any result
-recovered by reading MT7921 firmware has to be re-established on the MT7925 some other way,
-or scoped to the MT7921 alone.
+The on-disk string-reading route works on MT7921, not the encrypted MT7925 container.
+**2026-09-05 update:** bounded [loaded MT7925 code reads](MT7925_LOADED_FIRMWARE.md)
+now work over USB and decode as RV32 with custom Andes-style instructions. MT7961
+findings still require independent MT7925 verification; its ISA and addresses differ.
 
 Roadmap context: [ROADMAP.md](../ROADMAP.md). Chip-generic results land in
 [TESTING.md](TESTING.md); disproven ideas land in [NEGATIVE_RESULTS.md](../NEGATIVE_RESULTS.md).
@@ -82,36 +83,50 @@ strings come from `wifi/core/wificore/rlm/rdm_phy.c`, alongside `rlm_phy.c`, `cn
 and a `hal_cal_flow.c` reached through a build path naming the project
 `wifi_mobile_ram_ccn16`.
 
-**The code regions are Tensilica Xtensa LX**, 32-bit little-endian, with Code Density, the
-Windowed ABI, and vendor TIE extensions. Verified here by decoding the entry point: region 0
-begins `46 00 09`, which as a little-endian 24-bit word is `0x090046` -- `op0 = 6`, `n = 0`,
-`imm18 = 9217`, so `j PC + 4 + 9217` = `j 0x00917405`, an ordinary unconditional jump.
-
-A first signature sweep wrongly concluded no ISA matched, because it scanned on 2-byte
-alignment. Xtensa instructions are 2 or 3 bytes and **byte**-aligned, so an aligned scan
-cannot see them; the density figures it produced were meaningless for every candidate.
+**Correction, 2026-09-05: the inspected MT7961 code is Andes NDS32**, with
+little-endian data and big-endian 16/32-bit instructions. Our earlier Xtensa
+identification was wrong: one plausible three-byte decode was not ISA evidence.
+Stock Ghidra 12.1.3 `NDS32:LE:32:default` decodes startup as `sethi a0,0x915`,
+`ori a0,a0,0xb34`, `jr5 a0`, transferring to 0x00915b34. Independently located
+spectrum, IPI and MIB handlers decode into compact, coherent control flow with
+matching NDS32 prologues/returns. The Xtensa interpretation instead produces
+implausible register operations and sprawling false function bodies.
+See [the reproducible correction](NDS32_RECON.md), including remaining EX9 limits.
 
 Direct string cross-referencing does not work: of 874 words in r1 pointing inside r1's own
 declared address range, only 8 land on a string start. Recovering call sites will not be as
 simple as following pointers.
 
-Disassembly proper is not attempted here. Roughly a quarter of instructions use undocumented
-MediaTek TIE encodings that stock Ghidra, Capstone and LLVM mis-decode, so it needs the
-vendor-specific processor definition described in
-[RELATED_WORK.md](../RELATED_WORK.md#mediatek-connac2-re).
+The frequent compressed instructions are NDS32 `ex9.it` table references, not
+established proprietary Xtensa TIE operations. Their instruction table and the
+global-pointer value must be resolved before treating decompilation as complete.
+Earlier instruction/function counts from the Xtensa import are not valid evidence.
 
 ## What the dispatch tables say, without disassembling anything
 
+**Later2026-09-05 correction:** [the scanner reversed record words](COMMAND_TABLES.md).
+The tables use CID-then-handler; the old interpretation paired each handler with
+the next row's ID. The scanner is fixed, including its skipped-final-record bug.
+Old static assignments and hit/absence counts below are historical, not a reliable
+map or proof of missing capability. Independently measured live results remain valid.
+
+The earlier intermediate correction was: the numeric-tag comparisons below are historical
+hypotheses, not established wire-command mappings. NDS32/GP cross-checks show
+tag 0xa3 names RDD control and tag 0x3a names MU control, contrary to their
+same-numbered wire EXT enums. A missing numeric tag is not proof that a wire
+command lacks a handler. See [NDS32_RECON](NDS32_RECON.md). Independently measured
+accepted/refused/silent hardware outcomes remain valid.
+
 Command dispatch tables are plain data in the rodata region, so which commands a firmware
-implements can be read straight out of the image. A slot is `{u32 handler, u32 cid}`, and
+may expose can be explored in the image. A slot is `{u32 cid, u32 handler}`, and
 `scripts/fw_triage.py --command-map` scans every region for that shape at 4-byte alignment,
 accepting a slot only when the handler points into an address range the image itself declares
 as code.
 
-The evidence is asymmetric and the asymmetry decides how to read the output. A hit is weak:
+Both directions are limited. A hit is weak:
 a code-shaped address can sit beside a small integer by chance, and `CHANNEL_SWITCH` -- a
-command this driver uses successfully on hardware -- produces nine. Zero hits across every
-region is the stronger claim.
+command this driver uses successfully on hardware -- produced nine in the old scan.
+Zero hits only means no matching candidate pair; it does not establish absence.
 
 Measured on the MT7921 image, 2026-09-03:
 
@@ -124,7 +139,8 @@ Measured on the MT7921 image, 2026-09-03:
 - `RX_AIRTIME_CTRL` (0x4a) is present, which is how per-station airtime accounting is armed
   on the AP parts. Not yet investigated.
 
-The MT7925 image's regions are encrypted, so none of this can be repeated there.
+The MT7925 container regions are encrypted. Subsequent loaded-code reads open a
+separate inspection route; these particular dispatch claims are not verified there.
 
 Cross-checks against the independent analysis cited in RELATED_WORK.md, both read from the
 image here rather than taken on trust: the region map agrees byte-for-byte on every offset,
@@ -451,8 +467,8 @@ behavioral map:
 | 11 | PHY receive attempts / MDRDY count | high |
 | 12 | CCK receive duration, microseconds | high |
 | 13 | OFDM-family receive duration, microseconds | high |
-| 17 | broader busy time; exact CCA/NAV/TX composition unsettled | medium |
-| **19** | **primary-channel CCA busy time, microseconds** | **medium-high** |
+| 17 | primary CCA, source/ROM-named on2026-09-05 | high for mapping, unit/source qualification retained |
+| **19** | **CCA+NAV+TX, source/ROM-named on2026-09-05** | **high for mapping, unit/source qualification retained** |
 | 20 | primary ED-active time; overlaps valid Wi-Fi | high |
 
 On three quiet 6 GHz comparisons, offset 19 was within 0.019-0.138 percentage points of the
@@ -460,6 +476,10 @@ MT7921's identified `P_CCA_TIME`. Rotating the primary through 36/40/44/48 while
 80 MHz block fixed moved offsets 17/19/20 with the primary, so none is a whole-block measure.
 Offset 18 matches wall time only at 20 MHz and is not a generic clock. The complete dated
 evidence, negative interpretations and runnable tools are in [MT7925_MIB.md](MT7925_MIB.md).
+The original17/19 behavioral names are superseded by the explicit UNI enum and
+firmware map. [Subchannel/NAV measurements](SUBCHANNEL_MEASUREMENTS.md) now add
+separate NAV time, per-lane ED and width-gated secondary CCA; inactive-width
+fields can resemble wall time and must not be interpreted as100% occupancy.
 
 ## Capability map
 
@@ -579,7 +599,7 @@ The four instruments built here compose into a loop that takes an hour and needs
 disassembly. It is written down because every lead below runs through the same steps.
 
 1. **Is it in the image?** `scripts/fw_triage.py --command-map` scans the rodata dispatch
-   tables. Zero hits across every region is a real absence; a hit only makes it a candidate.
+   tables. Zero hits only means no matching pair; a hit only makes it a candidate.
 2. **Does the firmware admit to it?** Send it and check for the refusal:
    16 bytes, echoed ext_cid, `0xfe`. `scripts/mcu_stats.py` recognises this. Calibrate against
    a control that works (`THERMAL_CTRL` 0x2c returns a temperature) so a broken send is not
@@ -623,8 +643,9 @@ is the cheapest evidence that something is there; none has been sent to hardware
    20, but controlled valid Wi-Fi traffic makes it rise too. The MT7996-style `NON_WIFI_TIME`
    offset 27 remains zero on this firmware; an enable or different numbering may exist.
 
-Out of reach for now: anything needing the MT7925's dispatch tables, and anything needing
-real disassembly of the Xtensa code regions.
+Subsequent work resolved [MT7961 NDS32/EX9 and runtime GP](NDS32_RECON.md) and
+established [readable MT7925 loaded code](MT7925_LOADED_FIRMWARE.md). Its dispatch
+tables and custom compressed ISA still need independent mapping.
 
 ## Scope boundaries
 

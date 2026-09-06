@@ -1,0 +1,23 @@
+{
+  "experiment": "fixed CSI receive-gate callback and static debug argument",
+  "windows": [
+    {
+      "purpose": "ROM callback",
+      "base": "0x82b4cc",
+      "length": 128,
+      "sha256": "d6eab46d4c40cd237e1c795a1cc3c559e678f52706d1d4273f9bac424c5836e0"
+    },
+    {
+      "purpose": "static debug argument",
+      "base": "0x22857f4",
+      "length": 128,
+      "sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca"
+    }
+  ],
+  "field_pair_word_address": "0x0084bdf4",
+  "field_pair_word": "0x1c1c1d1d",
+  "callback_slot": "0x008293b8",
+  "callback_pointer": "0x82b4cc",
+  "alive_after": true,
+  "cleanup_reload_alive": true
+}

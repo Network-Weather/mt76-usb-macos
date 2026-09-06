@@ -8,6 +8,13 @@ records 554 offline tests, live checks on both dongles, and the explicit limits.
 
 ## C parity sprint (R30)
 
+Current exploration priority: new firmware/chip measurement and transmit surfaces,
+with [autonomous continuation findings and next leads](docs/OVERNIGHT_EXPLORATION.md)
+tracked in draft PR #31. Keep committing/pushing; do not merge without direction.
+This takes priority over further acquisition infrastructure. [PHY transmit findings](docs/PHY_TRANSMIT.md)
+record bounded experiments and remaining leads. Continuous acquisition remains on
+its pushed branch; no two-hour soak was started.
+
 Reference: Python driver and research tooling on `main` at `6081908`. The chipset
 primitives below are implemented, tested, and pushed in incremental commits.
 Existing CLI behavior and passive defaults are preserved. Generic analysis is
@@ -154,7 +161,7 @@ published in `docs/TESTING.md` are wrong until step 4 replaces them.
 - [ ] **R1 remainder.** Requested-versus-actual channel per step and a `not_tested` status in
   `scripts/hardware_smoke.py`.
 - [x] **R11 CCA/MIB.** MCU paths now expose primary CCA on both chips: identified MT7921 EXT
-  offset 11 and behaviorally identified MT7925 UNI offset 19, with reproducible probes and dated
+  offset11 and source/ROM-identified MT7925 UNI offset17 (offset19 is CCA+NAV+TX), with reproducible probes and dated
   evidence.
 - [ ] **R12 noise floor.** The available paths remain zero or idle; continue the documented IPI
   and PHY investigation without presenting RSSI as SNR.

@@ -1,0 +1,172 @@
+{
+  "runs": [
+    {
+      "tool": "rxv_report_probe",
+      "date_utc": "2026-09-05T11:32:16.487535+00:00",
+      "chip": "mt7925",
+      "channel": 1,
+      "both_endpoints": true,
+      "rows": [
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 32,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 43,
+            "elapsed_seconds": 1.0050276250112802,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 43,
+              "good_fcs_frames": 43
+            },
+            "endpoint_transfers": {
+              "84": 43
+            },
+            "frame_group_masks": {
+              "23": 43
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": true,
+          "reply": {
+            "body_bytes": 32,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 43,
+            "elapsed_seconds": 1.001561125041917,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 43,
+              "good_fcs_frames": 43
+            },
+            "endpoint_transfers": {
+              "84": 43
+            },
+            "frame_group_masks": {
+              "23": 43
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 32,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 43,
+            "elapsed_seconds": 1.007642458891496,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 43,
+              "good_fcs_frames": 43
+            },
+            "endpoint_transfers": {
+              "84": 43
+            },
+            "frame_group_masks": {
+              "23": 43
+            },
+            "non_frame_sizes": []
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_off": {
+        "body_bytes": 32,
+        "command_result_status": 0
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "rxv_report_probe",
+      "date_utc": "2026-09-05T11:32:20.254397+00:00",
+      "chip": "mt7961",
+      "channel": 1,
+      "both_endpoints": true,
+      "rows": [
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 42,
+            "elapsed_seconds": 1.0064914589747787,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 42,
+              "good_fcs_frames": 42
+            },
+            "endpoint_transfers": {
+              "84": 42
+            },
+            "frame_group_masks": {
+              "7": 42
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": true,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 45,
+            "elapsed_seconds": 1.0002708330284804,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 45,
+              "good_fcs_frames": 45
+            },
+            "endpoint_transfers": {
+              "84": 45
+            },
+            "frame_group_masks": {
+              "7": 45
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 46,
+            "elapsed_seconds": 1.0160995828919113,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 46,
+              "good_fcs_frames": 46
+            },
+            "endpoint_transfers": {
+              "84": 46
+            },
+            "frame_group_masks": {
+              "7": 46
+            },
+            "non_frame_sizes": []
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_off": {
+        "body_bytes": 16,
+        "command_result_status": 0
+      },
+      "cleanup_reload_alive": true
+    }
+  ]
+}

@@ -1,0 +1,974 @@
+{
+  "tool": "mt7925_csi_code_state_controls",
+  "code": {
+    "tool": "mt7925_declared_r3_code_read",
+    "date_utc": "2026-09-05T08:58:08.068476+00:00",
+    "address": "0xe0026c00",
+    "bytes": 594896,
+    "sha256": "a4fbdb6a78bb1e8847947f22f4310005e67b21e81f3b3e1eeff9d63e58a3e2cd",
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "crosschecks": [
+    {
+      "address": "0xe007b588",
+      "bytes": 512,
+      "sha256": "172d52247968706e72cb605cfe25280d1287be7e0d4a8259ab51a1388440cc68",
+      "matches_earlier_window": true
+    },
+    {
+      "address": "0xe0057ea4",
+      "bytes": 2048,
+      "sha256": "8064e24f3e512ce7794aa564b2c1a2fadf5cbc64322d3488c04d492a682bb796",
+      "matches_earlier_window": true
+    }
+  ],
+  "static_string_search": {
+    "tool": "mt7925_target_static_csi_strings",
+    "date_utc": "2026-09-05T08:56:37.873760+00:00",
+    "address": "0x2212800",
+    "bytes": 114688,
+    "sha256": "8a7061ab4dec617edf8e492d56c6691d29aaba2dca6b2c57f400565533c8cec5",
+    "ascii_strings": 867,
+    "csi_hits": [
+      {
+        "address": "0x221794c",
+        "text": "whCsiLoadMemory"
+      },
+      {
+        "address": "0x2219dc0",
+        "text": "pfUniCmdBitmapConfig"
+      },
+      {
+        "address": "0x221a328",
+        "text": "wsysCfgChipUniCmd"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "live_slots": {
+    "tool": "mt7925_csi_field_callback_slots",
+    "slots": {
+      "0x8294c4": "0x84581e",
+      "0x8294c8": "0x84583e",
+      "0x2210428": "0x82a21e",
+      "0x2215558": "0xe003d466",
+      "0x221555c": "0xe003d49a",
+      "0x2215560": "0xe003d4c4",
+      "0x2215564": "0xe003d4ec",
+      "0x2215568": "0xe003d4fa"
+    },
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "state_runs": [
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "chains": 2,
+      "state_snapshots": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:08:26.143137+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 90,
+          "elapsed_s": 1.001,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 2,
+          "transfers": 75,
+          "elapsed_s": 1.006,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 82,
+          "elapsed_s": 1.019,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 68,
+          "elapsed_s": 1.019,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "control_before": [
+        {
+          "address": "0x2239760",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "address": "0x223976e",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "control_after_cleanup": [
+        {
+          "address": "0x2239760",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "address": "0x223976e",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 1,
+      "chains": 1,
+      "state_snapshots": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:08:33.761278+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 133,
+          "elapsed_s": 1.009,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 2,
+          "transfers": 96,
+          "elapsed_s": 1.019,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 72,
+          "elapsed_s": 1.019,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 70,
+          "elapsed_s": 1.019,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "control_after": [
+            {
+              "address": "0x2239760",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "address": "0x223976e",
+              "mode_raw": 0,
+              "band_raw": 0,
+              "max_chain_raw": 0,
+              "chain_config_flag_raw": 0,
+              "enable_raw": 0,
+              "frame_config_mask_raw": 0,
+              "frame_selection_raw": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "auxiliary_raw": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "control_before": [
+        {
+          "address": "0x2239760",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "address": "0x223976e",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "control_after_cleanup": [
+        {
+          "address": "0x2239760",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "address": "0x223976e",
+          "mode_raw": 0,
+          "band_raw": 0,
+          "max_chain_raw": 0,
+          "chain_config_flag_raw": 0,
+          "enable_raw": 0,
+          "frame_config_mask_raw": 0,
+          "frame_selection_raw": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "auxiliary_raw": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "cpu_read_control": {
+    "tool": "mt7925_csi_cpu_vs_usb_state",
+    "date_utc": "2026-09-05T09:10:59.458672+00:00",
+    "phases": [
+      {
+        "name": "normal_before",
+        "reads": [
+          {
+            "address": "0x7c0600f0",
+            "usb_value": "0x3",
+            "eid": 6,
+            "sequence": 13,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 12,
+            "echoed_address": "0x7c0600f0",
+            "reported_value": "0x3",
+            "cpu_value": "0x3"
+          },
+          {
+            "address": "0x2239760",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 14,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x2239764",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 15,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x223976c",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 1,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x2239770",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 2,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          }
+        ]
+      },
+      {
+        "name": "after_chain2_start",
+        "reads": [
+          {
+            "address": "0x7c0600f0",
+            "usb_value": "0x3",
+            "eid": 6,
+            "sequence": 5,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 12,
+            "echoed_address": "0x7c0600f0",
+            "reported_value": "0x3",
+            "cpu_value": "0x3"
+          },
+          {
+            "address": "0x2239760",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 6,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x2239764",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 7,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x223976c",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 8,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x2239770",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 9,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          }
+        ]
+      },
+      {
+        "name": "after_stop",
+        "reads": [
+          {
+            "address": "0x7c0600f0",
+            "usb_value": "0x3",
+            "eid": 6,
+            "sequence": 11,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 12,
+            "echoed_address": "0x7c0600f0",
+            "reported_value": "0x3",
+            "cpu_value": "0x3"
+          },
+          {
+            "address": "0x2239760",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 12,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x2239764",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 13,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x223976c",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 14,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          },
+          {
+            "address": "0x2239770",
+            "usb_value": "0x0",
+            "eid": 6,
+            "sequence": 15,
+            "body_bytes": 1492,
+            "usb_transfer_bytes": 1548,
+            "declared_bytes": 1536,
+            "tlv_tag": 0,
+            "tlv_bytes": 0,
+            "echoed_address": "0x0"
+          }
+        ]
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  }
+}

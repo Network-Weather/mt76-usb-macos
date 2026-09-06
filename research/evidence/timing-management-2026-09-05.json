@@ -1,0 +1,1235 @@
+{
+  "scope": "One-bit normal/timing-management/normal descriptor control; ordinary probe frames, not a full timing protocol",
+  "trials": [
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "both_endpoints": true,
+      "channel": 6,
+      "cleanup_reload_alive": true,
+      "configured_center": 6,
+      "configured_width_mhz": 20,
+      "date_utc": "2026-09-05T17:03:27.728790+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "frame_bytes_without_fcs": 65,
+      "gap_s": 0.05,
+      "host_submissions": [
+        {
+          "call_seconds": 0.00016166712157428265,
+          "sequence": 0,
+          "start_seconds": 0.005817290861159563
+        },
+        {
+          "call_seconds": 0.00014683394692838192,
+          "sequence": 1,
+          "start_seconds": 0.06078516598790884
+        },
+        {
+          "call_seconds": 0.0002027079463005066,
+          "sequence": 2,
+          "start_seconds": 0.11257787491194904
+        },
+        {
+          "call_seconds": 0.00018212501890957355,
+          "sequence": 3,
+          "start_seconds": 0.16469912487082183
+        },
+        {
+          "call_seconds": 0.00026716687716543674,
+          "sequence": 4,
+          "start_seconds": 0.3712819579523057
+        },
+        {
+          "call_seconds": 0.0001436250749975443,
+          "sequence": 5,
+          "start_seconds": 0.42553008277900517
+        },
+        {
+          "call_seconds": 0.0001942911185324192,
+          "sequence": 6,
+          "start_seconds": 0.47876187483780086
+        },
+        {
+          "call_seconds": 0.0007895000744611025,
+          "sequence": 7,
+          "start_seconds": 0.5338892498984933
+        },
+        {
+          "call_seconds": 0.00023870891891419888,
+          "sequence": 8,
+          "start_seconds": 0.7462816659826785
+        },
+        {
+          "call_seconds": 0.00022287503816187382,
+          "sequence": 9,
+          "start_seconds": 0.7978556249290705
+        },
+        {
+          "call_seconds": 0.0005377079360187054,
+          "sequence": 10,
+          "start_seconds": 0.8529388329479843
+        },
+        {
+          "call_seconds": 0.0001460830681025982,
+          "sequence": 11,
+          "start_seconds": 0.9044284578412771
+        }
+      ],
+      "per_phase": 4,
+      "phase_gap_seconds": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "phase_tx_width_mhz": [
+        20,
+        20,
+        20
+      ],
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 176,
+            "frames_seen": 176,
+            "own_nonce_usb_records": 12
+          },
+          "own_rx_timing": [
+            {
+              "received_host_seconds": 0.31021491694264114,
+              "rxd_timestamp_raw": 3702737,
+              "sequence": 0
+            },
+            {
+              "received_host_seconds": 0.36536087514832616,
+              "rxd_timestamp_raw": 3757646,
+              "sequence": 1
+            },
+            {
+              "received_host_seconds": 0.4168657080736011,
+              "rxd_timestamp_raw": 3809479,
+              "sequence": 2
+            },
+            {
+              "received_host_seconds": 0.4690859999973327,
+              "rxd_timestamp_raw": 3861620,
+              "sequence": 3
+            },
+            {
+              "received_host_seconds": 0.6768585829995573,
+              "rxd_timestamp_raw": 4068214,
+              "sequence": 4
+            },
+            {
+              "received_host_seconds": 0.7298367500770837,
+              "rxd_timestamp_raw": 4122494,
+              "sequence": 5
+            },
+            {
+              "received_host_seconds": 0.7839273330755532,
+              "rxd_timestamp_raw": 4175654,
+              "sequence": 6
+            },
+            {
+              "received_host_seconds": 0.8384007499553263,
+              "rxd_timestamp_raw": 4230859,
+              "sequence": 7
+            },
+            {
+              "received_host_seconds": 1.0586015000008047,
+              "rxd_timestamp_raw": 4448790,
+              "sequence": 8
+            },
+            {
+              "received_host_seconds": 1.111460458021611,
+              "rxd_timestamp_raw": 4501158,
+              "sequence": 9
+            },
+            {
+              "received_host_seconds": 1.1586359171196818,
+              "rxd_timestamp_raw": 4551190,
+              "sequence": 10
+            },
+            {
+              "received_host_seconds": 1.212553417077288,
+              "rxd_timestamp_raw": 4603595,
+              "sequence": 11
+            }
+          ],
+          "phases": [
+            {
+              "median_rssi_raw": -99,
+              "name": "normal_before",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "nsts": 2,
+                    "rate_mbps": 13,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -99,
+              "name": "timing_management",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "nsts": 2,
+                    "rate_mbps": 13,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -100,
+              "name": "normal_after",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "nsts": 2,
+                    "rate_mbps": 13,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 4
+            }
+          ],
+          "tx_status": [],
+          "usb_packet_type_sizes": [
+            {
+              "count": 12,
+              "declared_bytes": 121,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 35,
+              "declared_bytes": 346,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 68,
+              "declared_bytes": 350,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 30,
+              "declared_bytes": 475,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 31,
+              "declared_bytes": 496,
+              "endpoint": "84",
+              "packet_type": 2
+            }
+          ]
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 96,
+            "frames_seen": 84
+          },
+          "own_rx_timing": [],
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "normal_before",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "timing_management",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "normal_after",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": [
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 40748,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 0,
+                "status_received_host_seconds": 0.3105583330616355,
+                "timestamp_raw": 1176412,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 42464,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 1,
+                "status_received_host_seconds": 0.36384970787912607,
+                "timestamp_raw": 1231321,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 44083,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 2,
+                "status_received_host_seconds": 0.4171593328937888,
+                "timestamp_raw": 1283154,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 45713,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 3,
+                "status_received_host_seconds": 0.4678064580075443,
+                "timestamp_raw": 1335295,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 52169,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 4,
+                "status_received_host_seconds": 0.6744509579148144,
+                "timestamp_raw": 1541889,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 53863,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 5,
+                "status_received_host_seconds": 0.7302575830835849,
+                "timestamp_raw": 1596170,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 6
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 55527,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 6,
+                "status_received_host_seconds": 0.7830949169583619,
+                "timestamp_raw": 1649329,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 57252,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 7,
+                "status_received_host_seconds": 0.8373739998787642,
+                "timestamp_raw": 1704535,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 63889,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 8,
+                "status_received_host_seconds": 1.0586292499210685,
+                "timestamp_raw": 1922466,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 176
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 65499,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 9,
+                "status_received_host_seconds": 1.1101711250375956,
+                "timestamp_raw": 1974834,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 203
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 67223,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 10,
+                "status_received_host_seconds": 1.1591789999511093,
+                "timestamp_raw": 2024866,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 42
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 68829,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 11,
+                "status_received_host_seconds": 1.2112952498719096,
+                "timestamp_raw": 2077271,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 74
+              }
+            }
+          ],
+          "usb_packet_type_sizes": [
+            {
+              "count": 12,
+              "declared_bytes": 64,
+              "endpoint": "84",
+              "packet_type": 0
+            },
+            {
+              "count": 17,
+              "declared_bytes": 474,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 31,
+              "declared_bytes": 478,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 18,
+              "declared_bytes": 603,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 18,
+              "declared_bytes": 624,
+              "endpoint": "84",
+              "packet_type": 2
+            }
+          ]
+        }
+      ],
+      "receiver_g5": false,
+      "requested_management_types": [
+        0,
+        1,
+        0
+      ],
+      "requested_status_formats": null,
+      "spatial_codes": null,
+      "submitted": 12,
+      "suite": "timing-type",
+      "table_gi_ldpc": null,
+      "table_ltf": null,
+      "table_spatial_codes": null,
+      "timing_padding_bytes": 0,
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7925",
+      "tx_timing": true,
+      "unique_run_payload": true
+    },
+    {
+      "alive_after": [
+        true,
+        true
+      ],
+      "both_endpoints": true,
+      "channel": 6,
+      "cleanup_reload_alive": true,
+      "configured_center": 6,
+      "configured_width_mhz": 20,
+      "date_utc": "2026-09-05T17:04:06.436798+00:00",
+      "firmware_sha256": {
+        "mt7921": [
+          "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        ],
+        "mt7925": [
+          "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        ]
+      },
+      "fixed_bw": false,
+      "frame_bytes_without_fcs": 65,
+      "gap_s": 0.05,
+      "host_submissions": [
+        {
+          "call_seconds": 0.0001812500413507223,
+          "sequence": 0,
+          "start_seconds": 0.0020434160251170397
+        },
+        {
+          "call_seconds": 0.0002807078417390585,
+          "sequence": 1,
+          "start_seconds": 0.05375808314420283
+        },
+        {
+          "call_seconds": 0.00027029216289520264,
+          "sequence": 2,
+          "start_seconds": 0.10514570795930922
+        },
+        {
+          "call_seconds": 0.0005772090516984463,
+          "sequence": 3,
+          "start_seconds": 0.1588241660501808
+        },
+        {
+          "call_seconds": 0.00025983317755162716,
+          "sequence": 4,
+          "start_seconds": 0.3736214579548687
+        },
+        {
+          "call_seconds": 0.00016274978406727314,
+          "sequence": 5,
+          "start_seconds": 0.4289683331735432
+        },
+        {
+          "call_seconds": 0.0001984580885618925,
+          "sequence": 6,
+          "start_seconds": 0.4822723329998553
+        },
+        {
+          "call_seconds": 0.00022166618146002293,
+          "sequence": 7,
+          "start_seconds": 0.5358038749545813
+        },
+        {
+          "call_seconds": 0.0002622092142701149,
+          "sequence": 8,
+          "start_seconds": 0.7416432909667492
+        },
+        {
+          "call_seconds": 0.00027299998328089714,
+          "sequence": 9,
+          "start_seconds": 0.7953143331687897
+        },
+        {
+          "call_seconds": 0.0005906671285629272,
+          "sequence": 10,
+          "start_seconds": 0.8489256659522653
+        },
+        {
+          "call_seconds": 0.00043325009755790234,
+          "sequence": 11,
+          "start_seconds": 0.9026414160616696
+        }
+      ],
+      "per_phase": 4,
+      "phase_gap_seconds": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "phase_tx_width_mhz": [
+        20,
+        20,
+        20
+      ],
+      "radios": [
+        {
+          "chip": "mt7921",
+          "counts": {
+            "decoded_usb_records": 196,
+            "frames_seen": 196,
+            "own_nonce_usb_records": 12
+          },
+          "own_rx_timing": [
+            {
+              "received_host_seconds": 0.3057999580632895,
+              "rxd_timestamp_raw": 3734982,
+              "sequence": 0
+            },
+            {
+              "received_host_seconds": 0.35763849993236363,
+              "rxd_timestamp_raw": 3786766,
+              "sequence": 1
+            },
+            {
+              "received_host_seconds": 0.41006416687741876,
+              "rxd_timestamp_raw": 3838093,
+              "sequence": 2
+            },
+            {
+              "received_host_seconds": 0.4627759999129921,
+              "rxd_timestamp_raw": 3891820,
+              "sequence": 3
+            },
+            {
+              "received_host_seconds": 0.6809587918687612,
+              "rxd_timestamp_raw": 4107071,
+              "sequence": 4
+            },
+            {
+              "received_host_seconds": 0.7334223750513047,
+              "rxd_timestamp_raw": 4161907,
+              "sequence": 5
+            },
+            {
+              "received_host_seconds": 0.7871932920534164,
+              "rxd_timestamp_raw": 4216366,
+              "sequence": 6
+            },
+            {
+              "received_host_seconds": 0.8394693748559803,
+              "rxd_timestamp_raw": 4268800,
+              "sequence": 7
+            },
+            {
+              "received_host_seconds": 1.0453550000675023,
+              "rxd_timestamp_raw": 4474640,
+              "sequence": 8
+            },
+            {
+              "received_host_seconds": 1.0989274580497295,
+              "rxd_timestamp_raw": 4528292,
+              "sequence": 9
+            },
+            {
+              "received_host_seconds": 1.1529658329673111,
+              "rxd_timestamp_raw": 4582039,
+              "sequence": 10
+            },
+            {
+              "received_host_seconds": 1.2068205419927835,
+              "rxd_timestamp_raw": 4635730,
+              "sequence": 11
+            }
+          ],
+          "phases": [
+            {
+              "median_rssi_raw": -99,
+              "name": "normal_before",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "nsts": 2,
+                    "rate_mbps": 13,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -99,
+              "name": "timing_management",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "nsts": 2,
+                    "rate_mbps": 13,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 4
+            },
+            {
+              "median_rssi_raw": -99,
+              "name": "normal_after",
+              "phy": [
+                {
+                  "count": 4,
+                  "fields": {
+                    "bw_mhz": 20,
+                    "dcm": false,
+                    "gi": 0,
+                    "ldpc": false,
+                    "mcs": 8,
+                    "mode_name": "HT",
+                    "nss": 2,
+                    "nsts": 2,
+                    "rate_mbps": 13,
+                    "stbc": false
+                  }
+                }
+              ],
+              "rate_code": 1160,
+              "unique_exact_frames": 4
+            }
+          ],
+          "tx_status": [],
+          "usb_packet_type_sizes": [
+            {
+              "count": 12,
+              "declared_bytes": 121,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 6,
+              "declared_bytes": 343,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 34,
+              "declared_bytes": 346,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 69,
+              "declared_bytes": 350,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 32,
+              "declared_bytes": 475,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 35,
+              "declared_bytes": 496,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 8,
+              "declared_bytes": 622,
+              "endpoint": "84",
+              "packet_type": 2
+            }
+          ]
+        },
+        {
+          "chip": "mt7925",
+          "counts": {
+            "decoded_usb_records": 103,
+            "frames_seen": 91
+          },
+          "own_rx_timing": [],
+          "phases": [
+            {
+              "median_rssi_raw": null,
+              "name": "normal_before",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "timing_management",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            },
+            {
+              "median_rssi_raw": null,
+              "name": "normal_after",
+              "phy": [],
+              "rate_code": 1160,
+              "unique_exact_frames": 0
+            }
+          ],
+          "tx_status": [
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 41021,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 0,
+                "status_received_host_seconds": 0.30515958298929036,
+                "timestamp_raw": 1179625,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 42640,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 1,
+                "status_received_host_seconds": 0.35697750002145767,
+                "timestamp_raw": 1231409,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 44244,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 2,
+                "status_received_host_seconds": 0.409696500049904,
+                "timestamp_raw": 1282736,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 45923,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 3,
+                "status_received_host_seconds": 0.46259295800700784,
+                "timestamp_raw": 1336463,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 52636,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 4,
+                "status_received_host_seconds": 0.6803070830646902,
+                "timestamp_raw": 1551715,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 16
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 54362,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 5,
+                "status_received_host_seconds": 0.7330653748940676,
+                "timestamp_raw": 1606551,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 56030,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 6,
+                "status_received_host_seconds": 0.7865540829952806,
+                "timestamp_raw": 1661010,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 38
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 57702,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 7,
+                "status_received_host_seconds": 0.8391657918691635,
+                "timestamp_raw": 1713444,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 64135,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 8,
+                "status_received_host_seconds": 1.0450475830584764,
+                "timestamp_raw": 1919284,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 65812,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 9,
+                "status_received_host_seconds": 1.0985737920273095,
+                "timestamp_raw": 1972936,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 67492,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 10,
+                "status_received_host_seconds": 1.1527318749576807,
+                "timestamp_raw": 2026683,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 3
+              }
+            },
+            {
+              "count": 1,
+              "fields": {
+                "ack_error_bits": 0,
+                "bandwidth_raw": 0,
+                "error_bits_16_22": 0,
+                "format": 0,
+                "format1_words5_7_raw": null,
+                "front_time_raw_format0": 69169,
+                "mpdu_counters_format1_hypothesis": null,
+                "pid": 3,
+                "power_raw": 36,
+                "rate_raw": 1160,
+                "rate_stbc": false,
+                "sequence": 11,
+                "status_received_host_seconds": 1.206016874872148,
+                "timestamp_raw": 2080374,
+                "tx_count_format0": 1,
+                "tx_delay_raw": 4
+              }
+            }
+          ],
+          "usb_packet_type_sizes": [
+            {
+              "count": 12,
+              "declared_bytes": 64,
+              "endpoint": "84",
+              "packet_type": 0
+            },
+            {
+              "count": 19,
+              "declared_bytes": 474,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 34,
+              "declared_bytes": 478,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 19,
+              "declared_bytes": 603,
+              "endpoint": "84",
+              "packet_type": 2
+            },
+            {
+              "count": 19,
+              "declared_bytes": 624,
+              "endpoint": "84",
+              "packet_type": 2
+            }
+          ]
+        }
+      ],
+      "receiver_g5": false,
+      "requested_management_types": [
+        0,
+        1,
+        0
+      ],
+      "requested_status_formats": null,
+      "spatial_codes": null,
+      "submitted": 12,
+      "suite": "timing-type",
+      "table_gi_ldpc": null,
+      "table_ltf": null,
+      "table_spatial_codes": null,
+      "timing_padding_bytes": 0,
+      "tool": "phy_tx_probe",
+      "transmitter": "mt7925",
+      "tx_timing": true,
+      "unique_run_payload": true
+    }
+  ]
+}

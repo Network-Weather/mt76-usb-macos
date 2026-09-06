@@ -1,0 +1,1874 @@
+{
+  "scope": "Three passive histogram/MCU-MIB crosschecks, channels11/36/6, no TX. Source-selected consuming MIB queries only; no direct MIB-counter reads. Timing scales remain hypotheses.",
+  "runs": [
+    {
+      "date_utc": "2026-09-05T19:37:31.820442+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "bank_addresses": {
+        "ordinary_getter": "0x83088600",
+        "timer_getter": "0x83001000",
+        "ordinary_index1": "0x83098600",
+        "timer_index1": "0x83011000"
+      },
+      "channel": 11,
+      "mib_offsets": [
+        11,
+        12,
+        13,
+        17,
+        19,
+        20,
+        52
+      ],
+      "rows": [
+        {
+          "duration_requested": 0.25,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "mib_before": {
+            "values": {
+              "11": 355,
+              "12": 258321,
+              "13": 33254,
+              "17": 420964,
+              "19": 411510,
+              "20": 388191,
+              "52": 0
+            },
+            "opened_s": 1897111.138064375,
+            "midpoint_s": 1897111.1866781665,
+            "closed_s": 1897111.23529175
+          },
+          "enabled_controls": {
+            "0x83082004": 5,
+            "0x83092004": 0
+          },
+          "stopped_controls": {
+            "0x83082004": 0,
+            "0x83092004": 0
+          },
+          "host_enable_stop_seconds": 0.26427587517537177,
+          "mib_after": {
+            "values": {
+              "11": 401,
+              "12": 304813,
+              "13": 34278,
+              "17": 509472,
+              "19": 496765,
+              "20": 466900,
+              "52": 0
+            },
+            "opened_s": 1897111.499591166,
+            "midpoint_s": 1897111.5019302908,
+            "closed_s": 1897111.504267375
+          },
+          "mib_delta": {
+            "11": 46,
+            "12": 46492,
+            "13": 1024,
+            "17": 88508,
+            "19": 85255,
+            "20": 78709,
+            "52": 0
+          },
+          "stopped": {
+            "ordinary_getter": [
+              206,
+              0,
+              0,
+              10,
+              1,
+              0,
+              52,
+              22320,
+              3282,
+              15,
+              0
+            ],
+            "timer_getter": [
+              12,
+              0,
+              0,
+              20,
+              1,
+              0,
+              49,
+              22503,
+              3285,
+              16,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              3,
+              0,
+              0,
+              29,
+              0,
+              491,
+              22025,
+              1605,
+              307,
+              1426,
+              0
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              206,
+              0,
+              0,
+              10,
+              1,
+              0,
+              52,
+              22320,
+              3282,
+              15,
+              0
+            ],
+            "timer_getter": [
+              12,
+              0,
+              0,
+              20,
+              1,
+              0,
+              49,
+              22503,
+              3285,
+              16,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              3,
+              0,
+              0,
+              29,
+              0,
+              491,
+              22025,
+              1605,
+              307,
+              1426,
+              0
+            ]
+          }
+        },
+        {
+          "duration_requested": 1,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "mib_before": {
+            "values": {
+              "11": 428,
+              "12": 328345,
+              "13": 34417,
+              "17": 556856,
+              "19": 546211,
+              "20": 512566,
+              "52": 2792
+            },
+            "opened_s": 1897111.651455041,
+            "midpoint_s": 1897111.6526805414,
+            "closed_s": 1897111.653904875
+          },
+          "enabled_controls": {
+            "0x83082004": 5,
+            "0x83092004": 0
+          },
+          "stopped_controls": {
+            "0x83082004": 0,
+            "0x83092004": 0
+          },
+          "host_enable_stop_seconds": 1.0109248328953981,
+          "mib_after": {
+            "values": {
+              "11": 612,
+              "12": 479334,
+              "13": 38938,
+              "17": 877071,
+              "19": 857855,
+              "20": 806319,
+              "52": 3573
+            },
+            "opened_s": 1897112.664838833,
+            "midpoint_s": 1897112.6711626665,
+            "closed_s": 1897112.677486333
+          },
+          "mib_delta": {
+            "11": 184,
+            "12": 150989,
+            "13": 4521,
+            "17": 320215,
+            "19": 311644,
+            "20": 293753,
+            "52": 781
+          },
+          "stopped": {
+            "ordinary_getter": [
+              1001,
+              0,
+              0,
+              193,
+              5,
+              11,
+              226,
+              88310,
+              9847,
+              414,
+              3
+            ],
+            "timer_getter": [
+              105,
+              0,
+              0,
+              257,
+              6,
+              14,
+              187,
+              88930,
+              9994,
+              509,
+              8
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              69,
+              1,
+              0,
+              280,
+              10,
+              1182,
+              87364,
+              8865,
+              2140,
+              85,
+              14
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              1001,
+              0,
+              0,
+              193,
+              5,
+              11,
+              226,
+              88310,
+              9847,
+              414,
+              3
+            ],
+            "timer_getter": [
+              105,
+              0,
+              0,
+              257,
+              6,
+              14,
+              187,
+              88930,
+              9994,
+              509,
+              8
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              69,
+              1,
+              0,
+              280,
+              10,
+              1182,
+              87364,
+              8865,
+              2140,
+              85,
+              14
+            ]
+          }
+        }
+      ],
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "threshold_labels_raw": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0
+      },
+      "baseline_before": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "baseline_controls": {
+        "0x83082004": 0,
+        "0x83092004": 0
+      },
+      "baseline_after": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T19:37:37.722263+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "bank_addresses": {
+        "ordinary_getter": "0x83088600",
+        "timer_getter": "0x83001000",
+        "ordinary_index1": "0x83098600",
+        "timer_index1": "0x83011000"
+      },
+      "channel": 36,
+      "mib_offsets": [
+        11,
+        12,
+        13,
+        17,
+        19,
+        20,
+        52
+      ],
+      "rows": [
+        {
+          "duration_requested": 0.25,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "mib_before": {
+            "values": {
+              "11": 114,
+              "12": 0,
+              "13": 19869,
+              "17": 28673,
+              "19": 25721,
+              "20": 3962,
+              "52": 2236
+            },
+            "opened_s": 1897117.50216825,
+            "midpoint_s": 1897117.506597958,
+            "closed_s": 1897117.511027291
+          },
+          "enabled_controls": {
+            "0x83082004": 5,
+            "0x83092004": 0
+          },
+          "stopped_controls": {
+            "0x83082004": 0,
+            "0x83092004": 0
+          },
+          "host_enable_stop_seconds": 0.2661991659551859,
+          "mib_after": {
+            "values": {
+              "11": 217,
+              "12": 0,
+              "13": 27386,
+              "17": 39750,
+              "19": 34143,
+              "20": 4312,
+              "52": 2947
+            },
+            "opened_s": 1897117.777233666,
+            "midpoint_s": 1897117.778813416,
+            "closed_s": 1897117.780393041
+          },
+          "mib_delta": {
+            "11": 103,
+            "12": 0,
+            "13": 7517,
+            "17": 11077,
+            "19": 8422,
+            "20": 350,
+            "52": 711
+          },
+          "stopped": {
+            "ordinary_getter": [
+              31736,
+              14,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              31732,
+              17,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              31732,
+              17,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              31736,
+              14,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              31732,
+              17,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              31732,
+              17,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "duration_requested": 1,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "mib_before": {
+            "values": {
+              "11": 233,
+              "12": 0,
+              "13": 30644,
+              "17": 43697,
+              "19": 37707,
+              "20": 4360,
+              "52": 3245
+            },
+            "opened_s": 1897117.92355775,
+            "midpoint_s": 1897117.9246005625,
+            "closed_s": 1897117.925643583
+          },
+          "enabled_controls": {
+            "0x83082004": 5,
+            "0x83092004": 0
+          },
+          "stopped_controls": {
+            "0x83082004": 0,
+            "0x83092004": 0
+          },
+          "host_enable_stop_seconds": 1.0157881670165807,
+          "mib_after": {
+            "values": {
+              "11": 415,
+              "12": 0,
+              "13": 52176,
+              "17": 72044,
+              "19": 62104,
+              "20": 5064,
+              "52": 5972
+            },
+            "opened_s": 1897118.941436416,
+            "midpoint_s": 1897118.9459010828,
+            "closed_s": 1897118.95036625
+          },
+          "mib_delta": {
+            "11": 182,
+            "12": 0,
+            "13": 21532,
+            "17": 28347,
+            "19": 24397,
+            "20": 704,
+            "52": 2727
+          },
+          "stopped": {
+            "ordinary_getter": [
+              122759,
+              121,
+              30,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              122756,
+              119,
+              33,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              122854,
+              20,
+              17,
+              17,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              122759,
+              121,
+              30,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              122756,
+              119,
+              33,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              122854,
+              20,
+              17,
+              17,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "threshold_labels_raw": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0
+      },
+      "baseline_before": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "baseline_controls": {
+        "0x83082004": 0,
+        "0x83092004": 0
+      },
+      "baseline_after": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T19:37:44.185677+00:00",
+      "firmware_sha256": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ],
+      "bank_addresses": {
+        "ordinary_getter": "0x83088600",
+        "timer_getter": "0x83001000",
+        "ordinary_index1": "0x83098600",
+        "timer_index1": "0x83011000"
+      },
+      "channel": 6,
+      "mib_offsets": [
+        11,
+        12,
+        13,
+        17,
+        19,
+        20,
+        52
+      ],
+      "rows": [
+        {
+          "duration_requested": 0.25,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "mib_before": {
+            "values": {
+              "11": 52,
+              "12": 139784,
+              "13": 0,
+              "17": 315635,
+              "19": 311370,
+              "20": 311373,
+              "52": 0
+            },
+            "opened_s": 1897123.726789833,
+            "midpoint_s": 1897123.728915458,
+            "closed_s": 1897123.731041541
+          },
+          "enabled_controls": {
+            "0x83082004": 5,
+            "0x83092004": 0
+          },
+          "stopped_controls": {
+            "0x83082004": 0,
+            "0x83092004": 0
+          },
+          "host_enable_stop_seconds": 0.26056145899929106,
+          "mib_after": {
+            "values": {
+              "11": 62,
+              "12": 167906,
+              "13": 0,
+              "17": 394274,
+              "19": 388669,
+              "20": 388669,
+              "52": 0
+            },
+            "opened_s": 1897123.991615833,
+            "midpoint_s": 1897123.992676604,
+            "closed_s": 1897123.993737791
+          },
+          "mib_delta": {
+            "11": 10,
+            "12": 28122,
+            "13": 0,
+            "17": 78639,
+            "19": 77299,
+            "20": 77296,
+            "52": 0
+          },
+          "stopped": {
+            "ordinary_getter": [
+              165,
+              1,
+              3,
+              20,
+              3,
+              2,
+              30,
+              25790,
+              2179,
+              0,
+              10
+            ],
+            "timer_getter": [
+              6,
+              2,
+              2,
+              19,
+              4,
+              3,
+              39,
+              25944,
+              2166,
+              3,
+              15
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              7,
+              7,
+              1,
+              34,
+              0,
+              17,
+              26944,
+              1149,
+              9,
+              20,
+              15
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              165,
+              1,
+              3,
+              20,
+              3,
+              2,
+              30,
+              25790,
+              2179,
+              0,
+              10
+            ],
+            "timer_getter": [
+              6,
+              2,
+              2,
+              19,
+              4,
+              3,
+              39,
+              25944,
+              2166,
+              3,
+              15
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              7,
+              7,
+              1,
+              34,
+              0,
+              17,
+              26944,
+              1149,
+              9,
+              20,
+              15
+            ]
+          }
+        },
+        {
+          "duration_requested": 1,
+          "after_reset": {
+            "ordinary_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_getter": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "mib_before": {
+            "values": {
+              "11": 72,
+              "12": 193779,
+              "13": 0,
+              "17": 449513,
+              "19": 443480,
+              "20": 443481,
+              "52": 0
+            },
+            "opened_s": 1897124.13486025,
+            "midpoint_s": 1897124.135899479,
+            "closed_s": 1897124.136938958
+          },
+          "enabled_controls": {
+            "0x83082004": 5,
+            "0x83092004": 0
+          },
+          "stopped_controls": {
+            "0x83082004": 0,
+            "0x83092004": 0
+          },
+          "host_enable_stop_seconds": 1.016440625069663,
+          "mib_after": {
+            "values": {
+              "11": 127,
+              "12": 348258,
+              "13": 0,
+              "17": 772955,
+              "19": 764464,
+              "20": 763920,
+              "52": 622
+            },
+            "opened_s": 1897125.153386416,
+            "midpoint_s": 1897125.156076208,
+            "closed_s": 1897125.158766333
+          },
+          "mib_delta": {
+            "11": 55,
+            "12": 154479,
+            "13": 0,
+            "17": 323442,
+            "19": 320984,
+            "20": 320439,
+            "52": 622
+          },
+          "stopped": {
+            "ordinary_getter": [
+              622,
+              4,
+              18,
+              63,
+              8,
+              11,
+              215,
+              98101,
+              5750,
+              6,
+              26
+            ],
+            "timer_getter": [
+              33,
+              5,
+              21,
+              76,
+              9,
+              13,
+              140,
+              98569,
+              5848,
+              9,
+              101
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              54,
+              5,
+              8,
+              87,
+              1,
+              9,
+              101285,
+              2527,
+              728,
+              13,
+              107
+            ]
+          },
+          "stopped_repeat": {
+            "ordinary_getter": [
+              622,
+              4,
+              18,
+              63,
+              8,
+              11,
+              215,
+              98101,
+              5750,
+              6,
+              26
+            ],
+            "timer_getter": [
+              33,
+              5,
+              21,
+              76,
+              9,
+              13,
+              140,
+              98569,
+              5848,
+              9,
+              101
+            ],
+            "ordinary_index1": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "timer_index1": [
+              54,
+              5,
+              8,
+              87,
+              1,
+              9,
+              101285,
+              2527,
+              728,
+              13,
+              107
+            ]
+          }
+        }
+      ],
+      "code": [
+        {
+          "name": "initializer",
+          "address": "0xe00532bc",
+          "bytes": 116,
+          "sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "expected_sha256": "e4158899f546948c3e8ffcbd2dc37ceefb7c7fc498835f238390977b62cdb2e0",
+          "matches": true
+        },
+        {
+          "name": "dispatcher",
+          "address": "0xe0053784",
+          "bytes": 24,
+          "sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "expected_sha256": "d56cec41febf572897e78e110db687cb3cac5ebfd43b73455b9296c414acd646",
+          "matches": true
+        },
+        {
+          "name": "callback_and_event",
+          "address": "0xe0054118",
+          "bytes": 204,
+          "sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "expected_sha256": "805c85b8e38fbd80868a56c69ca5323be047ff706bf11832a468d66e780dbcb0",
+          "matches": true
+        },
+        {
+          "name": "histogram_helpers",
+          "address": "0xe005ae5c",
+          "bytes": 256,
+          "sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "expected_sha256": "27d5f4a173e83944ecb15b9e51c4d023e7404ad075f370490d233085fa0d7d83",
+          "matches": true
+        },
+        {
+          "name": "instruction_table",
+          "address": "0x9171e8",
+          "bytes": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "expected_sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "matches": true
+        }
+      ],
+      "threshold_labels_raw": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "original_masked_bits": {
+        "0x83082004": 0,
+        "0x83088230": 0
+      },
+      "baseline_before": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "baseline_controls": {
+        "0x83082004": 0,
+        "0x83092004": 0
+      },
+      "baseline_after": {
+        "ordinary_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_getter": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ordinary_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_index1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alive_after": true,
+      "restored": {
+        "0x83082004": true,
+        "0x83088230": true
+      },
+      "cleanup_reload_alive": true
+    }
+  ]
+}

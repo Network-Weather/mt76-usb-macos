@@ -73,6 +73,52 @@ def test_connac3_status_uses_four_word_header_twelve_word_records():
     assert tx_status(raw[:-1]) == []
 
 
+@pytest.mark.parametrize("format_id", [0, 1, 2, 3])
+def test_optional_raw_timing_fields_masked_and_format_guarded(format_id):
+    words = [
+        format_id << 23 | 0x480,
+        7 << 20,
+        0x1234ABCD,
+        3 << 24 | 0x80,
+        0xFFFFFFFF,
+        0xE2345678,
+    ] + [0] * 6
+    raw = struct.pack("<4I", 64, 0, 0, 0) + struct.pack("<12I", *words)
+    plain = tx_status(raw)[0]
+    result = tx_status(raw, include_timing=True)[0]
+    assert "timestamp_raw" not in plain
+    assert result["bandwidth_raw"] == 0
+    assert result["timestamp_raw"] == 0xFFFFFFFF
+    assert result["tx_delay_raw"] == 0xABCD
+    assert result["rate_stbc"]
+    assert result["front_time_raw_format0"] == (0x345678 if format_id == 0 else None)
+    assert result["tx_count_format0"] == (17 if format_id == 0 else None)
+    assert (result["mpdu_counters_format1_hypothesis"] is not None) == (format_id == 1)
+    assert "private" not in repr(tx_status(raw + b"private USB tail", include_timing=True))
+
+
+@pytest.mark.parametrize("bandwidth", [0, 1, 2, 3, 7])
+def test_optional_tx_status_bandwidth_uses_only_high_three_bits(bandwidth):
+    words = [(bandwidth << 29) | 0x488, 0, 0, 3 << 24, 0, 1 << 25] + [0] * 6
+    raw = struct.pack("<4I", 64, 0, 0, 0) + struct.pack("<12I", *words)
+    assert tx_status(raw, include_timing=True)[0]["bandwidth_raw"] == bandwidth
+    assert "bandwidth_raw" not in tx_status(raw)[0]
+
+
+def test_format1_mpdu_counts_and_bytes_are_not_format0_timing():
+    words = [1 << 23, 0, 0, 3 << 24, 0, 0x01000045, 0x0200008A, 0x030000CF] + [0] * 4
+    raw = struct.pack("<4I", 64, 0, 0, 0) + struct.pack("<12I", *words)
+    row = tx_status(raw, include_timing=True)[0]
+    assert row["front_time_raw_format0"] is None
+    assert row["tx_count_format0"] is None
+    assert row["mpdu_counters_format1_hypothesis"] == {
+        "tx": {"count": 1, "bytes": 69},
+        "fail": {"count": 2, "bytes": 138},
+        "retry": {"count": 3, "bytes": 207},
+    }
+    assert row["format1_words5_7_raw"] == ["0x1000045", "0x200008a", "0x30000cf"]
+
+
 def test_capture_power_phase_assignment_and_exact_bytes(monkeypatch):
     samples = []
     for seq, signal in ((0, -50), (12, -54), (36, -58), (60, -50)):

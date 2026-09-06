@@ -1,0 +1,40 @@
+{
+  "scope": "No CSI activation; only two traced PHY fields sampled during normal passive reception",
+  "evidence": {
+    "tool": "normal_csi_signal_fields",
+    "date_utc": "2026-09-05T11:53:26.771134+00:00",
+    "runs": [
+      {
+        "channel": 36,
+        "elapsed_seconds": 1.3225782078225166,
+        "samples": 40,
+        "snr_bits31_25_counts": {
+          "0": 40
+        },
+        "type_bit22_counts": {
+          "0": 40
+        },
+        "received": {
+          "good_fcs": 40
+        },
+        "alive_after": true
+      },
+      {
+        "channel": 1,
+        "elapsed_seconds": 1.3130050408653915,
+        "samples": 40,
+        "snr_bits31_25_counts": {
+          "0": 40
+        },
+        "type_bit22_counts": {
+          "0": 40
+        },
+        "received": {
+          "good_fcs": 40
+        },
+        "alive_after": true
+      }
+    ],
+    "cleanup_reload_alive": true
+  }
+}

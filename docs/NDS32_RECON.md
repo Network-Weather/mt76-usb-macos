@@ -1,0 +1,107 @@
+# MT7961 instruction-set correction — 2026-09-05
+
+The earlier Xtensa identification in this project was wrong. The tested plaintext
+MT7961 RAM image decodes coherently as **Andes NDS32**, little-endian data with
+big-endian mixed 16/32-bit instructions. This correction affects disassembly and
+its derived claims, not the independently tested USB protocols or table bytes.
+
+## Independent checks
+
+Ghidra 12.1.3, built-in `NDS32:LE:32:default`, raw region imports at their declared
+addresses; no vendor processor extension. Firmware SHA-256:
+`b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9`.
+
+| Site | NDS32 result |
+|---|---|
+| Region 0 entry 0x00915000 | Three instructions construct 0x00915b34 and jump there |
+| Startup 0x00915b34 | Stack prologue, direct initialization calls and indirect calls |
+| Table tag 0x56 handler 0x009214c8 | Null check, matching push/pop, bounded body through 0x00921533 |
+| Table tag 0xa3 handler 0x00961422 | Reads command bytes, checks index < 2, dispatches subcommands |
+| Table tag 0x5a handler 0xe02767c0 | Null/length checks, parameter accesses, matching push/pop/return |
+
+Handler addresses were found from coherent little-endian dispatch tables before
+this ISA test. Agreement across startup, separate functions and two code regions
+is much stronger evidence than the earlier isolated Xtensa instruction match.
+The old Xtensa import generated extensive implausible branches and register use;
+its function/instruction counts and claimed vendor-TIE proportion are invalid.
+
+This also agrees with Wegemer and Mantovani's original
+[Nullcon presentation](https://nullcon.net/wp-content/uploads/2026/04/Unlock-hidden-Superpowers-in-MediaTek-WiFi-Chips.pdf)
+(firmware overview, page 7). Their discussion of global-pointer-based references
+is a useful lead for recovering strings that direct pointer scans missed.
+
+## Reproduction and limits
+
+Import extracted region 0 as raw binary at 0x00915000 and region 3 at 0xe0270000
+with `NDS32:LE:32:default`. Use a new project; do not overwrite the earlier import.
+Disassemble the addresses above. The ten entry bytes are
+`46 00 09 15 58 00 0b 34 dd 00`; decode as `sethi`, `ori`, `jr5`, not a
+three-byte Xtensa jump. The firmware container itself is not a flat code image.
+
+Frequent `ex9.it` instructions refer to an instruction table. Stock Ghidra's
+installed NDS32 implementation represents these as opaque p-code operations.
+Do not infer complete call graphs, register liveness or decompiler correctness
+until that table is resolved. Global-pointer-relative strings also need the real
+GP value. See the upstream
+[EX9 implementation discussion](https://github.com/NationalSecurityAgency/ghidra/discussions/6612).
+No firmware modification, device writes or blob redistribution is involved.
+
+## EX9 table and GP-relative references recovered
+
+Startup routine 0x00915074 explicitly constructs **0x0096c7bc** and writes ITB.
+That table is present in region 0. The independent, read-only
+[`Nds32Inspect.java`](../research/ghidra/Nds32Inspect.java) expands its entries for
+inspection and exposes operands omitted by stock Ghidra's `addi.gp` renderer.
+EX9 J/JAL targets use address concatenation, not normal PC-relative addition;
+the helper marks the corrected target separately. It does not inject decompiler
+semantics or claim to repair the complete Ghidra analysis.
+
+An initial **file-layout GP surrogate 0x02002bb4** resolves six independent `addi.gp` references to
+matching format strings/function names, including `rdmCmdRddCtrl` and
+`muExtCmdMuTxRxCtrl`. This is not the runtime GP: startup relocates those bytes.
+It yields direct ICAP-mode-guard and histogram string references:
+
+- ICAP-mode guard reference: 0x00933de2.
+- `rdmSetIpiHist` reference: 0x00961634.
+- `rdmGetIpiHist` reference: 0x00961696.
+
+**Table-order correction:** [later live-table controls](COMMAND_TABLES.md) establish
+CID-then-handler records. The earlier scanner paired each handler with the next
+row's ID. Correctly aligned, CE0x8f and EXT0x3a both point to`rdmCmdRddCtrl` at
+0x00961422, while EXT0x40 points to MU control.
+
+The earlier intermediate warning was: tag 0xa3 at 0x00961422 resolves to
+`rdmCmdRddCtrl`, while tag 0x3a at 0x0095c90e resolves to `muExtCmdMuTxRxCtrl`.
+Those were **mispaired adjacent IDs**, not established internal dispatch tags.
+Measured wire command responses remain valid; old static mappings/counts do not.
+Do not use the original reversed table scan to construct commands.
+
+The inspector also annotates `ifcall9` (0xf800 family, unsigned nine-bit
+displacement scaled by two), using GNU opcode facts. These instructions are
+missing from the installed Ghidra decoder; see the upstream
+[inline-call issue](https://github.com/NationalSecurityAgency/ghidra/issues/8974)
+and [GNU port submission](https://sourceware.org/legacy-ml/binutils/2013-07/msg00066.html).
+The helper is still a bounded linear inspector, not a complete control-flow or
+decompiler repair. It stops at other unknown instructions rather than guessing.
+
+## Runtime relocation resolves the real GP
+
+Startup 0x0091500c copies an overlapping data range backward, moving it **0x44c
+bytes upward**. Its source/destination GP-relative boundaries differ by exactly
+that amount. Consequently the runtime GP is **0x02003000**, not the file-layout
+surrogate 0x02002bb4. This remains a startup/memory inference, not a CPU-register
+read, but live hardware verifies it:
+
+- Reads at 0x02018c98 and 0x0201e0d8 match original region-1 bytes at addresses
+  lower by 0x44c, not the unrelocated file offsets.
+- The internal table start moves from 0x02018c98 to 0x020190e4. Its first two
+  handler values read back correctly at 0x020190e4 and 0x020190ec.
+- Field-access callback slots computed from the corrected GP return code pointers;
+  the earlier surrogate-based slots returned all ones.
+- All five extracted regions were re-compared byte-for-byte with the pinned RAM
+  container and matched. This is runtime relocation, not a stale firmware file.
+
+Only the demonstrated copied range should receive this address adjustment; do
+not add 0x44c to every firmware address. Code and the EX9 table retain their
+declared locations. Use the file surrogate for string searches in the original
+region file, and the runtime GP for live memory addresses.

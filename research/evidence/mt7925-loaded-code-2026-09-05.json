@@ -1,0 +1,108 @@
+{
+  "tool": "mt7925_loaded_code_controls",
+  "runs": [
+    {
+      "tool": "mt7925_loaded_entry_read",
+      "windows": [
+        {
+          "base": "0x90d000",
+          "length": 256,
+          "sha256": "dba5416070800168e618fc3b3258dd2b13332587a97fa779f2864d0afafcb26f",
+          "matches_container": false,
+          "distinct_bytes": 94
+        }
+      ],
+      "firmware_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+      "header": {
+        "chip_id": 24,
+        "eco_code": 0,
+        "n_region": 5,
+        "format_ver": 2,
+        "format_flag": 1,
+        "fw_ver": "____000000",
+        "build_date": "20260813113118",
+        "crc": 1441732085,
+        "regions": [
+          {
+            "addr": 9490432,
+            "len": 77200,
+            "feature_set": 33,
+            "type": 0,
+            "decomp_crc": 0,
+            "decomp_len": 0
+          },
+          {
+            "addr": 35727360,
+            "len": 382928,
+            "feature_set": 1,
+            "type": 0,
+            "decomp_crc": 0,
+            "decomp_len": 0
+          },
+          {
+            "addr": 4210688,
+            "len": 32720,
+            "feature_set": 1,
+            "type": 0,
+            "decomp_crc": 0,
+            "decomp_len": 0
+          },
+          {
+            "addr": 3758255104,
+            "len": 594896,
+            "feature_set": 1,
+            "type": 0,
+            "decomp_crc": 0,
+            "decomp_len": 0
+          },
+          {
+            "addr": 0,
+            "len": 303936,
+            "feature_set": 64,
+            "type": 2,
+            "decomp_crc": 0,
+            "decomp_len": 0
+          }
+        ]
+      },
+      "chip_id": "0x7925",
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_loaded_startup_read",
+      "windows": [
+        {
+          "label": "entry_repeat",
+          "base": "0x90d000",
+          "length": 256,
+          "sha256": "dba5416070800168e618fc3b3258dd2b13332587a97fa779f2864d0afafcb26f",
+          "distinct_bytes": 94
+        },
+        {
+          "label": "entry_jump_target",
+          "base": "0x90d770",
+          "length": 256,
+          "sha256": "1f53f5f9e08b3e39df3b21ab3be74ab3dc6142cbe7b7505c39bafdaf7f90d629",
+          "distinct_bytes": 107
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_loaded_instruction_table_read",
+      "windows": [
+        {
+          "label": "instruction_table",
+          "base": "0x9171e8",
+          "length": 4096,
+          "sha256": "d24962d144ffa01a10c0a19b5192e4afa1fccdccc179dfbe126274b2a68cb153",
+          "distinct_bytes": 191
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

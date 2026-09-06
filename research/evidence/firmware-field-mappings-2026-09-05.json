@@ -1,0 +1,341 @@
+{
+  "firmware_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+  "date": "2026-09-05",
+  "method": "Bounded USB ROM reads; NDS32 instruction inspection; no register writes, ROM bytes or ambient captures in evidence",
+  "domain_pointers": {
+    "table": "0x2014f04",
+    "domains": [
+      {
+        "domain": "0x26",
+        "slot": "0x2014f9c",
+        "descriptor": "0x201392c",
+        "descriptor_words": [
+          "0x830350",
+          "0xe3c77a5e",
+          "0x83093e",
+          "0xf33a2270"
+        ]
+      },
+      {
+        "domain": "0x5a",
+        "slot": "0x201506c",
+        "descriptor": "0x20139cc",
+        "descriptor_words": [
+          "0x832174",
+          "0xf03d7326",
+          "0x834fd6",
+          "0x76ba205b"
+        ]
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "resolved": {
+    "fields": [
+      {
+        "key": "0x260000",
+        "table_entry": "0x84cac4",
+        "field_table": "0x84cb80",
+        "register": "0x830af04c",
+        "field_index": 0,
+        "field_count": 4,
+        "low_bit": 5,
+        "high_bit": 5,
+        "mask": "0x20"
+      },
+      {
+        "key": "0x260001",
+        "table_entry": "0x84cac4",
+        "field_table": "0x84cb80",
+        "register": "0x830af04c",
+        "field_index": 1,
+        "field_count": 4,
+        "low_bit": 6,
+        "high_bit": 8,
+        "mask": "0x1c0"
+      },
+      {
+        "key": "0x260002",
+        "table_entry": "0x84cac4",
+        "field_table": "0x84cb80",
+        "register": "0x830af04c",
+        "field_index": 2,
+        "field_count": 4,
+        "low_bit": 0,
+        "high_bit": 3,
+        "mask": "0xf"
+      },
+      {
+        "key": "0x260080",
+        "table_entry": "0x84cae4",
+        "field_table": "0x84cb70",
+        "register": "0x830af0a8",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x2600a0",
+        "table_entry": "0x84caec",
+        "field_table": "0x84cb6c",
+        "register": "0x830af0ac",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x2600c0",
+        "table_entry": "0x84caf4",
+        "field_table": "0x84cb68",
+        "register": "0x830af0b0",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x2600e0",
+        "table_entry": "0x84cafc",
+        "field_table": "0x84cb64",
+        "register": "0x830af0b4",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x260100",
+        "table_entry": "0x84cb04",
+        "field_table": "0x84cb60",
+        "register": "0x830af0b8",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x260120",
+        "table_entry": "0x84cb0c",
+        "field_table": "0x84cb5c",
+        "register": "0x830af0bc",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x260140",
+        "table_entry": "0x84cb14",
+        "field_table": "0x84cb58",
+        "register": "0x830af0c0",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x260160",
+        "table_entry": "0x84cb1c",
+        "field_table": "0x84cb54",
+        "register": "0x830af0c4",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x260180",
+        "table_entry": "0x84cb24",
+        "field_table": "0x84cb50",
+        "register": "0x830af0c8",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x2601a0",
+        "table_entry": "0x84cb2c",
+        "field_table": "0x84cb4c",
+        "register": "0x830af0cc",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x2601c0",
+        "table_entry": "0x84cb34",
+        "field_table": "0x84cb48",
+        "register": "0x830af0d0",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x2601e0",
+        "table_entry": "0x84cb3c",
+        "field_table": "0x84cb44",
+        "register": "0x830af0d4",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 22,
+        "mask": "0x7fffff"
+      },
+      {
+        "key": "0x5a0013",
+        "table_entry": "0x84d550",
+        "field_table": "0x84d650",
+        "register": "0x80021090",
+        "field_index": 19,
+        "field_count": 21,
+        "low_bit": 1,
+        "high_bit": 1,
+        "mask": "0x2"
+      },
+      {
+        "key": "0x5a0005",
+        "table_entry": "0x84d550",
+        "field_table": "0x84d650",
+        "register": "0x80021090",
+        "field_index": 5,
+        "field_count": 21,
+        "low_bit": 20,
+        "high_bit": 22,
+        "mask": "0x700000"
+      },
+      {
+        "key": "0x5a0040",
+        "table_entry": "0x84d560",
+        "field_table": "0x84d648",
+        "register": "0x80021098",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "mask": "0xffffffff"
+      },
+      {
+        "key": "0x5a0060",
+        "table_entry": "0x84d568",
+        "field_table": "0x84d644",
+        "register": "0x8002109c",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "mask": "0xffffffff"
+      },
+      {
+        "key": "0x5a00a0",
+        "table_entry": "0x84d578",
+        "field_table": "0x84d63c",
+        "register": "0x800210a4",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "mask": "0xffffffff"
+      },
+      {
+        "key": "0x5a0008",
+        "table_entry": "0x84d550",
+        "field_table": "0x84d650",
+        "register": "0x80021090",
+        "field_index": 8,
+        "field_count": 21,
+        "low_bit": 17,
+        "high_bit": 17,
+        "mask": "0x20000"
+      },
+      {
+        "key": "0x5a0120",
+        "table_entry": "0x84d598",
+        "field_table": "0x84d620",
+        "register": "0x800210b4",
+        "field_index": 0,
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "mask": "0xffffffff"
+      }
+    ],
+    "ipi_mapper_tail": {
+      "base": "0x830450",
+      "length": 64,
+      "sha256": "af5c5115b4d406e2ba9840862371e115b642b94c62012dc71da5300c01179f98"
+    },
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "rom_windows": [
+    {
+      "tool": "field_accessor_rom_window",
+      "base": 8547184,
+      "length": 384,
+      "sha256": "9c7ee710ea669b4f2c58234f5cec688f9e1d2c8885405b841f9ff1d576d8bf70",
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "resolver_callback": {
+        "slot": "0x02013884",
+        "target": "0x826860"
+      },
+      "base": "0x826a80",
+      "length": 240,
+      "sha256": "d4b026b9e5382918d5c66feee6a8455dd67d7009a89a00964a4a1f7136bde736",
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "base": "0x826860",
+      "length": 256,
+      "sha256": "47876985b8cb73248c351efa027226ccd35bea252ad0326ad80ba8e222872727",
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "icap_rom_window",
+      "base": 8594136,
+      "length": 256,
+      "sha256": "b109e321be83821b4bd7fe0bb4a5c183250b3ce727ed1f7468324f38dfa006ae",
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ],
+  "mapper_windows": {
+    "windows": [
+      {
+        "name": "ipi",
+        "base": "0x830350",
+        "length": 256,
+        "sha256": "5c0144609749cb125c2549efc4be26e3d856e3832b63323987320cf4e6064542"
+      },
+      {
+        "name": "icap",
+        "base": "0x832174",
+        "length": 256,
+        "sha256": "6d8691b0764f6235ee53c510dcbb20598ed6d5fb063dd1ab70bf13d11c947da0"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  }
+}

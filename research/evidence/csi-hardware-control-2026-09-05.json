@@ -1,0 +1,376 @@
+{
+  "tool": "mt7925_csi_hardware_control",
+  "runs": [
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "chains": 2,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:17:50.370240+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 134,
+          "elapsed_s": 1.013,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 2,
+          "transfers": 79,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x0",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 69,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0xe0000000",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 314,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x40000000",
+              "enable_bit29": false
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 1,
+      "chains": 1,
+      "state_snapshots": false,
+      "hardware_snapshots": true,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T09:17:57.972987+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 68,
+          "elapsed_s": 1.014,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x0",
+              "enable_bit29": false
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 2,
+          "transfers": 66,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x0",
+              "enable_bit29": false
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 123,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0xe0000000",
+              "enable_bit29": true
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 73,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "hardware_after": [
+            {
+              "band": 0,
+              "address": "0x820e5060",
+              "value": "0x20000000",
+              "enable_bit29": true
+            },
+            {
+              "band": 1,
+              "address": "0x820f5060",
+              "value": "0x40000000",
+              "enable_bit29": false
+            }
+          ]
+        }
+      ],
+      "hardware_before": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true,
+      "hardware_after_cleanup": [
+        {
+          "band": 0,
+          "address": "0x820e5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        },
+        {
+          "band": 1,
+          "address": "0x820f5060",
+          "value": "0x20000000",
+          "enable_bit29": true
+        }
+      ]
+    }
+  ],
+  "rom_reads": [
+    {
+      "tool": "mt7925_csi_register_callback_code",
+      "windows": [
+        {
+          "base": "0x845800",
+          "length": 256,
+          "sha256": "6112d851e6b0663d9f4229bc42a36ff201fcba072e8955979c15f5558287e065"
+        },
+        {
+          "base": "0x82a200",
+          "length": 512,
+          "sha256": "d57ae6ffcdc6a7b0b0aa5b19972c2397ee7c0ac576a6fc87ef3c696f2e77e762"
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "mt7925_csi_register_callback_code",
+      "windows": [
+        {
+          "base": "0x82a080",
+          "length": 384,
+          "sha256": "37895a9e4ca076fa0ae2a2185a7128d1a1ffdd093405529342e795af43057e2e"
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

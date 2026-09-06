@@ -1,0 +1,419 @@
+{
+  "tool": "station_csi_controls",
+  "initial_no_ack_transfer_cap": 64,
+  "followup_transfer_cap": 512,
+  "runs": [
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "date_utc": "2026-09-05T08:50:34.557934+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 64,
+          "events": []
+        },
+        {
+          "name": "start",
+          "request_sequence": 2,
+          "transfers": 64,
+          "events": []
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 3,
+          "transfers": 64,
+          "events": []
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7961",
+      "date_utc": "2026-09-05T08:50:40.958240+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 4,
+          "transfers": 1,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 0,
+                "eid": 253,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 5,
+          "transfers": 1,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 0,
+                "eid": 253,
+                "sequence": 5
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 6,
+          "transfers": 3,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 0,
+                "eid": 253,
+                "sequence": 6
+              },
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "uni_option": 6,
+      "date_utc": "2026-09-05T08:51:41.267556+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 68,
+          "elapsed_s": 1.007,
+          "transfer_limit_reached": false,
+          "events": []
+        },
+        {
+          "name": "start",
+          "request_sequence": 2,
+          "transfers": 66,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": []
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 3,
+          "transfers": 58,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": []
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "uni_option": 7,
+      "date_utc": "2026-09-05T08:51:47.853823+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 62,
+          "elapsed_s": 1.001,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 2,
+          "transfers": 60,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 3,
+          "transfers": 61,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 1,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T08:53:10.437451+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 69,
+          "elapsed_s": 1.002,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 2,
+          "transfers": 63,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 3,
+          "transfers": 73,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 1,
+      "chains": 1,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T08:53:52.907542+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 60,
+          "elapsed_s": 1.019,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 2,
+          "transfers": 65,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 67,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 65,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "csi_control_probe",
+      "chip": "mt7925",
+      "band": 0,
+      "chains": 2,
+      "uni_option": 7,
+      "date_utc": "2026-09-05T08:54:00.495333+00:00",
+      "phases": [
+        {
+          "name": "stop_before",
+          "request_sequence": 1,
+          "transfers": 67,
+          "elapsed_s": 1.004,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 1
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "chains",
+          "request_sequence": 2,
+          "transfers": 64,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 2
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "start",
+          "request_sequence": 3,
+          "transfers": 62,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 3
+              },
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "stop_after",
+          "request_sequence": 4,
+          "transfers": 75,
+          "elapsed_s": 1.003,
+          "transfer_limit_reached": false,
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 8,
+                "command_result_status": 0,
+                "eid": 1,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

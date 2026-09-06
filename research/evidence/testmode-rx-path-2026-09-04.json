@@ -1,0 +1,867 @@
+{
+  "runs": [
+    {
+      "tool": "testmode_receiver_probe",
+      "date_utc": "2026-09-05T04:54:24.573521+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 36,
+      "control_submitted": 12,
+      "rx_path": 3,
+      "engineering_bw": true,
+      "phases": [
+        {
+          "name": "quiet_before",
+          "power_code": null,
+          "elapsed_s": 0.605,
+          "stats": {
+            "34": 42,
+            "35": 15,
+            "46": 4294944677,
+            "50": 2712884048
+          }
+        },
+        {
+          "name": "tx_0",
+          "power_code": 0,
+          "elapsed_s": 0.6374,
+          "stats": {
+            "34": 91,
+            "35": 20,
+            "46": 4294942881,
+            "50": 2645774160
+          }
+        },
+        {
+          "name": "tx_minus16",
+          "power_code": -16,
+          "elapsed_s": 0.6364,
+          "stats": {
+            "34": 137,
+            "35": 23,
+            "46": 4294943138,
+            "50": 2645774160
+          }
+        },
+        {
+          "name": "tx_0_return",
+          "power_code": 0,
+          "elapsed_s": 0.6407,
+          "stats": {
+            "34": 180,
+            "35": 136,
+            "46": 4294944422,
+            "50": 2679329104
+          }
+        },
+        {
+          "name": "quiet_after",
+          "power_code": null,
+          "elapsed_s": 0.6017,
+          "stats": {
+            "34": 213,
+            "35": 142,
+            "46": 4294944422,
+            "50": 2679329104
+          }
+        }
+      ],
+      "monitor_control": {
+        "chip": "mt7921",
+        "counts": {},
+        "phases": [
+          {
+            "name": "ofdm_before",
+            "rate_code": 75,
+            "unique_exact_frames": 12,
+            "phy": [
+              {
+                "fields": {
+                  "bw_mhz": 20,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 11,
+                  "mode_name": "OFDM",
+                  "nss": 1,
+                  "rate_mbps": 6.0
+                },
+                "count": 12
+              }
+            ]
+          },
+          {
+            "name": "ht0",
+            "rate_code": 128,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ht7",
+            "rate_code": 135,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "vht0",
+            "rate_code": 256,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "he0",
+            "rate_code": 512,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ofdm_after",
+            "rate_code": 75,
+            "unique_exact_frames": 0,
+            "phy": []
+          }
+        ],
+        "tx_status": []
+      },
+      "setting_requests": [
+        [
+          1,
+          0
+        ],
+        [
+          104,
+          0
+        ],
+        [
+          106,
+          196608
+        ],
+        [
+          18,
+          5180000
+        ],
+        [
+          15,
+          0
+        ],
+        [
+          71,
+          0
+        ],
+        [
+          72,
+          0
+        ],
+        [
+          73,
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "setting_queries": {
+        "15": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 1,
+          "echoed_selector": 15,
+          "value_u32": 0
+        },
+        "18": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 18,
+          "value_u32": 0
+        },
+        "71": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 1,
+          "echoed_selector": 71,
+          "value_u32": 0
+        },
+        "72": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 72,
+          "value_u32": 0
+        },
+        "73": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 1,
+          "echoed_selector": 73,
+          "value_u32": 0
+        },
+        "104": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 104,
+          "value_u32": 0
+        },
+        "106": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 106,
+          "value_u32": 0
+        },
+        "32": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 1,
+          "echoed_selector": 32,
+          "value_u32": 0
+        }
+      },
+      "initial": {
+        "34": 7,
+        "35": 1,
+        "46": 4294942882,
+        "50": 2595441744
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "chip": "mt7921",
+          "alive": true
+        },
+        {
+          "chip": "mt7925",
+          "alive": true
+        }
+      ]
+    },
+    {
+      "tool": "testmode_receiver_probe",
+      "date_utc": "2026-09-05T04:55:03.619594+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 36,
+      "control_submitted": 12,
+      "rx_path": 3,
+      "engineering_bw": false,
+      "phases": [
+        {
+          "name": "quiet_before",
+          "power_code": null,
+          "elapsed_s": 0.6013,
+          "stats": {
+            "34": 44,
+            "35": 137,
+            "46": 4294943139,
+            "50": 2662551632
+          }
+        },
+        {
+          "name": "tx_0",
+          "power_code": 0,
+          "elapsed_s": 0.631,
+          "stats": {
+            "34": 97,
+            "35": 154,
+            "46": 4294943139,
+            "50": 2679329104
+          }
+        },
+        {
+          "name": "tx_minus16",
+          "power_code": -16,
+          "elapsed_s": 0.6331,
+          "stats": {
+            "34": 148,
+            "35": 176,
+            "46": 4294943137,
+            "50": 2645774160
+          }
+        },
+        {
+          "name": "tx_0_return",
+          "power_code": 0,
+          "elapsed_s": 0.6299,
+          "stats": {
+            "34": 184,
+            "35": 177,
+            "46": 4294942881,
+            "50": 2645774160
+          }
+        },
+        {
+          "name": "quiet_after",
+          "power_code": null,
+          "elapsed_s": 0.6046,
+          "stats": {
+            "34": 224,
+            "35": 193,
+            "46": 4294943137,
+            "50": 2662551632
+          }
+        }
+      ],
+      "monitor_control": {
+        "chip": "mt7921",
+        "counts": {},
+        "phases": [
+          {
+            "name": "ofdm_before",
+            "rate_code": 75,
+            "unique_exact_frames": 12,
+            "phy": [
+              {
+                "fields": {
+                  "bw_mhz": 20,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 11,
+                  "mode_name": "OFDM",
+                  "nss": 1,
+                  "rate_mbps": 6.0
+                },
+                "count": 12
+              }
+            ]
+          },
+          {
+            "name": "ht0",
+            "rate_code": 128,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ht7",
+            "rate_code": 135,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "vht0",
+            "rate_code": 256,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "he0",
+            "rate_code": 512,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ofdm_after",
+            "rate_code": 75,
+            "unique_exact_frames": 0,
+            "phy": []
+          }
+        ],
+        "tx_status": []
+      },
+      "setting_requests": [
+        [
+          1,
+          0
+        ],
+        [
+          104,
+          0
+        ],
+        [
+          106,
+          196608
+        ],
+        [
+          18,
+          5180000
+        ],
+        [
+          15,
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "setting_queries": {
+        "15": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 15,
+          "value_u32": 0
+        },
+        "18": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 1,
+          "echoed_selector": 18,
+          "value_u32": 0
+        },
+        "71": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 71,
+          "value_u32": 0
+        },
+        "72": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 72,
+          "value_u32": 0
+        },
+        "73": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 73,
+          "value_u32": 0
+        },
+        "104": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 3,
+          "echoed_selector": 104,
+          "value_u32": 0
+        },
+        "106": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 106,
+          "value_u32": 0
+        },
+        "32": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 32,
+          "value_u32": 0
+        }
+      },
+      "initial": {
+        "34": 8,
+        "35": 11,
+        "46": 4294943394,
+        "50": 2662551632
+      },
+      "stopped_initial": {
+        "34": 225,
+        "35": 193,
+        "46": 4294943138,
+        "50": 2679329104
+      },
+      "stopped_after_dwell": {
+        "34": 225,
+        "35": 193,
+        "46": 4294943138,
+        "50": 2679329104
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "chip": "mt7921",
+          "alive": true
+        },
+        {
+          "chip": "mt7925",
+          "alive": true
+        }
+      ]
+    },
+    {
+      "tool": "testmode_receiver_probe",
+      "date_utc": "2026-09-05T04:55:30.936479+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 36,
+      "control_submitted": 12,
+      "rx_path": null,
+      "engineering_bw": false,
+      "phases": [
+        {
+          "name": "quiet_before",
+          "power_code": null,
+          "elapsed_s": 0.6006,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_0",
+          "power_code": 0,
+          "elapsed_s": 0.6359,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_minus16",
+          "power_code": -16,
+          "elapsed_s": 0.6411,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_0_return",
+          "power_code": 0,
+          "elapsed_s": 0.6426,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "quiet_after",
+          "power_code": null,
+          "elapsed_s": 0.605,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        }
+      ],
+      "monitor_control": {
+        "chip": "mt7921",
+        "counts": {},
+        "phases": [
+          {
+            "name": "ofdm_before",
+            "rate_code": 75,
+            "unique_exact_frames": 12,
+            "phy": [
+              {
+                "fields": {
+                  "bw_mhz": 20,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 11,
+                  "mode_name": "OFDM",
+                  "nss": 1,
+                  "rate_mbps": 6.0
+                },
+                "count": 12
+              }
+            ]
+          },
+          {
+            "name": "ht0",
+            "rate_code": 128,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ht7",
+            "rate_code": 135,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "vht0",
+            "rate_code": 256,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "he0",
+            "rate_code": 512,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ofdm_after",
+            "rate_code": 75,
+            "unique_exact_frames": 0,
+            "phy": []
+          }
+        ],
+        "tx_status": []
+      },
+      "setting_requests": [
+        [
+          1,
+          0
+        ],
+        [
+          18,
+          5180000
+        ],
+        [
+          15,
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "initial": {
+        "34": 0,
+        "35": 0,
+        "46": 146,
+        "50": 2155888704
+      },
+      "stopped_initial": {
+        "34": 0,
+        "35": 0,
+        "46": 146,
+        "50": 2155888704
+      },
+      "stopped_after_dwell": {
+        "34": 0,
+        "35": 0,
+        "46": 146,
+        "50": 2155888704
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "chip": "mt7921",
+          "alive": true
+        },
+        {
+          "chip": "mt7925",
+          "alive": true
+        }
+      ]
+    },
+    {
+      "tool": "testmode_receiver_probe",
+      "date_utc": "2026-09-05T04:57:06.460165+00:00",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 36,
+      "control_submitted": 12,
+      "rx_path": null,
+      "engineering_bw": false,
+      "select_band": true,
+      "phases": [
+        {
+          "name": "quiet_before",
+          "power_code": null,
+          "elapsed_s": 0.6014,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_0",
+          "power_code": 0,
+          "elapsed_s": 0.634,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_minus16",
+          "power_code": -16,
+          "elapsed_s": 0.6316,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "tx_0_return",
+          "power_code": 0,
+          "elapsed_s": 0.6316,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        },
+        {
+          "name": "quiet_after",
+          "power_code": null,
+          "elapsed_s": 0.6009,
+          "stats": {
+            "34": 0,
+            "35": 0,
+            "46": 146,
+            "50": 2155888704
+          }
+        }
+      ],
+      "monitor_control": {
+        "chip": "mt7921",
+        "counts": {},
+        "phases": [
+          {
+            "name": "ofdm_before",
+            "rate_code": 75,
+            "unique_exact_frames": 12,
+            "phy": [
+              {
+                "fields": {
+                  "bw_mhz": 20,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 11,
+                  "mode_name": "OFDM",
+                  "nss": 1,
+                  "rate_mbps": 6.0
+                },
+                "count": 12
+              }
+            ]
+          },
+          {
+            "name": "ht0",
+            "rate_code": 128,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ht7",
+            "rate_code": 135,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "vht0",
+            "rate_code": 256,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "he0",
+            "rate_code": 512,
+            "unique_exact_frames": 0,
+            "phy": []
+          },
+          {
+            "name": "ofdm_after",
+            "rate_code": 75,
+            "unique_exact_frames": 0,
+            "phy": []
+          }
+        ],
+        "tx_status": []
+      },
+      "setting_requests": [
+        [
+          1,
+          0
+        ],
+        [
+          104,
+          0
+        ],
+        [
+          18,
+          5180000
+        ],
+        [
+          15,
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "setting_queries": {
+        "15": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 2,
+          "echoed_selector": 15,
+          "value_u32": 0
+        },
+        "18": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 18,
+          "value_u32": 0
+        },
+        "71": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 1,
+          "echoed_selector": 71,
+          "value_u32": 0
+        },
+        "72": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 1,
+          "echoed_selector": 72,
+          "value_u32": 0
+        },
+        "73": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 73,
+          "value_u32": 0
+        },
+        "104": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 104,
+          "value_u32": 0
+        },
+        "106": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 106,
+          "value_u32": 0
+        },
+        "32": {
+          "reply_bytes": 16,
+          "nonzero_bytes": 5,
+          "echoed_selector": 32,
+          "value_u32": 0
+        }
+      },
+      "initial": {
+        "34": 0,
+        "35": 0,
+        "46": 146,
+        "50": 2155888704
+      },
+      "stopped_initial": {
+        "34": 0,
+        "35": 0,
+        "46": 146,
+        "50": 2155888704
+      },
+      "stopped_after_dwell": {
+        "34": 0,
+        "35": 0,
+        "46": 146,
+        "50": 2155888704
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "chip": "mt7921",
+          "alive": true
+        },
+        {
+          "chip": "mt7925",
+          "alive": true
+        }
+      ]
+    }
+  ]
+}

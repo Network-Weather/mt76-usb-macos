@@ -1,0 +1,619 @@
+{
+  "scope": "Twelve controlled CCK/HT2SS/CCK frames per run; exact good-FCS RX and subsequent non-atomic latched CN/EVM read; no receiver writes or power changes",
+  "runs": [
+    {
+      "tool": "evm_cn_stimulus",
+      "date_utc": "2026-09-05T12:30:44.152877+00:00",
+      "channel": 1,
+      "submitted": 12,
+      "maximum_submissions": 12,
+      "rows": [
+        {
+          "name": "cck_before",
+          "rate_code": 0,
+          "before": {
+            "word": "0x8181ff80",
+            "fields_raw": {
+              "cn_raw_u9": 511,
+              "evm_rx0_raw_u8": 129,
+              "evm_rx1_raw_u8": 129
+            }
+          },
+          "receipts": [
+            {
+              "sequence": 0,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x8181ff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 129,
+                  "evm_rx1_raw_u8": 129
+                }
+              }
+            },
+            {
+              "sequence": 1,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x2322ff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 35,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            },
+            {
+              "sequence": 2,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x2322ff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 35,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            },
+            {
+              "sequence": 3,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x2322ff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 35,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            }
+          ],
+          "normal_by_phy": {
+            "0": 183
+          },
+          "after": {
+            "word": "0x2322ff80",
+            "fields_raw": {
+              "cn_raw_u9": 511,
+              "evm_rx0_raw_u8": 35,
+              "evm_rx1_raw_u8": 34
+            }
+          }
+        },
+        {
+          "name": "ht8_2ss",
+          "rate_code": 1160,
+          "before": {
+            "word": "0x2322ff80",
+            "fields_raw": {
+              "cn_raw_u9": 511,
+              "evm_rx0_raw_u8": 35,
+              "evm_rx1_raw_u8": 34
+            }
+          },
+          "receipts": [
+            {
+              "sequence": 4,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1f190480",
+                "fields_raw": {
+                  "cn_raw_u9": 9,
+                  "evm_rx0_raw_u8": 31,
+                  "evm_rx1_raw_u8": 25
+                }
+              }
+            },
+            {
+              "sequence": 5,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1f1f0600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 31,
+                  "evm_rx1_raw_u8": 31
+                }
+              }
+            },
+            {
+              "sequence": 6,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x20200600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 32,
+                  "evm_rx1_raw_u8": 32
+                }
+              }
+            },
+            {
+              "sequence": 7,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1d1d0580",
+                "fields_raw": {
+                  "cn_raw_u9": 11,
+                  "evm_rx0_raw_u8": 29,
+                  "evm_rx1_raw_u8": 29
+                }
+              }
+            }
+          ],
+          "normal_by_phy": {
+            "0": 26,
+            "2": 4
+          },
+          "after": {
+            "word": "0x1d1d0580",
+            "fields_raw": {
+              "cn_raw_u9": 11,
+              "evm_rx0_raw_u8": 29,
+              "evm_rx1_raw_u8": 29
+            }
+          }
+        },
+        {
+          "name": "cck_after",
+          "rate_code": 0,
+          "before": {
+            "word": "0x1d1d0580",
+            "fields_raw": {
+              "cn_raw_u9": 11,
+              "evm_rx0_raw_u8": 29,
+              "evm_rx1_raw_u8": 29
+            }
+          },
+          "receipts": [
+            {
+              "sequence": 8,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1d1d0580",
+                "fields_raw": {
+                  "cn_raw_u9": 11,
+                  "evm_rx0_raw_u8": 29,
+                  "evm_rx1_raw_u8": 29
+                }
+              }
+            },
+            {
+              "sequence": 9,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1d1d0580",
+                "fields_raw": {
+                  "cn_raw_u9": 11,
+                  "evm_rx0_raw_u8": 29,
+                  "evm_rx1_raw_u8": 29
+                }
+              }
+            },
+            {
+              "sequence": 10,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1d1d0580",
+                "fields_raw": {
+                  "cn_raw_u9": 11,
+                  "evm_rx0_raw_u8": 29,
+                  "evm_rx1_raw_u8": 29
+                }
+              }
+            },
+            {
+              "sequence": 11,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1d1d0580",
+                "fields_raw": {
+                  "cn_raw_u9": 11,
+                  "evm_rx0_raw_u8": 29,
+                  "evm_rx1_raw_u8": 29
+                }
+              }
+            }
+          ],
+          "normal_by_phy": {
+            "0": 36
+          },
+          "after": {
+            "word": "0x1d1d0580",
+            "fields_raw": {
+              "cn_raw_u9": 11,
+              "evm_rx0_raw_u8": 29,
+              "evm_rx1_raw_u8": 29
+            }
+          }
+        }
+      ],
+      "initial": {
+        "word": "0x8181ff80",
+        "fields_raw": {
+          "cn_raw_u9": 511,
+          "evm_rx0_raw_u8": 129,
+          "evm_rx1_raw_u8": 129
+        }
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    },
+    {
+      "tool": "evm_cn_stimulus",
+      "date_utc": "2026-09-05T12:32:10.355247+00:00",
+      "channel": 1,
+      "submitted": 12,
+      "maximum_submissions": 12,
+      "rows": [
+        {
+          "name": "cck_before",
+          "rate_code": 0,
+          "before": {
+            "word": "0x221fff80",
+            "fields_raw": {
+              "cn_raw_u9": 511,
+              "evm_rx0_raw_u8": 34,
+              "evm_rx1_raw_u8": 31
+            }
+          },
+          "receipts": [
+            {
+              "sequence": 0,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x221fff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 34,
+                  "evm_rx1_raw_u8": 31
+                }
+              }
+            },
+            {
+              "sequence": 1,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x231eff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 35,
+                  "evm_rx1_raw_u8": 30
+                }
+              }
+            },
+            {
+              "sequence": 2,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x231eff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 35,
+                  "evm_rx1_raw_u8": 30
+                }
+              }
+            },
+            {
+              "sequence": 3,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x231eff80",
+                "fields_raw": {
+                  "cn_raw_u9": 511,
+                  "evm_rx0_raw_u8": 35,
+                  "evm_rx1_raw_u8": 30
+                }
+              }
+            }
+          ],
+          "normal_by_phy": {
+            "0": 177,
+            "2": 1,
+            "1": 4
+          },
+          "transfer_limit_reached": true,
+          "after": {
+            "word": "0x231eff80",
+            "fields_raw": {
+              "cn_raw_u9": 511,
+              "evm_rx0_raw_u8": 35,
+              "evm_rx1_raw_u8": 30
+            }
+          }
+        },
+        {
+          "name": "ht8_2ss",
+          "rate_code": 1160,
+          "before": {
+            "word": "0x231eff80",
+            "fields_raw": {
+              "cn_raw_u9": 511,
+              "evm_rx0_raw_u8": 35,
+              "evm_rx1_raw_u8": 30
+            }
+          },
+          "receipts": [
+            {
+              "sequence": 4,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x22230600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 34,
+                  "evm_rx1_raw_u8": 35
+                }
+              }
+            },
+            {
+              "sequence": 5,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x1f1e0600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 31,
+                  "evm_rx1_raw_u8": 30
+                }
+              }
+            },
+            {
+              "sequence": 6,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x21200600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 33,
+                  "evm_rx1_raw_u8": 32
+                }
+              }
+            },
+            {
+              "sequence": 7,
+              "phy": {
+                "mode_name": "HT",
+                "mcs": 8,
+                "nss": 2,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x22220600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 34,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            }
+          ],
+          "normal_by_phy": {
+            "0": 34,
+            "2": 4
+          },
+          "after": {
+            "word": "0x22220600",
+            "fields_raw": {
+              "cn_raw_u9": 12,
+              "evm_rx0_raw_u8": 34,
+              "evm_rx1_raw_u8": 34
+            }
+          }
+        },
+        {
+          "name": "cck_after",
+          "rate_code": 0,
+          "before": {
+            "word": "0x22220600",
+            "fields_raw": {
+              "cn_raw_u9": 12,
+              "evm_rx0_raw_u8": 34,
+              "evm_rx1_raw_u8": 34
+            }
+          },
+          "receipts": [
+            {
+              "sequence": 8,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x22220600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 34,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            },
+            {
+              "sequence": 9,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x22220600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 34,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            },
+            {
+              "sequence": 10,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x22220600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 34,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            },
+            {
+              "sequence": 11,
+              "phy": {
+                "mode_name": "CCK",
+                "mcs": 0,
+                "nss": 1,
+                "bw_mhz": 20
+              },
+              "register_after_receipt": {
+                "word": "0x22220600",
+                "fields_raw": {
+                  "cn_raw_u9": 12,
+                  "evm_rx0_raw_u8": 34,
+                  "evm_rx1_raw_u8": 34
+                }
+              }
+            }
+          ],
+          "normal_by_phy": {
+            "0": 79,
+            "1": 3
+          },
+          "after": {
+            "word": "0x2222ff80",
+            "fields_raw": {
+              "cn_raw_u9": 511,
+              "evm_rx0_raw_u8": 34,
+              "evm_rx1_raw_u8": 34
+            }
+          }
+        }
+      ],
+      "initial": {
+        "word": "0x221fff80",
+        "fields_raw": {
+          "cn_raw_u9": 511,
+          "evm_rx0_raw_u8": 34,
+          "evm_rx1_raw_u8": 31
+        }
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup_reload_alive": [
+        true,
+        true
+      ]
+    }
+  ]
+}

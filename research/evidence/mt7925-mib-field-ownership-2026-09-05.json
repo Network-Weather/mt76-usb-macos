@@ -1,0 +1,1273 @@
+{
+  "scope": "Pinned MT7925 UNI22 field mapping and competing read-clear ownership",
+  "firmware_ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+  "getter_trace": {
+    "scope": "512-byte window immediately preceding already identified UNI table; CID22 only",
+    "matches": [
+      {
+        "cid_address": "0x221bff4",
+        "cid": 34,
+        "handler": "0xe0053ac0"
+      }
+    ],
+    "alive_after": true,
+    "observed_offset_translation": [
+      {
+        "wire_offset": 0,
+        "table_address": "0x224c220",
+        "internal_id_u16": 49
+      },
+      {
+        "wire_offset": 2,
+        "table_address": "0x224c224",
+        "internal_id_u16": 119
+      }
+    ],
+    "rom_getter_slot": {
+      "address": "0x828648",
+      "pointer": "0x8334a6"
+    },
+    "rom_window_base": "0x8334a4",
+    "cleanup_reload_alive": true,
+    "rom_window_sha256": "803189445de97a6ba1018f98ed961cac980c55cc16e1754d8806424ef771878c"
+  },
+  "domain_mapper": {
+    "tool": "mt7925_field_domain_descriptors",
+    "domains": [
+      {
+        "domain": 29,
+        "slot": "0x22113b8",
+        "descriptor": "0x22104f4",
+        "mapper": "0x83299a",
+        "base": "0x832998",
+        "length": 256,
+        "sha256": "ece873f5ed829f75b44816e3b5d694ed7887efbc1bd8859e6c2b3b4d5e10101c"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "resolved_fields": {
+    "date_utc": "2026-09-05T17:32:51.990408+00:00",
+    "fields": [
+      {
+        "wire_offset": 0,
+        "internal_id": 49,
+        "key": "0x1d0820",
+        "table_entry": "0x84d9a4",
+        "field_table": "0x8555f0",
+        "descriptor_raw": "0x107f0",
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "register": "0x820ed7f0"
+      },
+      {
+        "wire_offset": 2,
+        "internal_id": 119,
+        "key": "0x1d10e0",
+        "table_entry": "0x84dbd4",
+        "field_table": "0x8554d8",
+        "descriptor_raw": "0x109a8",
+        "field_count": 1,
+        "low_bit": 0,
+        "high_bit": 31,
+        "register": "0x820ed9a8"
+      }
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true
+  },
+  "passive_source_candidates": {
+    "date_utc": "2026-09-05T17:19:56.851432+00:00",
+    "scope": "MT7925 source-defined MIB candidates, read-only except normal setup; no TX",
+    "windows": [
+      {
+        "channel": 6,
+        "before": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              15,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              0,
+              0
+            ]
+          }
+        },
+        "capture": {
+          "transfers": 48,
+          "limit_reached": false,
+          "anonymous_phy_counts": [
+            {
+              "mode": "CCK",
+              "mcs": 0,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 48
+            }
+          ]
+        },
+        "after": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              49,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              1,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "channel": 6,
+        "before": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              0,
+              0
+            ]
+          }
+        },
+        "capture": {
+          "transfers": 50,
+          "limit_reached": false,
+          "anonymous_phy_counts": [
+            {
+              "mode": "CCK",
+              "mcs": 0,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 50
+            }
+          ]
+        },
+        "after": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              50,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              4,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "channel": 6,
+        "before": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              0,
+              0
+            ]
+          }
+        },
+        "capture": {
+          "transfers": 47,
+          "limit_reached": false,
+          "anonymous_phy_counts": [
+            {
+              "mode": "CCK",
+              "mcs": 0,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 47
+            }
+          ]
+        },
+        "after": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              47,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              5,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "channel": 36,
+        "before": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              27,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              15,
+              0
+            ]
+          }
+        },
+        "capture": {
+          "transfers": 95,
+          "limit_reached": false,
+          "anonymous_phy_counts": [
+            {
+              "mode": "OFDM",
+              "mcs": 11,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 53
+            },
+            {
+              "mode": "OFDM",
+              "mcs": 9,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 42
+            }
+          ]
+        },
+        "after": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              95,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              28,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "channel": 36,
+        "before": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              1,
+              0
+            ]
+          }
+        },
+        "capture": {
+          "transfers": 93,
+          "limit_reached": false,
+          "anonymous_phy_counts": [
+            {
+              "mode": "OFDM",
+              "mcs": 11,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 51
+            },
+            {
+              "mode": "OFDM",
+              "mcs": 9,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 42
+            }
+          ]
+        },
+        "after": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              93,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              31,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "channel": 36,
+        "before": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              2,
+              0
+            ]
+          }
+        },
+        "capture": {
+          "transfers": 103,
+          "limit_reached": false,
+          "anonymous_phy_counts": [
+            {
+              "mode": "OFDM",
+              "mcs": 11,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 59
+            },
+            {
+              "mode": "OFDM",
+              "mcs": 9,
+              "nss": 1,
+              "fcs_error": false,
+              "count": 44
+            }
+          ]
+        },
+        "after": {
+          "rx_fcs_ok": {
+            "address": "0x820ed75c",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "rx_fcs_error": {
+            "address": "0x820ed760",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_ok": {
+            "address": "0x820ed764",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss1_mcs0_error": {
+            "address": "0x820ed768",
+            "paired_raw": [
+              0,
+              0
+            ]
+          },
+          "nss2_mcs7_ok": {
+            "address": "0x820ed7ec",
+            "paired_raw": [
+              103,
+              0
+            ]
+          },
+          "nss2_mcs7_error": {
+            "address": "0x820ed7f0",
+            "paired_raw": [
+              74,
+              0
+            ]
+          }
+        }
+      }
+    ],
+    "firmware_sha256": [
+      "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+      "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+    ],
+    "alive_after": true,
+    "cleanup_reload_alive": true,
+    "label_warning": "Dictionary keys below preserve vendor-header hypotheses from the experiment, NOT validated counter meanings. ROM resolves 0x820ed7f0 to UNI offset0; observed 0x820ed7ec tracks 1SS CCK/OFDM, not proved NSS2/MCS7."
+  },
+  "ownership_trials": [
+    {
+      "date_utc": "2026-09-05T17:33:35.021078+00:00",
+      "scope": "passive MT7925 counter ownership; no TX",
+      "windows": [
+        {
+          "order": "firmware_first",
+          "before": {
+            "values": {
+              "0": 203,
+              "2": 108
+            },
+            "host_monotonic": 1889674.916530729
+          },
+          "capture": {
+            "transfers": 101,
+            "good": 101,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "after": {
+            "values": {
+              "0": 369,
+              "2": 209
+            },
+            "host_monotonic": 1889675.9285069164
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                1,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                0,
+                0
+              ]
+            }
+          },
+          "firmware_delta": {
+            "0": 166,
+            "2": 101
+          }
+        },
+        {
+          "order": "direct_first",
+          "before": {
+            "values": {
+              "0": 369,
+              "2": 209
+            },
+            "host_monotonic": 1889675.9331872705
+          },
+          "capture": {
+            "transfers": 105,
+            "good": 105,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                169,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                105,
+                0
+              ]
+            }
+          },
+          "after": {
+            "values": {
+              "0": 369,
+              "2": 209
+            },
+            "host_monotonic": 1889676.9478655206
+          },
+          "firmware_delta": {
+            "0": 0,
+            "2": 0
+          }
+        },
+        {
+          "order": "firmware_first",
+          "before": {
+            "values": {
+              "0": 369,
+              "2": 209
+            },
+            "host_monotonic": 1889676.9501133119
+          },
+          "capture": {
+            "transfers": 114,
+            "good": 114,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "after": {
+            "values": {
+              "0": 508,
+              "2": 323
+            },
+            "host_monotonic": 1889677.9561826661
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                0,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                0,
+                0
+              ]
+            }
+          },
+          "firmware_delta": {
+            "0": 139,
+            "2": 114
+          }
+        },
+        {
+          "order": "direct_first",
+          "before": {
+            "values": {
+              "0": 508,
+              "2": 323
+            },
+            "host_monotonic": 1889677.9592359373
+          },
+          "capture": {
+            "transfers": 97,
+            "good": 97,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                70,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                97,
+                0
+              ]
+            }
+          },
+          "after": {
+            "values": {
+              "0": 508,
+              "2": 323
+            },
+            "host_monotonic": 1889678.9767458122
+          },
+          "firmware_delta": {
+            "0": 0,
+            "2": 0
+          }
+        },
+        {
+          "order": "firmware_first",
+          "before": {
+            "values": {
+              "0": 508,
+              "2": 324
+            },
+            "host_monotonic": 1889678.9788730205
+          },
+          "capture": {
+            "transfers": 111,
+            "good": 111,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "after": {
+            "values": {
+              "0": 597,
+              "2": 435
+            },
+            "host_monotonic": 1889679.9839114994
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                0,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                0,
+                0
+              ]
+            }
+          },
+          "firmware_delta": {
+            "0": 89,
+            "2": 111
+          }
+        },
+        {
+          "order": "direct_first",
+          "before": {
+            "values": {
+              "0": 597,
+              "2": 435
+            },
+            "host_monotonic": 1889679.988557937
+          },
+          "capture": {
+            "transfers": 97,
+            "good": 97,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                60,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                97,
+                0
+              ]
+            }
+          },
+          "after": {
+            "values": {
+              "0": 597,
+              "2": 435
+            },
+            "host_monotonic": 1889681.0020267915
+          },
+          "firmware_delta": {
+            "0": 0,
+            "2": 0
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "date_utc": "2026-09-05T17:34:48.645521+00:00",
+      "scope": "passive MT7925 counter ownership; no TX",
+      "windows": [
+        {
+          "order": "firmware_first",
+          "before": {
+            "values": {
+              "0": 37,
+              "2": 104
+            },
+            "host_monotonic": 1889748.5228947494
+          },
+          "capture": {
+            "transfers": 94,
+            "good": 94,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "after": {
+            "values": {
+              "0": 88,
+              "2": 198
+            },
+            "host_monotonic": 1889749.5276217493
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                0,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                0,
+                0
+              ]
+            }
+          },
+          "firmware_delta": {
+            "0": 51,
+            "2": 94
+          }
+        },
+        {
+          "order": "direct_first",
+          "before": {
+            "values": {
+              "0": 88,
+              "2": 198
+            },
+            "host_monotonic": 1889749.532270166
+          },
+          "capture": {
+            "transfers": 98,
+            "good": 98,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                44,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                98,
+                0
+              ]
+            }
+          },
+          "after": {
+            "values": {
+              "0": 88,
+              "2": 198
+            },
+            "host_monotonic": 1889750.541556729
+          },
+          "firmware_delta": {
+            "0": 0,
+            "2": 0
+          }
+        },
+        {
+          "order": "firmware_first",
+          "before": {
+            "values": {
+              "0": 88,
+              "2": 198
+            },
+            "host_monotonic": 1889750.543321812
+          },
+          "capture": {
+            "transfers": 92,
+            "good": 92,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "after": {
+            "values": {
+              "0": 122,
+              "2": 291
+            },
+            "host_monotonic": 1889751.548913833
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                0,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                0,
+                0
+              ]
+            }
+          },
+          "firmware_delta": {
+            "0": 34,
+            "2": 93
+          }
+        },
+        {
+          "order": "direct_first",
+          "before": {
+            "values": {
+              "0": 122,
+              "2": 291
+            },
+            "host_monotonic": 1889751.5535843745
+          },
+          "capture": {
+            "transfers": 91,
+            "good": 91,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                17,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                91,
+                0
+              ]
+            }
+          },
+          "after": {
+            "values": {
+              "0": 123,
+              "2": 291
+            },
+            "host_monotonic": 1889752.5609377706
+          },
+          "firmware_delta": {
+            "0": 1,
+            "2": 0
+          }
+        },
+        {
+          "order": "firmware_first",
+          "before": {
+            "values": {
+              "0": 123,
+              "2": 291
+            },
+            "host_monotonic": 1889752.5630385415
+          },
+          "capture": {
+            "transfers": 101,
+            "good": 101,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "after": {
+            "values": {
+              "0": 134,
+              "2": 392
+            },
+            "host_monotonic": 1889753.5703319164
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                0,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                0,
+                0
+              ]
+            }
+          },
+          "firmware_delta": {
+            "0": 11,
+            "2": 101
+          }
+        },
+        {
+          "order": "direct_first",
+          "before": {
+            "values": {
+              "0": 134,
+              "2": 392
+            },
+            "host_monotonic": 1889753.574974562
+          },
+          "capture": {
+            "transfers": 108,
+            "good": 108,
+            "bad": 0,
+            "limit_reached": false
+          },
+          "direct": {
+            "0": {
+              "address": "0x820ed7f0",
+              "paired_raw": [
+                62,
+                0
+              ]
+            },
+            "2": {
+              "address": "0x820ed9a8",
+              "paired_raw": [
+                108,
+                0
+              ]
+            }
+          },
+          "after": {
+            "values": {
+              "0": 134,
+              "2": 392
+            },
+            "host_monotonic": 1889754.588620687
+          },
+          "firmware_delta": {
+            "0": 0,
+            "2": 0
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    }
+  ]
+}

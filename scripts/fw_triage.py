@@ -112,10 +112,11 @@ PRINTABLE = re.compile(rb"[\x20-\x7e]{%d,}" % MIN_STRING_LEN)
 # absolute, and build-tree-relative in the same image.
 SOURCE_PATH = re.compile(r"[\w./-]*\w+\.[ch]\b")
 
-# Command dispatch tables are plain data in the rodata region, so which commands a firmware
-# implements can be read without disassembling anything. A slot is {u32 handler, u32 cid};
-# the MT7921 image carries at least three tables in that shape, with different strides, so
-# the scan looks for the shape anywhere rather than assuming a table address.
+# Observed MT7961 command tables use {u32 cid, u32 handler}. The earlier reverse
+# interpretation paired handlers with the NEXT record's cid. CSI/BF/RDD controls
+# independently corroborate the same order on MT7925. See docs/COMMAND_TABLES.md.
+# This unanchored scan finds candidates only: it does not establish table bounds,
+# transport (legacy/EXT/UNI), dispatch reachability, or feature availability.
 #
 # A handler must point at somewhere code can live. Ranges are the load addresses this image
 # actually declares (see the region table in docs/FIRMWARE_RECON.md) plus the mask ROM the
@@ -133,20 +134,15 @@ def in_code(addr: int) -> bool:
 
 
 def scan_dispatch_slots(data: bytes, cids: dict[int, str]) -> dict[int, list[tuple[int, int]]]:
-    """Every 4-aligned {handler, cid} pair whose handler points into code.
+    """Every complete4-aligned {cid, handler} candidate in pinned MT7961 code ranges.
 
-    Asymmetric evidence, and weaker than it looks in both directions. A hit may be chance
-    (CHANNEL_SWITCH, which works on this hardware, produces nine), and a genuine slot does not
-    mean the command is implemented: RX_AIRTIME_CTRL (0x4a) has exactly one slot and the
-    firmware still refuses it outright (measured 2026-09-03; see NEGATIVE_RESULTS.md). Zero
-    hits across every region remains a real absence claim, and it held for PHY_STAT_INFO.
-
-    To find out what a firmware actually implements, ask it: scripts/mcu_stats.py recognises
-    the dispatch-level refusal reply. This scan narrows the candidates; it does not settle them.
+    A hit may be coincidental or belong to another command transport. An empty
+    result means only no matching pair in these bytes, never feature absence.
+    The returned offset points to the CID, not the following handler word.
     """
     found: dict[int, list[tuple[int, int]]] = {c: [] for c in cids}
-    for off in range(0, len(data) - 8, 4):
-        handler, cid = struct.unpack_from("<II", data, off)
+    for off in range(0, len(data) - 7, 4):
+        cid, handler = struct.unpack_from("<II", data, off)
         if cid in found and in_code(handler):
             found[cid].append((off, handler))
     return found
@@ -407,7 +403,7 @@ EXT_CMD_NAMES = {
 
 
 def command_map(images: list[str]) -> int:
-    """Which EXT commands each firmware has a dispatch handler for. Offline, no hardware."""
+    """Candidate numeric command pairs; EXT enum names are labels, not ABI proof."""
     for path in images:
         with open(path, "rb") as fh:
             blob = fh.read()
@@ -429,13 +425,14 @@ def command_map(images: list[str]) -> int:
                 totals[cid].extend((region["index"], off, h) for off, h in slots)
         print(f"{name}")
         for cid, hits in sorted(totals.items()):
-            mark = "yes" if hits else "NO "
-            where = f"r{hits[0][0]}->0x{hits[0][2]:08x}" if hits else "no slot in any region"
+            mark = "hit " if hits else "none"
+            where = f"r{hits[0][0]}->0x{hits[0][2]:08x}" if hits else "no candidate pair"
             extra = f" (+{len(hits) - 1} more)" if len(hits) > 1 else ""
             print(f"  0x{cid:02x} {EXT_CMD_NAMES[cid]:<22} {mark}  {where}{extra}")
         print(
-            "\n  A hit is weak evidence (a code-shaped address can sit beside a small "
-            "integer by chance);\n  zero hits across every region is the stronger claim.\n"
+            "\n  Candidate CID-then-handler pairs in pinned MT7961 code ranges only.\n"
+            "  EXT enum labels do not establish transport or implementation;\n"
+            "  no matching pair is not proof of feature absence.\n"
         )
     return 0
 
@@ -483,7 +480,7 @@ def main() -> int:
     parser.add_argument(
         "--command-map",
         action="store_true",
-        help="report which MCU_EXT_CMD ids this firmware has a dispatch handler for",
+        help="find candidate CID/handler pairs (EXT names are unqualified numeric labels)",
     )
     parser.add_argument(
         "--extract-regions",

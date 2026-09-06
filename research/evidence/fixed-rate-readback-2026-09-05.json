@@ -1,0 +1,203 @@
+{
+  "scope": "ROM-defined indirect fixed-rate read verified by changed-slot/unchanged-slot control and reload; UNI40 unnamed nibble reaches hardware",
+  "rom_reader": {
+    "entry": "0x0083c14e",
+    "end_ret": "0x0083c174",
+    "source_window": "previously retained 512 bytes at0x0083c0ac",
+    "itcr": "0x820d43b0",
+    "read_command": "0x80000000 | index",
+    "data_registers": [
+      "0x820d43b8",
+      "0x820d43bc"
+    ]
+  },
+  "direct_control": {
+    "alive_after": true,
+    "cleanup_reload_alive": true,
+    "date_utc": "2026-09-05T16:38:22.685438+00:00",
+    "explicit_restore_verified": true,
+    "final_entry_matches_original": true,
+    "firmware_sha256": [
+      "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+      "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+    ],
+    "reads": [
+      {
+        "index": 18,
+        "label": "before18",
+        "words": [
+          "0x4b",
+          "0x11040"
+        ]
+      },
+      {
+        "index": 25,
+        "label": "before25",
+        "words": [
+          "0x4b",
+          "0x11040"
+        ]
+      },
+      {
+        "index": 18,
+        "label": "written18",
+        "words": [
+          "0x80",
+          "0x80"
+        ]
+      },
+      {
+        "index": 25,
+        "label": "unchanged25",
+        "words": [
+          "0x4b",
+          "0x11040"
+        ]
+      },
+      {
+        "index": 18,
+        "label": "reselected18",
+        "words": [
+          "0x80",
+          "0x80"
+        ]
+      },
+      {
+        "index": 18,
+        "label": "after_normal_reload18",
+        "words": [
+          "0x4b",
+          "0x11040"
+        ]
+      },
+      {
+        "index": 25,
+        "label": "after_normal_reload25",
+        "words": [
+          "0x4b",
+          "0x11040"
+        ]
+      },
+      {
+        "index": 18,
+        "label": "explicit_restore18",
+        "words": [
+          "0x4b",
+          "0x11040"
+        ]
+      },
+      {
+        "index": 18,
+        "label": "final18",
+        "words": [
+          "0x4b",
+          "0x11040"
+        ]
+      }
+    ],
+    "reload_restored_original_entry": true
+  },
+  "command_control": {
+    "tool": "mt7925_fixed_rate_slot25_no_tx",
+    "date_utc": "2026-09-05T16:39:06.281504+00:00",
+    "rows": [
+      {
+        "gi": 0,
+        "ltf": 0,
+        "ldpc": 0,
+        "status": 0,
+        "registers": {
+          "0x820d43b0": "0x49",
+          "0x820d43b8": "0x4b",
+          "0x820d43bc": "0x49"
+        },
+        "cache_address": "0x22601b6",
+        "cache_configuration_hex": "4b00090100000000000005010000",
+        "table_readback": {
+          "18": [
+            "0x4b",
+            "0x11040"
+          ],
+          "25": [
+            "0x4b",
+            "0x49"
+          ]
+        }
+      },
+      {
+        "gi": 1,
+        "ltf": 1,
+        "ldpc": 1,
+        "status": 0,
+        "registers": {
+          "0x820d43b0": "0x2011049",
+          "0x820d43b8": "0x4b",
+          "0x820d43bc": "0x2011049"
+        },
+        "cache_address": "0x22601b6",
+        "cache_configuration_hex": "4b00090100010101000005010000",
+        "table_readback": {
+          "18": [
+            "0x4b",
+            "0x11040"
+          ],
+          "25": [
+            "0x4b",
+            "0x2011049"
+          ]
+        }
+      },
+      {
+        "gi": 0,
+        "ltf": 0,
+        "ldpc": 0,
+        "status": 0,
+        "registers": {
+          "0x820d43b0": "0x49",
+          "0x820d43b8": "0x4b",
+          "0x820d43bc": "0x49"
+        },
+        "cache_address": "0x22601b6",
+        "cache_configuration_hex": "4b00090100000000000005010000",
+        "table_readback": {
+          "18": [
+            "0x4b",
+            "0x11040"
+          ],
+          "25": [
+            "0x4b",
+            "0x49"
+          ]
+        }
+      }
+    ],
+    "before_registers": {
+      "0x820d43b0": "0x100",
+      "0x820d43b8": "0x100",
+      "0x820d43bc": "0xc00"
+    },
+    "table_before": {
+      "18": [
+        "0x4b",
+        "0x11040"
+      ],
+      "25": [
+        "0x4b",
+        "0x11040"
+      ]
+    },
+    "alive_after": true,
+    "cleanup_reload_alive": true,
+    "table_after_reload": {
+      "18": [
+        "0x4b",
+        "0x11040"
+      ],
+      "25": [
+        "0x4b",
+        "0x11040"
+      ]
+    },
+    "table_reload_restored": true
+  }
+}

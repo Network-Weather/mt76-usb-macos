@@ -76,8 +76,27 @@ def vectors(raw: bytes, chip: str) -> dict:
 
 
 def he_fields(v: dict, mode: int) -> dict | None:
-    """HE/EHT hypotheses from mt76_connac3_mac.c at c5a3bd91; legacy excluded."""
-    if mode not in (8, 9, 10, 11, 13, 14, 15) or len(v.get("g3", ())) != 4 or "g5" not in v:
+    """Source-defined HE fields, with explicit chip-layout lengths.
+
+    Connac2: gen4m 8fddb9d7 nic_connac2x_rx.h, Group5-relative origins.
+    Connac3: mt76_connac3_mac.c at c5a3bd91, Group3-relative origins.
+    Neither layout is a calibrated topology inference; validate against frames.
+    """
+    if len(v.get("g3", ())) == 2 and len(v.get("g5", ())) == 18:
+        if mode not in (8, 9, 10, 11):
+            return None
+        g5 = v["g5"]
+        return {
+            "bss_color": g5[12] & 63,
+            "uplink": g5[0] >> 31,
+            "spatial_reuse": (g5[9] >> 8) & 15,
+            "txop": (g5[12] >> 6) & 127,
+        }
+    if (
+        mode not in (8, 9, 10, 11, 13, 14, 15)
+        or len(v.get("g3", ())) != 4
+        or len(v.get("g5", ())) != 24
+    ):
         return None
     rxv = v["g3"] + v["g5"]
     return {

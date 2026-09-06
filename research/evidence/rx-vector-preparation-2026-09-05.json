@@ -1,0 +1,711 @@
+{
+  "tool": "rx_vector_preparation_evidence",
+  "date_utc": "2026-09-05",
+  "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+  "notes": [
+    "Normal exact-frame controls precede a receiver-only clean reload.",
+    "Each unfiltered run submits eight synthetic no-ACK frames; matching A/B/A submits sixteen.",
+    "Channel-only and config-only both restore nonzero RX vectors without sniffer enable or monitor filters.",
+    "Wrong-target match remains ineffective under tune-only preparation.",
+    "Only identified measurement fields and configuration booleans are retained."
+  ],
+  "runs": [
+    {
+      "tool": "rxv_log_probe",
+      "date_utc": "2026-09-05T10:58:03.736357+00:00",
+      "maximum_submissions": 8,
+      "rate": "HT MCS8 two-stream",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 8,
+      "rearm_he": false,
+      "match_ta": false,
+      "rf_clean_start": false,
+      "rf_clean_prepare": "tune",
+      "normal_control": {
+        "counts": {
+          "transfers": 4,
+          "NORMAL": 4
+        },
+        "exact_synthetic_frames": 4,
+        "matched_phy": [
+          {
+            "mode": "HT",
+            "mcs": 8,
+            "nss": 2,
+            "width_mhz": 20,
+            "count": 4
+          }
+        ],
+        "transfer_limit_reached": false
+      },
+      "before": {
+        "count": 0,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": 0,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 0,
+          "firmware_frequency_offset_s32": 0,
+          "firmware_snr_field": 0
+        }
+      },
+      "rf_stimulus": {
+        "counts": {},
+        "exact_synthetic_frames": 0,
+        "matched_phy": [],
+        "transfer_limit_reached": false
+      },
+      "after": {
+        "count": 4,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -4772,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294961629,
+          "firmware_frequency_offset_s32": -5667,
+          "firmware_snr_field": 29
+        },
+        "cached_phy_mode": 2
+      },
+      "stopped": {
+        "count": 4,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -4772,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294961629,
+          "firmware_frequency_offset_s32": -5667,
+          "firmware_snr_field": 29
+        }
+      },
+      "log_readout": {
+        "records": [
+          {
+            "record": 0,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              30,
+              32
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4760,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961643,
+              "firmware_frequency_offset_s32": -5653,
+              "firmware_snr_field": 30
+            }
+          },
+          {
+            "record": 1,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              30,
+              32
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4731,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961677,
+              "firmware_frequency_offset_s32": -5619,
+              "firmware_snr_field": 30
+            }
+          },
+          {
+            "record": 2,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              28,
+              30
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4774,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961626,
+              "firmware_frequency_offset_s32": -5670,
+              "firmware_snr_field": 29
+            }
+          }
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "alive": true
+        },
+        {
+          "alive": true
+        }
+      ]
+    },
+    {
+      "tool": "rxv_log_probe",
+      "date_utc": "2026-09-05T10:58:37.402449+00:00",
+      "maximum_submissions": 16,
+      "rate": "HT MCS8 two-stream",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 16,
+      "rearm_he": false,
+      "match_ta": true,
+      "rf_clean_start": false,
+      "rf_clean_prepare": "tune",
+      "normal_control": {
+        "counts": {
+          "transfers": 4,
+          "NORMAL": 4
+        },
+        "exact_synthetic_frames": 4,
+        "matched_phy": [
+          {
+            "mode": "HT",
+            "mcs": 8,
+            "nss": 2,
+            "width_mhz": 20,
+            "count": 4
+          }
+        ],
+        "transfer_limit_reached": false
+      },
+      "before": {
+        "count": 0,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": 0,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 0,
+          "firmware_frequency_offset_s32": 0,
+          "firmware_snr_field": 0
+        }
+      },
+      "first_match_state": {
+        "rule": 0,
+        "transmitter_filter_flag": true,
+        "receiver_filter_flag": false,
+        "hardware_enable_bit": true,
+        "hardware_matches_synthetic_target": true
+      },
+      "rf_stimulus": {
+        "counts": {},
+        "exact_synthetic_frames": 0,
+        "matched_phy": [],
+        "transfer_limit_reached": false
+      },
+      "after": {
+        "count": 5,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -24206,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294938551,
+          "firmware_frequency_offset_s32": -28745,
+          "firmware_snr_field": 28
+        },
+        "cached_phy_mode": 1
+      },
+      "stopped": {
+        "count": 5,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -24206,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294938551,
+          "firmware_frequency_offset_s32": -28745,
+          "firmware_snr_field": 28
+        }
+      },
+      "log_readout": {
+        "records": [
+          {
+            "record": 0,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              30,
+              30
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4551,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961891,
+              "firmware_frequency_offset_s32": -5405,
+              "firmware_snr_field": 29
+            }
+          },
+          {
+            "record": 1,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              29,
+              29
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4742,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961664,
+              "firmware_frequency_offset_s32": -5632,
+              "firmware_snr_field": 30
+            }
+          },
+          {
+            "record": 2,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              30,
+              30
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4639,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961787,
+              "firmware_frequency_offset_s32": -5509,
+              "firmware_snr_field": 29
+            }
+          }
+        ]
+      },
+      "first_match_packet_counts": {
+        "rx_ok": 10,
+        "rx_error": 5
+      },
+      "match_followups": [
+        {
+          "phase": "mismatch",
+          "reset_count": 0,
+          "match_state": {
+            "rule": 0,
+            "transmitter_filter_flag": true,
+            "receiver_filter_flag": false,
+            "hardware_enable_bit": true,
+            "hardware_matches_synthetic_target": true
+          },
+          "stimulus": {
+            "counts": {},
+            "exact_synthetic_frames": 0,
+            "matched_phy": [],
+            "transfer_limit_reached": false
+          },
+          "count": 4,
+          "packet_counts": {
+            "rx_ok": 4,
+            "rx_error": 0
+          },
+          "log": {
+            "records": [
+              {
+                "record": 0,
+                "phy_mode": 2,
+                "rcpi_bytes": [
+                  27,
+                  27
+                ],
+                "fields": {
+                  "bandwidth_code": 0,
+                  "raw_signed20": -4754,
+                  "firmware_integer_factor": 19,
+                  "firmware_frequency_offset_u32": 4294961650,
+                  "firmware_frequency_offset_s32": -5646,
+                  "firmware_snr_field": 29
+                }
+              },
+              {
+                "record": 1,
+                "phy_mode": 2,
+                "rcpi_bytes": [
+                  28,
+                  28
+                ],
+                "fields": {
+                  "bandwidth_code": 0,
+                  "raw_signed20": -4668,
+                  "firmware_integer_factor": 19,
+                  "firmware_frequency_offset_u32": 4294961752,
+                  "firmware_frequency_offset_s32": -5544,
+                  "firmware_snr_field": 29
+                }
+              },
+              {
+                "record": 2,
+                "phy_mode": 2,
+                "rcpi_bytes": [
+                  27,
+                  27
+                ],
+                "fields": {
+                  "bandwidth_code": 0,
+                  "raw_signed20": -4583,
+                  "firmware_integer_factor": 19,
+                  "firmware_frequency_offset_u32": 4294961853,
+                  "firmware_frequency_offset_s32": -5443,
+                  "firmware_snr_field": 28
+                }
+              }
+            ]
+          }
+        },
+        {
+          "phase": "rematch",
+          "reset_count": 0,
+          "match_state": {
+            "rule": 0,
+            "transmitter_filter_flag": true,
+            "receiver_filter_flag": false,
+            "hardware_enable_bit": true,
+            "hardware_matches_synthetic_target": true
+          },
+          "stimulus": {
+            "counts": {},
+            "exact_synthetic_frames": 0,
+            "matched_phy": [],
+            "transfer_limit_reached": false
+          },
+          "count": 4,
+          "packet_counts": {
+            "rx_ok": 4,
+            "rx_error": 0
+          },
+          "log": {
+            "records": [
+              {
+                "record": 0,
+                "phy_mode": 2,
+                "rcpi_bytes": [
+                  27,
+                  27
+                ],
+                "fields": {
+                  "bandwidth_code": 0,
+                  "raw_signed20": -4734,
+                  "firmware_integer_factor": 19,
+                  "firmware_frequency_offset_u32": 4294961674,
+                  "firmware_frequency_offset_s32": -5622,
+                  "firmware_snr_field": 29
+                }
+              },
+              {
+                "record": 1,
+                "phy_mode": 2,
+                "rcpi_bytes": [
+                  28,
+                  28
+                ],
+                "fields": {
+                  "bandwidth_code": 0,
+                  "raw_signed20": -4699,
+                  "firmware_integer_factor": 19,
+                  "firmware_frequency_offset_u32": 4294961715,
+                  "firmware_frequency_offset_s32": -5581,
+                  "firmware_snr_field": 28
+                }
+              },
+              {
+                "record": 2,
+                "phy_mode": 2,
+                "rcpi_bytes": [
+                  27,
+                  28
+                ],
+                "fields": {
+                  "bandwidth_code": 0,
+                  "raw_signed20": -4828,
+                  "firmware_integer_factor": 19,
+                  "firmware_frequency_offset_u32": 4294961562,
+                  "firmware_frequency_offset_s32": -5734,
+                  "firmware_snr_field": 28
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "alive": true
+        },
+        {
+          "alive": true
+        }
+      ]
+    },
+    {
+      "tool": "rxv_log_probe",
+      "date_utc": "2026-09-05T10:59:08.653493+00:00",
+      "maximum_submissions": 8,
+      "rate": "HT MCS8 two-stream",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 8,
+      "rearm_he": false,
+      "match_ta": false,
+      "rf_clean_start": false,
+      "rf_clean_prepare": "channel",
+      "normal_control": {
+        "counts": {
+          "transfers": 9,
+          "NORMAL": 9
+        },
+        "exact_synthetic_frames": 4,
+        "matched_phy": [
+          {
+            "mode": "HT",
+            "mcs": 8,
+            "nss": 2,
+            "width_mhz": 20,
+            "count": 4
+          }
+        ],
+        "transfer_limit_reached": false
+      },
+      "before": {
+        "count": 0,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": 0,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 0,
+          "firmware_frequency_offset_s32": 0,
+          "firmware_snr_field": 0
+        }
+      },
+      "rf_stimulus": {
+        "counts": {},
+        "exact_synthetic_frames": 0,
+        "matched_phy": [],
+        "transfer_limit_reached": false
+      },
+      "after": {
+        "count": 5,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -24028,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294938762,
+          "firmware_frequency_offset_s32": -28534,
+          "firmware_snr_field": 27
+        },
+        "cached_phy_mode": 1
+      },
+      "stopped": {
+        "count": 5,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -24028,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294938762,
+          "firmware_frequency_offset_s32": -28534,
+          "firmware_snr_field": 27
+        }
+      },
+      "log_readout": {
+        "records": [
+          {
+            "record": 0,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              28,
+              29
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4577,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961860,
+              "firmware_frequency_offset_s32": -5436,
+              "firmware_snr_field": 29
+            }
+          },
+          {
+            "record": 1,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              29,
+              29
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4479,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961977,
+              "firmware_frequency_offset_s32": -5319,
+              "firmware_snr_field": 29
+            }
+          },
+          {
+            "record": 2,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              30,
+              30
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4597,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961837,
+              "firmware_frequency_offset_s32": -5459,
+              "firmware_snr_field": 29
+            }
+          }
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "alive": true
+        },
+        {
+          "alive": true
+        }
+      ]
+    },
+    {
+      "tool": "rxv_log_probe",
+      "date_utc": "2026-09-05T10:59:44.522064+00:00",
+      "maximum_submissions": 8,
+      "rate": "HT MCS8 two-stream",
+      "channel": 36,
+      "width_mhz": 20,
+      "submitted": 8,
+      "rearm_he": false,
+      "match_ta": false,
+      "rf_clean_start": false,
+      "rf_clean_prepare": "config",
+      "normal_control": {
+        "counts": {
+          "transfers": 4,
+          "NORMAL": 4
+        },
+        "exact_synthetic_frames": 4,
+        "matched_phy": [
+          {
+            "mode": "HT",
+            "mcs": 8,
+            "nss": 2,
+            "width_mhz": 20,
+            "count": 4
+          }
+        ],
+        "transfer_limit_reached": false
+      },
+      "before": {
+        "count": 0,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": 0,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 0,
+          "firmware_frequency_offset_s32": 0,
+          "firmware_snr_field": 0
+        }
+      },
+      "rf_stimulus": {
+        "counts": {},
+        "exact_synthetic_frames": 0,
+        "matched_phy": [],
+        "transfer_limit_reached": false
+      },
+      "after": {
+        "count": 5,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -8960,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294956656,
+          "firmware_frequency_offset_s32": -10640,
+          "firmware_snr_field": 35
+        },
+        "cached_phy_mode": 1
+      },
+      "stopped": {
+        "count": 5,
+        "cached": {
+          "bandwidth_code": 0,
+          "raw_signed20": -8960,
+          "firmware_integer_factor": 19,
+          "firmware_frequency_offset_u32": 4294956656,
+          "firmware_frequency_offset_s32": -10640,
+          "firmware_snr_field": 35
+        }
+      },
+      "log_readout": {
+        "records": [
+          {
+            "record": 0,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              29,
+              29
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4554,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961888,
+              "firmware_frequency_offset_s32": -5408,
+              "firmware_snr_field": 29
+            }
+          },
+          {
+            "record": 1,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              29,
+              29
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4703,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961711,
+              "firmware_frequency_offset_s32": -5585,
+              "firmware_snr_field": 30
+            }
+          },
+          {
+            "record": 2,
+            "phy_mode": 2,
+            "rcpi_bytes": [
+              32,
+              32
+            ],
+            "fields": {
+              "bandwidth_code": 0,
+              "raw_signed20": -4735,
+              "firmware_integer_factor": 19,
+              "firmware_frequency_offset_u32": 4294961673,
+              "firmware_frequency_offset_s32": -5623,
+              "firmware_snr_field": 30
+            }
+          }
+        ]
+      },
+      "alive_after": [
+        true,
+        true
+      ],
+      "cleanup": [
+        {
+          "alive": true
+        },
+        {
+          "alive": true
+        }
+      ]
+    }
+  ]
+}

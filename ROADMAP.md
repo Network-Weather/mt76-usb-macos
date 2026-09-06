@@ -23,6 +23,13 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 The selected sprint is **R30: C acquisition parity with the Python research baseline**,
 now implemented, qualified, and merged into `main`.
+The next selected work is firmware/chip measurement and bounded transmit discovery.
+Continuous-acquisition work is preserved on its pushed feature branch; a longer soak
+is deferred, not a prerequisite for exploration. See [new PHY experiments](docs/PHY_TRANSMIT.md).
+The 2026-09-05 continuation unlocked [live MT7925 CSI](docs/STATION_CSI.md):
+64-tone I/Q reports, receiver-chain pairing and a traced MCU timer field. Next
+research should test measurement selectivity, bandwidth/PHY coverage and controlled
+stimulus, without conflating raw CSI with calibrated topology/location information.
 This is an instrument for network interrogation and bounded radio experiments, not
 baseline connectivity. A proper networking driver is a durable non-goal, not a
 deferred implementation project. R21 is a deferred iPad survey test spike; no iPad
@@ -176,7 +183,8 @@ follow-ups fall out of it:
 ### R11 and R12, run as a parallel spike: channel-busy counters and noise floor
 
 R11 is now answered through MCU queries rather than the dead register path: MT7921 EXT offset 11
-and MT7925 UNI offset 19 provide primary CCA time. R12 remains open: the noise-floor helper reads
+and MT7925 UNI offset17 provide source-named primary CCA time; offset19 is CCA+NAV+TX
+(2026-09-05 source/ROM correction). R12 remains open: the noise-floor helper reads
 zero and the IPI sampler remains idle. The reproducible probes and negative paths are in
 [docs/FIRMWARE_RECON.md](docs/FIRMWARE_RECON.md) and [docs/MT7925_MIB.md](docs/MT7925_MIB.md).
 
@@ -315,6 +323,7 @@ command layouts, offset semantics and confidence, firmware hashes, pinned mt76
 files/symbols, minimal reproduction commands, and links to redacted evidence.
 
 Secondary pointers: [RX vectors and clocks](docs/RADIO_OBSERVABILITY.md),
+[station CSI commands, event layout and register maps](docs/STATION_CSI.md),
 [controlled MT7925 transmission](docs/MT7925_TRANSMIT.md), and
 [primary-channel capture limits](docs/CHANNEL_GEOMETRY.md). Clearly distinguish
 mechanisms already derived from Linux from observations made with this instrument.

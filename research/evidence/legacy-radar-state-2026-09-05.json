@@ -1,0 +1,276 @@
+{
+  "scope": "MT7961 source-defined CE8F receive STOP/START/STOP and read-only allocation/state provenance; no raw buffer, TX, emulation or thresholds",
+  "runs": [
+    {
+      "tool": "mt7961_rdd_memory_prerequisite",
+      "rows": [
+        {
+          "index": 0,
+          "selector0": 0,
+          "selector8": 1,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 1,
+          "selector0": 0,
+          "selector8": 3,
+          "selector20_lowbyte": 0,
+          "base": "0x401c00",
+          "bytes": 1024
+        },
+        {
+          "index": 2,
+          "selector0": 0,
+          "selector8": 2,
+          "selector20_lowbyte": 0,
+          "base": "0x403400",
+          "bytes": 4096
+        },
+        {
+          "index": 3,
+          "selector0": 0,
+          "selector8": 4,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 4,
+          "selector0": 0,
+          "selector8": 5,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 5,
+          "selector0": 0,
+          "selector8": 6,
+          "selector20_lowbyte": 0,
+          "base": "0x400e00",
+          "bytes": 512
+        },
+        {
+          "index": 6,
+          "selector0": 0,
+          "selector8": 7,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 7,
+          "selector0": 2,
+          "selector8": 1,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 8,
+          "selector0": 2,
+          "selector8": 2,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 9,
+          "selector0": 2,
+          "selector8": 3,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 10,
+          "selector0": 2,
+          "selector8": 4,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 11,
+          "selector0": 2,
+          "selector8": 5,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 12,
+          "selector0": 2,
+          "selector8": 6,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 13,
+          "selector0": 2,
+          "selector8": 7,
+          "selector20_lowbyte": 0,
+          "base": "0x0",
+          "bytes": 0
+        },
+        {
+          "index": 14,
+          "selector0": 0,
+          "selector8": 8,
+          "selector20_lowbyte": 0,
+          "base": "0xe0200000",
+          "bytes": 262144
+        },
+        {
+          "index": 15,
+          "selector0": 0,
+          "selector8": 8,
+          "selector20_lowbyte": 1,
+          "base": "0xe0240000",
+          "bytes": 131072
+        },
+        {
+          "index": 16,
+          "selector0": 0,
+          "selector8": 8,
+          "selector20_lowbyte": 2,
+          "base": "0xe0260000",
+          "bytes": 65536
+        },
+        {
+          "index": 17,
+          "selector0": 0,
+          "selector8": 9,
+          "selector20_lowbyte": 3,
+          "base": "0xe0270000",
+          "bytes": 65536
+        }
+      ],
+      "rdd_state_word": "0x0",
+      "alive_after": true,
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_rdd_state_probe",
+      "chip": "mt7961",
+      "channel": 36,
+      "date_utc": "2026-09-05T14:58:15.434993+00:00",
+      "rows": [
+        {
+          "requested_enabled": false,
+          "before": {
+            "address": "0x2037214",
+            "raw": "0x0",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 0
+          },
+          "after": {
+            "address": "0x2037214",
+            "raw": "0x0",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 0
+          },
+          "allocation_checked": null,
+          "receive": {
+            "events": [],
+            "good_fcs_frames_by_phy_mode": {},
+            "endpoint_transfers": {},
+            "transfers": 0,
+            "transfer_limit_reached": false,
+            "endpoint_timeout_ms": 1,
+            "elapsed_seconds": 1.000566084170714
+          }
+        },
+        {
+          "requested_enabled": true,
+          "before": {
+            "address": "0x2037214",
+            "raw": "0x0",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 0
+          },
+          "after": {
+            "address": "0x2037214",
+            "raw": "0x101",
+            "host_enabled_byte": 1,
+            "detector_region_byte": 1
+          },
+          "allocation_checked": {
+            "base": "0x401c00",
+            "bytes": 1024
+          },
+          "receive": {
+            "events": [],
+            "good_fcs_frames_by_phy_mode": {},
+            "endpoint_transfers": {},
+            "transfers": 0,
+            "transfer_limit_reached": false,
+            "endpoint_timeout_ms": 1,
+            "elapsed_seconds": 1.002187249949202
+          }
+        },
+        {
+          "requested_enabled": false,
+          "before": {
+            "address": "0x2037214",
+            "raw": "0x101",
+            "host_enabled_byte": 1,
+            "detector_region_byte": 1
+          },
+          "after": {
+            "address": "0x2037214",
+            "raw": "0x100",
+            "host_enabled_byte": 0,
+            "detector_region_byte": 1
+          },
+          "allocation_checked": null,
+          "receive": {
+            "events": [],
+            "good_fcs_frames_by_phy_mode": {},
+            "endpoint_transfers": {},
+            "transfers": 0,
+            "transfer_limit_reached": false,
+            "endpoint_timeout_ms": 1,
+            "elapsed_seconds": 1.0002724579535425
+          }
+        }
+      ],
+      "alive_after": true,
+      "cleanup_stop": {
+        "requested_enabled": false,
+        "before": {
+          "address": "0x2037214",
+          "raw": "0x100",
+          "host_enabled_byte": 0,
+          "detector_region_byte": 1
+        },
+        "after": {
+          "address": "0x2037214",
+          "raw": "0x100",
+          "host_enabled_byte": 0,
+          "detector_region_byte": 1
+        },
+        "allocation_checked": null,
+        "receive": {
+          "events": [],
+          "good_fcs_frames_by_phy_mode": {},
+          "endpoint_transfers": {},
+          "transfers": 0,
+          "transfer_limit_reached": false,
+          "endpoint_timeout_ms": 1,
+          "elapsed_seconds": 1.0006784999277443
+        }
+      },
+      "cleanup_reload_alive": true,
+      "cleanup_state": {
+        "address": "0x2037214",
+        "raw": "0x0",
+        "host_enabled_byte": 0,
+        "detector_region_byte": 0
+      }
+    }
+  ]
+}

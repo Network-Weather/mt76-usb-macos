@@ -1,5 +1,13 @@
 # Negative results
 
+## EXT receive statistics on MT7961 (2026-09-04)
+
+The AP-driver EXT `0xa4` receive-stat query categories 0/3/4/5/6 all returned
+the calibrated dispatch refusal signature on MT7961. No firmware dispatch slot
+was found; each query was followed by successful full firmware reload/alive check.
+This says nothing about the station-specific CE/UNI testmode routes.
+See [requests, reproduction, and follow-up leads](docs/PHY_TRANSMIT.md#receive-stat-lead-ap-interface-is-refused-station-interface-remains-open).
+
 Experiments that did not work, recorded so they are not re-run by accident. Check this file
 before proposing an experiment. An entry is not permanent: the "not ruled out" list says what
 would justify a rerun, and a rerun that succeeds moves the entry to

@@ -1,0 +1,73 @@
+{
+  "runs": [
+    {
+      "tool": "icap_status_probe",
+      "date_utc": "2026-09-05T04:57:40.554436+00:00",
+      "rows": [
+        {
+          "mode_requested": 1,
+          "events": [],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "mode_requested": 2,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 4,
+              "sequence_matches": true,
+              "unsolicited_sequence": false,
+              "body_bytes": 68,
+              "candidate_capture_done_raw": 1
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "mode_requested": 4,
+          "events": [],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "icap_status_probe",
+      "date_utc": "2026-09-05T04:58:45.267634+00:00",
+      "rows": [
+        {
+          "mode_requested": 2,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 4,
+              "sequence_matches": true,
+              "unsolicited_sequence": false,
+              "body_bytes": 68,
+              "candidate_capture_done_raw": 1
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "mode_requested": 2,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 4,
+              "sequence_matches": true,
+              "unsolicited_sequence": false,
+              "body_bytes": 68,
+              "candidate_capture_done_raw": 1
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    }
+  ]
+}

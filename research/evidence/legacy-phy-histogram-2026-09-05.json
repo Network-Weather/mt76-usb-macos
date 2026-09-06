@@ -1,0 +1,344 @@
+{
+  "runs": [
+    {
+      "tool": "legacy_noise_hist_probe",
+      "date_utc": "2026-09-05T11:14:59.095677+00:00",
+      "firmware_threshold_labels": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "rows": [
+        {
+          "requested_seconds": 0.25,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 0.25925220898352563,
+            "transfers": 0,
+            "packet_types": {},
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            32805,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            32805,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "requested_seconds": 1.0,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 1.0225363748613745,
+            "transfers": 3,
+            "packet_types": {
+              "NORMAL": 3
+            },
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            128195,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            128195,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "original_masked_bits": {
+        "83082004": 0,
+        "83088230": 0,
+        "83088234": 0
+      },
+      "baseline_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "baseline_window": {
+        "elapsed_seconds": 0.26090079196728766,
+        "transfers": 0,
+        "packet_types": {},
+        "limit_reached": false
+      },
+      "baseline_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "alive_after": true,
+      "restore": {
+        "83088234": true,
+        "83088230": true,
+        "83082004": true
+      },
+      "cleanup_reload_alive": true
+    },
+    {
+      "tool": "legacy_noise_hist_probe",
+      "date_utc": "2026-09-05T11:15:21.090005+00:00",
+      "firmware_threshold_labels": [
+        -92,
+        -89,
+        -86,
+        -83,
+        -80,
+        -75,
+        -70,
+        -65,
+        -60,
+        -55
+      ],
+      "rows": [
+        {
+          "requested_seconds": 0.25,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 0.26167670893482864,
+            "transfers": 0,
+            "packet_types": {},
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            33047,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            33047,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "requested_seconds": 1.0,
+          "after_reset": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "enabled_masked_bits": {
+            "83082004": 5,
+            "83088230": 0,
+            "83088234": 196608
+          },
+          "window": {
+            "elapsed_seconds": 1.0141406669281423,
+            "transfers": 2,
+            "packet_types": {
+              "NORMAL": 2
+            },
+            "limit_reached": false
+          },
+          "stopped_bins": [
+            127147,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "stopped_repeat": [
+            127147,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "original_masked_bits": {
+        "83082004": 0,
+        "83088230": 0,
+        "83088234": 0
+      },
+      "baseline_before": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "baseline_window": {
+        "elapsed_seconds": 0.2598542917985469,
+        "transfers": 0,
+        "packet_types": {},
+        "limit_reached": false
+      },
+      "baseline_after": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "alive_after": true,
+      "restore": {
+        "83088234": true,
+        "83088230": true,
+        "83082004": true
+      },
+      "cleanup_reload_alive": true
+    }
+  ]
+}

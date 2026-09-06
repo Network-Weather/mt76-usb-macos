@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "firmware_ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120",
+  "device": "0846:9072",
+  "channel": 6,
+  "transmissions": 0,
+  "association_attempted": false,
+  "request": {"cid": 35, "tag": 1, "tlv_bytes": 4, "query": true},
+  "reply": {"body_bytes": 40, "tlv_bytes": 36, "rows_per_reply": 4},
+  "pool_count_addresses": ["0x0222efc0", "0x0222ed84", "0x0222e238"],
+  "runs": [
+    {
+      "date_utc": "2026-09-06T02:15:51.117156+00:00",
+      "queries_completed": 6,
+      "ordinary_good_per_query": [0, 7, 5, 6, 5, 5],
+      "ready_rows_per_query": [0, 0, 0, 0, 0, 0],
+      "tag_table_matches": true,
+      "pool_counts_initial": [4, 4, 16],
+      "all_before_and_after_counts_match_initial": true,
+      "temperature_after_c": 43,
+      "cleanup_reload_alive": true,
+      "pool_counts_after_reload": [4, 4, 16]
+    },
+    {
+      "date_utc": "2026-09-06T02:16:15.774061+00:00",
+      "queries_completed": 6,
+      "ordinary_good_per_query": [0, 5, 5, 5, 6, 7],
+      "ready_rows_per_query": [0, 0, 0, 0, 0, 0],
+      "tag_table_matches": true,
+      "pool_counts_initial": [4, 4, 16],
+      "all_before_and_after_counts_match_initial": true,
+      "temperature_after_c": 43,
+      "cleanup_reload_alive": true,
+      "pool_counts_after_reload": [4, 4, 16]
+    }
+  ],
+  "limits": [
+    "No associated-station test or ready-row calibration.",
+    "Unready bytes and ambient identities are not exported.",
+    "Busy percentage is hardcoded zero in the traced ready path, not measured idle airtime.",
+    "Tag8 layout is source-traced only; no tag8 request was sent.",
+    "Twelve completed requests do not establish indefinite polling safety."
+  ]
+}

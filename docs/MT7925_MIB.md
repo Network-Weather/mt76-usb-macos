@@ -1,6 +1,6 @@
 # MT7925 UNI MIB characterization
 
-Date: 2026-09-04
+Date: 2026-09-04; firmware/register cross-check 2026-09-05
 
 ## Result
 
@@ -10,21 +10,111 @@ measurements now support a working, though partly provisional, counter map:
 
 | Offset | Provisional meaning | Confidence | Observed behavior |
 | ---: | --- | --- | --- |
-| 0 | RX FCS/error count | Medium | Rises most on busy/noisy channels; zero on the quiet 6 GHz sample |
+| 0 | RX FCS/error count | High, firmware map + related-chip source | ROM resolves to full-width `0x820ed7f0`; passive ownership controls below |
 | 2 | delivered RX MPDU count | High | Matched decoded frames within 0-3 frames in every atomic-sampled dwell |
-| 7 | saturated/read-side artifact | High | Advanced by exactly 65,535 on every 3-6 second dwell, independent of traffic and width |
+| 7 | 16-bit idle-slot counter | High for field/cadence | Saturates at65,535 on long dwells; short-cadence samples now vary |
 | 11 | PHY receive attempts / MDRDY count | High | Always at least the delivered MPDU count and grows when the PHY detects frames it does not deliver |
 | 12 | CCK MDRDY duration, microseconds | High | Active only on 2.4 GHz and, with offset 13, closely tracks reconstructed receive airtime |
 | 13 | OFDM/HT/VHT/HE/EHT MDRDY duration, microseconds | High | Tracks reconstructed receive airtime on 5 and 6 GHz, where CCK cannot occur |
-| 17 | broader busy-time counter, possibly CCA+NAV(+TX) | Medium | Closely tracks offset 19 and normally exceeds decoded receive duration; direct reference comparison is compatible but not conclusive |
-| 18 | width-dependent/unknown duration | Low | Tracks wall time at 20 MHz but becomes a variable, usually small duration at 40/80/160 MHz; it is not a general clock or usable occupancy value |
-| 19 | primary CCA busy duration, microseconds | Medium-high | Exceeds decoded receive duration and closely tracked an independent MT7921 `P_CCA_TIME` reference on repeated 6 GHz samples |
+| 17 | primary CCA duration, source-named | High for mapping; unit/source qualification retained | UNI enum names`P_CCA_TIME`; ROM maps32-bit`0x820edb6c` |
+| 18 | secondary CCA duration, source-named | High for mapping; width-gated | UNI enum names`S_CCA_TIME`; near wall time at20MHz is not valid secondary occupancy |
+| 19 | CCA+NAV+TX duration, source-named | High for mapping; unit/source qualification retained | ROM maps24-bit`0x820ed024`, matching named vendor register |
 | 20 | primary energy-detect duration, microseconds | High | Nearly equals the busy counters on 2.4 GHz, is tiny on ordinary 5 GHz traffic, and rises under controlled valid Wi-Fi load; it is not non-Wi-Fi time |
-| 32 | unknown event count | Low | Intermittent, most visible during wide 5 GHz capture |
+| 32 | RX out-of-range count, source-named | Mapping known; physical trigger unqualified | ROM maps32-bit`0x820ed9b4`; do not treat as distance |
 
-The names for 12, 13, 17, 19, and 20 are behavioral identifications, not a
-published MT7925 enum.  Their relationships match MediaTek's documented MT7915
-MIB instruments:
+**Naming correction, 2026-09-05:** the newly located [pinned UNI counter enum](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/nic_uni_cmd_event.h#L2649)
+explicitly names17/18/19 as primary CCA / secondary CCA / CCA+NAV+TX.
+The earlier behavioral assignment of19 to primary CCA and17 to a broader
+counter was tentative and is superseded. The old raw observations remain valid.
+The [firmware mapping and new NAV/subchannel measurements](SUBCHANNEL_MEASUREMENTS.md)
+also qualify counter widths, idle saturation and inactive-width artifacts.
+Earlier percentages below used one microsecond per tick as a working model;
+the related detailed header specifies1.024µs for some duration counters, so
+those percentages are not precise calibrated units.
+
+## Firmware-resolved FCS/MPDU counters and read-clear ownership
+
+The pinned MT7925 firmware now provides an independent address mapping for
+offsets0/2, beyond the earlier traffic correlations. Bounded live table reads
+and ROM inspection give this chain:
+
+1. UNI22 table CID at`0x0221bff4` dispatches to`0xe0053ac0`.
+2. Its ordinary-offset path reads u16 IDs from`0x0224c220 + 2*offset`:
+   offset0→49, offset2→119. It calls`0xe003bc24` through`0xe0053c54`.
+3. The accumulator calls`0xe007a402`; ROM slot`0x00828648` points to`0x008334a6`.
+4. For these IDs, ROM constructs the band0 field key as
+   `((internal_id + 0x3e810) & 0xffff) << 5`. The reversed-endpoint Andes BFOZ
+   instruction deposits low bits; treating it as a conventional extraction
+   gives the wrong key. See the [pinned primary QEMU implementation](https://github.com/andestech/qemu/blob/32902627f26c5d760cd4efab499b989d566822f9/target/riscv/andes_helper.c#L20).
+5. Domain29 slot`0x022113b8` points to descriptor`0x022104f4`, whose first word
+   is ROM mapper`0x0083299a`—the domain slot is not itself a code pointer.
+   That mapper uses table`0x0084d79c` and band0 base`0x820ed000`.
+
+| UNI offset | Internal ID / key | Register descriptor / bit-pair table | Hardware field |
+| ---: | --- | --- | --- |
+| 0 | 49 / `0x1d0820` | `0x84d9a4` / `0x8555f0` | `0x820ed7f0[31:0]` |
+| 2 | 119 / `0x1d10e0` | `0x84dbd4` / `0x8554d8` | `0x820ed9a8[31:0]` |
+
+These agree with the related Linux MT7992 `MIB_RSCR1` and `MIB_RSCR31` offsets
+in [pinned mt7996/mmio.c](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7996/mmio.c#L75),
+which [mt7996/mac.c](https://github.com/openwrt/mt76/blob/c5a3bd91aa735b669618610d5f0ebfa5786845a6/mt7996/mac.c#L2798)
+accumulates as FCS errors and RX MPDUs. This is corroboration, not permission to
+apply the entire MT7992 map to MT7925. No live Linux-driver defect is claimed.
+
+The loaded accumulator has separate four/eight-byte software-total paths and
+adds each hardware sample into RAM before returning the UNI value. The exact
+software width of these two metadata records is not yet independently resolved;
+a 64-bit reply does not by itself establish a 64-bit hardware counter.
+
+Six passive one-second ch36/20MHz windows alternate firmware-first and
+direct-first sampling after a fresh normal boot, without counter-enable writes:
+
+| Read order | Decoded good MPDUs | UNI deltas: errors / MPDUs | First direct samples: errors / MPDUs |
+| --- | ---: | --- | --- |
+| Firmware first | 101 | 166 / 101 | 1 / 0 |
+| Direct first | 105 | 0 / 0 | 169 / 105 |
+| Firmware first | 114 | 139 / 114 | 0 / 0 |
+| Direct first | 97 | 0 / 0 | 70 / 97 |
+| Firmware first | 111 | 89 / 111 | 0 / 0 |
+| Direct first | 97 | 0 / 0 | 60 / 97 |
+
+Every immediate second direct read is zero. The one error after a firmware-first
+read demonstrates the sampling gap: new traffic can arrive between readers.
+Direct-first reads remove the entire observed window from the subsequent UNI
+delta. **These are competing consumers of read-clear hardware, not independent
+measurement streams.** Keep one owner; normal acquisition should continue using
+UNI totals, not interleave raw reads. Do not subtract consecutive direct samples
+or infer error percentages without qualifying the denominator and interval.
+Counter overflow/saturation, filtering scope and a controlled failed-frame test
+on this receiver remain unqualified. No ambient frame identifiers or payloads
+are exported; alive and normal-reload checks pass.
+
+A fresh repeat with the published reproducer gives firmware-first MPDU
+deltas94/93/101 versus94/92/101 decoded, and direct-first samples98/91/108
+versus98/91/108 decoded with all three subsequent UNI MPDU deltas0. Error
+deltas51/34/11 move through firmware-first reads; direct-first samples44/17/62
+leave firmware deltas0/1/0. All paired second reads are zero and cleanup passes.
+The one extra error and one extra MPDU retain the non-atomic read/capture gaps.
+
+A separate passive six-register check also warns against literal vendor names.
+The pinned vendor [MT7925 MIB header](https://github.com/MotorolaMobilityLLC/vendor-mediatek-kernel_modules-connectivity-wlan-core-gen4m/blob/8fddb9d7d80112cf3f2b68c961536ed61f4ab0ec/include/chips/coda/mt7925/bn0_wf_mib_top.h)
+labels`0x75c/0x760` overall FCS good/error and`0x7ec/0x7f0` NSS2/MCS7 good/error.
+But`0x75c/0x760/0x764/0x768` stay zero, while`0x7ec` tracks ordinary **1SS CCK
+and OFDM** packets:49/50/47 versus48/50/47 decoded on ch6,95/93/103 versus
+95/93/103 on ch36. Its paired second reads are zero. This is not evidence for
+per-NSS/MCS statistics; the exact reason for the header/map disagreement is
+unresolved. The firmware-derived mapping above takes precedence for offsets0/2.
+
+Reproducer: [`mt7925_mib_ownership_probe.py`](../research/mt7925_mib_ownership_probe.py)
+requires`--acknowledge-consuming-counters`; fixed-key helper and tests reject
+other offsets/chips. [Sanitized evidence](../research/evidence/mt7925-mib-field-ownership-2026-09-05.json)
+contains the narrow mappings, ROM hashes and anonymous counts, not ROM bytes.
+
+## Earlier behavioral interpretation
+
+The original names for12/13/17/19/20 were behavioral identifications. The UNI
+enum now supplies explicit names and corrects17/19 as noted above. The original
+comparison with MediaTek's MT7915 instruments was:
 
 ```text
 CCK_MDRDY_TIME + OFDM_MDRDY_TIME  ~= decodable PHY receive duration
@@ -33,10 +123,10 @@ CCA_NAV_TX_TIME and P_CCA_TIME     are closely related busy-time counters
 P_ED_TIME                          overlaps P_CCA_TIME; it is not additive
 ```
 
-Offset 19 is now the best-supported `P_CCA_TIME` identification. Offset 17 is a
-closely related, usually broader busy-time counter, but passive data does not
-prove that it is `CCA_NAV_TX_TIME`: offset 17 is larger on channel 36, while
-offset 19 is slightly larger on channel 149. Offset 20 is a valuable view of
+The earlier data could not distinguish primary CCA from CCA+NAV+TX: offset17
+was larger on channel36, while19 was slightly larger on channel149. Counter
+units and configured sources must also be considered; relative size alone did
+not justify assigning these names. Offset20 is a valuable view of
 energy detection, but it must not be labeled "non-Wi-Fi time": energy-detect
 can overlap valid Wi-Fi and its threshold is not calibrated.
 
@@ -79,8 +169,8 @@ characterization's method:
   primary-channel scope.
 - Its controlled MT7921 burst did not distinguish `P_CCA_TIME` from
   `CCA_NAV_TX_TIME`; ambient NAV changed more than the injected TX contribution.
-  That negative result directly supports retaining only the behavioral name
-  "broader busy time" for MT7925 offset 17.
+  That negative result justified provisional names at the time. The later UNI
+  enum and ROM map supersede the tentative17/19 assignments.
 
 The earlier [`uni_mib_probe.py`](../research/uni_mib_probe.py) result records the
 initial offset sweep and intentionally leaves the MT7925 counters unidentified.
@@ -187,8 +277,9 @@ MT7925 offset 19 closely followed the MT7921U primary CCA counter:
 | Repeat 1 | 1.766% | 1.679% | 0.087 pp |
 | Repeat 2 | 0.890% | 0.752% | 0.138 pp |
 
-This rules out the hypothesis that offset 19 merely has an arbitrary scale and
-is the strongest current evidence that it is MT7925 primary CCA time.
+This supports a near-microsecond scale and correlation with primary activity,
+but did not distinguish primary CCA from CCA+NAV+TX. The later source/ROM trace
+identifies offset19 as the latter; it does not establish exact tick units.
 
 Absolute readings diverged on busier 2.4 and 5 GHz channels. On channel 6,
 MT7925 offset 19 read 40.5% while MT7921 primary CCA read 18.1%. This is not
@@ -256,7 +347,7 @@ The center channel was then held at 42 while the primary rotated through all
 four 20 MHz channels in the same 80 MHz block. This changes the primary without
 changing the spectrum covered by the wide receiver:
 
-| Primary / center / width | Decoded airtime | Offset 17 | Offset 19 (`P_CCA`) | Offset 20 (`P_ED`) |
+| Primary / center / width | Decoded airtime | Offset 17 | Offset 19 (CCA+NAV+TX) | Offset 20 (`P_ED`) |
 | --- | ---: | ---: | ---: | ---: |
 | 36 / 42 / 80 | 1.66% | 2.98% | 2.69% | 0.03% |
 | 40 / 42 / 80 | 0.04% | 0.31% | 0.19% | 0.02% |
@@ -276,9 +367,10 @@ For a downstream survey instrument, the useful measurement model is now:
 1. **Delivered Wi-Fi:** offset 2 plus decoded per-frame PHY metadata.
 2. **Detected but not delivered:** offset 11 minus offset 2.
 3. **Decoded PHY duration:** offsets 12 and 13.
-4. **Primary-channel occupancy:** offset 19, retaining offset 17 beside it as an
-   experimental broader-busy counter.
-5. **NAV extension:** not derived yet; subtracting 17 and 19 would be premature.
+4. **Primary-channel activity:** source-named primary CCA offset17 beside
+   CCA+NAV+TX offset19; report units/configuration qualifications explicitly.
+5. **NAV:** directly query source-named offset52; subtracting17 and19 is not a
+   validated substitute. See the new subchannel/NAV evidence.
 6. **Energy detection:** offset 20, reported separately rather than
    called non-Wi-Fi.
 

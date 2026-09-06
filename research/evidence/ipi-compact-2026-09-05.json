@@ -1,0 +1,348 @@
+{
+  "runs": [
+    {
+      "tool": "ipi_compact_probe",
+      "date_utc": "2026-09-05T07:26:04.075932+00:00",
+      "rf_rx": false,
+      "rows": [
+        {
+          "compact": false,
+          "histograms": [
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            }
+          ],
+          "set_reply": {
+            "reply_bytes": 16,
+            "nonzero_bytes": 5,
+            "tag": 0,
+            "tlv_bytes": 0
+          },
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "compact": true,
+          "histograms": [
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            }
+          ],
+          "set_reply": {
+            "reply_bytes": 16,
+            "nonzero_bytes": 5,
+            "tag": 0,
+            "tlv_bytes": 0
+          },
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    {
+      "tool": "ipi_compact_probe",
+      "date_utc": "2026-09-05T07:26:40.620240+00:00",
+      "rf_rx": true,
+      "rows": [
+        {
+          "compact": false,
+          "histograms": [
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            }
+          ],
+          "set_reply": {
+            "reply_bytes": 16,
+            "nonzero_bytes": 2,
+            "tag": 0,
+            "tlv_bytes": 0,
+            "dispatch_refused": false,
+            "words_u32": [
+              163,
+              0,
+              28,
+              0
+            ]
+          },
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        },
+        {
+          "compact": true,
+          "histograms": [
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            },
+            {
+              "body_bytes": 56,
+              "histogram": {
+                "echoed_idx": 12,
+                "band_idx": 0,
+                "bins": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "free_run": 0,
+                "tx_assert_us": 0
+              }
+            }
+          ],
+          "set_reply": {
+            "reply_bytes": 16,
+            "nonzero_bytes": 2,
+            "tag": 0,
+            "tlv_bytes": 0,
+            "dispatch_refused": false,
+            "words_u32": [
+              163,
+              0,
+              28,
+              0
+            ]
+          },
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    }
+  ]
+}

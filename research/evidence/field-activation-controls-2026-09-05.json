@@ -1,0 +1,647 @@
+{
+  "date": "2026-09-05",
+  "firmware_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9",
+  "ipi_direct": {
+    "tool": "ipi_register_probe",
+    "direct_init": true,
+    "rf_rx": true,
+    "before": {
+      "control_raw": "0x0",
+      "field_0": 0,
+      "field_1": 0,
+      "field_2": 0,
+      "counter_words_raw": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "counters_23bit": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "set_reply_words": [
+      163,
+      0,
+      28,
+      0
+    ],
+    "after_firmware_init": {
+      "control_raw": "0x0",
+      "field_0": 0,
+      "field_1": 0,
+      "field_2": 0,
+      "counter_words_raw": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "counters_23bit": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "write": {
+      "register": "0x830af04c",
+      "mask": "0x1ef",
+      "value": "0x121"
+    },
+    "after_direct_init": {
+      "control_raw": "0x0",
+      "field_0": 0,
+      "field_1": 0,
+      "field_2": 0,
+      "counter_words_raw": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "counters_23bit": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "after_dwell": {
+      "control_raw": "0x0",
+      "field_0": 0,
+      "field_1": 0,
+      "field_2": 0,
+      "counter_words_raw": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "counters_23bit": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "histogram": {
+      "echoed_idx": 12,
+      "band_idx": 0,
+      "bins": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "free_run": 0,
+      "tx_assert_us": 0
+    },
+    "alive_after": true,
+    "restored_control": "0x0",
+    "cleanup_reload_alive": true
+  },
+  "icap_phy_control": {
+    "tool": "icap_capture_probe",
+    "date_utc": "2026-09-05T07:43:57.289263+00:00",
+    "samples_requested": 64,
+    "trigger_event": 4294967295,
+    "node_candidate": 73,
+    "architecture": 0,
+    "prepare_rx": false,
+    "icap_channel": true,
+    "retrieve": false,
+    "register_checks": true,
+    "polls": [
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ]
+    ],
+    "before": [
+      {
+        "eid": 237,
+        "ext_eid": 4,
+        "sequence_matches": true,
+        "unsolicited_sequence": false,
+        "body_bytes": 68,
+        "candidate_capture_done_raw": 1,
+        "function_raw": 12
+      }
+    ],
+    "registers_before": {
+      "registers_raw": {
+        "0x80021090": 1024,
+        "0x80021098": 1048576,
+        "0x8002109c": 1179644,
+        "0x800210a4": 1310716,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14336,
+        "0x83080008": 14336,
+        "0x830a1000": 0,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 0,
+        "0x830ad448": 0
+      },
+      "active_bit": 0
+    },
+    "start_events": [],
+    "registers_after_start": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 64,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483648,
+        "0x830ad448": 65609
+      },
+      "active_bit": 1
+    },
+    "completion_observed": false,
+    "registers_after_polls": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 64,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483648,
+        "0x830ad448": 65609
+      },
+      "active_bit": 1
+    },
+    "alive_after": true,
+    "stop_events": [],
+    "registers_after_stop": {
+      "registers_raw": {
+        "0x80021090": 1265,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 64,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483648,
+        "0x830ad448": 65609
+      },
+      "active_bit": 0
+    },
+    "cleanup_reload_alive": true
+  },
+  "icap_packed_node": {
+    "tool": "icap_capture_probe",
+    "date_utc": "2026-09-05T07:45:47.648108+00:00",
+    "samples_requested": 64,
+    "trigger_event": 4294967295,
+    "node_candidate": 1114112,
+    "architecture": 0,
+    "prepare_rx": false,
+    "icap_channel": true,
+    "retrieve": false,
+    "register_checks": true,
+    "polls": [
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ]
+    ],
+    "before": [
+      {
+        "eid": 237,
+        "ext_eid": 4,
+        "sequence_matches": true,
+        "unsolicited_sequence": false,
+        "body_bytes": 68,
+        "candidate_capture_done_raw": 1,
+        "function_raw": 12
+      }
+    ],
+    "registers_before": {
+      "registers_raw": {
+        "0x80021090": 1024,
+        "0x80021098": 1048576,
+        "0x8002109c": 1179644,
+        "0x800210a4": 1310716,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14336,
+        "0x83080008": 14336,
+        "0x830a1000": 0,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 0,
+        "0x830ad448": 0
+      },
+      "active_bit": 0
+    },
+    "start_events": [],
+    "registers_after_start": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 32,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483665,
+        "0x830ad448": 2162688
+      },
+      "active_bit": 1
+    },
+    "completion_observed": false,
+    "registers_after_polls": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 32,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483665,
+        "0x830ad448": 2162688
+      },
+      "active_bit": 1
+    },
+    "alive_after": true,
+    "stop_events": [],
+    "registers_after_stop": {
+      "registers_raw": {
+        "0x80021090": 1265,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 32,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483665,
+        "0x830ad448": 2162688
+      },
+      "active_bit": 0
+    },
+    "cleanup_reload_alive": true
+  },
+  "icap_rx_after_mode": {
+    "tool": "icap_capture_probe",
+    "date_utc": "2026-09-05T07:46:22.124340+00:00",
+    "samples_requested": 64,
+    "trigger_event": 4294967295,
+    "node_candidate": 1114112,
+    "architecture": 0,
+    "prepare_rx": false,
+    "icap_rx": true,
+    "icap_channel": false,
+    "retrieve": false,
+    "register_checks": true,
+    "polls": [
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ],
+      [
+        {
+          "eid": 237,
+          "ext_eid": 4,
+          "sequence_matches": true,
+          "unsolicited_sequence": false,
+          "body_bytes": 68,
+          "candidate_capture_done_raw": 0,
+          "function_raw": 12
+        }
+      ]
+    ],
+    "before": [
+      {
+        "eid": 237,
+        "ext_eid": 4,
+        "sequence_matches": true,
+        "unsolicited_sequence": false,
+        "body_bytes": 68,
+        "candidate_capture_done_raw": 1,
+        "function_raw": 12
+      }
+    ],
+    "registers_before": {
+      "registers_raw": {
+        "0x80021090": 1024,
+        "0x80021098": 1048576,
+        "0x8002109c": 1179644,
+        "0x800210a4": 1310716,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14336,
+        "0x83080008": 14336,
+        "0x830a1000": 0,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 0,
+        "0x830ad448": 0
+      },
+      "active_bit": 0
+    },
+    "start_events": [],
+    "registers_after_start": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 32,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483665,
+        "0x830ad448": 2162688
+      },
+      "active_bit": 1
+    },
+    "completion_observed": false,
+    "registers_after_polls": {
+      "registers_raw": {
+        "0x80021090": 1267,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 32,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483665,
+        "0x830ad448": 2162688
+      },
+      "active_bit": 1
+    },
+    "alive_after": true,
+    "stop_events": [],
+    "registers_after_stop": {
+      "registers_raw": {
+        "0x80021090": 1265,
+        "0x80021098": 0,
+        "0x8002109c": 65532,
+        "0x800210a4": 32,
+        "0x800210b4": 0
+      },
+      "phy_registers_raw": {
+        "0x83080004": 14400,
+        "0x83080008": 14400,
+        "0x830a1000": 67174656,
+        "0x830a1004": 0,
+        "0x830a3008": 0,
+        "0x830ad440": 2147483665,
+        "0x830ad448": 2162688
+      },
+      "active_bit": 0
+    },
+    "cleanup_reload_alive": true
+  },
+  "rx_mode_scalar_control": {
+    "tool": "icap_mode_rx_scalar_control",
+    "rows": [
+      {
+        "mode": 1,
+        "before": {
+          "34": 0,
+          "35": 0,
+          "46": 4294939282,
+          "50": 2461615190
+        },
+        "after": {
+          "34": 2,
+          "35": 0,
+          "46": 4294942100,
+          "50": 2797164630
+        },
+        "stopped": {
+          "34": 2,
+          "35": 0,
+          "46": 4294942100,
+          "50": 2461615190
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      },
+      {
+        "mode": 2,
+        "before": {
+          "34": 0,
+          "35": 0,
+          "46": 4294939282,
+          "50": 2461615190
+        },
+        "after": {
+          "34": 0,
+          "35": 0,
+          "46": 4294939282,
+          "50": 2461615190
+        },
+        "stopped": {
+          "34": 0,
+          "35": 0,
+          "46": 4294939282,
+          "50": 2595834966
+        },
+        "alive_after": true,
+        "cleanup_reload_alive": true
+      }
+    ]
+  }
+}

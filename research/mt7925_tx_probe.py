@@ -85,7 +85,7 @@ def build_txwi(frame, sequence, power_code=0, *, disable_mat=False, rate="ofdm6"
     return struct.pack("<16I", *words)
 
 
-def tx_status(raw):
+def tx_status(raw, *, include_timing=False):
     # mt7925_mac_rx_check: MT_TXS_HDR_SIZE=4 DW, MT_TXS_SIZE=12 DW.
     if len(raw) < 16:
         return []
@@ -101,10 +101,31 @@ def tx_status(raw):
                 "power_raw": words[1] & 255,
                 "ack_error_bits": (words[0] >> 16) & 7,
                 "error_bits_16_22": (words[0] >> 16) & 127,
-                "tx_count_format0": (words[5] >> 25) & 31,
+                "tx_count_format0": (words[5] >> 25) & 31 if (words[0] >> 23) & 3 == 0 else None,
                 "pid": words[3] >> 24,
             }
         )
+        if include_timing:
+            # mt76_connac3_mac.h: raw hardware fields, units not established.
+            # Format0 alone defines the 25-bit front-time field.
+            records[-1].update(
+                bandwidth_raw=words[0] >> 29,
+                tx_delay_raw=words[2] & 0xFFFF,
+                timestamp_raw=words[4],
+                rate_stbc=bool(words[3] & (1 << 7)),
+                front_time_raw_format0=(words[5] & 0x1FFFFFF)
+                if records[-1]["format"] == 0
+                else None,
+                mpdu_counters_format1_hypothesis={
+                    name: {"count": words[index] >> 24, "bytes": words[index] & 0xFFFFFF}
+                    for name, index in (("tx", 5), ("fail", 6), ("retry", 7))
+                }
+                if records[-1]["format"] == 1
+                else None,
+                format1_words5_7_raw=[hex(w) for w in words[5:8]]
+                if records[-1]["format"] == 1
+                else None,
+            )
     return records
 
 
