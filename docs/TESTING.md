@@ -6,6 +6,13 @@ hardware result, and a packet seen once is not presented as a reliability guaran
 
 ## R32 current MT7921 RF failure and soak status, 2026-09-06
 
+The subsequent [native reset-error check](../research/evidence/r32-reset-error-gate-2026-09-06.json)
+at `542da24` passes all 2,014 offline tests and updated ASan/UBSan controls. A
+fresh native channel6/5s smoke completes bring-up and reports38C, but still
+receives zero frames (exit2/inconclusive). The ignored reset error is fixed;
+the RF-silence cause is not. Changed-build A9000 bring-up remains a post-soak
+check; the running native soak uses its recorded `2074599` executable.
+
 The attached ALFA is now RF-silent in fresh2.4GHz baselines, not merely weak on
 5GHz. [Preserved failure evidence](../research/evidence/r32-mt7921-rf-silence-2026-09-06.json)
 records0 frames over164.531s on channels1/11 despite90 matched MCU replies,

@@ -39,7 +39,8 @@ including the initial thermal/MIB failure and the recent old-radio RF silence.
   the final commit. Do not run the clean/rebuild script over a native executable
   currently participating in a soak; use a separate build directory or wait.
   A subsequent native reset-timeout error-return fix passes synthetic controls
-  and sanitizers, but its fresh hardware bring-up remains a post-soak check.
+  and sanitizers. Fresh old-chip bring-up/thermal reads pass, but RX remains
+  silent; changed-build A9000 bring-up remains a post-soak check.
   The running soak's recorded base remains `2074599`, not the later source HEAD.
 - Refresh the final Unreleased/support/privacy notes, then select a version and
   prepare the publication checklist separately. No merge/release is authorized
