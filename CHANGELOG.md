@@ -5,6 +5,18 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+### Qualification limits
+
+- R32 is not release-ready: the attached MT7921 is RF-silent in fresh passive
+  controls on both unchanged main and the feature branch. Firmware/MCU responses
+  do not establish receiver health, and a software port-power cycle did not
+  establish a physical cold reset. Historical release evidence is retained;
+  current acceptance and the cause remain unresolved. See [the scope and remaining gates](docs/MEASUREMENT_RELEASE_SCOPE.md).
+- Raw CSI addresses, coefficients and fingerprints remain sensitive even without
+  packet payloads. [Security guidance](SECURITY.md) now explicitly covers raw
+  measurement events and explains that a redacted default representation is not
+  an anonymization guarantee.
+
 ### Fixed
 
 - Native bring-up now aborts when a retained-firmware WFSYS reset times out,
