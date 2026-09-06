@@ -121,17 +121,52 @@ def test_timeout_faults_before_sequence_can_be_reused(dev):
     dev.dev.on_write = lambda: None
     session = AcquisitionSession(dev).start()
     try:
-        with pytest.raises(SessionError):
-            session.call(lambda d: d.mcu_send(0x44), timeout=0.1)
+        with pytest.raises(SessionError, match="MCU command 0x44 timed out"):
+            # Give worker startup/queueing the normal outer deadline, then
+            # expire the reply wait after the command actually reached USB.
+            # A 100ms total deadline can correctly expire BEFORE any write on
+            # a loaded runner; that distinct case is synchronized below.
+            session.call(lambda d: d.mcu_send(0x44, timeout=50))
+        expired_sequence = dev.msg_seq
         dev.dev.rx.put(packet(7, seq=dev.msg_seq, chip=dev.CHIP))
         with pytest.raises(SessionError):
             session.call(lambda d: d.mcu_send(0x44))
         assert len(dev.dev.writes) == 1
+        assert dev.msg_seq == expired_sequence
         assert max(dev.dev.timeouts) <= 100
     finally:
         session.stop()
     with pytest.raises(SessionError):
         AcquisitionSession(dev).start()
+
+
+def test_queued_deadline_faults_without_allocating_sequence(dev):
+    entered, release = threading.Event(), threading.Event()
+
+    def hold_worker(_dev):
+        # Deliberately stalled callback: finally always releases this test gate.
+        entered.set()
+        release.wait()
+
+    session = AcquisitionSession(dev).start()
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        active = pool.submit(session.call, hold_worker)
+        try:
+            assert entered.wait(2)
+            initial_sequence = dev.msg_seq
+            with pytest.raises(SessionError, match="deadline"):
+                session.call(lambda d: d.mcu_send(0x44), timeout=0.05)
+            assert session.snapshot()["state"] == "failed"
+            release.set()
+            with pytest.raises(SessionError):
+                active.result(timeout=2)
+            with pytest.raises(SessionError):
+                session.call(lambda d: d.mcu_send(0x44))
+            assert dev.dev.writes == []
+            assert dev.msg_seq == initial_sequence
+        finally:
+            release.set()
+            session.stop()
 
 
 def test_sequence_wrap_serialized_concurrent_callers(dev):

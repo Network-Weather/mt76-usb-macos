@@ -4,6 +4,33 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 offline and CI qualification, 2026-09-06
+
+Fresh archives of `1f08090` pass the complete `scripts/check.sh` on local
+macOS26.6.1 with Python3.14 and an isolated Python3.10.18 runtime:2,025 tests,
+formatting/lint/docs, distribution build, dependency checks, native build/tests
+and ASan/UBSan. The installed measurement/session modules and example imports
+also work outside the checkout. An initial Python3.10 attempt scanned a wheel
+installation mistakenly placed beneath the archived source; a fresh source tree
+removed that test-directory contamination without a repository change.
+
+[Draft PR32](https://github.com/Network-Weather/mt76-usb-macos/pull/32) enables the
+configured macOS14/26 × Python3.10/3.14 matrix. Its
+[first run](https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064371831)
+passed macOS26/Python3.10 but failed the same two timeout-test assertions in the
+other three jobs: the test required exactly one USB write within a100ms total
+deadline, while the observed write count was zero. Queueing is part of the
+documented deadline; failing before issuing a write is valid fail-closed behavior.
+The logs do not establish the exact scheduling cause.
+
+The corrected tests give worker startup the normal outer deadline and explicitly
+expire the MCU reply wait after a write, retaining the one-write/no-sequence-reuse
+assertion. A separate event-gated blocked-worker test proves queued expiration
+allocates no sequence and issues no write. This changes tests, not production
+timeouts or session behavior. The local suite now passes2,027 tests; the renewed
+CI matrix remains a separate gate. Optional tshark checks can be skipped on
+CI runners without that tool; local Wireshark-backed tests are not skipped.
+
 ## R32 current MT7921 RF failure and soak status, 2026-09-06
 
 The subsequent [native reset-error check](../research/evidence/r32-reset-error-gate-2026-09-06.json)
