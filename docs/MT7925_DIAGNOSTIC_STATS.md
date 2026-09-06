@@ -66,8 +66,8 @@ six8-byte entries at GP+11524 = **02215504**. Live reads match:
 | Tag | Handler | Meaning used here |
 | --- | --- | --- |
 | 0 | e00535f0 →e003bbba | Basic statistics |
-| 1 | e0053538 | Not invoked |
-| 8 | e0053578 | Not invoked; do not infer a public layout |
+| 1 | e0053538 | Four-row link quality; tested below |
+| 8 | e0053578 | Sparse ready link-quality rows; source trace only |
 | 2 | e0053c6e | Peer statistics, not invoked |
 | 3 | e00535f4 →e003ba76 | Diagnostic report |
 | 6 | e0054090 | Not invoked |
@@ -146,3 +146,44 @@ Any failed temperature control causes a nonzero process exit.
 [All nine runs plus the independent tag-table read](../research/evidence/mt7925-diagnostic-command-leak-2026-09-05.json)
 retain failed/partial runs, live counts, empty replies and recovery evidence.
 Every normal reload succeeds. Production Python/C APIs are unchanged.
+
+## Link quality: readiness matters, busy percentage is not implemented
+
+Two fresh receive-only monitor-mode boots on2026-09-06 UTC each complete six
+UNI23 tag1 queries. All48 returned rows are **not ready**, while28 ordinary
+good-FCS records arrive during each run's queries. Pool counts stay4/4/16 before
+and after every query; subsequent temperature queries report43°C and both
+normal reloads succeed. Unlike diagnostic tag3, this path shows no resource
+retention in these twelve requests. This is a bounded control, not endurance
+qualification or an associated-station test.
+
+The request is four zero bytes followed by `(tag1,length4)`; the matched reply
+is40 bytes, containing a36-byte TLV and four8-byte rows. The public structure
+names row bytes0/1/2..3/4/5 as RSSI, link quality, link speed, medium busy and
+readiness. The pinned implementation is narrower:
+
+- Handler`e0053546` loops over four slots and calls`e00534b2(row,index,1)`.
+  It returns0 at`e005356e`, taking the ordinary command-cleanup path.
+- Getter`e00534c2` first clears readiness at row+5. It requires a non-null
+  station context, context+18 equal1, context+4 equal0, and a successful
+  readiness helper using context+38. Failed gates return without filling the
+  other row fields. Their bytes must not be interpreted or exported. This is
+  not a demonstrated memory disclosure: allocator initialization is unaudited.
+- On the ready path, RSSI is derived from a bounded RCPI-like getter using
+  arithmetic shift-right1 minus110; link quality is explicitly0 and speed is
+  another getter divided by5. These are source formulas, not live calibration.
+- **`e0053514..516` stores halfword0x0100 at row+4:** medium busy is hardcoded0,
+  readiness1. The subsequent visible calls do not fill medium busy. Despite the
+  public header's read-clear comment, this is not a channel-occupancy reading.
+- Tag8 handler`e005357a` zeros four scratch rows, calls the same getter, and
+  skips rows whose byte5 is zero. Each ready row produces a16-byte tag8 TLV,
+  slot index at+4 and the8-byte row at+8. It returns0 at`e00535e6`. This is a
+  static layout trace only; tag8 was not sent and its padding is uninterpreted.
+
+[`link_quality_probe.py`](../research/link_quality_probe.py) strictly validates
+the event shape, exports no scalars from unready rows, always marks medium busy
+unavailable, checks pool counts after each request and aborts on any decrease.
+[Sanitized evidence](../research/evidence/mt7925-link-quality-2026-09-06.json)
+retains all per-query aggregate counts. No association, TX, guessed register
+writes or production API changes. For Network Weather, neither unready RSSI nor
+this constant busy field is a usable passive survey metric.

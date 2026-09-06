@@ -5,6 +5,13 @@ User-authorized autonomous measurement/TX exploration; not a networking driver.
 No merge, nonvolatile firmware writes, host-memory DMA, raw ambient captures, or
 calibrated claims by inference. Results below extend [station testmode](STATION_TESTMODE.md).
 
+**Link-quality replies do not provide passive channel occupancy:** two fresh
+[six-query controls](MT7925_DIAGNOSTIC_STATS.md#link-quality-readiness-matters-busy-percentage-is-not-implemented)
+complete with stable command pools and working thermal controls, but all48 rows
+are unready despite56 ordinary good-FCS records. Firmware hardcodes busy0 even
+on its ready path; unready scalars are discarded. No TX or association; both
+reloads pass. This closes another misleading advertised measurement field.
+
 **New concrete firmware defect: UNI23 diagnostic reports retain command objects.**
 [Maintainer-ready reproduction and ownership trace](MT7925_DIAGNOSTIC_STATS.md)
 show free count4→3→2→1 after three reports; six basic queries keep4. Exactly
