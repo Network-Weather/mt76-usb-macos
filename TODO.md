@@ -8,7 +8,7 @@ remaining research, Python/C integration and acceptance gates.
 
 Execution order: sessions and raw named counters first (implemented below), then
 thermal, normal Group5 signal/TX-status timing, CSI, histograms, and final release
-qualification. Current next implementation slice is TX-status timing. Group5
+qualification. Current next implementation slice is the separately gated beacon CSI API. Group5
 raw decoding/guard is implemented; live enabled-phase reliability remains gated.
 
 - [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
@@ -18,8 +18,10 @@ raw decoding/guard is implemented; live enabled-phase reliability remains gated.
   stay unknown; weak MT7921 reception remains an RF qualification limit.
 - [x] Deliver query-only thermal primitives in both libraries, including MT7925 raw
   ADC, research helper reuse, failure fixtures and short mixed-session evidence.
-- [ ] Deliver Group5 signal and TX-status timing primitives in
+- [x] Deliver Group5 signal and TX-status timing primitives in
   both libraries, with research helpers consuming the promoted implementations.
+  Group5 remains experimental with a failed live-reliability gate;12/12 live
+  TX-status timing records match, but weak RF controls still prohibit new TX claims.
 - [ ] Target bounded beacon CSI, then raw histograms, behind separate experimental
   gates; defer either if its validity/cleanup/parity gate is not met.
 - [ ] Requalify healthy independent RF controls before any expanded TX profile.

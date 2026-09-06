@@ -149,7 +149,9 @@ discovery or large type-system refactor is needed to complete this package.
 - [x] Implement Group5 raw-signal decoder/guard parity with shared bounds/failure
   fixtures. Live reliability gate remains open: [four cycles](MEASUREMENTS.md#experimental-raw-group5-fields)
   reproduce enabled-phase near-silence in both languages; retain experimental scope.
-- [ ] TX-status timing parity.
+- [x] TX-status timing parity: strict installed parser and research reuse, shared
+  malformed/format/capacity fixtures,12/12 identical live status decodes. Missing
+  independent OFDM receipts remain a TX-profile gate, not parser failure.
 - [ ] Each slice includes synthetic golden bytes shared across implementations,
   malformed/unknown/truncated-input and failure tests, CLI reuse, and dated live
   qualification on the applicable dongle. Compare semantics in separate runs;

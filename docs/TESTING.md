@@ -4,6 +4,18 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 TX-status timing integration, 2026-09-06
+
+All1,891 Python tests, native tests, ASan/UBSan and sdist/wheel build pass. Shared
+TXS fixtures cover both chips, all four formats, signed/raw boundaries, every
+truncation, DMA padding and capacity failures without partial output.
+[Live evidence](../research/evidence/r32-tx-status-2026-09-06.json) records12/12
+identical Python/C timing decodes from the same live status bytes (Python USB
+transport, native pure parser). The existing bounded channel6 experiment receives
+all8 CCK packets independently but neither two-packet OFDM bracket. Both radios
+remain alive and transmitter reload succeeds. This is parser qualification, not
+a healthy full RF control set, new TX profile, clock recalibration or ranging.
+
 ## R32 raw Group5 integration, 2026-09-06
 
 Shared Python/C tests cover all32 group masks on both chips, each DMA/USB

@@ -36,6 +36,85 @@ class CounterUnit(IntEnum):
     IDLE_SLOTS = 2
 
 
+@dataclass(frozen=True)
+class TxStatus:
+    """Raw TX completion metadata, not proof of independent RF delivery.
+
+    MT7925 timestamp/front-time are distinct wrapping device clocks, not RXD
+    timestamps or host time. Delay includes service/packet time, not pure
+    contention. Tick periods are evidenced only for pinned MT7925 format0;
+    other formats retain source-defined raw fields with unknown scales.
+    """
+
+    chip: str
+    format: int
+    rate_raw: int
+    power_raw: int
+    power_signed: int
+    sequence: int
+    pid: int
+    ack_error_bits: int
+    error_bits_16_22: int
+    tx_count: int | None
+    bandwidth_raw: int | None
+    rate_stbc: bool | None
+    tx_delay_raw: int | None
+    timestamp_raw: int | None
+    front_time_raw: int | None
+    timestamp_tick_ns: int | None
+    front_time_tick_ns: int | None
+    tx_delay_tick_ns: int | None
+
+
+def parse_tx_status(chip: str, raw: bytes, max_records: int = 128) -> tuple[TxStatus, ...]:
+    """Strict TXS packet parser, matching C mt_tx_status_parse; no I/O.
+
+    Ignore USB padding, reject incomplete DMA/records or insufficient capacity
+    without partial output. Empty well-formed TXS packets return an empty tuple.
+    No format1 MPDU-counter hypotheses or noise/ACK RSSI interpretation.
+    """
+    if chip not in (m.CHIP_MT7921, m.CHIP_MT7925):
+        raise ValueError("unsupported TXS chip")
+    if type(max_records) is not int or not 0 <= max_records <= 2047 or len(raw) < 4:
+        raise ValueError("short TXS packet or invalid capacity")
+    c3 = chip == m.CHIP_MT7925
+    prefix, stride = (16, 48) if c3 else (8, 32)
+    word = struct.unpack_from("<I", raw)[0]
+    end = word & 65535
+    if word >> 27 or not prefix <= end <= len(raw) or (end - prefix) % stride:
+        raise ValueError("invalid TXS DMA/type/record length")
+    if (end - prefix) // stride > max_records:
+        raise ValueError("TXS record capacity exceeded")
+    result = []
+    for offset in range(prefix, end, stride):
+        a, b, delay, d, timestamp, front = struct.unpack_from("<6I", raw, offset)
+        fmt, power = (a >> 23) & 3, b & 255
+        format0 = c3 and fmt == 0
+        result.append(
+            TxStatus(
+                chip,
+                fmt,
+                a & 0x3FFF,
+                power,
+                power if power < 128 else power - 256,
+                b >> 20,
+                d >> 24,
+                (a >> 16) & 7,
+                (a >> 16) & 127,
+                (front >> 25) & 31 if format0 else None,
+                a >> 29 if c3 else None,
+                bool(d & 128) if c3 else None,
+                delay & 65535 if c3 else None,
+                timestamp if c3 else None,
+                front & 0x1FFFFFF if format0 else None,
+                1000 if format0 else None,
+                32000 if format0 else None,
+                32000 if format0 else None,
+            )
+        )
+    return tuple(result)
+
+
 class ThermalAction(IntEnum):
     TEMPERATURE = 0
     RAW_ADC = 1

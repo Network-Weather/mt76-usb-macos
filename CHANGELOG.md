@@ -7,6 +7,12 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Added
 
+- Strict installed Python/native TX-status decoding with MT7925 raw timestamp,
+  delay, bandwidth and STBC, format0-only front-time/TX count and explicit tick
+  scale availability. Research readers reuse the bounded parser;12 live status
+  records decode identically. Missing independent OFDM receipts remain an RF
+  qualification limit. No new transmit controls, old-chip timing, synchronized
+  clocks or ranging; see [the contract](docs/MEASUREMENTS.md#tx-status-timing-without-new-transmit-controls).
 - Opt-in MT7921 Group5 raw in-band/wideband receiver-index decoding in Python/C,
   with complete-group/DMA bounds and explicit absence on MT7925. Python gains a
   matching saved-bit/readback/restore guard; research readers reuse the decoder.

@@ -198,6 +198,23 @@ int parity_mcu_fault(int chip, int mode) {
     return ret || len != 64 || mcu.dropped_frames != 1 || mcu.stale_events != 1;
 }
 
+int parity_txs_timing(int chip, const unsigned char *raw, unsigned len,
+                       unsigned capacity, uint32_t *v) {
+    mt_tx_status_t out[16];
+    if (capacity > 16) return -1;
+    int n = mt_tx_status_parse(chip, raw, len, out, capacity);
+    if (n <= 0) return n;
+    for (int i = 0; i < n; i++) {
+        uint32_t *p = v + i * 10;
+        p[0] = out[i].has_timing; p[1] = out[i].bandwidth_raw;
+        p[2] = out[i].rate_stbc; p[3] = out[i].tx_delay_raw;
+        p[4] = out[i].timestamp_raw; p[5] = out[i].has_front_time;
+        p[6] = out[i].front_time_raw; p[7] = out[i].timestamp_tick_ns;
+        p[8] = out[i].front_time_tick_ns; p[9] = out[i].tx_delay_tick_ns;
+    }
+    return n;
+}
+
 int parity_txs(int chip, const unsigned char *raw, unsigned len, int *v) {
     mt_tx_status_t out[16];
     int n = mt_tx_status_parse(chip, raw, len, out, 16);

@@ -120,6 +120,40 @@ restoration in the first run. The raw decoder/guard is implemented and offline
 tested, but dependable live Group5 acquisition is **not qualified**. No sensor
 validity should be inferred from the isolated odd values in the failing runs.
 
+## TX-status timing without new transmit controls
+
+`parse_tx_status(chip, raw, max_records=128)` returns immutable `TxStatus`
+records and matches native `mt_tx_status_parse`. Both require type0 TXS,
+chip-specific prefix/stride, complete DMA/record bounds and sufficient output
+capacity; malformed packets fail without partial output. USB padding is ignored.
+The Python capacity is0..2047 (maximum that fits the old-chip u16 DMA length).
+A well-formed empty TXS packet is an empty result, not an error. Research status
+readers reuse the installed parser while retaining their existing output keys.
+
+Both chips expose raw rate/power, signed power representation, sequence, PID and
+error bits. MT7925 additionally exposes raw bandwidth, STBC, 16-bit TX delay and
+32-bit timestamp. Only format0 supplies TX count and 25-bit front-time. C uses
+`has_timing` / `has_front_time` / `has_tx_count`; Python uses `None` for absence.
+Old-chip timing is not promoted; neither are format1 MPDU-counter hypotheses,
+noise or ACK RSSI measurements. Embedders must rebuild for the expanded C struct.
+
+`timestamp_tick_ns`, `front_time_tick_ns`, `tx_delay_tick_ns` are1000/32000/32000
+only on pinned MT7925 format0, following [earlier measured controls](TX_STATUS_TIMING.md).
+Other formats have unknown scales (`None` / native0), even when raw layout fields
+are present. Timestamp and front-time are separate wrapping device clocks, not
+synchronized RXD or host time; front-time is not a duration. Delay includes packet
+and service time, not pure contention. No automatic unwrap, clock alignment,
+calibrated airtime, exact latch point or ranging calculation is supplied.
+
+[Live shared-byte qualification](../research/evidence/r32-tx-status-2026-09-06.json)
+matched all12 format0 statuses in Python/C during an existing channel6 CCK/OFDM
+experiment. The independent receiver obtained8/12 exact good-FCS frames, all CCK;
+the two OFDM brackets remained unreceived. This qualifies the raw parsers on those
+status bytes, not successful delivery or an expanded transmit profile. The run
+used Python transport with native decoding of the same bytes; both radios stayed
+alive and transmitter firmware reload succeeded. Native `mt76_radio_probe` also
+exports the new fields as redacted metadata without changing its TX limits.
+
 ## Use during capture
 
 After explicit pinned-firmware bring-up, monitor/sniffer configuration and tune:

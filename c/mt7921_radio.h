@@ -105,6 +105,15 @@ typedef struct {
     uint16_t rate_raw, sequence;
     bool has_tx_count;
     uint8_t tx_count;     /* connac3 format 0 only */
+    bool has_timing;      /* connac3 raw layout; old-chip timing not promoted */
+    uint8_t bandwidth_raw;
+    bool rate_stbc, has_front_time;
+    uint16_t tx_delay_raw; /* service/packet delay, NOT pure contention */
+    uint32_t timestamp_raw; /* wrapping TXS clock, not RXD/host time */
+    uint32_t front_time_raw; /* separate wrapping 25-bit clock, format0 only */
+    unsigned timestamp_tick_ns, front_time_tick_ns, tx_delay_tick_ns;
+    /* Nonzero ticks only for evidenced pinned MT7925 format0; zero = UNKNOWN.
+     * No synchronized clock domains, exact latch points, or ranging claim. */
 } mt_tx_status_t;
 /* Packet type must be TXS (0). Strict DMA bounds and complete records; USB padding
  * beyond DMA length is ignored. Returns record count or -1, no partial output. */

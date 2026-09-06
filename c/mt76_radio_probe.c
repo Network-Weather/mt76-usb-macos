@@ -105,6 +105,16 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
                        s->format, s->sequence, s->rate_raw, s->power_raw, s->power_signed,
                        s->pid, s->error_bits_16_22);
                 if (s->has_tx_count) printf("%u", s->tx_count); else printf("null");
+                printf(",\"timing\":");
+                if (s->has_timing) {
+                    printf("{\"timestamp_raw\":%u,\"tx_delay_raw\":%u,"
+                           "\"bandwidth_raw\":%u,\"rate_stbc\":%s,\"front_time_raw\":",
+                           s->timestamp_raw, s->tx_delay_raw, s->bandwidth_raw,
+                           s->rate_stbc ? "true" : "false");
+                    if (s->has_front_time) printf("%u", s->front_time_raw); else printf("null");
+                    printf(",\"timestamp_tick_ns\":%u,\"front_time_tick_ns\":%u,\"tx_delay_tick_ns\":%u}",
+                           s->timestamp_tick_ns, s->front_time_tick_ns, s->tx_delay_tick_ns);
+                } else printf("null");
                 puts("}");
             }
             continue;

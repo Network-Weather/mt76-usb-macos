@@ -459,6 +459,55 @@ def test_tx_invalid_inputs(native):
 
 
 @pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("value", [0, 1, 0xFFFFFFFF, 0xE2345678])
+def test_txs_timing_shared_contract(native, chip, value):
+    from tests.test_tx_status_measurements import packet
+
+    name = "mt7925" if chip else "mt7921"
+    raw = packet(name, (0, 1, 2, 3), value)
+    native.parity_txs_timing.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_uint,
+        ct.c_uint,
+        ct.POINTER(ct.c_uint32),
+    ]
+    mutations = [raw, raw + b"USB padding", packet(name, ()), raw * 2]
+    mutations += [raw[:end] for end in range(len(raw))]
+    for end in range(len(raw) + 1):
+        changed = bytearray(raw)
+        struct.pack_into("<H", changed, 0, end)
+        mutations.append(bytes(changed))
+    wrong_type = bytearray(raw)
+    wrong_type[3] = 2 << 3
+    mutations.append(bytes(wrong_type))
+    for sample in mutations:
+        for cap in (0, 3, 4):
+            output = (ct.c_uint32 * 160)(*([99] * 160))
+            result = native.parity_txs_timing(chip, sample, len(sample), cap, output)
+            try:
+                records = mm.parse_tx_status(name, sample, cap)
+            except ValueError:
+                assert result == -1
+                assert list(output) == [99] * 160
+                continue
+            assert result == len(records)
+            for index, s in enumerate(records):
+                assert list(output[index * 10 : (index + 1) * 10]) == [
+                    chip == 1,
+                    s.bandwidth_raw or 0,
+                    s.rate_stbc or 0,
+                    s.tx_delay_raw or 0,
+                    s.timestamp_raw or 0,
+                    s.front_time_raw is not None,
+                    s.front_time_raw or 0,
+                    s.timestamp_tick_ns or 0,
+                    s.front_time_tick_ns or 0,
+                    s.tx_delay_tick_ns or 0,
+                ]
+
+
+@pytest.mark.parametrize("chip", [0, 1])
 @pytest.mark.parametrize("fmt", range(4))
 def test_txs_shared_bytes(native, chip, fmt):
     from research.dual_radio_probe import tx_status_records

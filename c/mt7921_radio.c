@@ -328,6 +328,19 @@ int mt_tx_status_parse(int chip, const uint8_t *raw, size_t len,
         value.error_bits_16_22 = (a >> 16) & 127;
         value.has_tx_count = chip == MT_CHIP_MT7925 && value.format == 0;
         if (value.has_tx_count) value.tx_count = (le32(p + 20) >> 25) & 31;
+        value.has_timing = chip == MT_CHIP_MT7925;
+        if (value.has_timing) {
+            value.bandwidth_raw = a >> 29;
+            value.rate_stbc = (d & 128) != 0;
+            value.tx_delay_raw = le32(p + 8) & 65535;
+            value.timestamp_raw = le32(p + 16);
+            value.has_front_time = value.format == 0;
+            if (value.has_front_time) {
+                value.front_time_raw = le32(p + 20) & 0x1ffffff;
+                value.timestamp_tick_ns = 1000;
+                value.front_time_tick_ns = value.tx_delay_tick_ns = 32000;
+            }
+        }
         out[i] = value;
     }
     return (int)n;
