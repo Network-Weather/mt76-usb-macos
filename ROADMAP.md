@@ -21,6 +21,12 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 ## Priority decision, 2026-09-06
 
+The [R32 checkpoint and prioritized next steps](docs/R32_CHECKPOINT.md) record
+the completed Python/C implementation, native A9000 two-hour result, intentionally
+partial Python run and unresolved old-radio RF failure. Acquisition is stopped
+at the user's request; resume with fixture recovery and bounded acceptance,
+then focused measurement research. Nothing is merged or released for R32.
+
 R30 C acquisition parity and PR #31 firmware research are merged into `main`, but
 not released. The selected next delivery is **R32: measurement API integration**:
 turn a selected, qualified subset into callable Python and C primitives. The

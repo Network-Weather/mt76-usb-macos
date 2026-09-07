@@ -77,8 +77,10 @@ matching Python/C control lifetimes and short hardware evidence. Group5 streamin
 reliability remains unqualified, and no calibrated noise, power or ranging is implied.
 
 Current release qualification is not complete: the attached MT7921 is now RF-silent
-even in the existing baseline tools, while the A9000's longer session tests are
-running. [Current status and limitations](docs/TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06)
+even in unchanged-main controls. The A9000 native two-hour run passed its scoped
+gate; Python was intentionally stopped at39.5min for the user's checkpoint.
+[Stocktake and next roadmap](docs/R32_CHECKPOINT.md) and
+[current limitations](docs/TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06)
 supersede any inference that the historical hardware table guarantees this unit's
 present RF health; the cause is unresolved.
 

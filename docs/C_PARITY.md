@@ -11,6 +11,12 @@ This additive slice and the integrated sessions are on `feat/measurement-api`,
 not yet released. New raw-counter and query-only thermal parity is distinct from the earlier R30 table
 and does not imply parity for the remaining research-only surfaces.
 
+The [R32 checkpoint](R32_CHECKPOINT.md) records the native A9000 two-hour
+passive/counter/thermal/retune result and Python's intentionally partial39.5min
+run. That is not a completed two-language/two-chip long-run matrix. Old-radio
+RF failure and the current-build postflight gate remain explicit; matching
+interfaces and synthetic tests do not close those hardware gates.
+
 | Python reference | C interface | Semantics and boundary |
 |---|---|---|
 | `mt76_csi` pure controls, ACK and beacon parser; `mt76_csi_session.BeaconCsiCapture` | `mt76_csi.h`, `mt76_csi_session.h` | Narrow version22/band0/20MHz/64-tone profile, signed owned arrays; matching session-bound lifetime, stage-fault/epoch tests and short native/Python normal/overflow/cancellation runs pass; longer acceptance remains gated ([contract](CSI_API.md)) |

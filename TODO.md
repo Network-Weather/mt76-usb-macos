@@ -20,7 +20,10 @@ now pass offline and outside-checkout packaging checks. The
 [inclusion matrix](docs/MEASUREMENT_RELEASE_SCOPE.md) and
 [Linux handoff draft](docs/LINUX_MEASUREMENT_HANDOFF.md) are prepared; nothing has
 been sent upstream. MT7921 fresh baseline RX is currently silent, and A9000
-multi-hour qualification is in progress, not passed.
+native two-hour qualification passes its narrow profile. Python was deliberately
+stopped at39.5min for the user's checkpoint, not a two-hour pass. No soak process
+remains active. [Stocktake and prioritized resumption](docs/R32_CHECKPOINT.md)
+supersede unattended continuation; choose the next bounded work window first.
 
 - [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
   `feat/measurement-api` (not main); baseline offline checks pass.
@@ -51,6 +54,8 @@ Integrated from `feat/continuous-acquisition` into `feat/measurement-api`, not m
 - [x] Five-minute native stress, Python/C cancellation, clean reinitialization and
   [durable evidence](docs/TESTING.md#continuous-acquisition-sessions-2026-09-04).
 - [ ] Multi-hour passive soak; keep hot-unplug and warm adoption explicitly unqualified.
+  Native A9000 two-hour gate is recorded; Python A9000 and both old-chip runs
+  remain incomplete. See the checkpoint's source/telemetry-collection limits.
 - [ ] Review and merge after evidence gates, retaining honest retune/queue-loss limits.
 
 ## Completed C parity sprint record

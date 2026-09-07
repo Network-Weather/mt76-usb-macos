@@ -8,7 +8,7 @@ acceptance mean the point release is **not release-ready**.
 | Capability | Selected Python/C implementation | Release decision / evidence limit |
 | --- | --- | --- |
 | Existing passive capture / RXD timestamps | Existing chip-specific decoders and USB capture paths, raw timestamp presence | Preserve interfaces and historical evidence; current old-unit RF acceptance fails, cause unresolved. No ranging/TSF reconstruction |
-| Continuous acquisition | One worker, bounded drop-newest queues, short MCU callbacks, explicit epochs/generations and fail-closed errors | Candidate floor; new native/Python A9000 two-hour runs in progress. Old-unit run stopped at164.5s with0frames, not passed. Physical unplug/sleep-wake/automatic recovery remain unqualified |
+| Continuous acquisition | One worker, bounded drop-newest queues, short MCU callbacks, explicit epochs/generations and fail-closed errors | Candidate floor; native A9000 two-hour scoped pass. Python intentionally stopped at39.5min for the checkpoint, not a two-hour pass. Old-unit run stopped at164.5s with0frames, not passed. Physical unplug/sleep-wake/automatic recovery remain unqualified |
 | Named MCU counters | `read_counters` / `mt_counter_read`, old4/new10 named fields | Include raw profiles; one owner, non-atomic query intervals, distinct wire/hardware/accumulator widths. Unknown duration conversions retained; idle-slot saturation can lose samples |
 | Query-only thermal | `read_thermal` / `mt_thermal_read`, reported temperature both chips, raw ADC new only | Include with request intervals and explicit ADC availability; no thermal-control or calibration writes |
 | TX-status metadata | Strict `parse_tx_status` / `mt_tx_status_parse`, old/new layouts, qualified new-format0 clock scales | Include decoding only. No new transmit profiles; current independent RF controls are insufficient for broader claims |
@@ -28,6 +28,9 @@ including the initial thermal/MIB failure and the recent old-radio RF silence.
 - Complete the selected two-hour session runs and review memory, queue loss,
   command failures, timestamp wrap/backsteps and channel provenance. Do not count
   interrupted attempts or RF-silent dwells as successful radio qualification.
+  The [checkpoint](R32_CHECKPOINT.md) records native A9000 acceptance and Python's
+  intentional partial run, including three intermediate telemetry-collection gaps.
+  No acquisition remains running; schedule remaining runs separately.
 - Recover/requalify the old reference receiver, or explicitly narrow the release
   claim with the unresolved limitation. Its successful register/temperature reads
   do not close that gate. No unattended physical recovery has been performed.
@@ -45,7 +48,8 @@ including the initial thermal/MIB failure and the recent old-radio RF silence.
   A subsequent native reset-timeout error-return fix passes synthetic controls
   and sanitizers. Fresh old-chip bring-up/thermal reads pass, but RX remains
   silent; changed-build A9000 bring-up remains a post-soak check.
-  The running soak's recorded base remains `2074599`, not the later source HEAD.
+  The completed native soak's recorded base is `2074599`, not later source HEAD;
+  the partial Python probe's actual diagnostics revision is separately identified.
 - Refresh the final Unreleased/support/privacy notes, then select a version and
   prepare the publication checklist separately. No merge/release is authorized
   by this matrix, and neither has been performed for R32.

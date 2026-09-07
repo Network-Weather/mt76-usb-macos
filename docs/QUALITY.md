@@ -48,11 +48,13 @@ These are publication disclosures, not hidden backlog:
   drops, matched replies, errors, requested channel/generation and latency. Native soaks
   report current/peak memory; Python runs can be measured by the owned-process supervisor.
   There is no stable application-level logging schema or complete RF-loss accounting.
-- **Long-run and RF acceptance remain open.** Two-hour acceptance is in progress on the
-  A9000. The attached MT7921 became RF-silent in both legacy baseline drivers despite
+- **Long-run and RF acceptance remain open.** The A9000 native two-hour run passes
+  its scoped gate; Python stopped intentionally at39.5min for the user's
+  [checkpoint](R32_CHECKPOINT.md), not a two-hour pass. Intermediate telemetry
+  collection has three disclosed gaps. The attached MT7921 became RF-silent in both legacy baseline drivers despite
   responsive MCU/reset controls; its current acceptance is blocked. See the
   [preserved negative evidence](TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06).
-  No automatic recovery, physical recovery or multi-hour pass is claimed yet.
+  No automatic/physical recovery or complete two-chip/two-language soak matrix is claimed.
 - **Release automation is minimal.** There is a changelog, tag/version check, and dependency
   update bot, but no signed release procedure, code-coverage report, API reference site, or
   compatibility/deprecation policy yet. Publication remains a manual checklist in

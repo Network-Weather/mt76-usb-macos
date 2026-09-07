@@ -6,6 +6,25 @@ hardware result, and a packet seen once is not presented as a reliability guaran
 
 ## R32 offline and CI qualification, 2026-09-06
 
+The later [user-requested checkpoint](R32_CHECKPOINT.md) stops acquisition and
+records a scoped native A9000 two-hour pass plus an intentionally partial Python
+run. [Soak summary](../research/evidence/r32-a9000-soak-checkpoint-2026-09-07.json)
+and [all3,993 retained redacted records](../research/evidence/r32-a9000-soak-retained-2026-09-07.json)
+are preserved. Native:7,200.058s,857,759 frames,3,099 matched/completed commands,
+715 counter rounds,239 retunes, zero reported queue drops/USB errors/malformed
+or unmatched replies, one timestamp-wrap candidate and no backsteps/ambiguous
+gaps. Python:2,372.772s,288,445 frames,1,018 commands,235 rounds,78 retunes,
+no reported drops/errors, and orderly SIGTERM exit130. Python is not a two-hour
+pass. Both workers closed, queues drained and register checks passed.
+
+Retained heartbeat RSS ranges are13,156,352..13,221,888bytes native and
+32,686,080..32,751,616bytes Python. Three host collection/truncation gaps omit
+intermediate telemetry, separately from the terminal device/session counters;
+no complete-series or leak-absence claim. Native/Python report100/41 transition
+frames and333/123 off-requested-channel frames, so buffered retune provenance
+must not be erased. Native used `2074599`; Python core was unchanged, while
+its later probe-only diagnostics are identified by the emitted source SHA.
+
 Fresh archives of `1f08090` pass the complete `scripts/check.sh` on local
 macOS26.6.1 with Python3.14 and an isolated Python3.10.18 runtime:2,025 tests,
 formatting/lint/docs, distribution build, dependency checks, native build/tests
@@ -43,7 +62,7 @@ at `542da24` passes all 2,014 offline tests and updated ASan/UBSan controls. A
 fresh native channel6/5s smoke completes bring-up and reports38C, but still
 receives zero frames (exit2/inconclusive). The ignored reset error is fixed;
 the RF-silence cause is not. Changed-build A9000 bring-up remains a post-soak
-check; the running native soak uses its recorded `2074599` executable.
+check; the completed native soak used its recorded `2074599` executable.
 
 The attached ALFA is now RF-silent in fresh2.4GHz baselines, not merely weak on
 5GHz. [Preserved failure evidence](../research/evidence/r32-mt7921-rf-silence-2026-09-06.json)
@@ -100,8 +119,9 @@ at508.316s:59,095 frames,16 retunes,50 counter rounds, no software drops/USB err
 roughly13.1MB current resident memory. It is not a two-hour pass. A fresh native
 two-hour run followed by Python two hours started2026-09-06T21:26:07UTC, using
 channels1/11,30s retunes,10s named-counter/thermal polls. The native process
-exited0 at23:26:09UTC; Python then started and remains running. Final aggregate
-review and qualification decisions are pending, not inferred from exit status.
+exited0 at23:26:09UTC; Python then started and was intentionally stopped at
+2026-09-07T00:05:44UTC for the user's checkpoint. Reviewed final diagnostics are
+above; current-build smoke and remaining matrix qualification are still open.
 
 Before the queued Python run started, its probe gained the same conservative
 timestamp wrap/backstep/ambiguous-gap diagnostics as native, with eleven shared

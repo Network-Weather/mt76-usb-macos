@@ -7,6 +7,12 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Qualification limits
 
+- The [R32 checkpoint](docs/R32_CHECKPOINT.md) records a scoped native A9000
+  two-hour passive/counter/thermal/retune pass:857,759 decoded frames and no
+  reported queue drops or USB errors. Python stopped cleanly at the user's
+  request after39.5min/288,445 frames, not a two-hour pass. Three intermediate
+  telemetry-collection gaps are disclosed; the full acceptance matrix is open.
+
 - R32 is not release-ready: the attached MT7921 is RF-silent in fresh passive
   controls on both unchanged main and the feature branch. Firmware/MCU responses
   do not establish receiver health, and a software port-power cycle did not

@@ -30,7 +30,9 @@ The following baseline motivated the plan. Sessions, counters, thermal, Group5,
 TX-status timing, CSI and histogram contracts are now implemented on
 `feat/measurement-api`, not main. The [scope matrix](MEASUREMENT_RELEASE_SCOPE.md)
 is the current acceptance status. In particular, the MT7921 is now RF-silent in
-fresh baseline controls; A9000 long-session qualification is still running.
+fresh baseline controls. At the user's [checkpoint](R32_CHECKPOINT.md), A9000
+native two-hour acceptance is recorded; Python stopped cleanly at39.5min and
+remains incomplete. Neither radio is owned by a soak process now.
 
 - **Released:** 0.3.0. **Merged but unreleased:** R30 native acquisition parity,
   later capture/analysis changes, and PR #31's research, fixtures and evidence.
@@ -215,6 +217,8 @@ Exit: an explicit included/deferred matrix, not every firmware mystery resolved.
   the newly merged continuous API, not a prerequisite to further chip research or
   a reason to build more monitoring infrastructure. Failure narrows/defer sessions
   and stream features; it does not erase the existing bounded capture capability.
+  Native A9000 passes the recorded scoped run at `2074599`; Python's39.5min
+  checkpoint is not a two-hour pass. Both old-chip runs remain unqualified.
 - [x] Offline disconnect/timeout coverage is mandatory; physical hot-unplug and
   sleep/wake remain explicitly unqualified unless exercised. No warm-adoption or
   automatic recovery claim. Restoration failure must be visible and require fresh
