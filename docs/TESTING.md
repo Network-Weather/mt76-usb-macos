@@ -4,6 +4,18 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 bounded merge check, 2026-09-08
+
+**PR32 remains blocked, not merged.** Later current Python/C controls initially
+pass on both radios across2.4/5/6GHz; eight private captures independently validate
+5,651 packets. Group5 reception and old histogram multi-bin output recover, but
+ALFA5/6GHz reception degrades during the histogram sequence despite successful
+restore/reload. Final overlapping passive controls: ALFA410/0/2 versus
+A9000539/369/834 frames on1/36/53. See the [merge verdict and exact sequence](R32_MERGE_CHECK.md)
+and [structured evidence](../research/evidence/r32-bounded-merge-check-2026-09-08.json).
+This supersedes the current-health implications of the earlier recovery below;
+it neither identifies a root cause nor erases the positive captures. No new soak.
+
 ## R32 attached-radio recheck, 2026-09-08
 
 **Later physical-cycle recovery:** after the user confirmed unplug/replug of

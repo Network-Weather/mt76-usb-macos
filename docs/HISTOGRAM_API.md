@@ -6,6 +6,14 @@ helpers**. `mt76_histogram_acquisition` / `mt76_histogram_acquisition.h` add mat
 opt-in control guards with short native/Python live evidence. This is not a
 calibrated noise measurement service or a released continuous stream.
 
+**2026-09-08 qualification warning:** a recovered ALFA initially produces
+multi-bin data and healthy three-band capture, then loses most5/6GHz reception
+during the histogram sequence despite checked restoration and full reload.
+The [bounded merge check](R32_MERGE_CHECK.md) therefore blocks the complete PR;
+the offending operation is not yet isolated. Earlier exit0/`reload_alive` results
+below are control-path observations, not proof of post-experiment RF recovery.
+The corresponding A9000 bounded checks and post-capture controls pass.
+
 | Python | C | Profile |
 | --- | --- | --- |
 | `build_histogram_request` | `mt_histogram_request` | MT7925 only, fixed UNI36/tag2 one-shot request, SET/ACK option7; no duration, index, threshold or address parameters |

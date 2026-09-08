@@ -21,9 +21,11 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 ## Priority decision, 2026-09-06
 
-Update2026-09-08: physical ALFA unplug/replug restores short Python2.4GHz RX;
-continue with broader/native and warm-reload requalification before treating
-the fixture as fully recovered. [Evidence](docs/TESTING.md#r32-attached-radio-recheck-2026-09-08).
+Update2026-09-08: physical ALFA recovery enables successful current Python/C
+three-band baselines and capture-file checks, then5/6GHz RX degrades during the
+histogram sequence despite restore/reload. [Bounded merge verdict](docs/R32_MERGE_CHECK.md):
+hold PR32; isolate the offending operation or explicitly split/defer the affected
+acquisition surface before merging. This is separate from remaining release soaks.
 
 The [R32 checkpoint and prioritized next steps](docs/R32_CHECKPOINT.md) record
 the completed Python/C implementation, native A9000 two-hour result, intentionally

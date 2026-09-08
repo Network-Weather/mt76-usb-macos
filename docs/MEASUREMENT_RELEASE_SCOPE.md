@@ -2,9 +2,11 @@
 
 Decision snapshot2026-09-06, updated2026-09-08, `feat/measurement-api`; published version remains0.3.0.
 This is the implementation/inclusion matrix, not permission to merge, tag or
-publish. The attached MT7921's RF silence recovered after physical unplug/replug
-in a short Python2.4GHz check. Broader requalification, cause investigation and
-unfinished long-session acceptance mean the point release is **not release-ready**.
+publish. After physical recovery, current Python/C three-band baselines and
+independent capture-file checks pass on both radios. ALFA5/6GHz reception then
+degrades during the histogram sequence despite restore/reload: the
+[bounded merge check](R32_MERGE_CHECK.md) holds the complete PR pending isolation
+or an explicit scope split. The point release is also **not release-ready**.
 
 | Capability | Selected Python/C implementation | Release decision / evidence limit |
 | --- | --- | --- |
@@ -26,10 +28,11 @@ including the initial thermal/MIB failure and the recent old-radio RF silence.
 
 ## Acceptance still required
 
-The [physical-cycle recovery](../research/evidence/r32-alfa-physical-cycle-recovery-2026-09-08.json)
-closes only the immediate old-chip short2.4GHz receive check:1,568 frames,
-all three channels, no USB errors/timeouts. It does not close native C,5/6GHz,
-warm-reload repeatability, independent TX or two-hour gates below.
+The [bounded acceptance evidence](../research/evidence/r32-bounded-merge-check-2026-09-08.json)
+closes initial current-build Python/C three-band reception and independent capture
+validation on both radios. It does **not** close sustained ALFA RF recovery:
+post-experiment high-band reception degrades while the A9000 control stays healthy.
+Independent TX and two-hour gates also remain open.
 
 - Complete the selected two-hour session runs and review memory, queue loss,
   command failures, timestamp wrap/backsteps and channel provenance. Do not count
@@ -43,17 +46,17 @@ warm-reload repeatability, independent TX or two-hour gates below.
   A clean-main/feature [passive comparison](../research/evidence/r32-old-radio-main-control-2026-09-06.json)
   reproduces zero USB transfers on both revisions; this weakens an active
   feature-only code-path explanation but does not rule out retained device state.
-- Small [Python/native composition examples](MEASUREMENT_EXAMPLES.md) now pass
-  offline checks and outside-checkout packaging/build verification. Remaining:
-  run current passive smoke and independent capture-file
-  validation on available healthy references; preserve failing controls.
+- Small [Python/native composition examples](MEASUREMENT_EXAMPLES.md) pass
+  offline checks and outside-checkout packaging/build verification. Current
+  passive smoke and independent capture-file validation now pass initially;
+  the separate failing post-experiment RF controls are preserved above.
 - Offline/docs/packaging checks now pass locally on Python 3.10/3.14 and across
   the four-job CI matrix at `b4b1315`; see [the evidence](../research/evidence/r32-offline-ci-matrix-2026-09-06.json).
   Recheck after implementation changes. Do not run the clean/rebuild script over a native executable
   currently participating in a soak; use a separate build directory or wait.
   A subsequent native reset-timeout error-return fix passes synthetic controls
-  and sanitizers. Fresh old-chip bring-up/thermal reads pass, but RX remains
-  silent; changed-build A9000 bring-up remains a post-soak check.
+  and sanitizers. Current-build bring-up and initial RF controls now pass on
+  both chips; subsequent old-chip RF degradation remains a separate blocker.
   The completed native soak's recorded base is `2074599`, not later source HEAD;
   the partial Python probe's actual diagnostics revision is separately identified.
 - Refresh the final Unreleased/support/privacy notes, then select a version and

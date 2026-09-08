@@ -2,6 +2,12 @@
 
 ## Active sprint: measurement API integration (R32)
 
+Latest2026-09-08: [bounded merge acceptance](docs/R32_MERGE_CHECK.md) passes the
+initial current Python/C three-band/capture-file gates but exposes ALFA5/6GHz
+degradation during the histogram sequence. PR32 stays unmerged; next is isolating
+that sequence or an explicit scope split, not another long soak. Both radios are
+released, and no version bump/release was made.
+
 Planning checkpoint 2026-09-06: PR #31 is merged at `7eb35d1`; no new release
 was cut. The [next-release plan](docs/NEXT_RELEASE.md) is the selected sequence for
 remaining research, Python/C integration and acceptance gates.

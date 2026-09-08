@@ -7,6 +7,14 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Qualification limits
 
+- The [bounded R32 merge check](docs/R32_MERGE_CHECK.md) initially passes current
+  Python/C three-band reception and independently validates5,651 private-capture
+  packets on both radios. ALFA then loses most5/6GHz reception during the histogram
+  sequence despite successful restoration/reload; an overlapping A9000 control
+  remains healthy. The complete PR remains unmerged pending isolation or an
+  explicit scope split. Initial Group5 reception and multi-bin legacy histograms
+  are positive findings, not dependable-streaming or calibrated-noise claims.
+
 - The [R32 checkpoint](docs/R32_CHECKPOINT.md) records a scoped native A9000
   two-hour passive/counter/thermal/retune pass:857,759 decoded frames and no
   reported queue drops or USB errors. Python stopped cleanly at the user's
@@ -17,8 +25,9 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
   controls on unchanged main and the feature branch. A physical USB unplug/replug
   on2026-09-08 restored short Python2.4GHz reception (1,568 frames; no USB errors/
   timeouts). Its pre-bring-up firmware-ready state changed from3 to0. The earlier
-  software port-power cycle did not establish that cold state. Root cause,
-  broader/native RF acceptance and remaining soaks are unresolved. See
+  software port-power cycle did not establish that cold state. Later Python/C
+  three-band baselines pass, but sustained recovery fails as recorded above.
+  Root cause and remaining soaks are unresolved. See
   [the scope and remaining gates](docs/MEASUREMENT_RELEASE_SCOPE.md).
 - Raw CSI addresses, coefficients and fingerprints remain sensitive even without
   packet payloads. [Security guidance](SECURITY.md) now explicitly covers raw

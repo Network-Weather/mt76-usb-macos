@@ -14,8 +14,10 @@ and does not imply parity for the remaining research-only surfaces.
 The [R32 checkpoint](R32_CHECKPOINT.md) records the native A9000 two-hour
 passive/counter/thermal/retune result and Python's intentionally partial39.5min
 run. That is not a completed two-language/two-chip long-run matrix. Old-radio
-RF failure and the current-build postflight gate remain explicit; matching
-interfaces and synthetic tests do not close those hardware gates.
+RF failure remains explicit: current-build three-band baselines and capture files
+pass initially, but the [bounded merge check](R32_MERGE_CHECK.md) finds ALFA5/6GHz
+degradation during histogram testing. Matching interfaces and synthetic tests
+do not close the post-cleanup RF gate; this is not a demonstrated C-only defect.
 
 | Python reference | C interface | Semantics and boundary |
 |---|---|---|

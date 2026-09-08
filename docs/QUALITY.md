@@ -53,9 +53,10 @@ These are publication disclosures, not hidden backlog:
   [checkpoint](R32_CHECKPOINT.md), not a two-hour pass. Intermediate telemetry
   collection has three disclosed gaps. The attached MT7921 became RF-silent
   despite responsive MCU/reset controls; a user-performed physical USB cycle
-  restored short Python2.4GHz reception on2026-09-08. See the
-  [before/after evidence](TESTING.md#r32-attached-radio-recheck-2026-09-08).
-  The cause, broader RF qualification and complete two-chip/two-language soak
+  restored reception on2026-09-08. Current Python/C three-band controls and private
+  capture files pass initially, but5/6GHz reception degrades during the histogram
+  sequence despite restore/reload. See the [bounded merge hold](R32_MERGE_CHECK.md).
+  The cause, post-experiment RF qualification and complete two-chip/two-language soak
   matrix remain open; no automatic-recovery guarantee is claimed.
 - **Release automation is minimal.** There is a changelog, tag/version check, and dependency
   update bot, but no signed release procedure, code-coverage report, API reference site, or

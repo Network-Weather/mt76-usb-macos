@@ -1,5 +1,11 @@
 # R32 checkpoint and next decisions
 
+**Latest2026-09-08 merge check:** current Python/C three-band baselines and private
+capture-file validation pass initially, but ALFA5/6GHz RX degrades during the
+histogram sequence and remains impaired in the independent-reference post-check.
+The [bounded merge verdict](R32_MERGE_CHECK.md) holds PR32; no merge or release.
+This supersedes the current-health status below, not the historical evidence.
+
 **2026-09-08 update:** the user physically unplugged/replugged the ALFA. Its
 pre-bring-up firmware-ready state read0, and the same short Python2.4GHz check
 then received1,568 frames across1/6/11 with no USB errors/timeouts. The immediate
