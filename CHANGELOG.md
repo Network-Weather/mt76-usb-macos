@@ -13,11 +13,13 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
   request after39.5min/288,445 frames, not a two-hour pass. Three intermediate
   telemetry-collection gaps are disclosed; the full acceptance matrix is open.
 
-- R32 is not release-ready: the attached MT7921 is RF-silent in fresh passive
-  controls on both unchanged main and the feature branch. Firmware/MCU responses
-  do not establish receiver health, and a software port-power cycle did not
-  establish a physical cold reset. Historical release evidence is retained;
-  current acceptance and the cause remain unresolved. See [the scope and remaining gates](docs/MEASUREMENT_RELEASE_SCOPE.md).
+- R32 is not release-ready: the attached MT7921 was RF-silent in fresh passive
+  controls on unchanged main and the feature branch. A physical USB unplug/replug
+  on2026-09-08 restored short Python2.4GHz reception (1,568 frames; no USB errors/
+  timeouts). Its pre-bring-up firmware-ready state changed from3 to0. The earlier
+  software port-power cycle did not establish that cold state. Root cause,
+  broader/native RF acceptance and remaining soaks are unresolved. See
+  [the scope and remaining gates](docs/MEASUREMENT_RELEASE_SCOPE.md).
 - Raw CSI addresses, coefficients and fingerprints remain sensitive even without
   packet payloads. [Security guidance](SECURITY.md) now explicitly covers raw
   measurement events and explains that a redacted default representation is not

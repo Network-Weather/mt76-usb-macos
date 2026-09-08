@@ -1,13 +1,14 @@
 # R32 selected release scope and remaining gates
 
-Decision snapshot2026-09-06, `feat/measurement-api`; published version remains0.3.0.
+Decision snapshot2026-09-06, updated2026-09-08, `feat/measurement-api`; published version remains0.3.0.
 This is the implementation/inclusion matrix, not permission to merge, tag or
-publish. The attached MT7921's new RF-silent baseline and unfinished long-session
-acceptance mean the point release is **not release-ready**.
+publish. The attached MT7921's RF silence recovered after physical unplug/replug
+in a short Python2.4GHz check. Broader requalification, cause investigation and
+unfinished long-session acceptance mean the point release is **not release-ready**.
 
 | Capability | Selected Python/C implementation | Release decision / evidence limit |
 | --- | --- | --- |
-| Existing passive capture / RXD timestamps | Existing chip-specific decoders and USB capture paths, raw timestamp presence | Preserve interfaces and historical evidence; current old-unit RF acceptance fails, cause unresolved. No ranging/TSF reconstruction |
+| Existing passive capture / RXD timestamps | Existing chip-specific decoders and USB capture paths, raw timestamp presence | Preserve interfaces and historical evidence; old-unit short Python2.4GHz RX recovered after physical cycle on2026-09-08. Broader requalification and cause remain open. No ranging/TSF reconstruction |
 | Continuous acquisition | One worker, bounded drop-newest queues, short MCU callbacks, explicit epochs/generations and fail-closed errors | Candidate floor; native A9000 two-hour scoped pass. Python intentionally stopped at39.5min for the checkpoint, not a two-hour pass. Old-unit run stopped at164.5s with0frames, not passed. Physical unplug/sleep-wake/automatic recovery remain unqualified |
 | Named MCU counters | `read_counters` / `mt_counter_read`, old4/new10 named fields | Include raw profiles; one owner, non-atomic query intervals, distinct wire/hardware/accumulator widths. Unknown duration conversions retained; idle-slot saturation can lose samples |
 | Query-only thermal | `read_thermal` / `mt_thermal_read`, reported temperature both chips, raw ADC new only | Include with request intervals and explicit ADC availability; no thermal-control or calibration writes |
@@ -24,6 +25,11 @@ research-script count. [Testing](TESTING.md) retains positive and negative runs,
 including the initial thermal/MIB failure and the recent old-radio RF silence.
 
 ## Acceptance still required
+
+The [physical-cycle recovery](../research/evidence/r32-alfa-physical-cycle-recovery-2026-09-08.json)
+closes only the immediate old-chip short2.4GHz receive check:1,568 frames,
+all three channels, no USB errors/timeouts. It does not close native C,5/6GHz,
+warm-reload repeatability, independent TX or two-hour gates below.
 
 - Complete the selected two-hour session runs and review memory, queue loss,
   command failures, timestamp wrap/backsteps and channel provenance. Do not count

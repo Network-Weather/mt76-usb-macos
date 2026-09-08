@@ -51,10 +51,12 @@ These are publication disclosures, not hidden backlog:
 - **Long-run and RF acceptance remain open.** The A9000 native two-hour run passes
   its scoped gate; Python stopped intentionally at39.5min for the user's
   [checkpoint](R32_CHECKPOINT.md), not a two-hour pass. Intermediate telemetry
-  collection has three disclosed gaps. The attached MT7921 became RF-silent in both legacy baseline drivers despite
-  responsive MCU/reset controls; its current acceptance is blocked. See the
-  [preserved negative evidence](TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06).
-  No automatic/physical recovery or complete two-chip/two-language soak matrix is claimed.
+  collection has three disclosed gaps. The attached MT7921 became RF-silent
+  despite responsive MCU/reset controls; a user-performed physical USB cycle
+  restored short Python2.4GHz reception on2026-09-08. See the
+  [before/after evidence](TESTING.md#r32-attached-radio-recheck-2026-09-08).
+  The cause, broader RF qualification and complete two-chip/two-language soak
+  matrix remain open; no automatic-recovery guarantee is claimed.
 - **Release automation is minimal.** There is a changelog, tag/version check, and dependency
   update bot, but no signed release procedure, code-coverage report, API reference site, or
   compatibility/deprecation policy yet. Publication remains a manual checklist in

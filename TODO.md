@@ -19,7 +19,8 @@ outstanding live acceptance. Small [composition examples](docs/MEASUREMENT_EXAMP
 now pass offline and outside-checkout packaging checks. The
 [inclusion matrix](docs/MEASUREMENT_RELEASE_SCOPE.md) and
 [Linux handoff draft](docs/LINUX_MEASUREMENT_HANDOFF.md) are prepared; nothing has
-been sent upstream. MT7921 fresh baseline RX is currently silent, and A9000
+been sent upstream. MT7921 short Python2.4GHz RX recovered after the user's
+physical USB cycle on2026-09-08; broader/native requalification remains open. A9000
 native two-hour qualification passes its narrow profile. Python was deliberately
 stopped at39.5min for the user's checkpoint, not a two-hour pass. No soak process
 remains active. [Stocktake and prioritized resumption](docs/R32_CHECKPOINT.md)

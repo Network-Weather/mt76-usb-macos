@@ -6,6 +6,20 @@ hardware result, and a packet seen once is not presented as a reliability guaran
 
 ## R32 attached-radio recheck, 2026-09-08
 
+**Later physical-cycle recovery:** after the user confirmed unplug/replug of
+the ALFA, its pre-bring-up `MT_CONN_ON_MISC` read0 (firmware not ready), rather
+than3. With unchanged driver/firmware and the same3s channel1/6/11 dwells, the
+ALFA receives1,568 decoded frames across all three channels, zero USB errors
+or timeouts, exit0. [Recovery evidence](../research/evidence/r32-alfa-physical-cycle-recovery-2026-09-08.json)
+records the before/after controls and user-reported physical action; supply
+voltage and exact disconnect duration were not instrumented. The immediate
+2.4GHz RF-silence gate is recovered. Retained device/firmware state is a plausible
+explanation, not an identified root cause. Native C,5/6GHz, warm-reload
+repeatability, independent TX controls and the remaining two-hour runs still
+need their own evidence. The short process exited; no long tests restarted.
+
+The following was the earlier same-day check, before physical power removal:
+
 After the user confirmed both dongles attached, [a bounded current-source check](../research/evidence/r32-attached-radio-recheck-2026-09-08.json)
 at `f3beab9` reads redacted USB/identity descriptors, then fresh Python bring-up
 and passive3s dwells on2.4GHz channels1/6/11. Both adapters enumerate correctly;

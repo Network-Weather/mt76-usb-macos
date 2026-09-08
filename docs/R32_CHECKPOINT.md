@@ -1,5 +1,13 @@
 # R32 checkpoint and next decisions
 
+**2026-09-08 update:** the user physically unplugged/replugged the ALFA. Its
+pre-bring-up firmware-ready state read0, and the same short Python2.4GHz check
+then received1,568 frames across1/6/11 with no USB errors/timeouts. The immediate
+RF-silence condition is recovered; native C,5/6GHz, warm-reload repeatability,
+independent TX controls and the remaining two-hour runs are still open. See
+[dated recovery evidence](../research/evidence/r32-alfa-physical-cycle-recovery-2026-09-08.json).
+No long runs were restarted. The following preserves the original checkpoint.
+
 Checkpoint: 2026-09-06 Pacific / 2026-09-07 UTC, at the user's request.
 Work is on `feat/measurement-api` and [draft PR #32](https://github.com/Network-Weather/mt76-usb-macos/pull/32).
 Main remains `7eb35d1`; published version remains0.3.0. Nothing is merged or

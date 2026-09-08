@@ -30,7 +30,7 @@ Support is per chip and evidence-gated:
 
 | Chip (Linux module) | Adapter tested | Status |
 |---|---|---|
-| MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Historical 0.3.0 qualification: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz in both drivers, with the A9000 attached alongside. **Current R32 reference unit is RF-silent**, including unchanged-main controls; cause unresolved and new acceptance not passed. [Dated evidence](docs/TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06) |
+| MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Historical 0.3.0 qualification: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz in both drivers, with the A9000 attached alongside. R32 RF silence recovered in a short Python2.4GHz check after physical unplug/replug on2026-09-08; cause and broader requalification remain open. [Dated evidence](docs/TESTING.md#r32-attached-radio-recheck-2026-09-08) |
 | MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | Netgear Nighthawk A9000 (`0846:9072`) | Working: 2.4 / 5 / 6 GHz passive capture at 20, 80, and **160 MHz**, 43-channel smoke pass, dated evidence in [docs/TESTING.md](docs/TESTING.md); the A8500 and MediaTek ids are in the table but untested |
 | MT7663U, MT76x2U, MT76x0U (`mt7663u`, `mt76x2u`, `mt76x0u`) | none | Not attempted: different firmware and MCU models; nothing here has been run on them |
 
@@ -76,11 +76,12 @@ limits, query-only thermal data and raw TX-status timing. Narrow experimental
 matching Python/C control lifetimes and short hardware evidence. Group5 streaming
 reliability remains unqualified, and no calibrated noise, power or ranging is implied.
 
-Current release qualification is not complete: the attached MT7921 is now RF-silent
-even in unchanged-main controls. The A9000 native two-hour run passed its scoped
+Current release qualification is not complete. The attached MT7921's RF silence
+recovered after a physical USB cycle in a short Python2.4GHz check; native C,
+other bands and repeatability remain to be requalified. The A9000 native two-hour run passed its scoped
 gate; Python was intentionally stopped at39.5min for the user's checkpoint.
 [Stocktake and next roadmap](docs/R32_CHECKPOINT.md) and
-[current limitations](docs/TESTING.md#r32-current-mt7921-rf-failure-and-soak-status-2026-09-06)
+[current limitations](docs/TESTING.md#r32-attached-radio-recheck-2026-09-08)
 supersede any inference that the historical hardware table guarantees this unit's
 present RF health; the cause is unresolved.
 

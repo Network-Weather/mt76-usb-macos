@@ -21,6 +21,10 @@ negatives are in [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md).
 
 ## Priority decision, 2026-09-06
 
+Update2026-09-08: physical ALFA unplug/replug restores short Python2.4GHz RX;
+continue with broader/native and warm-reload requalification before treating
+the fixture as fully recovered. [Evidence](docs/TESTING.md#r32-attached-radio-recheck-2026-09-08).
+
 The [R32 checkpoint and prioritized next steps](docs/R32_CHECKPOINT.md) record
 the completed Python/C implementation, native A9000 two-hour result, intentionally
 partial Python run and unresolved old-radio RF failure. Acquisition is stopped

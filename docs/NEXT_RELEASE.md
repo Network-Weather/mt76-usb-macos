@@ -29,8 +29,9 @@ Do not turn this into a wholesale driver rewrite or a port of every research scr
 The following baseline motivated the plan. Sessions, counters, thermal, Group5,
 TX-status timing, CSI and histogram contracts are now implemented on
 `feat/measurement-api`, not main. The [scope matrix](MEASUREMENT_RELEASE_SCOPE.md)
-is the current acceptance status. In particular, the MT7921 is now RF-silent in
-fresh baseline controls. At the user's [checkpoint](R32_CHECKPOINT.md), A9000
+is the current acceptance status. The MT7921's RF silence recovered in a short
+Python2.4GHz check after physical unplug/replug on2026-09-08; broader RF and
+native requalification remain open. At the user's [checkpoint](R32_CHECKPOINT.md), A9000
 native two-hour acceptance is recorded; Python stopped cleanly at39.5min and
 remains incomplete. Neither radio is owned by a soak process now.
 
