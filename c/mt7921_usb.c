@@ -255,6 +255,10 @@ int mt7921_usb_open(mt7921_usb_t *usb, const char *usb_id) {
 
 void mt7921_usb_close(mt7921_usb_t *usb) {
     if (!usb) return;
+    if (usb->session_context) {
+        set_error("stop acquisition before closing USB");
+        return;
+    }
     if (usb->intf) {
         (*usb->intf)->USBInterfaceClose(usb->intf);
         (*usb->intf)->Release(usb->intf);
@@ -269,6 +273,7 @@ void mt7921_usb_close(mt7921_usb_t *usb) {
 
 int mt7921_usb_reset(mt7921_usb_t *usb) {
     if (!usb || !usb->dev) return -1;
+    if (usb->session_context) return -1;
     kern_return_t kr = (*usb->dev)->ResetDevice(usb->dev);
     usleep(500000); /* 500ms sleep matching Python reset sequence */
     return (kr == KERN_SUCCESS) ? 0 : -1;
@@ -278,6 +283,10 @@ int mt7921_usb_vendor_req(mt7921_usb_t *usb, uint8_t req, uint8_t req_type,
                           uint16_t value, uint16_t index, void *data,
                           uint16_t length, uint32_t timeout_ms) {
     if (!usb || !usb->dev || !timeout_ms) return -1;
+    if (usb->session_timeout) {
+        timeout_ms = usb->session_timeout(usb->session_context, timeout_ms);
+        if (!timeout_ms) return -1;
+    }
     /* Apple IOUSBLib.h: DeviceRequestTO is available on interface 182+.
      * The original DeviceRequest call ignored timeout_ms; retries now share one
      * monotonic deadline rather than each receiving a new full timeout. */
@@ -293,7 +302,9 @@ int mt7921_usb_vendor_req(mt7921_usb_t *usb, uint8_t req, uint8_t req_type,
     uint64_t deadline = current_time_ms() + timeout_ms;
     for (int retry = 0; retry < VEND_RETRIES; retry++) {
         uint64_t now = current_time_ms();
-        if (now >= deadline) return -1;
+        if (now >= deadline) break;
+        if (usb->session_timeout &&
+            !usb->session_timeout(usb->session_context, (uint32_t)(deadline - now))) break;
         devReq.noDataTimeout = devReq.completionTimeout = (UInt32)(deadline - now);
         devReq.wLenDone = 0;
         kern_return_t kr = (*usb->dev)->DeviceRequestTO(usb->dev, &devReq);
@@ -302,6 +313,7 @@ int mt7921_usb_vendor_req(mt7921_usb_t *usb, uint8_t req, uint8_t req_type,
         }
         usleep(5000); /* 5ms retry delay matching Python */
     }
+    if (usb->session_fail) usb->session_fail(usb->session_context);
     return -1;
 }
 
@@ -432,14 +444,23 @@ static UInt8 pipe_for_ep(mt7921_usb_t *usb, uint8_t ep) {
 
 int mt7921_bulk_out(mt7921_usb_t *usb, uint8_t ep, const void *data, uint32_t len, uint32_t timeout_ms) {
     if (!usb || !usb->intf) return -1;
+    if (usb->session_timeout) {
+        timeout_ms = usb->session_timeout(usb->session_context, timeout_ms);
+        if (!timeout_ms) return -1;
+    }
     UInt8 pipe = pipe_for_ep(usb, ep);
     if (!pipe) return -1;
     kern_return_t kr = (*usb->intf)->WritePipeTO(usb->intf, pipe, (void*)data, len, timeout_ms, timeout_ms);
+    if (kr != KERN_SUCCESS && usb->session_fail) usb->session_fail(usb->session_context);
     return (kr == KERN_SUCCESS) ? 0 : -1;
 }
 
 int mt7921_bulk_in(mt7921_usb_t *usb, uint8_t ep, void *data, uint32_t *len, uint32_t timeout_ms) {
     if (!usb || !usb->intf || !data || !len) return MT7921_ERR_IO;
+    if (usb->session_timeout) {
+        timeout_ms = usb->session_timeout(usb->session_context, timeout_ms);
+        if (!timeout_ms) return MT7921_ERR_IO;
+    }
     UInt8 pipe = pipe_for_ep(usb, ep);
     if (!pipe) return MT7921_ERR_IO;
     UInt32 size = *len;
@@ -451,5 +472,6 @@ int mt7921_bulk_in(mt7921_usb_t *usb, uint8_t ep, void *data, uint32_t *len, uin
     if (kr == kIOUSBTransactionTimeout || kr == kIOReturnTimeout) {
         return MT7921_ERR_TIMEOUT;
     }
+    /* The session dispatcher classifies/counts read failures, including stop. */
     return MT7921_ERR_IO;
 }

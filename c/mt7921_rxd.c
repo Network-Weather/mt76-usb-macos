@@ -381,6 +381,21 @@ int mt7921_rxd_decode(const uint8_t *buf, uint32_t buf_len, mt7921_rxd_frame_t *
     bool have_rxv_group5 = out->g5_words != 0;
     uint32_t rxv_group5 = out->g5[6];
 
+    if (have_rxv_group5) {
+        /* Pinned MT7961 statistics-builder formula, not calibrated RF units:
+         * docs/INBAND_WIDEBAND_SIGNAL.md. Shift before signed8 interpretation. */
+        uint32_t values[] = {out->g5[7], out->g5[7] >> 8,
+                             out->g5[8] >> 5, out->g5[8] >> 14};
+        int8_t signed_values[4];
+        for (unsigned i = 0; i < 4; i++) {
+            unsigned byte = values[i] & 255;
+            signed_values[i] = (int8_t)(byte < 128 ? (int)byte : (int)byte - 256);
+        }
+        out->has_raw_signal = true;
+        memcpy(out->fagc_ib_raw_s8, signed_values, 2);
+        memcpy(out->fagc_wb_raw_s8, signed_values + 2, 2);
+    }
+
     uint32_t rcpi_word = have_rxv_group5 ? rxv_group5 : (have_rxv_group3 ? rxv_group3[1] : 0);
     if (have_rxv_group5 || have_rxv_group3) {
         int8_t max_rssi = -128;

@@ -12,6 +12,7 @@ typedef struct {
     mt7921_mcu_t mcu;
     /* Successful tune state for the new bounded experimental transmitter only. */
     bool tuned;
+    bool session_ready; /* successful explicit bringup; consumed by session start */
     uint8_t tuned_band, tuned_control, tuned_center;
     uint16_t tuned_width;
     unsigned experimental_rates, experimental_tx_count;

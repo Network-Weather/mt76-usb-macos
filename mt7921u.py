@@ -533,6 +533,9 @@ class Mt7921u:
             )
 
     def close(self) -> None:
+        if getattr(self, "_session", None) is not None:
+            raise RuntimeError("stop the acquisition session before closing USB")
+        self._session_ready = False
         if self.dev is None:
             return
         for intf in self._claimed:
@@ -554,13 +557,20 @@ class Mt7921u:
         timeout: int = VEND_TIMEOUT_MS,
     ):
         """__mt76u_vendor_request, including its retry loop."""
+        session = getattr(self, "_session", None)
+        if session:
+            session.check_owner()
         last = None
         for _ in range(VEND_RETRIES):
             try:
+                if session:
+                    timeout = session.io_timeout(timeout)
                 return self.dev.ctrl_transfer(req_type, req, value, index, data_or_len, timeout)
             except usb.core.USBError as exc:
                 last = exc
                 time.sleep(0.005)
+        if session:
+            session._fail("USB control request failed; fresh bringup required")
         raise RuntimeError(f"vendor request req:{req:02x} off:{index:04x} failed: {last}")
 
     def rr(self, addr: int) -> int:
@@ -656,9 +666,24 @@ class Mt7921u:
             time.sleep(0.010)
 
     def bulk_out(self, ep: int, data: bytes, timeout: int = 1000) -> int:
-        return self.dev.write(ep, data, timeout)
+        session = getattr(self, "_session", None)
+        if session:
+            timeout = session.io_timeout(timeout)
+        try:
+            written = self.dev.write(ep, data, timeout)
+        except usb.core.USBError:
+            if session:
+                session._fail("USB write failed; fresh bringup required")
+            raise
+        if session and written != len(data):
+            session._fail("short USB write; fresh bringup required")
+            raise McuError("short bulk write during acquisition")
+        return written
 
     def bulk_in(self, ep: int, length: int, timeout: int = 1000) -> bytes:
+        session = getattr(self, "_session", None)
+        if session:
+            timeout = session.io_timeout(timeout)
         return bytes(self.dev.read(ep, length, timeout))
 
     # ---- identity ------------------------------------------------------
@@ -785,6 +810,8 @@ class Mt7921uMcu(Mt7921u):
         self.mcu_wait_other_packets = 0  # status/notification packets (TXS, TXRXV, ...)
 
     def _next_seq(self) -> int:
+        if getattr(self, "_session", None):
+            self._session.check_owner()
         self.msg_seq = (self.msg_seq + 1) & 0xF
         if self.msg_seq == 0:
             self.msg_seq = (self.msg_seq + 1) & 0xF
@@ -858,6 +885,8 @@ class Mt7921uMcu(Mt7921u):
         with it set (what mt792xu_dma_init does) responses arrive on
         MT_EP_IN_PKT_RX, otherwise on MT_EP_IN_CMD_RESP. Measured both ways.
         """
+        if getattr(self, "_session", None):
+            return self._session.wait_reply(seq, cid, timeout)
         ep = self.ep_in_pkt_rx if self.evt_ep4 else self.ep_in_cmd_resp
         # Once RX events are routed to EP4, MCU responses and 802.11 frames
         # share one endpoint. Under load the response is buried in the frame
@@ -1293,6 +1322,10 @@ class Mt7921uDevice(Mt7921uMcu):
 
     def bringup(self, patch_blob: bytes, ram_blob: bytes, log=print) -> None:
         """mt7921u_probe through mt7921u_mcu_init."""
+        if getattr(self, "_session", None):
+            raise RuntimeError("stop acquisition before firmware reset")
+        self._session_ready = False
+        self._capture_channel = None
         log("resetting USB device")
         try:
             self.dev.reset()
@@ -1343,6 +1376,7 @@ class Mt7921uDevice(Mt7921uMcu):
         self.clear_bits(MT_UDMA_TX_QSEL, MT_FW_DL_EN)
         log("firmware is running")
         self.post_firmware_init(log)
+        self._session_ready = True
 
     def post_firmware_init(self, log=print) -> None:
         """What __mt7921_init_hardware does once the firmware answers.
@@ -1607,6 +1641,8 @@ def _set_rxfilter(self, fif: int, bit_op: int = 0, bit_map: int = 0) -> None:
 
 def _rx_read(self, timeout: int = 1000, size: int = 8192) -> bytes:
     """One bulk read off the 802.11 receive endpoint."""
+    if getattr(self, "_session", None):
+        raise RuntimeError("use session.read while acquisition owns RX")
     return self.bulk_in(self.ep_in_pkt_rx, size, timeout)
 
 
@@ -1870,6 +1906,9 @@ WIDTH_TO_SNIFFER_BW = {20: SNIFFER_BW_20, 40: SNIFFER_BW_20, 80: SNIFFER_BW_80, 
 def _tune(self, band_name: str, control_ch: int, center_ch: int | None = None, width_mhz: int = 20):
     """Put the sniffer on one channel: mt7921 needs CHANNEL_SWITCH then the sniffer CONFIG
     TLV; mt7925 overrides this with the TLV alone. center_ch defaults to control_ch."""
+    if getattr(self, "_session", None):
+        self._session.check_owner()
+    self._capture_channel = None
     if band_name not in CHAN_BAND:
         raise ValueError(f"band must be one of {sorted(CHAN_BAND)}, got {band_name!r}")
     if width_mhz not in WIDTH_TO_SNIFFER_BW:
@@ -1888,6 +1927,7 @@ def _tune(self, band_name: str, control_ch: int, center_ch: int | None = None, w
         band_name=band_name,
         bw=WIDTH_TO_SNIFFER_BW[width_mhz],
     )
+    self._capture_channel = (band_name, control_ch, center_ch, width_mhz)
 
 
 Mt7921uDevice.uni_option = _uni_option

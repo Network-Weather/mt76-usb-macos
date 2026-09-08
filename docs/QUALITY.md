@@ -11,7 +11,8 @@ page separates checks enforced today from work that remains.
 | Python formatting | `ruff format --check .` in macOS CI |
 | Python linting | Ruff `E`, `F`, `W`, import sorting, upgrades, bugbear, comprehensions, executable-bit, refurb, security, simplify, pie, pytest, and Ruff-specific rules |
 | Shell syntax | `bash -n setup.sh` in CI; `shellcheck setup.sh` in the local release check when ShellCheck is installed |
-| Offline behavior | 388 pytest tests, with no adapter or firmware required |
+| Offline behavior | 2,027 pytest cases on the R32 integration branch, including synthetic Python/C parity and injectable USB/register faults; no adapter or firmware required |
+| Native robustness | Native unit/fault tests, ASan/UBSan malformed-input harnesses and separate session/CSI ThreadSanitizer replay checks |
 | Distribution | PEP 517 wheel and source-distribution build on every CI matrix member; the local check reuses installed development backends rather than silently downloading them |
 | Platform matrix | macOS runners only, at the oldest/newest declared Python versions |
 | Hardware evidence | Dated, exact-device results kept separately in [TESTING.md](TESTING.md) |
@@ -35,18 +36,28 @@ These are publication disclosures, not hidden backlog:
   handle, and heterogeneous dictionaries used as protocol results. Broad ignores would hide the
   design problem, so type checking is not yet advertised or made cosmetic. Roadmap R4 replaces
   these boundaries before adding a type-check gate.
-- **Coverage is narrow.** The suite exercises important pure parsing and serialization paths,
-  but there is no coverage threshold, sanitized golden USB corpus, or mutation test. A seeded
-  random-byte smoke fuzz covers the descriptor, frame, and IE parser entry points; structured
-  and property-based fuzzing remain roadmap work (R20).
-- **The USB boundary is not injectable.** There is no fake transport for stalls, short reads,
-  disconnects, delayed MCU replies, or cancellation. Hardware-negative paths therefore have
-  weaker evidence than pure parsers.
-- **Operational observability is incomplete.** The examples do not expose stable structured
-  logs or counters for queue depth, USB retries, decode failures, dropped frames, current
-  channel, and firmware state.
-- **Long-run behavior is not qualified.** A five-minute two-adapter run exists, but there is no
-  multi-hour soak, hot-unplug, sleep/wake, or device-recovery result.
+- **Coverage has limits.** Shared synthetic wire fixtures, exhaustive profile truncations,
+  structured malformed cases and seeded Python/native fuzz harnesses exist. There is still
+  no coverage threshold, reviewed live golden USB corpus or broad property-based gate.
+  None of those parser checks establishes calibration or sensor freshness.
+- **Physical negative paths remain separate.** Injectable USB/register boundaries now cover
+  short writes, timeouts/disconnect failures, delayed/stale replies, queue overflow,
+  cancellation and restoration faults. Physical hot-unplug and sleep/wake are unqualified;
+  deterministic failure injection is not a substitute for exercising those conditions.
+- **Observability is scoped.** Session snapshots and redacted probe NDJSON expose queues,
+  drops, matched replies, errors, requested channel/generation and latency. Native soaks
+  report current/peak memory; Python runs can be measured by the owned-process supervisor.
+  There is no stable application-level logging schema or complete RF-loss accounting.
+- **Long-run and RF acceptance remain open.** The A9000 native two-hour run passes
+  its scoped gate; Python stopped intentionally at39.5min for the user's
+  [checkpoint](R32_CHECKPOINT.md), not a two-hour pass. Intermediate telemetry
+  collection has three disclosed gaps. The attached MT7921 became RF-silent
+  despite responsive MCU/reset controls; a user-performed physical USB cycle
+  restored reception on2026-09-08. Current Python/C three-band controls and private
+  capture files pass initially, but5/6GHz reception degrades during the histogram
+  sequence despite restore/reload. See the [bounded merge hold](R32_MERGE_CHECK.md).
+  The cause, post-experiment RF qualification and complete two-chip/two-language soak
+  matrix remain open; no automatic-recovery guarantee is claimed.
 - **Release automation is minimal.** There is a changelog, tag/version check, and dependency
   update bot, but no signed release procedure, code-coverage report, API reference site, or
   compatibility/deprecation policy yet. Publication remains a manual checklist in

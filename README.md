@@ -30,7 +30,7 @@ Support is per chip and evidence-gated:
 
 | Chip (Linux module) | Adapter tested | Status |
 |---|---|---|
-| MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Working: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz, both drivers, rerun on 0.3.0 with the A9000 attached alongside; dated evidence in [docs/TESTING.md](docs/TESTING.md) |
+| MT7921AU / MT7921U, `mt7921u` (`MT7961`, USB `0e8d:7961`) | ALFA AWUS036AXML | Historical 0.3.0 qualification: 2.4 / 5 / 6 GHz passive capture at 20 and 80 MHz in both drivers, with the A9000 attached alongside. On2026-09-08 physical recovery and current Python/C20MHz three-band controls pass initially, then5/6GHz RX degrades during histogram checks. R32 cleanup qualification remains blocked. [Dated evidence](docs/R32_MERGE_CHECK.md) |
 | MT7925U, `mt7925u` (Netgear Nighthawk A9000, A8500; USB `0846:9072`, `0846:9050`, `0e8d:7925`) | Netgear Nighthawk A9000 (`0846:9072`) | Working: 2.4 / 5 / 6 GHz passive capture at 20, 80, and **160 MHz**, 43-channel smoke pass, dated evidence in [docs/TESTING.md](docs/TESTING.md); the A8500 and MediaTek ids are in the table but untested |
 | MT7663U, MT76x2U, MT76x0U (`mt7663u`, `mt76x2u`, `mt76x0u`) | none | Not attempted: different firmware and MCU models; nothing here has been run on them |
 
@@ -59,10 +59,33 @@ radiotap. That is a plain userspace USB job, and on macOS nothing is holding the
 This project does not try to expose a CoreWLAN or BSD network interface. For passive
 capture, libusb access to the otherwise-unclaimed device is enough.
 
-[C acquisition parity](docs/C_PARITY.md) with the recent Python research is implemented
-and qualified on `main`; see [dated evidence](docs/TESTING.md#native-c-acquisition-parity-2026-09-04).
+[R30 C acquisition parity](docs/C_PARITY.md) is implemented and qualified on `main`;
+the expanded R32 measurement/session work is on `feat/measurement-api`, not merged
+or released. See [dated evidence](docs/TESTING.md#native-c-acquisition-parity-2026-09-04).
 A future iPad survey spike is deferred in [ROADMAP.md](ROADMAP.md);
 proper networking-driver and baseline-connectivity work are explicitly out of scope.
+
+Experimental [continuous acquisition sessions](docs/CONTINUOUS_ACQUISITION.md) provide
+single-owner Python/C capture with bounded queues and frame-preserving MCU waits.
+Short hardware checks are qualified; long-soak and recovery limits remain explicit.
+
+The unreleased [named measurement APIs](docs/MEASUREMENTS.md) expose MCU counter
+samples in Python and C, including raw units, width uncertainty and saturation
+limits, query-only thermal data and raw TX-status timing. Narrow experimental
+[beacon CSI](docs/CSI_API.md) and [raw histograms](docs/HISTOGRAM_API.md) now have
+matching Python/C control lifetimes and short hardware evidence. Group5 streaming
+reliability remains unqualified, and no calibrated noise, power or ranging is implied.
+
+Current release qualification is not complete. After the physical USB cycle,
+current Python/C three-band baselines pass, but the ALFA loses most5/6GHz
+reception during the histogram sequence despite restoration/reload. The
+[bounded merge check](docs/R32_MERGE_CHECK.md) holds the complete PR pending
+isolation or an explicit scope split. The A9000 native two-hour run passed its scoped
+gate; Python was intentionally stopped at39.5min for the user's checkpoint.
+[Stocktake and next roadmap](docs/R32_CHECKPOINT.md) and
+[current limitations](docs/TESTING.md#r32-attached-radio-recheck-2026-09-08)
+supersede any inference that the historical hardware table guarantees this unit's
+present RF health; the cause is unresolved.
 
 ## Requirements
 
@@ -299,10 +322,11 @@ and its evidence caveats are in [RELATED_WORK.md](RELATED_WORK.md#capability-com
 
 ## Testing
 
-The macOS-only CI runs 388 offline tests for firmware parsing, MCU framing (both chips, with
+The macOS-only suite now has 2,043 offline tests for firmware parsing, MCU framing (both chips, with
 the MT7921 frames frozen byte for byte in `tests/golden_mt7921_frames.json`), RX descriptors,
 USB descriptor selection,
-802.11 management parsing, PHY/airtime calculations, aggregation, and pcap serialization.
+802.11 management parsing, PHY/airtime calculations, aggregation, pcap serialization,
+session/fault handling and shared native/Python measurement records.
 It also enforces Ruff formatting/linting, shell syntax, and distribution builds. Hardware tests
 are intentionally separate because GitHub runners have no radio. See
 [docs/TESTING.md](docs/TESTING.md) for the dated attached-hardware evidence and exact untested

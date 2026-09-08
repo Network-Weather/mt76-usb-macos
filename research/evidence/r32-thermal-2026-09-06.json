@@ -1,0 +1,2026 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-06",
+  "branch": "feat/measurement-api",
+  "integration_base": "71a022e",
+  "scope": "Query-only thermal plus named-counter/RX/retune qualification; no thermal-control writes, TX, MMIO read-clear, ambient identifiers or raw frame captures.",
+  "commands": {
+    "python": "python scripts/session_probe.py --usb-id VID:PID --fw PINNED_DIR --seconds SECONDS --hop-seconds 4 --mib-seconds 1 --named-counters --thermal --band 2.4GHz",
+    "c": "c/mt76_session_probe --usb-id VID:PID --fw PINNED_DIR --seconds SECONDS --hop-seconds 4 --mib-seconds 1 --named-counters --thermal --band 2.4GHz",
+    "sequence": "Initial runs requested 8 seconds; fixed-parser followups requested 15 seconds. Python and C ran separately on each device, with fresh firmware bring-up."
+  },
+  "firmware_sha256": {
+    "mt7921": {
+      "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+      "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+    },
+    "mt7925": {
+      "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+      "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+    }
+  },
+  "qualification": {
+    "final_mixed_runs": "passed both chips and implementations for short 2.4GHz channel1/11 retunes",
+    "initial_failure": "Native MT7925 failed a counter sample after six thermal queries, with a matched reply and register alive. Exact reply not captured.",
+    "parser_regression": "Deterministic Python/C regression reproduced: complete value8 rescanned as TLV could manufacture offset0. Parsers now skip complete entries; research readers reuse installed parser. Plausible, not proven attribution of the initial live failure.",
+    "temperature": "Reported signed Celsius, not calibrated against an external reference or established same physical sensor across chips",
+    "adc": "MT7925 raw codes only; no conversion",
+    "old_5ghz_rx": "unqualified; baseline weakness retained",
+    "multi_hour_soak": "not tested",
+    "hot_unplug": "not tested"
+  },
+  "runs": [
+    {
+      "run": "thermal_python_7921",
+      "process_exit_code": 0,
+      "parser_fix_included": false,
+      "thermal_query_count": 7,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983103260139708,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983104326799,
+          "closed_us": 1983104327791
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983103260139708,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983105355179,
+          "closed_us": 1983105356140
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983103260139708,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983106429666,
+          "closed_us": 1983106430423
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983103260139708,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983107586360,
+          "closed_us": 1983107587337
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983103260139708,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983108724494,
+          "closed_us": 1983108725462
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983103260139708,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983109863210,
+          "closed_us": 1983109864347
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983103260139708,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983110903235,
+          "closed_us": 1983110904213
+        }
+      ],
+      "summary": {
+        "counts": {
+          "decoded_frames": 238,
+          "max_delivery_latency_us": 134385,
+          "max_mib_latency_us": 4185,
+          "max_retune_latency_us": 136753,
+          "mib_queries": 7,
+          "off_requested_channel": 2,
+          "packets_consumed": 238,
+          "retunes": 1,
+          "thermal_queries": 7,
+          "timestamp_frames": 238,
+          "transition_frames": 1
+        },
+        "elapsed_seconds": 8.074,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "hop_seconds": 4,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_band": "2.4GHz",
+        "requested_seconds": 8,
+        "session": {
+          "channel_generation": 1,
+          "counts": {
+            "commands_completed": 15,
+            "frames_delivered": 238,
+            "frames_high_water": 4,
+            "frames_received": 238,
+            "read_timeouts": 105,
+            "replies_matched": 37,
+            "transfers": 275
+          },
+          "epoch_ns": 1983103260139708,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            11,
+            11,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T19:30:44.279389+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0e8d:7961"
+      }
+    },
+    {
+      "run": "thermal_python_7925",
+      "process_exit_code": 0,
+      "parser_fix_included": false,
+      "thermal_query_count": 21,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983108628272,
+          "closed_us": 1983108630160
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983108640526,
+          "closed_us": 1983108642500
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983108642803,
+          "closed_us": 1983108644709
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983109651582,
+          "closed_us": 1983109653504
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983109699623,
+          "closed_us": 1983109701644
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983109747852,
+          "closed_us": 1983109749889
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983110790843,
+          "closed_us": 1983110792898
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983110810518,
+          "closed_us": 1983110812709
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983110868902,
+          "closed_us": 1983110871018
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983111888745,
+          "closed_us": 1983111890754
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983111915265,
+          "closed_us": 1983111917751
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983111920711,
+          "closed_us": 1983111922717
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983112944604,
+          "closed_us": 1983112946643
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983112949083,
+          "closed_us": 1983112951049
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983112955527,
+          "closed_us": 1983112957561
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983113968601,
+          "closed_us": 1983113970518
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983113973005,
+          "closed_us": 1983113974931
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983113987437,
+          "closed_us": 1983113989409
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983114997005,
+          "closed_us": 1983114999074
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983115000347,
+          "closed_us": 1983115002258
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983107624092916,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983115024153,
+          "closed_us": 1983115026197
+        }
+      ],
+      "summary": {
+        "counts": {
+          "decoded_frames": 1032,
+          "max_delivery_latency_us": 107555,
+          "max_mib_latency_us": 2379,
+          "max_retune_latency_us": 148708,
+          "mib_queries": 7,
+          "off_requested_channel": 1,
+          "packets_consumed": 1032,
+          "retunes": 1,
+          "thermal_queries": 21,
+          "timestamp_frames": 1032,
+          "transition_frames": 0
+        },
+        "elapsed_seconds": 8.014,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        "hop_seconds": 4,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_band": "2.4GHz",
+        "requested_seconds": 8,
+        "session": {
+          "channel_generation": 1,
+          "counts": {
+            "commands_completed": 29,
+            "frames_delivered": 1032,
+            "frames_high_water": 8,
+            "frames_received": 1032,
+            "read_timeouts": 18,
+            "replies_matched": 29,
+            "transfers": 1061
+          },
+          "epoch_ns": 1983107624092916,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            11,
+            11,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T19:30:49.425068+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0846:9072"
+      }
+    },
+    {
+      "run": "thermal_c_7921",
+      "process_exit_code": 0,
+      "parser_fix_included": false,
+      "thermal_query_count": 7,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983165729984000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983166799025,
+          "closed_us": 1983166799923
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983165729984000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983167823022,
+          "closed_us": 1983167823920
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983165729984000,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983168847000,
+          "closed_us": 1983168847898
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983165729984000,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983169984368,
+          "closed_us": 1983169985322
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983165729984000,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983171110787,
+          "closed_us": 1983171111686
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983165729984000,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983172237129,
+          "closed_us": 1983172238065
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983165729984000,
+          "action": 0,
+          "raw": 34,
+          "reported_temperature_c": 34,
+          "opened_us": 1983173374383,
+          "closed_us": 1983173375323
+        }
+      ],
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 8.053,
+        "state": 2,
+        "epoch_ns": 1983165729984000,
+        "frames_received": 379,
+        "frames_delivered": 379,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 4,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 416,
+        "read_timeouts": 90,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 37,
+        "unmatched_replies": 0,
+        "commands_completed": 15,
+        "decoded_frames": 379,
+        "undecoded": 0,
+        "timestamp_frames": 379,
+        "transition_frames": 1,
+        "off_requested_channel": 2,
+        "max_delivery_latency_us": 219899,
+        "mib_queries": 7,
+        "max_mib_latency_us": 3409,
+        "retunes": 1,
+        "max_retune_latency_us": 136507,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 12533760,
+        "peak_resident_bytes": 12582912,
+        "timestamp_first": 1758156,
+        "timestamp_last": 9771974,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "run": "thermal_c_7925",
+      "process_exit_code": 1,
+      "parser_fix_included": false,
+      "thermal_query_count": 6,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983170718289000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983171812922,
+          "closed_us": 1983171814779
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983170718289000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983171816640,
+          "closed_us": 1983171818513
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983170718289000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983171869215,
+          "closed_us": 1983171871121
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983170718289000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983172939307,
+          "closed_us": 1983172941147
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983170718289000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983172943043,
+          "closed_us": 1983172944921
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983170718289000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983172997442,
+          "closed_us": 1983172999330
+        }
+      ],
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 3.307,
+        "state": 3,
+        "epoch_ns": 1983170718289000,
+        "frames_received": 289,
+        "frames_delivered": 289,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 6,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 298,
+        "read_timeouts": 31,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 9,
+        "unmatched_replies": 0,
+        "commands_completed": 8,
+        "decoded_frames": 289,
+        "undecoded": 0,
+        "timestamp_frames": 289,
+        "transition_frames": 0,
+        "off_requested_channel": 0,
+        "max_delivery_latency_us": 62509,
+        "mib_queries": 2,
+        "max_mib_latency_us": 2037,
+        "retunes": 0,
+        "max_retune_latency_us": 0,
+        "channel_known": false,
+        "requested_control": 1,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 1,
+        "resident_bytes": 13107200,
+        "peak_resident_bytes": 13156352,
+        "timestamp_first": 922865,
+        "timestamp_last": 4103474,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "run": "thermal_fixed_python_7921",
+      "process_exit_code": 0,
+      "parser_fix_included": true,
+      "thermal_query_count": 13,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983447011460,
+          "closed_us": 1983447012686
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983448066234,
+          "closed_us": 1983448067497
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983449079276,
+          "closed_us": 1983449080215
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983450228710,
+          "closed_us": 1983450229707
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983451331491,
+          "closed_us": 1983451332452
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983452457114,
+          "closed_us": 1983452458380
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983453608668,
+          "closed_us": 1983453609853
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983454643032,
+          "closed_us": 1983454644094
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983455665742,
+          "closed_us": 1983455666823
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983456743851,
+          "closed_us": 1983456745087
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983457808720,
+          "closed_us": 1983457809728
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983458928187,
+          "closed_us": 1983458929348
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983445875237625,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983460044069,
+          "closed_us": 1983460045668
+        }
+      ],
+      "summary": {
+        "counts": {
+          "decoded_frames": 607,
+          "max_delivery_latency_us": 62052,
+          "max_mib_latency_us": 6459,
+          "max_retune_latency_us": 134194,
+          "mib_queries": 13,
+          "off_requested_channel": 1,
+          "packets_consumed": 607,
+          "retunes": 3,
+          "thermal_queries": 13,
+          "timestamp_frames": 607,
+          "transition_frames": 0
+        },
+        "elapsed_seconds": 15.064,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "hop_seconds": 4,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_band": "2.4GHz",
+        "requested_seconds": 15,
+        "session": {
+          "channel_generation": 3,
+          "counts": {
+            "commands_completed": 29,
+            "frames_delivered": 607,
+            "frames_high_water": 5,
+            "frames_received": 607,
+            "read_timeouts": 199,
+            "replies_matched": 71,
+            "transfers": 678
+          },
+          "epoch_ns": 1983445875237625,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            11,
+            11,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T19:36:26.902332+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0e8d:7961"
+      }
+    },
+    {
+      "run": "thermal_fixed_python_7925",
+      "process_exit_code": 0,
+      "parser_fix_included": true,
+      "thermal_query_count": 42,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983452993055,
+          "closed_us": 1983452995145
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983452995405,
+          "closed_us": 1983452997394
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983452998983,
+          "closed_us": 1983453000901
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983454023036,
+          "closed_us": 1983454025119
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983454080552,
+          "closed_us": 1983454082641
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983454119541,
+          "closed_us": 1983454121713
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983455149418,
+          "closed_us": 1983455151384
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983455202269,
+          "closed_us": 1983455204445
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983455245804,
+          "closed_us": 1983455247867
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983456268812,
+          "closed_us": 1983456270906
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983456279319,
+          "closed_us": 1983456281280
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983456282424,
+          "closed_us": 1983456283506
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983457309999,
+          "closed_us": 1983457312091
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983457312873,
+          "closed_us": 1983457315026
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983457319249,
+          "closed_us": 1983457321291
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983458333779,
+          "closed_us": 1983458335904
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983458336899,
+          "closed_us": 1983458339067
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983458339427,
+          "closed_us": 1983458341291
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983459357732,
+          "closed_us": 1983459359705
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983459360867,
+          "closed_us": 1983459362862
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983459367274,
+          "closed_us": 1983459369241
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983460375696,
+          "closed_us": 1983460377691
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983460428471,
+          "closed_us": 1983460430553
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983460468149,
+          "closed_us": 1983460471446
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983461485217,
+          "closed_us": 1983461487336
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983461490996,
+          "closed_us": 1983461493171
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983461495519,
+          "closed_us": 1983461497646
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983462522304,
+          "closed_us": 1983462524440
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983462576350,
+          "closed_us": 1983462578463
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983462618553,
+          "closed_us": 1983462620629
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983463648891,
+          "closed_us": 1983463650844
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983463704321,
+          "closed_us": 1983463706542
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983463746025,
+          "closed_us": 1983463748272
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983464788125,
+          "closed_us": 1983464790238
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983464794500,
+          "closed_us": 1983464796568
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983464824337,
+          "closed_us": 1983464826558
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983465868206,
+          "closed_us": 1983465870200
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983465899889,
+          "closed_us": 1983465901905
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983465918123,
+          "closed_us": 1983465920113
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983466931901,
+          "closed_us": 1983466933904
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983466936224,
+          "closed_us": 1983466938164
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983451927798166,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983466939395,
+          "closed_us": 1983466941333
+        }
+      ],
+      "summary": {
+        "counts": {
+          "decoded_frames": 1677,
+          "max_delivery_latency_us": 106359,
+          "max_mib_latency_us": 2702,
+          "max_retune_latency_us": 108377,
+          "mib_queries": 14,
+          "off_requested_channel": 4,
+          "packets_consumed": 1677,
+          "retunes": 3,
+          "thermal_queries": 42,
+          "timestamp_frames": 1677,
+          "transition_frames": 1
+        },
+        "elapsed_seconds": 15.017,
+        "event": "summary",
+        "exit_code": 0,
+        "firmware_sha256": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        "hop_seconds": 4,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 1,
+        "register_alive_after": true,
+        "requested_band": "2.4GHz",
+        "requested_seconds": 15,
+        "session": {
+          "channel_generation": 3,
+          "counts": {
+            "commands_completed": 59,
+            "frames_delivered": 1677,
+            "frames_high_water": 7,
+            "frames_received": 1677,
+            "read_timeouts": 71,
+            "replies_matched": 59,
+            "transfers": 1736
+          },
+          "epoch_ns": 1983451927798166,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            11,
+            11,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T19:36:33.710361+00:00",
+        "tool": "python_session_probe",
+        "usb_id": "0846:9072"
+      }
+    },
+    {
+      "run": "thermal_fixed_c_7921",
+      "process_exit_code": 0,
+      "parser_fix_included": true,
+      "thermal_query_count": 14,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983520074886,
+          "closed_us": 1983520075830
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983521098964,
+          "closed_us": 1983521099889
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983522130848,
+          "closed_us": 1983522131820
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 38,
+          "reported_temperature_c": 38,
+          "opened_us": 1983523289597,
+          "closed_us": 1983523290574
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983524394180,
+          "closed_us": 1983524395163
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983525510263,
+          "closed_us": 1983525511232
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983526663645,
+          "closed_us": 1983526664581
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983527674472,
+          "closed_us": 1983527675387
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983528682737,
+          "closed_us": 1983528683632
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983529706713,
+          "closed_us": 1983529707635
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983530782718,
+          "closed_us": 1983530783663
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983531861239,
+          "closed_us": 1983531862192
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983532914812,
+          "closed_us": 1983532915743
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0e8d:7961",
+          "epoch_ns": 1983519042752000,
+          "action": 0,
+          "raw": 36,
+          "reported_temperature_c": 36,
+          "opened_us": 1983534073535,
+          "closed_us": 1983534074497
+        }
+      ],
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0e8d:7961",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 15.088,
+        "state": 2,
+        "epoch_ns": 1983519042752000,
+        "frames_received": 899,
+        "frames_delivered": 899,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 6,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 975,
+        "read_timeouts": 184,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 76,
+        "unmatched_replies": 0,
+        "commands_completed": 31,
+        "decoded_frames": 899,
+        "undecoded": 0,
+        "timestamp_frames": 899,
+        "transition_frames": 1,
+        "off_requested_channel": 2,
+        "max_delivery_latency_us": 243054,
+        "mib_queries": 14,
+        "max_mib_latency_us": 4358,
+        "retunes": 3,
+        "max_retune_latency_us": 134222,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 12517376,
+        "peak_resident_bytes": 12566528,
+        "timestamp_first": 1726056,
+        "timestamp_last": 15780705,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    },
+    {
+      "run": "thermal_fixed_c_7925",
+      "process_exit_code": 0,
+      "parser_fix_included": true,
+      "thermal_query_count": 42,
+      "thermal_samples": [
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983524890226,
+          "closed_us": 1983524892173
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983524893917,
+          "closed_us": 1983524895829
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983524896527,
+          "closed_us": 1983524898484
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983525923576,
+          "closed_us": 1983525925585
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983525931363,
+          "closed_us": 1983525933414
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983525952237,
+          "closed_us": 1983525954197
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983527038216,
+          "closed_us": 1983527039830
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983527040600,
+          "closed_us": 1983527042506
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983527044338,
+          "closed_us": 1983527046231
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983528061481,
+          "closed_us": 1983528063431
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983528071499,
+          "closed_us": 1983528073401
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983528077059,
+          "closed_us": 1983528078996
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983529102042,
+          "closed_us": 1983529103936
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983529105210,
+          "closed_us": 1983529107203
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983529111480,
+          "closed_us": 1983529113346
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983530129034,
+          "closed_us": 1983530130954
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983530133789,
+          "closed_us": 1983530135661
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983530136459,
+          "closed_us": 1983530138347
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983531153430,
+          "closed_us": 1983531155371
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983531159565,
+          "closed_us": 1983531161479
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983531161798,
+          "closed_us": 1983531163718
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983532220526,
+          "closed_us": 1983532222514
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983532260723,
+          "closed_us": 1983532262647
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983532263098,
+          "closed_us": 1983532265043
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983533291709,
+          "closed_us": 1983533293619
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983533346679,
+          "closed_us": 1983533348510
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983533386922,
+          "closed_us": 1983533388807
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983534417113,
+          "closed_us": 1983534419023
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983534473448,
+          "closed_us": 1983534475318
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983534513382,
+          "closed_us": 1983534515277
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983535543628,
+          "closed_us": 1983535545525
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983535547971,
+          "closed_us": 1983535549897
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983535551679,
+          "closed_us": 1983535553712
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983536568793,
+          "closed_us": 1983536570699
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983536574837,
+          "closed_us": 1983536576795
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983536577279,
+          "closed_us": 1983536579225
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983537604333,
+          "closed_us": 1983537606017
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983537608857,
+          "closed_us": 1983537610741
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983537613117,
+          "closed_us": 1983537615043
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983538625357,
+          "closed_us": 1983538627311
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 1,
+          "raw": 67,
+          "reported_temperature_c": null,
+          "opened_us": 1983538628492,
+          "closed_us": 1983538630383
+        },
+        {
+          "event": "thermal",
+          "usb_id": "0846:9072",
+          "epoch_ns": 1983523882393000,
+          "action": 0,
+          "raw": 43,
+          "reported_temperature_c": 43,
+          "opened_us": 1983538632753,
+          "closed_us": 1983538634620
+        }
+      ],
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 15.022,
+        "state": 2,
+        "epoch_ns": 1983523882393000,
+        "frames_received": 2160,
+        "frames_delivered": 2160,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 12,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 2219,
+        "read_timeouts": 59,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 59,
+        "unmatched_replies": 0,
+        "commands_completed": 59,
+        "decoded_frames": 2160,
+        "undecoded": 0,
+        "timestamp_frames": 2160,
+        "transition_frames": 1,
+        "off_requested_channel": 4,
+        "max_delivery_latency_us": 103791,
+        "mib_queries": 14,
+        "max_mib_latency_us": 2153,
+        "retunes": 3,
+        "max_retune_latency_us": 124053,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 13074432,
+        "peak_resident_bytes": 13123584,
+        "timestamp_first": 859200,
+        "timestamp_last": 15879018,
+        "timestamp_wrap_candidates": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      }
+    }
+  ]
+}

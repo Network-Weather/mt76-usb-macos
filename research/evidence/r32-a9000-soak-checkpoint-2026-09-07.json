@@ -1,0 +1,456 @@
+{
+  "schema_version": 1,
+  "checkpoint_utc": "2026-09-07",
+  "branch": "feat/measurement-api",
+  "reviewed_head": "83b08202a9c0d46dbf10daa425ad973dac5c5e59",
+  "scope": "A9000 passive normal-RX, named-counter/thermal and retune qualification; user-requested checkpoint stops Python early.",
+  "source": {
+    "native_commit": "20745998f4726cd29c4d9c2aa40b970349dd59ae",
+    "native_binary_sha256": "d9aa553945209203b5045b00884cfb274b5a0917440b9bd1c3c7eb24b9c8535f",
+    "python_probe_revision": "9c33c52",
+    "python_probe_sha256": "3d2f87310040b2ca2e1dbc72e6ecf33633866f7ed99f5a81f2194b47598fffe5",
+    "python_core": "Device/session/measurement/RXD modules unchanged from2074599. Later Python probe adds diagnostics only; supervisor base_commit is launch-plan metadata, not its exact executed probe revision.",
+    "native_later_change": "WFSYS reset-error return fix542da24 not present in this executable; current-build A9000 fresh-bringup smoke remains pending."
+  },
+  "configuration": {
+    "usb_id": "0846:9072",
+    "requested_seconds_each": 7200,
+    "channels": [
+      1,
+      11
+    ],
+    "band": "2.4GHz",
+    "width_mhz": 20,
+    "hop_seconds": 30,
+    "measurement_seconds": 10,
+    "named_counters": 10,
+    "thermal_actions": [
+      0,
+      1,
+      0
+    ],
+    "frame_capacity": 256,
+    "event_capacity": 64,
+    "transmit": false,
+    "csi": false,
+    "histogram": false
+  },
+  "stop": {
+    "reason": "User requested wrap-up/checkpoint and roadmap before further token expenditure.",
+    "signal": "SIGTERM",
+    "target": "Verified owned Python child74362 only",
+    "python_partial_not_two_hour_pass": true,
+    "supervisor_exit": 0,
+    "supervisor_semantics": "Supervisor exited0 although Python child intentionally exited130. Qualification uses child summaries/exits, not supervisor exit alone.",
+    "processes_gone": true
+  },
+  "collection": {
+    "retained_records": 3993,
+    "raw_file": "r32-a9000-soak-retained-2026-09-07.json",
+    "host_collection_gap_fragments": 3,
+    "limitation": "Three tool-output collection/truncation gaps omit intermediate records: two native, one Python. Retained terminal summaries provide cumulative process counters, but the intermediate telemetry series is not complete. These collection gaps are not device or queue-drop counters.",
+    "native_heartbeat_gap_intervals": [
+      {
+        "from": 240.027,
+        "to": 300.035,
+        "gap": 60.00800000000004
+      },
+      {
+        "from": 630.075,
+        "to": 780.091,
+        "gap": 150.01599999999996
+      }
+    ],
+    "python_heartbeat_gap_intervals": [
+      {
+        "from": 210.09,
+        "to": 390.11,
+        "gap": 180.02
+      }
+    ],
+    "python_omitted_counter_keys": "Python snapshots serialize a sparse Counter; absent event/drop/error counters mean zero increments, not missing measurement fields.",
+    "host_stack_sample": "One one-second macOS sample of the owned Python process near23:44UTC checked for blocked stdout. No main-thread write block observed in that interval; not an RF or zero-loss proof."
+  },
+  "runs": {
+    "native": {
+      "started_utc": "2026-09-06T21:26:07.390926+00:00",
+      "finished_utc": "2026-09-06T23:26:09.623012+00:00",
+      "returncode": 0,
+      "stderr": "",
+      "summary": {
+        "event": "summary",
+        "tool": "c_session_probe",
+        "usb_id": "0846:9072",
+        "requested_band": "2.4GHz",
+        "elapsed_seconds": 7200.058,
+        "state": 2,
+        "epoch_ns": 1990025064527000,
+        "frames_received": 857759,
+        "frames_delivered": 857759,
+        "frames_dropped": 0,
+        "frame_depth": 0,
+        "frame_high_water": 25,
+        "events_received": 0,
+        "events_delivered": 0,
+        "events_dropped": 0,
+        "event_depth": 0,
+        "event_high_water": 0,
+        "transfers": 860858,
+        "read_timeouts": 32020,
+        "usb_errors": 0,
+        "malformed": 0,
+        "replies_matched": 3099,
+        "unmatched_replies": 0,
+        "commands_completed": 3099,
+        "decoded_frames": 857759,
+        "undecoded": 0,
+        "timestamp_frames": 857759,
+        "transition_frames": 100,
+        "off_requested_channel": 333,
+        "max_delivery_latency_us": 174433,
+        "mib_queries": 715,
+        "max_mib_latency_us": 7218,
+        "retunes": 239,
+        "max_retune_latency_us": 108089,
+        "channel_known": true,
+        "requested_control": 11,
+        "legacy_mcu_discarded_frames": 0,
+        "register_alive_after": true,
+        "exit_code": 0,
+        "resident_bytes": 13139968,
+        "peak_resident_bytes": 13221888,
+        "timestamp_first": 872490,
+        "timestamp_last": 2905913470,
+        "timestamp_wrap_candidates": 1,
+        "timestamp_backsteps": 0,
+        "timestamp_ambiguous_gaps": 0
+      },
+      "retained_diagnostics": {
+        "record_counts": {
+          "ready": 1,
+          "counters": 696,
+          "thermal": 2089,
+          "heartbeat": 234,
+          "summary": 1
+        },
+        "retained_heartbeats": 234,
+        "memory": {
+          "first": 13156352,
+          "last": 13189120,
+          "min": 13156352,
+          "max": 13221888
+        },
+        "thermal_c": {
+          "min": 43,
+          "max": 45
+        },
+        "heartbeat_gaps": [
+          {
+            "from": 240.027,
+            "to": 300.035,
+            "gap": 60.00800000000004
+          },
+          {
+            "from": 630.075,
+            "to": 780.091,
+            "gap": 150.01599999999996
+          }
+        ],
+        "first_hb": {
+          "event": "heartbeat",
+          "tool": "c_session_probe",
+          "usb_id": "0846:9072",
+          "requested_band": "2.4GHz",
+          "elapsed_seconds": 30.11,
+          "state": 0,
+          "epoch_ns": 1990025064527000,
+          "frames_received": 2621,
+          "frames_delivered": 2619,
+          "frames_dropped": 0,
+          "frame_depth": 2,
+          "frame_high_water": 8,
+          "events_received": 0,
+          "events_delivered": 0,
+          "events_dropped": 0,
+          "event_depth": 0,
+          "event_high_water": 0,
+          "transfers": 2630,
+          "read_timeouts": 221,
+          "usb_errors": 0,
+          "malformed": 0,
+          "replies_matched": 9,
+          "unmatched_replies": 0,
+          "commands_completed": 9,
+          "decoded_frames": 2619,
+          "undecoded": 0,
+          "timestamp_frames": 2619,
+          "transition_frames": 0,
+          "off_requested_channel": 0,
+          "max_delivery_latency_us": 51586,
+          "mib_queries": 2,
+          "max_mib_latency_us": 2353,
+          "retunes": 1,
+          "max_retune_latency_us": 108089,
+          "channel_known": true,
+          "requested_control": 11,
+          "legacy_mcu_discarded_frames": 0,
+          "register_alive_after": null,
+          "exit_code": 0,
+          "resident_bytes": 13156352,
+          "peak_resident_bytes": 13156352,
+          "timestamp_first": 872490,
+          "timestamp_last": 30869404,
+          "timestamp_wrap_candidates": 0,
+          "timestamp_backsteps": 0,
+          "timestamp_ambiguous_gaps": 0
+        },
+        "last_hb": {
+          "event": "heartbeat",
+          "tool": "c_session_probe",
+          "usb_id": "0846:9072",
+          "requested_band": "2.4GHz",
+          "elapsed_seconds": 7171.377,
+          "state": 0,
+          "epoch_ns": 1990025064527000,
+          "frames_received": 854074,
+          "frames_delivered": 854074,
+          "frames_dropped": 0,
+          "frame_depth": 0,
+          "frame_high_water": 25,
+          "events_received": 0,
+          "events_delivered": 0,
+          "events_dropped": 0,
+          "event_depth": 0,
+          "event_high_water": 0,
+          "transfers": 857160,
+          "read_timeouts": 31943,
+          "usb_errors": 0,
+          "malformed": 0,
+          "replies_matched": 3086,
+          "unmatched_replies": 0,
+          "commands_completed": 3086,
+          "decoded_frames": 854074,
+          "undecoded": 0,
+          "timestamp_frames": 854074,
+          "transition_frames": 100,
+          "off_requested_channel": 332,
+          "max_delivery_latency_us": 174433,
+          "mib_queries": 712,
+          "max_mib_latency_us": 7218,
+          "retunes": 238,
+          "max_retune_latency_us": 108089,
+          "channel_known": true,
+          "requested_control": 1,
+          "legacy_mcu_discarded_frames": 0,
+          "register_alive_after": null,
+          "exit_code": 0,
+          "resident_bytes": 13189120,
+          "peak_resident_bytes": 13221888,
+          "timestamp_first": 872490,
+          "timestamp_last": 2877175498,
+          "timestamp_wrap_candidates": 1,
+          "timestamp_backsteps": 0,
+          "timestamp_ambiguous_gaps": 0
+        }
+      }
+    },
+    "python": {
+      "started_utc": "2026-09-06T23:26:09.626519+00:00",
+      "finished_utc": "2026-09-07T00:05:44.188393+00:00",
+      "returncode": 130,
+      "stderr": "",
+      "summary": {
+        "counts": {
+          "decoded_frames": 288445,
+          "max_delivery_latency_us": 170667,
+          "max_mib_latency_us": 7346,
+          "max_retune_latency_us": 159181,
+          "mib_queries": 235,
+          "off_requested_channel": 123,
+          "packets_consumed": 288445,
+          "retunes": 78,
+          "thermal_queries": 705,
+          "timestamp_frames": 288445,
+          "transition_frames": 41
+        },
+        "elapsed_seconds": 2372.772,
+        "event": "summary",
+        "exit_code": 130,
+        "firmware_sha256": {
+          "patch": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        "hop_seconds": 30,
+        "legacy_mcu_discarded_frames": 0,
+        "mib_seconds": 10,
+        "probe_sha256": "3d2f87310040b2ca2e1dbc72e6ecf33633866f7ed99f5a81f2194b47598fffe5",
+        "register_alive_after": true,
+        "requested_band": "2.4GHz",
+        "requested_seconds": 7200,
+        "session": {
+          "channel_generation": 78,
+          "counts": {
+            "commands_completed": 1018,
+            "frames_delivered": 288445,
+            "frames_high_water": 24,
+            "frames_received": 288445,
+            "read_timeouts": 10162,
+            "replies_matched": 1018,
+            "transfers": 289463
+          },
+          "epoch_ns": 1997227875444916,
+          "error": null,
+          "event_depth": 0,
+          "frame_depth": 0,
+          "requested_channel": [
+            "2.4GHz",
+            1,
+            1,
+            20
+          ],
+          "state": "closed"
+        },
+        "started_utc": "2026-09-06T23:26:09.718137+00:00",
+        "timestamp_ambiguous_gaps": 0,
+        "timestamp_backsteps": 0,
+        "timestamp_first": 906892,
+        "timestamp_last": 2373626727,
+        "timestamp_wrap_candidates": 0,
+        "tool": "python_session_probe",
+        "usb_id": "0846:9072",
+        "supervisor_resident_bytes": 32669696
+      },
+      "retained_diagnostics": {
+        "record_counts": {
+          "ready": 1,
+          "counters": 223,
+          "thermal": 669,
+          "heartbeat": 74,
+          "summary": 1
+        },
+        "retained_heartbeats": 74,
+        "memory": {
+          "first": 32686080,
+          "last": 32735232,
+          "min": 32686080,
+          "max": 32751616
+        },
+        "thermal_c": {
+          "min": 43,
+          "max": 45
+        },
+        "heartbeat_gaps": [
+          {
+            "from": 210.09,
+            "to": 390.11,
+            "gap": 180.02
+          }
+        ],
+        "first_hb": {
+          "event": "heartbeat",
+          "elapsed_seconds": 30.05,
+          "counts": {
+            "packets_consumed": 2844,
+            "decoded_frames": 2844,
+            "timestamp_frames": 2844,
+            "transition_frames": 0,
+            "off_requested_channel": 0,
+            "max_delivery_latency_us": 14864,
+            "mib_queries": 3,
+            "max_mib_latency_us": 2702,
+            "thermal_queries": 9,
+            "max_retune_latency_us": 159181,
+            "retunes": 1
+          },
+          "session": {
+            "state": "running",
+            "error": null,
+            "epoch_ns": 1997227875444916,
+            "channel_generation": 1,
+            "requested_channel": [
+              "2.4GHz",
+              11,
+              11,
+              20
+            ],
+            "frame_depth": 5,
+            "event_depth": 0,
+            "counts": {
+              "transfers": 2862,
+              "frames_received": 2849,
+              "frames_high_water": 12,
+              "frames_delivered": 2844,
+              "read_timeouts": 210,
+              "replies_matched": 13,
+              "commands_completed": 13
+            }
+          },
+          "timestamp_first": 906892,
+          "timestamp_last": 30845255,
+          "timestamp_wrap_candidates": 0,
+          "timestamp_backsteps": 0,
+          "timestamp_ambiguous_gaps": 0,
+          "supervisor_resident_bytes": 32686080
+        },
+        "last_hb": {
+          "event": "heartbeat",
+          "elapsed_seconds": 2370.52,
+          "counts": {
+            "packets_consumed": 288257,
+            "decoded_frames": 288257,
+            "timestamp_frames": 288257,
+            "transition_frames": 41,
+            "off_requested_channel": 123,
+            "max_delivery_latency_us": 170667,
+            "mib_queries": 235,
+            "max_mib_latency_us": 7346,
+            "thermal_queries": 705,
+            "max_retune_latency_us": 159181,
+            "retunes": 78
+          },
+          "session": {
+            "state": "running",
+            "error": null,
+            "epoch_ns": 1997227875444916,
+            "channel_generation": 78,
+            "requested_channel": [
+              "2.4GHz",
+              1,
+              1,
+              20
+            ],
+            "frame_depth": 0,
+            "event_depth": 0,
+            "counts": {
+              "transfers": 289275,
+              "frames_received": 288257,
+              "frames_high_water": 24,
+              "frames_delivered": 288257,
+              "read_timeouts": 10142,
+              "replies_matched": 1018,
+              "commands_completed": 1018
+            }
+          },
+          "timestamp_first": 906892,
+          "timestamp_last": 2371373969,
+          "timestamp_wrap_candidates": 0,
+          "timestamp_backsteps": 0,
+          "timestamp_ambiguous_gaps": 0,
+          "supervisor_resident_bytes": 32735232
+        }
+      }
+    }
+  },
+  "qualification": {
+    "native": "Scoped two-hour pass:7200.058s,857759 decoded/delivered frames,3099 matched/completed commands,715 measurement rounds,239 retunes; zero reported frame/event drops,USB errors,malformed/unmatched replies or legacy MCU discards; worker closed,queues drained,register responsive.",
+    "python": "Partial run plus orderly cancellation:2372.772s,288445 decoded/delivered frames,1018 matched/completed commands,235 measurement rounds,78 retunes; no reported drops/errors,closed worker,drained queues,responsive register. User-stopped at39.5min, not a two-hour pass.",
+    "timing": "Native one conservative timestamp-wrap candidate,zero backsteps/ambiguous gaps; Python no wrap/backstep/ambiguous-gap observations. No clock extension,shared clock,ranging or global timestamp guarantee.",
+    "channel": "Native100 transition-marked and333 off-requested-channel frames; Python41 and123. Buffered/retune provenance remains explicit; do not label all frames as current requested channel or claim every off-channel record was transition-marked.",
+    "memory": "Retained native heartbeat RSS13,156,352..13,221,888bytes; Python32,686,080..32,751,616bytes. Bounded observed range, not a proof of leak absence; incomplete intermediate samples disclosed.",
+    "limits": [
+      "Old MT7921 RF silence remains unresolved; no old-radio two-hour pass.",
+      "Current-build passive smoke and independent capture-file validation remain pending.",
+      "No multi-hour CSI/histogram,physical hot-unplug,sleep/wake,automatic recovery,expanded TX or release claim."
+    ]
+  }
+}

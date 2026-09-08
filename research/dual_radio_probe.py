@@ -33,6 +33,7 @@ import usb.core
 
 import mt7921u as m
 import rxd
+from mt76_measurements import parse_tx_status
 from research.control_frames import parse_control
 from research.mt7925_mib_characterize import parse_target
 from research.rx_vector_probe import summarize, vectors
@@ -109,19 +110,19 @@ def tx_status_records(raw):
     Constants: mt76_connac2_mac.h MT_TXS*, c5a3bd91. Return only metadata.
     The power byte is not called calibrated dBm; no-ACK TX cannot measure an ACK's RSSI.
     """
-    if len(raw) < 8:
+    try:
+        parsed = parse_tx_status(m.CHIP_MT7921, raw)
+    except ValueError:
         return []
-    end = min(len(raw), int.from_bytes(raw[:2], "little"))
     result = []
-    for offset in range(8, end - 31, 32):
-        words = struct.unpack_from("<8I", raw, offset)
+    for status in parsed:
         result.append(
             {
-                "format": (words[0] >> 23) & 3,
-                "rate": words[0] & 0x3FFF,
-                "ack_error_bits": (words[0] >> 16) & 7,
-                "tx_power_raw": words[1] & 255,
-                "pid": words[3] >> 24,
+                "format": status.format,
+                "rate": status.rate_raw,
+                "ack_error_bits": status.ack_error_bits,
+                "tx_power_raw": status.power_raw,
+                "pid": status.pid,
             }
         )
     return result

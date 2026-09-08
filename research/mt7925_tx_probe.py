@@ -34,6 +34,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import usb.core
 
 import mt7921u as m
+from mt76_measurements import parse_tx_status
 from research.dual_radio_probe import SOURCE, SSID
 
 # openwrt/mt76 c5a3bd91aa735b669618610d5f0ebfa5786845a6:
@@ -86,36 +87,37 @@ def build_txwi(frame, sequence, power_code=0, *, disable_mat=False, rate="ofdm6"
 
 
 def tx_status(raw, *, include_timing=False):
-    # mt7925_mac_rx_check: MT_TXS_HDR_SIZE=4 DW, MT_TXS_SIZE=12 DW.
-    if len(raw) < 16:
+    # Installed strict parser owns bounds and promoted fields. Retain the CLI's
+    # compatibility keys and explicitly research-only format1 hypotheses.
+    try:
+        parsed = parse_tx_status(m.CHIP_MT7925, raw)
+    except ValueError:
         return []
-    end = min(len(raw), int.from_bytes(raw[:2], "little"))
     records = []
-    for offset in range(16, end - 47, 48):
+    for index, status in enumerate(parsed):
+        offset = 16 + index * 48
         words = struct.unpack_from("<12I", raw, offset)
         records.append(
             {
-                "sequence": words[1] >> 20,
-                "format": (words[0] >> 23) & 3,
-                "rate_raw": words[0] & 0x3FFF,
-                "power_raw": words[1] & 255,
-                "ack_error_bits": (words[0] >> 16) & 7,
-                "error_bits_16_22": (words[0] >> 16) & 127,
-                "tx_count_format0": (words[5] >> 25) & 31 if (words[0] >> 23) & 3 == 0 else None,
-                "pid": words[3] >> 24,
+                "sequence": status.sequence,
+                "format": status.format,
+                "rate_raw": status.rate_raw,
+                "power_raw": status.power_raw,
+                "ack_error_bits": status.ack_error_bits,
+                "error_bits_16_22": status.error_bits_16_22,
+                "tx_count_format0": status.tx_count,
+                "pid": status.pid,
             }
         )
         if include_timing:
-            # mt76_connac3_mac.h: raw hardware fields, units not established.
-            # Format0 alone defines the 25-bit front-time field.
+            # Format0 alone defines front-time; scale metadata is available in
+            # the installed record, not added to this compatibility CLI schema.
             records[-1].update(
-                bandwidth_raw=words[0] >> 29,
-                tx_delay_raw=words[2] & 0xFFFF,
-                timestamp_raw=words[4],
-                rate_stbc=bool(words[3] & (1 << 7)),
-                front_time_raw_format0=(words[5] & 0x1FFFFFF)
-                if records[-1]["format"] == 0
-                else None,
+                bandwidth_raw=status.bandwidth_raw,
+                tx_delay_raw=status.tx_delay_raw,
+                timestamp_raw=status.timestamp_raw,
+                rate_stbc=status.rate_stbc,
+                front_time_raw_format0=status.front_time_raw,
                 mpdu_counters_format1_hypothesis={
                     name: {"count": words[index] >> 24, "bytes": words[index] & 0xFFFFFF}
                     for name, index in (("tx", 5), ("fail", 6), ("retry", 7))

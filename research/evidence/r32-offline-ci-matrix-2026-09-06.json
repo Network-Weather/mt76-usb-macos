@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-06",
+  "tested_source_commit": "1f0809083d600d0f588b8d2a77e3d3f6080778c5",
+  "local_host": {
+    "macos": "26.6.1",
+    "machine": "arm64"
+  },
+  "local_full_checks": [
+    {
+      "python": "3.14.7",
+      "command": "PROJECT_PYTHON=/Users/dew/dev/mt76-usb-macos/.venv/bin/python bash scripts/check.sh",
+      "source_tree": "fresh git archive in /private/tmp/mt76-final-offline.bjba0N",
+      "exit_code": 0,
+      "pytest_passed": 2025,
+      "pytest_seconds": 29.18,
+      "wheel_sha256": "75b4888b32901e014baa2c5c8e951ea69437310530cef10d72400a718066f88a",
+      "sdist_sha256": "cfed5c0d9a30bbb2c20d53c52be8af718c1dfbbfb43482a4552e6379fad27779"
+    },
+    {
+      "python": "3.10.18",
+      "command": "PROJECT_PYTHON=/private/tmp/mt76-audit-py310/bin/python bash scripts/check.sh",
+      "source_tree": "fresh git archive in /private/tmp/mt76-py310-source.C0dk8O",
+      "exit_code": 0,
+      "pytest_passed": 2025,
+      "pytest_seconds": 26.77,
+      "wheel_sha256": "3d66cda01b93687c02e1634c25f2c8e01bcf87690b3928de1919c59bcb8b48d5",
+      "sdist_sha256": "a6bec80d29e4beb372cddf22a66d3d050414bccec373b425b9062ecb8b3c4dee"
+    }
+  ],
+  "checks_in_script": [
+    "ruff format --check",
+    "ruff check",
+    "local docs/JSON validation",
+    "shell syntax/available shellcheck",
+    "pytest",
+    "sdist/wheel build",
+    "pip dependency check",
+    "native clean/all/test",
+    "native ASan/UBSan",
+    "temporary native build cleanup"
+  ],
+  "packaging": {
+    "six_installed_measurement_session_modules_verified": true,
+    "python_example_help_verified": true,
+    "native_example_and_shared_fixture_in_sdist_verified": true,
+    "published": false,
+    "version": "0.3.0"
+  },
+  "initial_py310_setup_failure": {
+    "cause": "wheel installation placed inside the archived source tree, so docs scanner found installed NOTICE.md links without repository-relative targets",
+    "repository_change": false,
+    "resolution": "fresh archive with installations outside source"
+  },
+  "pr": {
+    "number": 32,
+    "url": "https://github.com/Network-Weather/mt76-usb-macos/pull/32",
+    "draft": true,
+    "merged": false
+  },
+  "ci_initial": {
+    "run_id": 34064371831,
+    "head": "1f0809083d600d0f588b8d2a77e3d3f6080778c5",
+    "conclusion": "failure",
+    "passed_job": "macos-26 / Python 3.10",
+    "other_three_jobs_failed_tests": [
+      "test_timeout_faults_before_sequence_can_be_reused[Mt7921uDevice]",
+      "test_timeout_faults_before_sequence_can_be_reused[Mt7925uDevice]"
+    ],
+    "assertion": "expected1 write; observed0",
+    "exact_scheduling_cause_proven": false
+  },
+  "correction": {
+    "commit": "b4b131516f780673b89928376b039658d82e0276",
+    "production_code_changed": false,
+    "coverage": [
+      "MCU reply wait expires after exactly one write, with late-reply and sequence-reuse refusal",
+      "event-gated queued deadline expires without a write or sequence allocation"
+    ],
+    "targeted_repetitions": {
+      "interpreters": [
+        "3.10.18",
+        "3.14.7"
+      ],
+      "iterations_each": 10,
+      "cases_per_iteration": 4,
+      "passed_cases": 80
+    },
+    "local_full_pytest_passed": 2027
+  },
+  "ci_corrected": {
+    "conclusion": "success",
+    "headSha": "b4b131516f780673b89928376b039658d82e0276",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "macos-14 / Python 3.14",
+        "status": "completed",
+        "url": "https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064809583/job/101571593283"
+      },
+      {
+        "conclusion": "success",
+        "name": "macos-26 / Python 3.14",
+        "status": "completed",
+        "url": "https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064809583/job/101571593396"
+      },
+      {
+        "conclusion": "success",
+        "name": "macos-26 / Python 3.10",
+        "status": "completed",
+        "url": "https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064809583/job/101571593435"
+      },
+      {
+        "conclusion": "success",
+        "name": "macos-14 / Python 3.10",
+        "status": "completed",
+        "url": "https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064809583/job/101571593436"
+      }
+    ],
+    "status": "completed"
+  },
+  "ci_corrected_counts": [
+    {
+      "job": "macos-14 / Python 3.14",
+      "detail": "2026-09-06T22:43:36.9827490Z 2022 passed, 5 skipped in 37.20s"
+    },
+    {
+      "job": "macos-26 / Python 3.14",
+      "detail": "2026-09-06T22:43:54.5082690Z 2022 passed, 5 skipped in 49.88s"
+    },
+    {
+      "job": "macos-26 / Python 3.10",
+      "detail": "2026-09-06T22:44:11.1195080Z 2022 passed, 5 skipped in 47.86s"
+    },
+    {
+      "job": "macos-14 / Python 3.10",
+      "detail": "2026-09-06T22:44:02.7362040Z 2022 passed, 5 skipped in 40.42s"
+    }
+  ],
+  "ci_skip_scope": "Four optional compressed-BlockAck tshark cases plus one optional EHT pcap tshark case; all five run locally with the installed tool.",
+  "hardware_qualification": "Not supplied by this offline/CI evidence. A9000 long runs and postflight remain pending; old radio RF acceptance remains unresolved."
+}

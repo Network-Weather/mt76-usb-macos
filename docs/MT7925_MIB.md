@@ -11,7 +11,7 @@ measurements now support a working, though partly provisional, counter map:
 | Offset | Provisional meaning | Confidence | Observed behavior |
 | ---: | --- | --- | --- |
 | 0 | RX FCS/error count | High, firmware map + related-chip source | ROM resolves to full-width `0x820ed7f0`; passive ownership controls below |
-| 2 | delivered RX MPDU count | High | Matched decoded frames within 0-3 frames in every atomic-sampled dwell |
+| 2 | delivered RX MPDU count | High | Matched decoded frames within 0-3 frames in every batched-query dwell |
 | 7 | 16-bit idle-slot counter | High for field/cadence | Saturates at65,535 on long dwells; short-cadence samples now vary |
 | 11 | PHY receive attempts / MDRDY count | High | Always at least the delivered MPDU count and grows when the PHY detects frames it does not deliver |
 | 12 | CCK MDRDY duration, microseconds | High | Active only on 2.4 GHz and, with offset 13, closely tracks reconstructed receive airtime |
@@ -165,7 +165,7 @@ characterization's method:
   span, uses aggregation-aware decoded airtime, and refuses to calculate a
   busy-minus-decoded residual when CCA and decoded airtime cover different
   bandwidths. The local MT7925 tools already use midpoint-to-midpoint counter
-  intervals, aggregation-aware airtime, atomic UNI batches, and explicit
+  intervals, aggregation-aware airtime, single-request UNI batches, and explicit
   primary-channel scope.
 - Its controlled MT7921 burst did not distinguish `P_CCA_TIME` from
   `CCA_NAV_TX_TIME`; ambient NAV changed more than the injected TX contribution.
@@ -174,7 +174,7 @@ characterization's method:
 
 The earlier [`uni_mib_probe.py`](../research/uni_mib_probe.py) result records the
 initial offset sweep and intentionally leaves the MT7925 counters unidentified.
-The experiments here extend that evidence with atomic multi-counter reads,
+The experiments here extend that evidence with batched multi-counter reads,
 multi-band and multi-width behavior, controlled Wi-Fi traffic, primary rotation,
 and an identified MT7921 counter as an independent reference.
 
@@ -186,7 +186,8 @@ variable at 40/80/160 MHz. The semantic identification is withdrawn while the
 
 ## Representative evidence
 
-Percentages below use the atomic counter interval.  Decoded airtime uses the
+Percentages below use the batch's host counter interval, not a simultaneous
+hardware latch. Decoded airtime uses the
 receive-loop interval, which differs by only the two bounding MCU round trips.
 
 | Target | Decoded frames | Decoded airtime | offs 12 | offs 13 | offs 17 | offs 19 | offs 20 |

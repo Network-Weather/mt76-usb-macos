@@ -4,6 +4,317 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 calibration reapply check, 2026-09-08
+
+[Retained-state and traced bring-up checks](R32_CALIBRATION_CHECK.md) rule out a
+simply omitted5/6GHz enablement call: ALFA's factory-calibration command returns
+the expected zero result, and the pre-download normal-mode write reads back0,
+but high-band reception remains impaired. Reapplying monitor/sniffer settings
+also fails to recover it; independent Netgear references stay healthy. The new
+research-only probe has16 offline boundary/opt-in/redaction tests; the full local
+suite passes2,043 cases. No production recovery claim or release is added.
+
+## R32 bounded merge check, 2026-09-08
+
+**PR32 remains blocked, not merged.** Later current Python/C controls initially
+pass on both radios across2.4/5/6GHz; eight private captures independently validate
+5,651 packets. Group5 reception and old histogram multi-bin output recover, but
+ALFA5/6GHz reception degrades during the histogram sequence despite successful
+restore/reload. Final overlapping passive controls: ALFA410/0/2 versus
+A9000539/369/834 frames on1/36/53. See the [merge verdict and exact sequence](R32_MERGE_CHECK.md)
+and [structured evidence](../research/evidence/r32-bounded-merge-check-2026-09-08.json).
+This supersedes the current-health implications of the earlier recovery below;
+it neither identifies a root cause nor erases the positive captures. No new soak.
+
+## R32 attached-radio recheck, 2026-09-08
+
+**Later physical-cycle recovery:** after the user confirmed unplug/replug of
+the ALFA, its pre-bring-up `MT_CONN_ON_MISC` read0 (firmware not ready), rather
+than3. With unchanged driver/firmware and the same3s channel1/6/11 dwells, the
+ALFA receives1,568 decoded frames across all three channels, zero USB errors
+or timeouts, exit0. [Recovery evidence](../research/evidence/r32-alfa-physical-cycle-recovery-2026-09-08.json)
+records the before/after controls and user-reported physical action; supply
+voltage and exact disconnect duration were not instrumented. The immediate
+2.4GHz RF-silence gate is recovered. Retained device/firmware state is a plausible
+explanation, not an identified root cause. Native C,5/6GHz, warm-reload
+repeatability, independent TX controls and the remaining two-hour runs still
+need their own evidence. The short process exited; no long tests restarted.
+
+The following was the earlier same-day check, before physical power removal:
+
+After the user confirmed both dongles attached, [a bounded current-source check](../research/evidence/r32-attached-radio-recheck-2026-09-08.json)
+at `f3beab9` reads redacted USB/identity descriptors, then fresh Python bring-up
+and passive3s dwells on2.4GHz channels1/6/11. Both adapters enumerate correctly;
+both pre-bring-up firmware-ready registers read3. No physical power cycle was
+observed or established by the user's attachment report.
+
+The Netgear receives893 decoded frames across all three channels, with zero
+USB errors/timeouts (exit0). The ALFA receives zero transfers/frames, with36
+timeouts and no USB errors (exit2/inconclusive). Its prior RF-silence issue is
+not resolved by being attached. Both short processes exit and release their
+devices. No TX, further recovery commands or long-soak restart. This new evidence
+does not qualify5/6GHz, native C, capture-file interoperability or Python two hours.
+
+## R32 offline and CI qualification, 2026-09-06
+
+The later [user-requested checkpoint](R32_CHECKPOINT.md) stops acquisition and
+records a scoped native A9000 two-hour pass plus an intentionally partial Python
+run. [Soak summary](../research/evidence/r32-a9000-soak-checkpoint-2026-09-07.json)
+and [all3,993 retained redacted records](../research/evidence/r32-a9000-soak-retained-2026-09-07.json)
+are preserved. Native:7,200.058s,857,759 frames,3,099 matched/completed commands,
+715 counter rounds,239 retunes, zero reported queue drops/USB errors/malformed
+or unmatched replies, one timestamp-wrap candidate and no backsteps/ambiguous
+gaps. Python:2,372.772s,288,445 frames,1,018 commands,235 rounds,78 retunes,
+no reported drops/errors, and orderly SIGTERM exit130. Python is not a two-hour
+pass. Both workers closed, queues drained and register checks passed.
+
+Retained heartbeat RSS ranges are13,156,352..13,221,888bytes native and
+32,686,080..32,751,616bytes Python. Three host collection/truncation gaps omit
+intermediate telemetry, separately from the terminal device/session counters;
+no complete-series or leak-absence claim. Native/Python report100/41 transition
+frames and333/123 off-requested-channel frames, so buffered retune provenance
+must not be erased. Native used `2074599`; Python core was unchanged, while
+its later probe-only diagnostics are identified by the emitted source SHA.
+
+Fresh archives of `1f08090` pass the complete `scripts/check.sh` on local
+macOS26.6.1 with Python3.14 and an isolated Python3.10.18 runtime:2,025 tests,
+formatting/lint/docs, distribution build, dependency checks, native build/tests
+and ASan/UBSan. The installed measurement/session modules and example imports
+also work outside the checkout. An initial Python3.10 attempt scanned a wheel
+installation mistakenly placed beneath the archived source; a fresh source tree
+removed that test-directory contamination without a repository change.
+
+[Draft PR32](https://github.com/Network-Weather/mt76-usb-macos/pull/32) enables the
+configured macOS14/26 × Python3.10/3.14 matrix. Its
+[first run](https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064371831)
+passed macOS26/Python3.10 but failed the same two timeout-test assertions in the
+other three jobs: the test required exactly one USB write within a100ms total
+deadline, while the observed write count was zero. Queueing is part of the
+documented deadline; failing before issuing a write is valid fail-closed behavior.
+The logs do not establish the exact scheduling cause.
+
+The corrected tests give worker startup the normal outer deadline and explicitly
+expire the MCU reply wait after a write, retaining the one-write/no-sequence-reuse
+assertion. A separate event-gated blocked-worker test proves queued expiration
+allocates no sequence and issues no write. This changes tests, not production
+timeouts or session behavior. The local suite now passes 2,027 tests. The
+[renewed CI matrix](https://github.com/Network-Weather/mt76-usb-macos/actions/runs/34064809583)
+passes all four jobs at `b4b1315`, each with 2,022 passes and 5 optional tshark
+skips. The two targeted timeout scenarios also pass 80 repetitions across local
+Python 3.10/3.14. [Structured evidence](../research/evidence/r32-offline-ci-matrix-2026-09-06.json)
+retains the initial failure and corrected results. The four compressed-BlockAck
+and one EHT pcap tshark checks are skipped on CI runners without that tool;
+all five run locally with Wireshark installed.
+
+## R32 current MT7921 RF failure and soak status, 2026-09-06
+
+The subsequent [native reset-error check](../research/evidence/r32-reset-error-gate-2026-09-06.json)
+at `542da24` passes all 2,014 offline tests and updated ASan/UBSan controls. A
+fresh native channel6/5s smoke completes bring-up and reports38C, but still
+receives zero frames (exit2/inconclusive). The ignored reset error is fixed;
+the RF-silence cause is not. Changed-build A9000 bring-up remains a post-soak
+check; the completed native soak used its recorded `2074599` executable.
+
+The attached ALFA is now RF-silent in fresh2.4GHz baselines, not merely weak on
+5GHz. [Preserved failure evidence](../research/evidence/r32-mt7921-rf-silence-2026-09-06.json)
+records0 frames over164.531s on channels1/11 despite90 matched MCU replies,
+five retunes and no USB errors. That soak was intentionally cancelled (exit130),
+not passed. Existing non-session C channel6 and Python1/6/11 smoke tools also
+return0 transfers/frames and exit2/inconclusive. Three further normal/explicit
+WFSYS/normal-repeat bringups do not recover reception; firmware/calibration/thermal
+queries work, and histogram/Group5 enable masks read off.
+
+A fixed-old-receiver peer-idle/active/idle control gives0/0/0 old frames while the
+A9000 receives1,378. That does not support sustained peer USB activity as the
+cause in this experiment. The exact cause/onset remains unknown; this is not
+proof of a new API regression, firmware bug or permanent hardware damage.
+Cold-power/physical recovery and healthy old-radio RF acceptance remain open.
+
+A review of the saved [histogram-guard records](../research/evidence/r32-histogram-guard-2026-09-06.json)
+narrows the observed sequence without identifying a cause. Python channel6,
+channel36 and cancellation runs received144,13 and19 frames; the native channel6
+run then received131, including53 in its third histogram window. The native
+channel36 run recorded zero, and the native channel6 cancellation run already
+had zero in its250ms baseline before histogram activation or cancellation.
+That short baseline alone cannot prove sustained silence, but its zero cannot
+be caused by that run's later cancellation. The subsequent164.5s soak establishes
+the sustained failure. Importantly, these histogram probes check a register
+after cleanup firmware reload, not post-reload RF reception; `reload_alive` is
+not a receiver-health result. No per-frame chronology or proven cold-reset
+boundary identifies the exact transition or rules out earlier retained state.
+
+A later [port-3-only software power-cycle attempt](../research/evidence/r32-old-radio-port-cycle-2026-09-06.json)
+did not recover reception. Read-only topology/BOS checks matched the USB2/USB3
+companion hubs and their individual-port switching descriptors; the selected
+subtree contained only the old dongle, with A9000 downstream of another port.
+Both logical power readbacks went off and were restored; the old USB address
+changed, while the A9000 continued receiving without reported USB errors.
+Nevertheless, pre-bring-up `MT_CONN_ON_MISC` remained3 and a fresh10s channel6
+capture had zero frames. This is not evidence of a real supply-power cut or a
+cold firmware reset. [uhubctl documents that distinction](https://github.com/mvp/uhubctl#usb-30-duality-note).
+No shared hub reset, other port-power control, physical voltage measurement or
+further power-cycle experiment was performed.
+
+A subsequent [unchanged-main control](../research/evidence/r32-old-radio-main-control-2026-09-06.json)
+uses clean `main` at `7eb35d1`, then the feature branch at `e12fa53`, with the
+same passive smoke script and pinned firmware. Both fresh bringups receive zero
+USB transfers/frames on channels1/6/11 (5s each), with57 timeouts, no USB errors
+and exit2/inconclusive. This makes an actively executing R32-only driver or
+decoder regression less likely: the failure also occurs without those changes,
+before frame decoding. It does not rule out persistent state left by earlier
+experiments, since both runs use the same already-affected unit without a proven
+cold power reset. Old-radio acceptance remains open.
+
+The A9000's first native soak was interrupted solely for that coexistence control
+at508.316s:59,095 frames,16 retunes,50 counter rounds, no software drops/USB errors,
+roughly13.1MB current resident memory. It is not a two-hour pass. A fresh native
+two-hour run followed by Python two hours started2026-09-06T21:26:07UTC, using
+channels1/11,30s retunes,10s named-counter/thermal polls. The native process
+exited0 at23:26:09UTC; Python then started and was intentionally stopped at
+2026-09-07T00:05:44UTC for the user's checkpoint. Reviewed final diagnostics are
+above; current-build smoke and remaining matrix qualification are still open.
+
+Before the queued Python run started, its probe gained the same conservative
+timestamp wrap/backstep/ambiguous-gap diagnostics as native, with eleven shared
+synthetic cases and an emitted probe-source SHA-256. No running native executable
+was replaced. The supervisor's original `base_commit` records its launch-plan
+snapshot; the Python probe hash identifies the actual later script. Final
+evidence must distinguish these revisions rather than attribute both runs to
+the supervisor's original commit. Unknown Python first/last timestamps are null.
+The Python probe hash is
+`3d2f87310040b2ca2e1dbc72e6ecf33633866f7ed99f5a81f2194b47598fffe5`;
+the full offline suite at that instrumentation checkpoint passed 2,025 tests.
+The diagnostic fixtures are preparation evidence, not a completed Python soak.
+
+## R32 histogram acquisition parity, 2026-09-06
+
+All1,996 tests pass. Shared Python/native guard fixtures match operation traces,
+inject transport failures at every begin/finish/restore stage (including writes
+that reach hardware before failing), preserve failed native outputs, reject
+pre-enabled/invalid controls and verify pending-timer cleanup refuses without I/O.
+Native builds/tests and ASan/UBSan pass, including the guard fault harness and
+20,000 malformed histogram cases. The wheel imports outside the checkout and
+the source archive contains the new guard, native probe and test fixtures.
+
+[Twelve public-guard hardware runs](../research/evidence/r32-histogram-guard-2026-09-06.json)
+cover both implementations/chips on6/36 plus cancellation during acquisition.
+All completed windows freeze/read, match modern event/banks, remain stable100ms
+later and restore. All12 reload successfully; no USB errors/queue overflow were
+reported. MT7921 remains bin0-only with weak/intermittent5GHz RX (13 total frames
+in Python36, zero in native36). The cancellation guards intentionally remain
+marked pending before the authoritative full reload, not falsely "restored".
+No combined CSI/histogram, multi-hour or calibrated power/coverage claim.
+
+## R32 histogram records and repeated acquisition, 2026-09-06
+
+All1,975 tests pass, including matching native/Python request/ACK/record fixtures,
+every event truncation, malformed profiles, wide totals and unchanged native
+outputs on failure. Native tests and ASan/UBSan pass, including20,000 additional
+malformed histogram cases. Source/wheel build uses installed dependencies.
+
+[Six Python hardware runs](../research/evidence/r32-histogram-session-2026-09-06.json)
+cover both chips on6/36 and cancellation during the first active acquisition.
+Repeated reset/start/event-or-freeze/stopped-repeat checks pass, with counter and
+thermal queries and normal RX (except the already weak MT7921 channel36 path).
+All runs reload successfully; cancelled pending acquisitions use full reload
+instead of a masked restore that could race a firmware timer. This earlier
+checkpoint predates the acquisition parity above; see [histogram status](HISTOGRAM_API.md).
+
+## R32 CSI lifetime integration, 2026-09-06
+
+All1,963 tests pass, including real Python/native session workers with synthetic
+write/ACK-shape/status faults at every start command and STOP, epoch/generation
+and channel invalidation, stale packets, fail-closed acceptance and restart.
+Native tests, ASan/UBSan and the new CSI lifetime ThreadSanitizer harness pass.
+The wheel imports outside the checkout and the source archive contains the new
+native implementation/tests. Build used installed dependencies after isolated
+dependency fetching failed under restricted network access.
+
+[Public-helper evidence](../research/evidence/r32-csi-lifetime-2026-09-06.json)
+retains normal, one-event overflow and SIGTERM-after-start runs in both languages.
+Python normal cycles accepted17/20 reports; native18/20. Forced event queues
+dropped98/99 events respectively, with no USB errors or normal-frame queue loss.
+All six runs acknowledged cleanup STOP and reloaded; capture acceptance was off
+at cleanup. This does not close multi-hour, unplug, sleep/wake or calibration gates.
+
+## R32 CSI wire parity and session gate, 2026-09-06
+
+All1,914 Python tests pass, including shared Python/C CSI requests, ACK status,
+strict version/profile parsing, every truncation, unsupported shapes, native
+output preservation and CLI refusal tests. Native builds/tests and ASan/UBSan
+also pass. [CSI contract](CSI_API.md) and [dated evidence](../research/evidence/r32-csi-session-2026-09-06.json)
+retain six short coexistence/ordering/overflow runs plus two active-CSI SIGTERM
+checks. This earlier checkpoint predates the lifetime integration above.
+
+Both implementations complete routine counter/thermal queries while receiving
+normal frames and filtered CSI. Count1 before ADD produces both receiver indices;
+ADD before count1 produces only receiver0 in fresh Python/C controls. Host-side
+preconfiguration/source/index checks remain necessary. Both one-event overflow
+tests expose event drops without USB failures or normal-frame queue overflow.
+Both cancellation runs exit130, acknowledge STOP and reload successfully. Native
+cancellation retains11 frame/2 event queue records at destruction, now explicitly
+reported rather than mislabeled as overflow or complete delivery. Short tests do
+not establish multi-hour stability, hot-unplug or calibrated RF quantities.
+
+## R32 TX-status timing integration, 2026-09-06
+
+All1,891 Python tests, native tests, ASan/UBSan and sdist/wheel build pass. Shared
+TXS fixtures cover both chips, all four formats, signed/raw boundaries, every
+truncation, DMA padding and capacity failures without partial output.
+[Live evidence](../research/evidence/r32-tx-status-2026-09-06.json) records12/12
+identical Python/C timing decodes from the same live status bytes (Python USB
+transport, native pure parser). The existing bounded channel6 experiment receives
+all8 CCK packets independently but neither two-packet OFDM bracket. Both radios
+remain alive and transmitter reload succeeds. This is parser qualification, not
+a healthy full RF control set, new TX profile, clock recalibration or ranging.
+
+## R32 raw Group5 integration, 2026-09-06
+
+Shared Python/C tests cover all32 group masks on both chips, each DMA/USB
+truncation, signed-byte boundaries and fractional-bit extraction. The Python
+guard mirrors native failure/readback restoration semantics. All1,874 Python
+tests, native tests and ASan/UBSan pass.
+
+[Four six-second-per-phase cycles](../research/evidence/r32-group5-2026-09-06.json)
+retain the live qualification failure: initial Python baseline/enabled/restored
+RX350/324/302, then native with MIB308/0/301, native without MIB320/1/298,
+and repeated Python314/1/332. Baseline/restored reception was healthy; all guards
+restored. Native exit0 reports cleanup/transport success, **not** successful
+signal qualification. Odd single-frame values and a queued post-restore Group5
+frame remain visible. This narrows the API to experimental raw decoding, not
+dependable signal streaming. Root cause is open; no C-only attribution, calibrated
+RF units, or override of upstream's Group5 hardware warning is justified.
+
+## R32 thermal integration and counter parser correction, 2026-09-06
+
+The [thermal contract](MEASUREMENTS.md#query-only-thermal-measurements) and
+[eight-run sanitized evidence](../research/evidence/r32-thermal-2026-09-06.json)
+cover Python/C temperature on both chips and raw ADC on MT7925. The final
+15-second mixed runs decoded Python/C 607/899 old-chip and 1,677/2,160 new-chip
+frames, with three retunes each and no USB errors, malformed transfers, queue
+drops or legacy MCU discards. Native stop was orderly and register reads remained
+alive. These separate-run frame counts are not a sensitivity comparison.
+
+The first native MT7925 run failed a counter sample after six successful thermal
+queries. Its matched reply was not saved. A subsequently reproduced MIB bug
+(value bytes rescanned as an entry header) is fixed in both parsers and covered by
+shared fixtures, but is not a proven explanation of that particular live failure.
+The failed run remains in the evidence. No thermal-control writes or new RF
+transmit profiles were used. Old-chip 5-GHz RX and multi-hour stability remain
+unqualified. Offline checkpoint: 1,788 Python tests and native ASan/UBSan pass.
+
+## R32 named-counter integration, 2026-09-06
+
+The [measurement API contract](MEASUREMENTS.md) and
+[sanitized eight-run evidence](../research/evidence/r32-named-counters-2026-09-06.json)
+record short Python/native named-query qualification on both reference dongles.
+The 2.4-GHz channel1/11/1 runs receive frames, complete all named queries and stop
+cleanly in both languages. MT7925 also receives normally on channel36; MT7921
+is weak/silent there, including on an unchanged-main control. This is not a pass
+for current MT7921 5-GHz RF performance, multi-hour soak, or calibrated units.
+The integrated suite passes 1,738 pytest tests, native tests and ASan/UBSan;
+new named-read failure paths are included in the sanitizer target.
+
 ## Offline test suite
 
 ### PHY transmit and station testmode exploration, 2026-09-04
@@ -1018,7 +1329,80 @@ TX power byte 250, consistent with signed -6 after a 32-count reduction from 26.
 Both radios remain alive, and transmitter firmware cleanup succeeds. No decoding
 boundary or absolute sensitivity rating was established by these short probes.
 
+## Continuous acquisition sessions (2026-09-04)
+
+Local date 2026-09-04 / UTC 2026-09-05, Apple Silicon macOS 26.6.1, Python 3.14.7,
+the same checksum-pinned firmware and reference ALFA `0e8d:7961` / A9000 `0846:9072`.
+The [session contract](CONTINUOUS_ACQUISITION.md) is additive to existing capture APIs.
+[Redacted machine-readable evidence](../research/evidence/continuous-acquisition-2026-09-04.json)
+retains initial runs, native stress results, all cancellation/restart phases, source
+checkpoints and untested cases. No firmware, raw packets or network identifiers are retained.
+
+The native stress binary was built from `5740d4f`. Each radio ran for five minutes,
+alternating 5 GHz channels 36/149 at 20 MHz every two seconds and requesting primary CCA
+about once per second. This is a bounded qualification, **not a multi-hour soak**.
+
+| Native five-minute run | MT7961 | MT7925 |
+| --- | ---: | ---: |
+| Decoded frames delivered | 16,828 | 23,631 |
+| Successful retunes | 146 | 146 |
+| Successful CCA queries | 289 | 290 |
+| Matched MCU replies | 581 | 436 |
+| Frame queue high-water | 5 / 256 | 11 / 256 |
+| Software queue drops / USB errors / malformed records | 0 / 0 / 0 | 0 / 0 / 0 |
+| Frames received during retune callbacks and preserved | 36 | 42 |
+| Off-requested-channel observations retained | 132 | 159 |
+| Maximum host retune call, including queueing | 529.531 ms | 345.149 ms |
+| Register alive after stop | yes | yes |
+
+Every received frame was delivered and decoded, every delivered frame had its raw hardware
+timestamp, and no unmatched replies or status events occurred in these stress runs. The
+MT7961's two-command retune explains its extra replies. Per-frame descriptor channel remains
+the observed channel; queue generation only records host control state. Retune latency and
+packet delivery latency are not direct measurements of physical RF blind time. No assertion
+of zero over-the-air loss follows from zero software drops. These relatively quiet dwells
+also do not establish saturation performance or absence of firmware-internal loss.
+
+Initial Python 30-second runs delivered 1,629 / 1,718 frames, with 28 CCA queries and five
+retunes per radio. Initial native 60-second runs delivered 2,776 / 4,134 frames, with 57
+queries and 11 retunes per radio. All had zero reported queue drops, USB errors or undecoded
+frames and successful health checks. Their development-snapshot provenance is explicit in
+the evidence; they precede the final timing and setup-counter reporting refinements.
+
+Final code checkpoint `1dfa505` was tested with `scripts/session_lifecycle.py` on both radios,
+once for C and once for Python. Each of the four cases sends SIGTERM about 2.2 seconds after
+the probe reports ready, requires orderly exit 130 and successful register health, then
+starts a fresh process, reloads firmware and captures for three seconds. **All eight phases
+passed**, with balanced frame accounting and no queue drops, USB errors or legacy MCU frame
+discards. This validates process cancellation and clean reinitialization, not hot-unplug,
+SIGKILL or cancellation at a deterministically chosen in-flight USB instruction.
+
+Commands (run one process per dongle; substitute either reference USB ID):
+
+```sh
+make -C c mt76_session_probe
+c/mt76_session_probe --usb-id 0e8d:7961 --fw /path/to/firmware --seconds 300 --hop-seconds 2
+python scripts/session_probe.py --usb-id 0846:9072 --fw /path/to/firmware --seconds 30
+python scripts/session_lifecycle.py --implementation c --usb-id 0e8d:7961 --fw /path/to/firmware
+python scripts/session_lifecycle.py --implementation python --usb-id 0846:9072 --fw /path/to/firmware
+```
+
+Offline: 613 tests pass, alongside the C suites, ASan/UBSan, a separate native TSan replay
+run and zero diagnostics from Clang analysis of the session and probe. Shared fixtures
+cover every type/flag combination, DMA boundaries and malformed records; lifecycle tests
+exercise sequence wrap, stale replies, overflow, short writes, swallowed timeout errors,
+small reply buffers, owner guards, queue-full refusal and callback/stop races.
+
+Remaining: multi-hour soak and leak evidence, timestamp-wrap endurance, physical endpoint
+stalls, hot-unplug, suspend/resume and session-specific tri-band/wide-channel regression.
+Warm adoption and automatic recovery are deliberately unsupported. Arbitrary blocking
+application callbacks cannot be forcibly cancelled. C retains caller memory until callback
+exit; a stop timeout in either implementation retains ownership rather than closing live USB.
+
 ## Native C acquisition parity (2026-09-04)
+
+The subsequent [continuous-session qualification](#continuous-acquisition-sessions-2026-09-04)
+is separately scoped; the full parity sweeps below are not session soak evidence.
 
 R30 implementation completed on `feat/c-acquisition-parity`; Python reference
 `6081908`. Native code checkpoints: `da3ea36` RX metadata, `44aac54` MIB/G5,

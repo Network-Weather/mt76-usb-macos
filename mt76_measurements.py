@@ -1,0 +1,426 @@
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+"""Named raw MCU counters and query-only thermal data for pinned firmware profiles.
+
+No read-clear MMIO counters or automatic percentage conversion. Group5Guard
+is an explicit opt-in reporting-bit guard, never enabled by measurement reads.
+Use read_counters inside session.call when acquisition owns the device. Retain
+the session epoch/channel generation alongside samples before comparing them.
+"""
+
+from __future__ import annotations
+
+import struct
+import time
+from dataclasses import dataclass
+from enum import IntEnum
+
+import mt7921u as m
+
+
+class Counter(IntEnum):
+    RX_MPDU = 1
+    RX_FCS_ERROR = 2
+    RX_MDRDY = 3
+    PRIMARY_CCA = 4
+    CCA_NAV_TX = 5
+    CCK_RX_DURATION = 6
+    OFDM_RX_DURATION = 7
+    PRIMARY_ED = 8
+    NAV = 9
+    IDLE_SLOTS = 10
+
+
+class CounterUnit(IntEnum):
+    COUNT = 0
+    DURATION_TICKS = 1
+    IDLE_SLOTS = 2
+
+
+@dataclass(frozen=True)
+class TxStatus:
+    """Raw TX completion metadata, not proof of independent RF delivery.
+
+    MT7925 timestamp/front-time are distinct wrapping device clocks, not RXD
+    timestamps or host time. Delay includes service/packet time, not pure
+    contention. Tick periods are evidenced only for pinned MT7925 format0;
+    other formats retain source-defined raw fields with unknown scales.
+    """
+
+    chip: str
+    format: int
+    rate_raw: int
+    power_raw: int
+    power_signed: int
+    sequence: int
+    pid: int
+    ack_error_bits: int
+    error_bits_16_22: int
+    tx_count: int | None
+    bandwidth_raw: int | None
+    rate_stbc: bool | None
+    tx_delay_raw: int | None
+    timestamp_raw: int | None
+    front_time_raw: int | None
+    timestamp_tick_ns: int | None
+    front_time_tick_ns: int | None
+    tx_delay_tick_ns: int | None
+
+
+def parse_tx_status(chip: str, raw: bytes, max_records: int = 128) -> tuple[TxStatus, ...]:
+    """Strict TXS packet parser, matching C mt_tx_status_parse; no I/O.
+
+    Ignore USB padding, reject incomplete DMA/records or insufficient capacity
+    without partial output. Empty well-formed TXS packets return an empty tuple.
+    No format1 MPDU-counter hypotheses or noise/ACK RSSI interpretation.
+    """
+    if chip not in (m.CHIP_MT7921, m.CHIP_MT7925):
+        raise ValueError("unsupported TXS chip")
+    if type(max_records) is not int or not 0 <= max_records <= 2047 or len(raw) < 4:
+        raise ValueError("short TXS packet or invalid capacity")
+    c3 = chip == m.CHIP_MT7925
+    prefix, stride = (16, 48) if c3 else (8, 32)
+    word = struct.unpack_from("<I", raw)[0]
+    end = word & 65535
+    if word >> 27 or not prefix <= end <= len(raw) or (end - prefix) % stride:
+        raise ValueError("invalid TXS DMA/type/record length")
+    if (end - prefix) // stride > max_records:
+        raise ValueError("TXS record capacity exceeded")
+    result = []
+    for offset in range(prefix, end, stride):
+        a, b, delay, d, timestamp, front = struct.unpack_from("<6I", raw, offset)
+        fmt, power = (a >> 23) & 3, b & 255
+        format0 = c3 and fmt == 0
+        result.append(
+            TxStatus(
+                chip,
+                fmt,
+                a & 0x3FFF,
+                power,
+                power if power < 128 else power - 256,
+                b >> 20,
+                d >> 24,
+                (a >> 16) & 7,
+                (a >> 16) & 127,
+                (front >> 25) & 31 if format0 else None,
+                a >> 29 if c3 else None,
+                bool(d & 128) if c3 else None,
+                delay & 65535 if c3 else None,
+                timestamp if c3 else None,
+                front & 0x1FFFFFF if format0 else None,
+                1000 if format0 else None,
+                32000 if format0 else None,
+                32000 if format0 else None,
+            )
+        )
+    return tuple(result)
+
+
+class ThermalAction(IntEnum):
+    TEMPERATURE = 0
+    RAW_ADC = 1
+
+
+class Group5Guard:
+    """MT7921-only opt-in Group5 reporting, matching C mt_g5_*.
+
+    Upstream warns of hardware issues with Group5 enabled. Use begin/restore in
+    try/finally, even if begin raises: a failed write may have reached hardware.
+    Restore failure keeps active true for retry. Preserve other register bits.
+    Serialize with session.call while a session owns the device; never carry a
+    guard across reset/reload or use concurrent guards for the same register.
+    """
+
+    REGISTER = 0x820E7000
+    BIT = 1 << 23
+
+    def __init__(self, dev):
+        self.dev = dev
+        self.active = False
+        self.saved_bit = 0
+
+    def begin(self):
+        if self.dev.CHIP != m.CHIP_MT7921:
+            raise ValueError("Group5 guard supports MT7921 only")
+        if self.active:
+            raise RuntimeError("Group5 guard already active")
+        original = self.dev.rr(self.REGISTER)
+        self.saved_bit = original & self.BIT
+        self.active = True
+        self.dev.wr(self.REGISTER, original | self.BIT)
+        if not self.dev.rr(self.REGISTER) & self.BIT:
+            raise RuntimeError("Group5 enable readback mismatch")
+
+    def restore(self):
+        if not self.active:
+            return
+        current = self.dev.rr(self.REGISTER)
+        self.dev.wr(self.REGISTER, (current & ~self.BIT) | self.saved_bit)
+        if self.dev.rr(self.REGISTER) & self.BIT != self.saved_bit:
+            raise RuntimeError("Group5 restore readback mismatch")
+        self.active = False
+
+
+def build_thermal_request(chip: str, action: ThermalAction = ThermalAction.TEMPERATURE) -> bytes:
+    """Query only; no protection overrides or sensor/band sweep."""
+    if not isinstance(action, ThermalAction):
+        raise ValueError("use a ThermalAction")
+    if chip == m.CHIP_MT7925:
+        return struct.pack("<4xHH4B", 0, 8, 0, action, 0, 0)
+    if chip == m.CHIP_MT7921 and action == ThermalAction.TEMPERATURE:
+        return bytes(8)
+    raise ValueError("thermal action unsupported by pinned chip profile")
+
+
+def parse_thermal_event(chip: str, raw: bytes, sequence: int, action: ThermalAction) -> int:
+    """Return the raw u32 sensor result, not an ADC-to-temperature conversion."""
+    build_thermal_request(chip, action)
+    header = 44 if chip == m.CHIP_MT7925 else 36
+    seq_at = 37 if chip == m.CHIP_MT7925 else 29
+    if type(sequence) is not int or not 1 <= sequence <= 15 or len(raw) < header:
+        raise ValueError("short thermal MCU event or invalid sequence")
+    word = struct.unpack_from("<I", raw)[0]
+    size = word & 0xFFFF
+    if (
+        not header <= size <= len(raw)
+        or word >> 27 != m.PKT_TYPE_RX_EVENT
+        or (word >> m.RXD0_PKT_FLAG_SHIFT) & m.RXD0_PKT_FLAG_MASK == m.PKT_FLAG_NORMAL_MCU
+        or raw[seq_at] != sequence
+        or (chip == m.CHIP_MT7925 and raw[36] != 0x35)
+    ):
+        raise ValueError("not a matching thermal MCU event")
+    body = raw[header:size]
+    if chip == m.CHIP_MT7925:
+        if len(body) != 16 or body[:12] != struct.pack("<4xHH4x", 0, 12):
+            raise ValueError("unexpected thermal sensor response shape")
+        return struct.unpack_from("<I", body, 12)[0]
+    if len(body) < 8 or (len(body) == 16 and body[:8] == struct.pack("<II", 0x2C, 0xFE)):
+        raise ValueError("short or unsupported EXT thermal response")
+    return struct.unpack_from("<I", body, 4)[0]
+
+
+@dataclass(frozen=True)
+class ThermalSample:
+    chip: str
+    action: ThermalAction
+    raw: int
+    reported_temperature_c: int | None
+    opened_us: int
+    closed_us: int
+    legacy_dropped_frames: int
+
+
+def read_thermal(dev, action: ThermalAction = ThermalAction.TEMPERATURE) -> ThermalSample:
+    """Reported sensor temperature or MT7925 raw ADC; use inside session.call.
+
+    MT7925 is the analog-die sensor, not necessarily the same physical sensor
+    as MT7921. ADC codes are never labeled degrees. Unknown actions fail before
+    I/O; time windows and legacy-drop accounting follow read_counters.
+    """
+    request = build_thermal_request(dev.CHIP, action)
+    if dev.CHIP == m.CHIP_MT7925 and dev.uni_option(0x35, True) != 3:
+        raise ValueError("MT7925 requires QUERY_ACK option3")
+    dropped = dev.mcu_wait_dropped_frames
+    opened = time.monotonic_ns() // 1000
+    if dev.CHIP == m.CHIP_MT7925:
+        reply = dev.mcu_uni(0x35, request, query=True, timeout=1000)
+    else:
+        reply = dev.mcu_cmd_word(m.MCU_EXT_CMD(0x2C), request, timeout=1000)
+    value = parse_thermal_event(dev.CHIP, reply, dev.msg_seq, action)
+    temperature = None
+    if action == ThermalAction.TEMPERATURE:
+        temperature = value if value < 0x80000000 else value - 0x100000000
+    return ThermalSample(
+        dev.CHIP,
+        action,
+        value,
+        temperature,
+        opened,
+        time.monotonic_ns() // 1000,
+        dev.mcu_wait_dropped_frames - dropped,
+    )
+
+
+@dataclass(frozen=True)
+class CounterDescriptor:
+    counter: Counter
+    offset: int
+    unit: CounterUnit
+    wire_bits: int
+    hardware_bits: int | None
+    accumulator_bits: int | None
+    tick_ns: int | None
+    hardware_saturates: bool = False
+
+    @property
+    def name(self) -> str:
+        return self.counter.name.lower()
+
+
+# Source/ROM mappings and qualification limits: docs/MT7925_MIB.md,
+# docs/SUBCHANNEL_MEASUREMENTS.md, docs/FIRMWARE_RECON.md. A wire u64 does
+# not establish accumulator width. Tick conversion for durations is unresolved.
+_PROFILES = {
+    m.CHIP_MT7921: (
+        (Counter.RX_MPDU, 2, CounterUnit.COUNT, None, None, False),
+        (Counter.RX_MDRDY, 7, CounterUnit.COUNT, None, None, False),
+        (Counter.PRIMARY_CCA, 11, CounterUnit.DURATION_TICKS, None, None, False),
+        (Counter.CCA_NAV_TX, 14, CounterUnit.DURATION_TICKS, None, None, False),
+    ),
+    m.CHIP_MT7925: (
+        (Counter.RX_MPDU, 2, CounterUnit.COUNT, 32, None, False),
+        (Counter.RX_FCS_ERROR, 0, CounterUnit.COUNT, 32, None, False),
+        (Counter.RX_MDRDY, 11, CounterUnit.COUNT, 32, None, False),
+        (Counter.PRIMARY_CCA, 17, CounterUnit.DURATION_TICKS, 32, None, False),
+        (Counter.CCA_NAV_TX, 19, CounterUnit.DURATION_TICKS, 24, None, False),
+        (Counter.CCK_RX_DURATION, 12, CounterUnit.DURATION_TICKS, 32, None, False),
+        (Counter.OFDM_RX_DURATION, 13, CounterUnit.DURATION_TICKS, 32, None, False),
+        (Counter.PRIMARY_ED, 20, CounterUnit.DURATION_TICKS, 24, None, False),
+        (Counter.NAV, 52, CounterUnit.DURATION_TICKS, 24, None, False),
+        (Counter.IDLE_SLOTS, 7, CounterUnit.IDLE_SLOTS, 16, 9000, True),
+    ),
+}
+
+
+def counter_descriptors(chip: str) -> tuple[CounterDescriptor, ...]:
+    """Describe the pinned profile, not a probe of the currently loaded firmware.
+
+    None means unknown, not zero bits/ticks. Idle's 9-us hardware slot cadence
+    does not recover slots lost to saturation between firmware samples.
+    """
+    if chip not in _PROFILES:
+        raise ValueError("unsupported chip")
+    return tuple(
+        CounterDescriptor(c, off, unit, 64 if chip == m.CHIP_MT7925 else 32, bits, None, ns, sat)
+        for c, off, unit, bits, ns, sat in _PROFILES[chip]
+    )
+
+
+def _offsets(chip, offsets):
+    offsets = tuple(offsets)
+    if (
+        chip not in _PROFILES
+        or not 1 <= len(offsets) <= 16
+        or (chip == m.CHIP_MT7921 and len(offsets) != 1)
+        or any(type(v) is not int or not 0 <= v <= 511 for v in offsets)
+        or len(set(offsets)) != len(offsets)
+    ):
+        raise ValueError("invalid chip/offset request")
+    return offsets
+
+
+def build_mib_request(chip: str, offsets, band: int = 0) -> bytes:
+    """Pure bounded wire encoder, matching C mt_mib_request (not an I/O API)."""
+    offsets = _offsets(chip, offsets)
+    if type(band) is not int or band not in (0, 1):
+        raise ValueError("band index must be 0 or 1")
+    if chip == m.CHIP_MT7921:
+        return struct.pack("<IIQ", band, offsets[0], 0)
+    return struct.pack("<B3x", band) + b"".join(struct.pack("<HHI", 0, 8, o) for o in offsets)
+
+
+def parse_mib_reply(chip: str, body: bytes, offsets) -> tuple[int, ...]:
+    """Strict complete requested set; malformed/missing/duplicate entries raise.
+
+    This consumes a reply body after MCU sequence matching. EXT has no offset
+    echo. UNI's measured prefix varies; only aligned tag0/length8-or-16 echoes
+    qualify, including a complete final entry. No partial measurements on error.
+    """
+    offsets = _offsets(chip, offsets)
+    if chip == m.CHIP_MT7921:
+        if len(body) < 32:
+            raise ValueError("short EXT MIB reply")
+        return (struct.unpack_from("<I", body, 28)[0],)
+    found = {}
+    at = 0
+    while at + 8 <= len(body):
+        tag, size, echoed = struct.unpack_from("<HHI", body, at)
+        if tag != 0 or size not in (8, 16):
+            at += 2
+            continue
+        if at + 16 > len(body):
+            raise ValueError("truncated UNI MIB entry")
+        if echoed in offsets and echoed in found:
+            raise ValueError("truncated or ambiguous UNI MIB entry")
+        if echoed in offsets:
+            found[echoed] = struct.unpack_from("<Q", body, at + 8)[0]
+        # A valid counter value can itself contain tag/length/offset-looking
+        # bytes (e.g. value8 can manufacture an offset0 match six bytes in).
+        # Consume the entire wire entry, even when its offset wasn't requested.
+        at += 16
+    if len(found) != len(offsets):
+        raise ValueError("missing UNI MIB entry")
+    return tuple(found[o] for o in offsets)
+
+
+def parse_mib_event(chip: str, raw: bytes, sequence: int, offsets) -> tuple[int, ...]:
+    """Validate a matched MCU record's DMA bounds; ignore only USB tail padding."""
+    offsets = _offsets(chip, offsets)
+    header = 44 if chip == m.CHIP_MT7925 else 36
+    seq_at = 37 if chip == m.CHIP_MT7925 else 29
+    if type(sequence) is not int or not 1 <= sequence <= 15 or len(raw) < header:
+        raise ValueError("invalid MIB event header/sequence")
+    word = struct.unpack_from("<I", raw)[0]
+    size = word & 0xFFFF
+    if (
+        not header <= size <= min(len(raw), 1024)
+        or word >> 27 != m.PKT_TYPE_RX_EVENT
+        or (word >> m.RXD0_PKT_FLAG_SHIFT) & m.RXD0_PKT_FLAG_MASK == m.PKT_FLAG_NORMAL_MCU
+        or raw[seq_at] != sequence
+    ):
+        raise ValueError("invalid MIB event DMA bounds/type/sequence")
+    return parse_mib_reply(chip, raw[header:size], offsets)
+
+
+@dataclass(frozen=True)
+class CounterReading:
+    descriptor: CounterDescriptor
+    raw: int
+
+
+@dataclass(frozen=True)
+class CounterSample:
+    chip: str
+    readings: tuple[CounterReading, ...]
+    opened_us: int
+    closed_us: int
+    legacy_dropped_frames: int
+
+
+def read_counters(dev, counters) -> CounterSample:
+    """Read a finite named set through MCU band0, with no direct read-clear access.
+
+    Caller owns an initialized pinned-firmware device (or executes via session.call).
+    Old-chip requests are serialized singly; new-chip requests are batched, not
+    hardware-atomic. The outer host interval includes all requests. Unsupported
+    names fail before I/O; transport/parser failures raise, never become zeros.
+    No delta/wrap/percentage inference is made while accumulator widths and some
+    units remain unresolved. Legacy discards exclude session consumer overflow.
+    """
+    names = tuple(counters)
+    if not 1 <= len(names) <= 16 or any(not isinstance(c, Counter) for c in names):
+        raise ValueError("request 1..16 Counter names")
+    if len(set(names)) != len(names):
+        raise ValueError("duplicate counter")
+    supported = {d.counter: d for d in counter_descriptors(dev.CHIP)}
+    if any(c not in supported for c in names):
+        raise ValueError("counter not supported by pinned chip profile")
+    descriptors = tuple(supported[c] for c in names)
+    offsets = tuple(d.offset for d in descriptors)
+    groups = (offsets,) if dev.CHIP == m.CHIP_MT7925 else tuple((o,) for o in offsets)
+    values = []
+    dropped = dev.mcu_wait_dropped_frames
+    opened = time.monotonic_ns() // 1000
+    for group in groups:
+        request = build_mib_request(dev.CHIP, group)
+        if dev.CHIP == m.CHIP_MT7925:
+            reply = dev.mcu_uni(0x22, request, query=True, timeout=700)
+        else:
+            reply = dev.mcu_cmd_word(m.MCU_EXT_CMD(0x5A), request, timeout=700)
+        values.extend(parse_mib_event(dev.CHIP, reply, dev.msg_seq, group))
+    return CounterSample(
+        dev.CHIP,
+        tuple(CounterReading(d, v) for d, v in zip(descriptors, values, strict=True)),
+        opened,
+        time.monotonic_ns() // 1000,
+        dev.mcu_wait_dropped_frames - dropped,
+    )

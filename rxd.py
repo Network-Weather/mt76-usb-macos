@@ -90,6 +90,28 @@ def status_freq(chfreq: int):
     return "2.4GHz", chfreq
 
 
+def decode_fagc(word7: int, word8: int) -> dict:
+    """MT7961 Group5 receiver indices, not calibrated dBm, SNR or antennas.
+
+    Pinned firmware statistics-builder extraction: docs/INBAND_WIDEBAND_SIGNAL.md.
+    Discard fractional low bits by logical shift before signed-byte conversion.
+    Call only with complete connac2 C-RXV words; connac3 has a different layout.
+    """
+    if any(type(v) is not int or not 0 <= v <= 0xFFFFFFFF for v in (word7, word8)):
+        raise ValueError("unsigned32 source word required")
+
+    def signed(value):
+        value &= 255
+        return value - 256 if value & 128 else value
+
+    return {
+        "fagc_ib0_raw_s8": signed(word7),
+        "fagc_ib1_raw_s8": signed(word7 >> 8),
+        "fagc_wb0_raw_s8": signed(word8 >> 5),
+        "fagc_wb1_raw_s8": signed(word8 >> 14),
+    }
+
+
 def decode(buf: bytes) -> dict | None:
     """Decode one RX transfer. Returns None if it is not a normal 802.11 frame."""
     if len(buf) < 24:
@@ -146,6 +168,11 @@ def decode(buf: bytes) -> dict | None:
             rxv_group3 = struct.unpack_from("<2I", buf, off)
         off += 8
         if rxd1 & MT_RXD1_NORMAL_GROUP_5:
+            # Require the entire C-RXV inside both declared DMA and USB bounds.
+            # Compatibility decoding below must not supply a new measurement
+            # from truncated groups, zero DMA length or transfer padding.
+            if off + 72 <= min(out["dma_len"], len(buf)):
+                out["raw_signal"] = decode_fagc(*struct.unpack_from("<2I", buf, off + 28))
             off += 24
             if off + 4 <= len(buf):
                 rxv_group5 = struct.unpack_from("<I", buf, off)[0]

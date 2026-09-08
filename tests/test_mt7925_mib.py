@@ -37,6 +37,15 @@ def test_uni_mib_parser_rejects_an_entry_with_the_wrong_length():
     assert mib.parse_counter(_entry(19, 1234, length=7), 19) is None
 
 
+def test_research_parser_skips_value_bytes_and_rejects_duplicate_echoes():
+    from research import uni_mib_probe
+
+    body = _entry(2, 8) + _entry(0, 42)
+    for parse in (mib.parse_counter, uni_mib_probe.parse_counter):
+        assert parse(body, 0) == 42
+        assert parse(body + _entry(0, 43), 0) is None
+
+
 def test_sample_reads_every_offset_in_one_mcu_round_trip():
     class FakeDevice:
         def __init__(self):

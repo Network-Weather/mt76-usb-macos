@@ -5,8 +5,107 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ## [Unreleased]
 
+### Qualification limits
+
+- [ALFA calibration follow-up](docs/R32_CALIBRATION_CHECK.md): reissuing the
+  existing factory-calibration load and monitor/sniffer configuration does not
+  recover high-band RX. Traced ordinary bring-up confirms the required normal-mode
+  write and zero-result calibration reply; a missing call is not the explanation.
+  Adds a bounded, opt-in retained-state research probe and16 offline tests, not
+  physical efuse programming, public warm adoption or automatic recovery.
+
+- The [bounded R32 merge check](docs/R32_MERGE_CHECK.md) initially passes current
+  Python/C three-band reception and independently validates5,651 private-capture
+  packets on both radios. ALFA then loses most5/6GHz reception during the histogram
+  sequence despite successful restoration/reload; an overlapping A9000 control
+  remains healthy. The complete PR remains unmerged pending isolation or an
+  explicit scope split. Initial Group5 reception and multi-bin legacy histograms
+  are positive findings, not dependable-streaming or calibrated-noise claims.
+
+- The [R32 checkpoint](docs/R32_CHECKPOINT.md) records a scoped native A9000
+  two-hour passive/counter/thermal/retune pass:857,759 decoded frames and no
+  reported queue drops or USB errors. Python stopped cleanly at the user's
+  request after39.5min/288,445 frames, not a two-hour pass. Three intermediate
+  telemetry-collection gaps are disclosed; the full acceptance matrix is open.
+
+- R32 is not release-ready: the attached MT7921 was RF-silent in fresh passive
+  controls on unchanged main and the feature branch. A physical USB unplug/replug
+  on2026-09-08 restored short Python2.4GHz reception (1,568 frames; no USB errors/
+  timeouts). Its pre-bring-up firmware-ready state changed from3 to0. The earlier
+  software port-power cycle did not establish that cold state. Later Python/C
+  three-band baselines pass, but sustained recovery fails as recorded above.
+  Root cause and remaining soaks are unresolved. See
+  [the scope and remaining gates](docs/MEASUREMENT_RELEASE_SCOPE.md).
+- Raw CSI addresses, coefficients and fingerprints remain sensitive even without
+  packet payloads. [Security guidance](SECURITY.md) now explicitly covers raw
+  measurement events and explains that a redacted default representation is not
+  an anonymization guarantee.
+
+### Fixed
+
+- Native bring-up now aborts when a retained-firmware WFSYS reset times out,
+  matching Python's refusal to continue. Synthetic tests cover both chips,
+  timeout, completed reset and no-retained-firmware controls. This fixes an
+  ignored error return, not the unresolved old-radio RF-silence cause.
+
 ### Added
 
+- Python session-probe timestamp diagnostics now match the native conservative
+  wrap-candidate/backstep/ambiguous-gap checks and retain unknown first/last
+  timestamps when no timestamp-bearing frames arrive. Shared synthetic cases
+  verify the diagnostic rules; no extended clock or ranging claim is added.
+- Small installed-API [Python/native measurement examples](docs/MEASUREMENT_EXAMPLES.md)
+  compose passive capture, named raw counters and reported temperature through
+  one session worker, with separate intervals, visible loss and unknown busy
+  conversion. Synthetic examples cover failure and changed-context rejection;
+  firmware/RF qualification remains separate.
+- Experimental pure Python/C histogram records: strict MT7925 one-shot request,
+  ACK and two11-bin event arrays; separate MT7921 stopped-bank parser, wide totals
+  and raw firmware threshold labels. Matching guarded acquisition and12 native/
+  Python live runs cover RX/query coexistence, repeated windows, restoration and
+  active cancellation. Pending firmware timers require full reload after worker
+  stop; no calibrated noise, antenna labels or coverage conversion.
+  See [histogram status](docs/HISTOGRAM_API.md).
+- Experimental MT7925 CSI wire/parser parity in `mt76_csi` and native
+  `mt76_csi.h`: version22,64 signed I/Q pairs, strict dimensions/sequence/DMA
+  bounds and narrow band0 beacon/20MHz profile. Stale CCK layouts are rejected.
+  Python/C session probes demonstrate capture/query coexistence and visible
+  event overflow, and reproduce a new ordering requirement: add the transmitter
+  filter before the final receiver-count command. Matching session-bound
+  start/accept/stop helpers enforce host epoch/generation/source/index checks,
+  fail closed on configuration faults and keep firmware-reload requirements
+  explicit. Longer qualification remains gated; see [CSI API status](docs/CSI_API.md).
+- Strict installed Python/native TX-status decoding with MT7925 raw timestamp,
+  delay, bandwidth and STBC, format0-only front-time/TX count and explicit tick
+  scale availability. Research readers reuse the bounded parser;12 live status
+  records decode identically. Missing independent OFDM receipts remain an RF
+  qualification limit. No new transmit controls, old-chip timing, synchronized
+  clocks or ranging; see [the contract](docs/MEASUREMENTS.md#tx-status-timing-without-new-transmit-controls).
+- Opt-in MT7921 Group5 raw in-band/wideband receiver-index decoding in Python/C,
+  with complete-group/DMA bounds and explicit absence on MT7925. Python gains a
+  matching saved-bit/readback/restore guard; research readers reuse the decoder.
+  Live repeats reveal enabled-phase near-silence in both languages despite healthy
+  restored reception: dependable streaming remains unqualified, not a passed
+  release gate. See [the evidence and limitations](docs/MEASUREMENTS.md#experimental-raw-group5-fields).
+- Query-only Python/C thermal measurements: reported signed Celsius on both chips
+  and separately labeled MT7925 raw ADC, with bounded matching-reply validation,
+  request intervals and unchanged native output on failure. Session probes can
+  interleave these reads with counters, RX and retunes. No thermal protection
+  overrides or ADC calibration; see [the contract](docs/MEASUREMENTS.md).
+- Named raw MCU counter APIs in installed `mt76_measurements` and native
+  `mt_counter_*`: four MT7921 and ten MT7925 fields, with distinct wire/hardware/
+  accumulator widths, unknown duration conversions, and explicit idle-saturation
+  limits. Shared fixtures and strict event bounds/sequence validation prevent
+  malformed replies or USB padding from manufacturing measurements. Session probes
+  now reuse these APIs and can export redacted named totals. See the
+  [measurement contract](docs/MEASUREMENTS.md); current MT7921 weak-RX and remaining
+  calibration/soak limits are not treated as passed hardware qualification.
+- Experimental Python/C continuous acquisition sessions: one USB owner, bounded
+  frame/event queues, frame-preserving MCU waits, serialized commands, explicit
+  failure and shutdown states, requested-channel metadata and redacted passive probes.
+  Shared routing/lifecycle replay and native thread/memory-sanitizer checks accompany
+  the implementation. Fresh bring-up is required; warm adoption and automatic recovery
+  are not supported. See [the contract](docs/CONTINUOUS_ACQUISITION.md).
 - Native C acquisition parity with the 2026-09-04 Python research: bounded hardware
   timestamp and Group-3/5 export, MT7921 EXT and MT7925 batched UNI MIB queries,
   opt-in reversible Group-5 reporting, controlled OFDM Probe Request transmission
@@ -117,6 +216,10 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Fixed
 
+- UNI MIB parsers no longer rescan bytes inside complete counter entries as TLV
+  headers. Values such as `8` could manufacture a false offset0 match, rejecting
+  valid batches or misleading loose research readers; those readers now reuse
+  the installed parser. Shared Python/C regression fixtures cover this case.
 - Offline `scripts/fw_triage.py --command-map` now reads candidate records as
   CID-then-handler and includes the final complete record. The old reversed order
   associated handlers with the next CID. Candidate matches or absence no longer

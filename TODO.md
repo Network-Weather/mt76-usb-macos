@@ -1,5 +1,77 @@
 # TODO: next sprint and prior backlog
 
+## Active sprint: measurement API integration (R32)
+
+Latest2026-09-08: [bounded merge acceptance](docs/R32_MERGE_CHECK.md) passes the
+initial current Python/C three-band/capture-file gates but exposes ALFA5/6GHz
+degradation during the histogram sequence. PR32 stays unmerged; next is isolating
+that sequence or an explicit scope split, not another long soak. Both radios are
+released, and no version bump/release was made.
+
+The [calibration follow-up](docs/R32_CALIBRATION_CHECK.md) confirms the required
+enablement writes/replies occur. Reissuing calibration or monitor/sniffer setup
+does not recover ALFA high-band RX; continue with a physically recovered matched
+control before any new histogram experiment, not speculative calibration writes.
+
+Planning checkpoint 2026-09-06: PR #31 is merged at `7eb35d1`; no new release
+was cut. The [next-release plan](docs/NEXT_RELEASE.md) is the selected sequence for
+remaining research, Python/C integration and acceptance gates.
+
+Execution order: sessions and raw named counters first (implemented below), then
+thermal, normal Group5 signal/TX-status timing, CSI, histograms, and final release
+qualification. The measurement implementations are now complete; Group5
+raw decoding/guard is implemented; live enabled-phase reliability remains gated.
+CSI wire/parser and public session-bound lifetime parity are implemented, with
+stage-fault tests and short native/Python coexistence/overflow/cancellation evidence.
+Longer acceptance remains open; CSI is narrow and explicitly experimental.
+Histogram wire/record and guarded acquisition parity now pass, including12 fresh
+native/Python live runs and shared faults. Next: release qualification, explicit
+outstanding live acceptance. Small [composition examples](docs/MEASUREMENT_EXAMPLES.md)
+now pass offline and outside-checkout packaging checks. The
+[inclusion matrix](docs/MEASUREMENT_RELEASE_SCOPE.md) and
+[Linux handoff draft](docs/LINUX_MEASUREMENT_HANDOFF.md) are prepared; nothing has
+been sent upstream. MT7921 short Python2.4GHz RX recovered after the user's
+physical USB cycle on2026-09-08; broader/native requalification remains open. A9000
+native two-hour qualification passes its narrow profile. Python was deliberately
+stopped at39.5min for the user's checkpoint, not a two-hour pass. No soak process
+remains active. [Stocktake and prioritized resumption](docs/R32_CHECKPOINT.md)
+supersede unattended continuation; choose the next bounded work window first.
+
+- [x] Reconcile the already implemented `feat/continuous-acquisition` branch on
+  `feat/measurement-api` (not main); baseline offline checks pass.
+- [x] Implement [named raw-counter records](docs/MEASUREMENTS.md) in Python/C,
+  shared wire/failure tests and session probe reuse. Conversion/accumulator widths
+  stay unknown; weak MT7921 reception remains an RF qualification limit.
+- [x] Deliver query-only thermal primitives in both libraries, including MT7925 raw
+  ADC, research helper reuse, failure fixtures and short mixed-session evidence.
+- [x] Deliver Group5 signal and TX-status timing primitives in
+  both libraries, with research helpers consuming the promoted implementations.
+  Group5 remains experimental with a failed live-reliability gate;12/12 live
+  TX-status timing records match, but weak RF controls still prohibit new TX claims.
+- [x] Target bounded beacon CSI, then raw histograms, behind separate experimental
+  gates; defer either if its validity/cleanup/parity gate is not met.
+- [ ] Requalify healthy independent RF controls before any expanded TX profile.
+- [ ] Complete packaging, regression and bounded live/session qualification, then
+  update release/support/parity docs. No automatic version bump, tag or publication.
+
+## Continuous acquisition sprint (R5)
+
+Integrated from `feat/continuous-acquisition` into `feat/measurement-api`, not main. See
+[the session contract](docs/CONTINUOUS_ACQUISITION.md).
+
+- [x] Python single-owner worker, bounded packet/event/command queues, failure latch.
+- [x] Native C worker, copied packet queues, ownership guards, safe callback lifetime.
+- [x] Shared routing replay, overflow/sequence/cancellation tests, ASan/UBSan and TSan.
+- [x] Initial passive MIB/retune hardware checks in both languages on both reference adapters.
+- [x] Five-minute native stress, Python/C cancellation, clean reinitialization and
+  [durable evidence](docs/TESTING.md#continuous-acquisition-sessions-2026-09-04).
+- [ ] Multi-hour passive soak; keep hot-unplug and warm adoption explicitly unqualified.
+  Native A9000 two-hour gate is recorded; Python A9000 and both old-chip runs
+  remain incomplete. See the checkpoint's source/telemetry-collection limits.
+- [ ] Review and merge after evidence gates, retaining honest retune/queue-loss limits.
+
+## Completed C parity sprint record
+
 Sprint selected and implemented 2026-09-04: C acquisition parity (R30). Items come from
 [ROADMAP.md](ROADMAP.md); check off only against the stated evidence. This is the
 completion record for the work merged into `main`, not a new release.
@@ -8,12 +80,12 @@ records 554 offline tests, live checks on both dongles, and the explicit limits.
 
 ## C parity sprint (R30)
 
-Current exploration priority: new firmware/chip measurement and transmit surfaces,
-with [autonomous continuation findings and next leads](docs/OVERNIGHT_EXPLORATION.md)
-tracked in draft PR #31. Keep committing/pushing; do not merge without direction.
-This takes priority over further acquisition infrastructure. [PHY transmit findings](docs/PHY_TRANSMIT.md)
-record bounded experiments and remaining leads. Continuous acquisition remains on
-its pushed branch; no two-hour soak was started.
+Subsequent firmware/chip measurement and transmit exploration merged in PR #31.
+[Autonomous continuation findings and next leads](docs/OVERNIGHT_EXPLORATION.md)
+and [PHY transmit findings](docs/PHY_TRANSMIT.md) retain the experiments and limits.
+Continuous acquisition remains on its pushed branch; its longer soak is still
+outstanding. The R32 proposal above supersedes this checkpoint's priority, not its
+historical acceptance evidence.
 
 Reference: Python driver and research tooling on `main` at `6081908`. The chipset
 primitives below are implemented, tested, and pushed in incremental commits.

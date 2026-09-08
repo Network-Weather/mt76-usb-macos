@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-08",
+  "branch": "feat/measurement-api",
+  "source_commit": "f3beab9c7ced8992abf332d47708695af5ffc983",
+  "reason": "User confirmed both Netgear and ALFA dongles currently plugged in; bounded passive recheck only, not a restart of long soaks.",
+  "method": {
+    "inventory_command": "scripts/usb_descriptors.py --json --chip-id",
+    "smoke_command": "MT76_FW_DIR=<PINNED_FW_DIR> <project Python3.14.7> scripts/hardware_smoke.py --usb-id <ID> --plan 2.4 --dwell 3",
+    "channels": [
+      1,
+      6,
+      11
+    ],
+    "width_mhz": 20,
+    "dwell_seconds": 3,
+    "transmit": false,
+    "fresh_bringup": true,
+    "ownership": "One short process per adapter; no pre-existing probe owner found. Both completed and closed their device.",
+    "physical_power_cycle": "Not established: user reported plugged in, not an observed physical disconnect/reconnect."
+  },
+  "inventory": {
+    "tool": "usb_descriptors",
+    "devices": [
+      {
+        "usb_id": "0e8d:7961",
+        "chip": "mt7921",
+        "bcd_usb": "0x0320",
+        "usb_speed_code": 4,
+        "configurations": 1,
+        "interfaces": [
+          {
+            "number": 0,
+            "class": "e0/01/01",
+            "endpoints": [
+              {
+                "address": "0x81",
+                "type": "interrupt"
+              },
+              {
+                "address": "0x82",
+                "type": "bulk"
+              },
+              {
+                "address": "0x02",
+                "type": "bulk"
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "class": "e0/01/01",
+            "endpoints": [
+              {
+                "address": "0x83",
+                "type": "isochronous"
+              },
+              {
+                "address": "0x03",
+                "type": "isochronous"
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "class": "e0/01/01",
+            "endpoints": [
+              {
+                "address": "0x8a",
+                "type": "interrupt"
+              },
+              {
+                "address": "0x0a",
+                "type": "interrupt"
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "class": "ff/ff/ff",
+            "endpoints": [
+              {
+                "address": "0x84",
+                "type": "bulk"
+              },
+              {
+                "address": "0x85",
+                "type": "bulk"
+              },
+              {
+                "address": "0x08",
+                "type": "bulk"
+              },
+              {
+                "address": "0x04",
+                "type": "bulk"
+              },
+              {
+                "address": "0x05",
+                "type": "bulk"
+              },
+              {
+                "address": "0x06",
+                "type": "bulk"
+              },
+              {
+                "address": "0x07",
+                "type": "bulk"
+              },
+              {
+                "address": "0x09",
+                "type": "bulk"
+              },
+              {
+                "address": "0x86",
+                "type": "interrupt"
+              }
+            ]
+          }
+        ],
+        "selection": {
+          "wifi_interface": 3,
+          "in_eps": [
+            "0x84",
+            "0x85"
+          ],
+          "out_eps": [
+            "0x08",
+            "0x04",
+            "0x05",
+            "0x06",
+            "0x07",
+            "0x09"
+          ],
+          "roles": {
+            "EP_IN_PKT_RX": "0x84",
+            "EP_IN_CMD_RESP": "0x85",
+            "EP_OUT_INBAND_CMD": "0x08",
+            "EP_OUT_AC_BE": "0x04"
+          }
+        },
+        "registers": {
+          "MT_HW_CHIPID": "0x00007961",
+          "chip_id": "0x7961",
+          "MT_HW_REV": "0x00008a10",
+          "MT_CONN_ON_MISC": "0x00000003",
+          "fw_n9_ready": true
+        }
+      },
+      {
+        "usb_id": "0846:9072",
+        "chip": "mt7925",
+        "bcd_usb": "0x0320",
+        "usb_speed_code": 4,
+        "configurations": 1,
+        "interfaces": [
+          {
+            "number": 0,
+            "class": "ff/ff/ff",
+            "endpoints": [
+              {
+                "address": "0x84",
+                "type": "bulk"
+              },
+              {
+                "address": "0x85",
+                "type": "bulk"
+              },
+              {
+                "address": "0x08",
+                "type": "bulk"
+              },
+              {
+                "address": "0x04",
+                "type": "bulk"
+              },
+              {
+                "address": "0x05",
+                "type": "bulk"
+              },
+              {
+                "address": "0x06",
+                "type": "bulk"
+              },
+              {
+                "address": "0x07",
+                "type": "bulk"
+              },
+              {
+                "address": "0x09",
+                "type": "bulk"
+              },
+              {
+                "address": "0x86",
+                "type": "interrupt"
+              }
+            ]
+          }
+        ],
+        "selection": {
+          "wifi_interface": 0,
+          "in_eps": [
+            "0x84",
+            "0x85"
+          ],
+          "out_eps": [
+            "0x08",
+            "0x04",
+            "0x05",
+            "0x06",
+            "0x07",
+            "0x09"
+          ],
+          "roles": {
+            "EP_IN_PKT_RX": "0x84",
+            "EP_IN_CMD_RESP": "0x85",
+            "EP_OUT_INBAND_CMD": "0x08",
+            "EP_OUT_AC_BE": "0x04"
+          }
+        },
+        "registers": {
+          "MT_HW_CHIPID": "0x00007925",
+          "chip_id": "0x7925",
+          "MT_HW_REV": "0x00008a00",
+          "MT_CONN_ON_MISC": "0x00000003",
+          "fw_n9_ready": true
+        }
+      }
+    ]
+  },
+  "runs": [
+    {
+      "usb_id": "0e8d:7961",
+      "returncode": 2,
+      "result": {
+        "bands": {
+          "2.4GHz": {
+            "channels_attempted": 3,
+            "channels_with_frames": 0,
+            "channels_with_transfers": 0,
+            "decoded_frames": 0,
+            "frame_types": {
+              "control": 0,
+              "data": 0,
+              "management": 0,
+              "other": 0
+            },
+            "undecoded_transfers": 0,
+            "usb_errors": 0,
+            "usb_timeouts": 36,
+            "usb_transfers": 0
+          }
+        },
+        "device": {
+          "chip": "mt7921",
+          "usb_id": "0e8d:7961",
+          "usb_speed_code": 4,
+          "wifi_interface": 3
+        },
+        "duration_seconds": 12.407,
+        "firmware": {
+          "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+          "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+        },
+        "generated_at_utc": "2026-09-08T18:24:04.634925+00:00",
+        "host": {
+          "machine": "arm64",
+          "macos": "26.6.1"
+        },
+        "plan": {
+          "channels": 3,
+          "dwell_seconds": 3,
+          "name": "2.4",
+          "requested_bands": [
+            "2.4GHz"
+          ]
+        },
+        "schema_version": 1,
+        "software": {
+          "mt76_usb_macos": "0.3.0",
+          "python": "3.14.7",
+          "pyusb": "1.3.1"
+        },
+        "status": "inconclusive",
+        "totals": {
+          "decoded_frames": 0,
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 36,
+          "usb_transfers": 0
+        }
+      }
+    },
+    {
+      "usb_id": "0846:9072",
+      "returncode": 0,
+      "result": {
+        "bands": {
+          "2.4GHz": {
+            "channels_attempted": 3,
+            "channels_with_frames": 3,
+            "channels_with_transfers": 3,
+            "decoded_frames": 893,
+            "frame_types": {
+              "control": 113,
+              "data": 340,
+              "management": 440,
+              "other": 0
+            },
+            "undecoded_transfers": 0,
+            "usb_errors": 0,
+            "usb_timeouts": 0,
+            "usb_transfers": 893
+          }
+        },
+        "device": {
+          "chip": "mt7925",
+          "usb_id": "0846:9072",
+          "usb_speed_code": 4,
+          "wifi_interface": 0
+        },
+        "duration_seconds": 11.176,
+        "firmware": {
+          "patch_sha256": "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+          "ram_sha256": "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+        },
+        "generated_at_utc": "2026-09-08T18:24:00.240771+00:00",
+        "host": {
+          "machine": "arm64",
+          "macos": "26.6.1"
+        },
+        "plan": {
+          "channels": 3,
+          "dwell_seconds": 3,
+          "name": "2.4",
+          "requested_bands": [
+            "2.4GHz"
+          ]
+        },
+        "schema_version": 1,
+        "software": {
+          "mt76_usb_macos": "0.3.0",
+          "python": "3.14.7",
+          "pyusb": "1.3.1"
+        },
+        "status": "pass",
+        "totals": {
+          "decoded_frames": 893,
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 0,
+          "usb_transfers": 893
+        }
+      }
+    }
+  ],
+  "assessment": {
+    "netgear": "Short current-source2.4GHz passive check passes:893 frames, all3channels receiving, zero USB errors/timeouts. Does not cover5/6GHz,C code,pcap interoperability or the unfinished Python two-hour run.",
+    "alfa": "Enumerates and identity reads succeed; pre-bringup firmware-ready state is3. Fresh firmware/monitor/tune completes but0transfers/frames across1/6/11 and36timeouts, no USB errors; exit2/inconclusive. Prior RF-silence issue persists in this control. No permanent damage or cause attribution.",
+    "next": "Clarify whether the ALFA was physically power-cycled; do not repeat blind resets or resume long runs automatically."
+  }
+}

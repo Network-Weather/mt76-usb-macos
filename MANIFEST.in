@@ -14,7 +14,7 @@ include requirements.txt
 include setup.sh
 recursive-include scripts *.py *.sh
 recursive-include docs *.json *.md
-recursive-include examples *.py
+recursive-include examples *.py *.c
 recursive-include tests *.py *.c *.json
 recursive-include c *.c *.h *.md Makefile
 recursive-include research *.py *.md *.json

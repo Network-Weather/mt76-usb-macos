@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+import mt76_measurements as mm
 import mt7921u as m
 import rxd
 import rxd_connac3
@@ -23,10 +24,141 @@ ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="native IOKit C build")
 
 
+@pytest.mark.parametrize(
+    ("values", "hosts", "expected"),
+    [
+        ([], [], (0, 0, 0)),
+        ([0], [0], (0, 0, 0)),
+        ([10, 20], [0, 10_000], (0, 0, 0)),
+        ([0xFFFFFFF0, 0x20], [0, 48_000], (1, 0, 0)),
+        ([0xF0000000, 0], [0, 10_000], (0, 1, 0)),
+        ([0xFFFFFFF0, 0x10000000], [0, 10_000], (0, 1, 0)),
+        ([0xFFFFFFF0, 0x20], [0, 60_000_000_000], (0, 1, 0)),
+        ([10, 20], [0, (1 << 31) * 1000], (0, 0, 1)),
+        ([0xFFFFFFF0, 0x20], [1000, 0], (0, 1, 1)),
+        ([100, 90], [0, 10_000], (0, 1, 0)),
+        ([0xFFFFFFF0, 4, 100], [0, 20_000, 116_000], (1, 0, 0)),
+    ],
+)
+def test_probe_clock_diagnostic_parity(native, values, hosts, expected):
+    from scripts.session_probe import ClockDiagnostics
+
+    clock = ClockDiagnostics()
+    for value, host in zip(values, hosts, strict=True):
+        clock.observe(value, host)
+    summary = clock.summary()
+    py = [
+        summary["timestamp_first"] or 0,
+        summary["timestamp_last"] or 0,
+        summary["timestamp_wrap_candidates"],
+        summary["timestamp_backsteps"],
+        summary["timestamp_ambiguous_gaps"],
+    ]
+    assert tuple(py[2:]) == expected
+    output = (ct.c_uint64 * 5)()
+    native.parity_probe_clock(
+        (ct.c_uint32 * len(values))(*values),
+        (ct.c_uint64 * len(hosts))(*hosts),
+        len(values),
+        output,
+    )
+    assert list(output) == py
+    assert "_last_host_ns" not in summary
+    if not values:
+        assert summary["timestamp_first"] is None
+
+
+class HistogramBins(ct.Structure):
+    _fields_ = [
+        ("chip", ct.c_int),
+        ("source", ct.c_int),
+        ("view_count", ct.c_uint),
+        ("bins", (ct.c_uint32 * 11) * 2),
+        ("totals", ct.c_uint64 * 2),
+        ("threshold_labels_raw", ct.c_int8 * 10),
+    ]
+
+
+def test_histogram_native_parity_and_unchanged_failures(native):
+    import mt76_histogram as hist
+    from tests.test_histogram import bad_histogram_events, histogram_event
+
+    for modern in (False, True):
+        chip = "mt7925" if modern else "mt7921"
+        raw = histogram_event() if modern else struct.pack("<11I", *([0xFFFFFFFF] * 11))
+        parse = hist.parse_histogram_event if modern else hist.parse_legacy_histogram
+        native_parse = native.mt_histogram_event if modern else native.mt_histogram_legacy
+        native_parse.argtypes = [ct.c_int, ct.c_void_p, ct.c_size_t, ct.POINTER(HistogramBins)]
+        expected = parse(chip, raw)
+        out = HistogramBins()
+        assert native_parse(int(modern), raw, len(raw), ct.byref(out)) == 0
+        assert out.chip == int(modern)
+        assert out.source == int(modern)
+        assert tuple(tuple(out.bins[i]) for i in range(out.view_count)) == expected.bins
+        assert tuple(out.totals)[: out.view_count] == expected.totals
+        assert tuple(out.threshold_labels_raw) == expected.threshold_labels_raw
+        bads = (
+            list(bad_histogram_events()) if modern else [raw[:n] for n in range(44)] + [raw + b"x"]
+        )
+        for bad in bads:
+            ct.memset(ct.byref(out), 0xA5, ct.sizeof(out))
+            before = bytes(out)
+            assert native_parse(int(modern), bad, len(bad), ct.byref(out)) == -1
+            assert bytes(out) == before
+        assert native_parse(int(not modern), raw, len(raw), ct.byref(out)) == -1
+
+
+def test_histogram_native_request_ack_status(native):
+    import mt76_histogram as hist
+    from tests.test_csi_measurements import event
+
+    native.mt_histogram_request.argtypes = [ct.c_int, ct.c_void_p, ct.c_size_t]
+    native.mt_histogram_ack.argtypes = [
+        ct.c_int,
+        ct.c_void_p,
+        ct.c_size_t,
+        ct.c_uint8,
+        ct.POINTER(ct.c_uint32),
+    ]
+    out = (ct.c_uint8 * 8)()
+    assert native.mt_histogram_request(1, out, 8) == 8
+    assert bytes(out) == hist.build_histogram_request("mt7925")
+    for chip, capacity in ((0, 8), (1, 7), (-1, 8)):
+        before = bytes(out)
+        assert native.mt_histogram_request(chip, out, capacity) == -1
+        assert bytes(out) == before
+    for status in (0, 1, 0xC00000BB, 0xFFFFFFFF):
+        raw = event(struct.pack("<II", 0x36, status), eid=1, sequence=9)
+        value = ct.c_uint32(123)
+        assert native.mt_histogram_ack(1, raw, len(raw), 9, ct.byref(value)) == 0
+        assert value.value == status
+        for chip, seq, size in (
+            (0, 9, len(raw)),
+            (1, 0, len(raw)),
+            (1, 8, len(raw)),
+            (1, 9, len(raw) - 1),
+        ):
+            value.value = 123
+            assert native.mt_histogram_ack(chip, raw, size, seq, ct.byref(value)) == -1
+            assert value.value == 123
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("mode", [0, 1, 2])
+def test_native_bringup_refuses_failed_reset(native, chip, mode):
+    assert native.parity_bringup_reset(chip, mode) == 0
+
+
 @pytest.fixture(scope="module")
 def native(tmp_path_factory):
     out = tmp_path_factory.mktemp("c-parity") / "parity.dylib"
     sources = [
+        "mt76_histogram.c",
+        "mt76_histogram_acquisition.c",
+        "mt76_csi.c",
+        "mt76_csi_session.c",
+        "mt76_session.c",
+        "test_csi_session.c",
         "mt7921_rxd.c",
         "mt7921_rxd_connac3.c",
         "mt7921_chip.c",
@@ -43,6 +175,8 @@ def native(tmp_path_factory):
             "-Wextra",
             "-Werror",
             "-dynamiclib",
+            "-DMT_CSI_NO_MAIN",
+            "-pthread",
             "-I",
             str(ROOT / "c"),
             str(ROOT / "tests/c_parity_bridge.c"),
@@ -96,6 +230,277 @@ def native(tmp_path_factory):
     ]
     lib.parity_txs.argtypes = [ct.c_int, ct.c_char_p, ct.c_uint, ct.POINTER(ct.c_int)]
     return lib
+
+
+class CounterDescriptor(ct.Structure):
+    _fields_ = [
+        ("name", ct.c_char_p),
+        ("counter", ct.c_int),
+        ("offset", ct.c_uint32),
+        ("unit", ct.c_int),
+        ("wire_bits", ct.c_uint),
+        ("hardware_bits", ct.c_uint),
+        ("accumulator_bits", ct.c_uint),
+        ("tick_ns", ct.c_uint),
+        ("hardware_saturates", ct.c_bool),
+    ]
+
+
+@pytest.mark.parametrize("stage", range(7))
+@pytest.mark.parametrize("mode", range(3))
+def test_native_csi_capture_stage_faults(native, stage, mode):
+    native.csi_capture_test.argtypes = [ct.c_uint, ct.c_uint, ct.c_uint]
+    assert native.csi_capture_test(stage, mode, 0) == 0
+
+
+@pytest.mark.parametrize("change", range(1, 6))
+def test_native_csi_capture_context_and_unsupported(native, change):
+    native.csi_capture_test.argtypes = [ct.c_uint, ct.c_uint, ct.c_uint]
+    assert native.csi_capture_test(0, 0, change) == 0
+
+
+class CsiReport(ct.Structure):
+    _fields_ = [
+        (name, ct.c_uint32)
+        for name in (
+            "version",
+            "data_count",
+            "rx_index",
+            "tx_index",
+            "rx_mode_raw",
+            "rx_rate_raw",
+            "channel_index_raw",
+        )
+    ] + [
+        ("rssi_raw_s8", ct.c_int32),
+        ("snr_raw", ct.c_uint32),
+        ("mcu_gpt_raw", ct.c_uint32),
+        ("transmitter", ct.c_uint8 * 6),
+        ("i", ct.c_int16 * 64),
+        ("q", ct.c_int16 * 64),
+    ]
+
+
+def test_csi_profile_shared_complete_and_malformed_bytes(native):
+    import mt76_csi as csi
+    from tests.test_csi_measurements import malformed_reports, report, report_fields
+
+    native.mt_beacon_csi_parse.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.POINTER(CsiReport),
+    ]
+    valid = [
+        report(),
+        report(tail=b""),
+        report() + b"private USB padding",
+        report(report_fields() | {18: struct.pack("<I", 1)}),
+        report(report_fields() | {63: b"unknown-data"}, tail=b""),
+    ]
+    for chip in (0, 1):
+        for raw in valid + list(malformed_reports()):
+            output = CsiReport()
+            ct.memset(ct.byref(output), 0xA5, ct.sizeof(output))
+            before = bytes(output)
+            result = native.mt_beacon_csi_parse(chip, raw, len(raw), ct.byref(output))
+            try:
+                expected = csi.parse_beacon_csi("mt7925" if chip else "mt7921", raw)
+            except ValueError:
+                assert result == -1
+                assert bytes(output) == before
+                continue
+            assert result == 0
+            for name, _ in CsiReport._fields_:
+                value = getattr(output, name)
+                if name == "transmitter":
+                    value = bytes(value)
+                elif name in ("i", "q"):
+                    value = tuple(value)
+                assert value == getattr(expected, name)
+
+
+def test_csi_request_and_ack_shared_bytes(native):
+    import mt76_csi as csi
+    from tests.test_csi_measurements import event
+
+    native.mt_csi_request.argtypes = [
+        ct.c_int,
+        ct.c_int,
+        ct.c_uint,
+        ct.c_char_p,
+        ct.c_void_p,
+        ct.c_size_t,
+    ]
+    native.mt_csi_ack.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.c_uint8,
+        ct.POINTER(ct.c_uint32),
+    ]
+    for chip in (0, 1):
+        name = "mt7925" if chip else "mt7921"
+        for action in csi.CsiAction:
+            for receivers in (0, 1, 2, 3):
+                for ta in (
+                    None,
+                    bytes(6),
+                    bytes.fromhex("010000000001"),
+                    bytes.fromhex("020000000001"),
+                ):
+                    for cap in (0, 7, 8, 11, 12, 14, 15, 16):
+                        output = ct.create_string_buffer(b"x" * 16, 16)
+                        result = native.mt_csi_request(chip, action, receivers, ta, output, cap)
+                        try:
+                            expected = csi.build_csi_request(
+                                name, action, receivers=receivers, transmitter=ta
+                            )
+                        except ValueError:
+                            expected = None
+                        if expected is None or len(expected) > cap:
+                            assert result == -1
+                            assert output.raw == b"x" * 16
+                        else:
+                            assert output.raw[:result] == expected
+        for status in (0, 0xC00000BB, 0xFFFFFFFF):
+            raw = event(struct.pack("<II", 0x4A, status), 1, 9)
+            for seq in (0, 8, 9, 16):
+                for end in range(len(raw) + 1):
+                    output = ct.c_uint32(99)
+                    result = native.mt_csi_ack(chip, raw, end, seq, ct.byref(output))
+                    try:
+                        expected = csi.parse_csi_ack(name, raw[:end], seq)
+                    except ValueError:
+                        assert result == -1
+                        assert output.value == 99
+                    else:
+                        assert result == 0
+                        assert output.value == expected
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+def test_named_counter_descriptors_and_requests_match_python(native, chip):
+    name = m.CHIP_MT7925 if chip else m.CHIP_MT7921
+    native.mt_counter_descriptor.argtypes = [ct.c_int, ct.c_int]
+    native.mt_counter_descriptor.restype = ct.POINTER(CounterDescriptor)
+    expected = {d.counter: d for d in mm.counter_descriptors(name)}
+    for counter in mm.Counter:
+        pointer = native.mt_counter_descriptor(chip, counter)
+        if counter not in expected:
+            assert not pointer
+            continue
+        actual, descriptor = pointer.contents, expected[counter]
+        assert actual.name.decode() == descriptor.name
+        for field in (
+            "counter",
+            "offset",
+            "unit",
+            "wire_bits",
+            "hardware_bits",
+            "accumulator_bits",
+            "tick_ns",
+            "hardware_saturates",
+        ):
+            assert getattr(actual, field) == (getattr(descriptor, field) or 0)
+        offsets = (ct.c_uint32 * 1)(descriptor.offset)
+        output = ct.create_string_buffer(132)
+        length = native.mt_mib_request(chip, 0, offsets, 1, output, len(output))
+        assert output.raw[:length] == mm.build_mib_request(name, (descriptor.offset,))
+    assert not native.mt_counter_descriptor(42, mm.Counter.PRIMARY_CCA)
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("mode", range(7))
+def test_named_counter_read_faults(native, chip, mode):
+    native.parity_counter_read.argtypes = [ct.c_int, ct.c_int]
+    assert native.parity_counter_read(chip, mode) == 0
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("action", [0, 1, 2])
+@pytest.mark.parametrize("mode", [0, 1, 2, 5, 6])
+def test_thermal_read_failures_and_getter(native, chip, action, mode):
+    native.parity_thermal_read.argtypes = [ct.c_int, ct.c_int, ct.c_int]
+    assert native.parity_thermal_read(chip, action, mode) == 0
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+def test_thermal_wire_parity_and_every_truncation(native, chip):
+    from tests.test_measurements import thermal_event
+
+    name = m.CHIP_MT7925 if chip else m.CHIP_MT7921
+    native.mt_thermal_request.argtypes = [ct.c_int, ct.c_int, ct.c_void_p, ct.c_size_t]
+    native.mt_thermal_parse.argtypes = [
+        ct.c_int,
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_size_t,
+        ct.c_uint8,
+        ct.POINTER(ct.c_uint32),
+    ]
+    for action in [0, 1] if chip else [0]:
+        output = ct.create_string_buffer(12)
+        length = native.mt_thermal_request(chip, action, output, len(output))
+        assert output.raw[:length] == mm.build_thermal_request(name, mm.ThermalAction(action))
+        raw = thermal_event(name, 0xFFFFFFFB)
+        for sample in [raw, raw + b"padding"] + [raw[:i] for i in range(len(raw))]:
+            value = ct.c_uint32(99)
+            result = native.mt_thermal_parse(chip, action, sample, len(sample), 9, ct.byref(value))
+            try:
+                expected = mm.parse_thermal_event(name, sample, 9, mm.ThermalAction(action))
+            except ValueError:
+                assert result < 0
+                assert value.value == 99
+            else:
+                assert result == 0
+                assert value.value == expected
+        for at in [0, 3, 37, 36, 48, 50, 52] if chip else [0, 3, 29]:
+            malformed = bytearray(raw)
+            malformed[at] ^= 8 if at == 3 else 1
+            value = ct.c_uint32(99)
+            result = native.mt_thermal_parse(
+                chip, action, bytes(malformed), len(malformed), 9, ct.byref(value)
+            )
+            assert result < 0
+            assert value.value == 99
+
+
+@pytest.mark.parametrize("chip", [0, 1])
+def test_production_mib_parsers_share_valid_and_malformed_bytes(native, chip):
+    name = m.CHIP_MT7925 if chip else m.CHIP_MT7921
+    offsets = (2, 17) if chip else (11,)
+    values = (0xFFFFFFFF, 0x100000002) if chip else (0xFFFFFFFF,)
+    body = (
+        bytes(12)
+        + b"".join(struct.pack("<HHIQ", 0, 8, o, v) for o, v in zip(offsets, values, strict=True))
+        if chip
+        else bytes(28) + struct.pack("<I", values[0])
+    )
+    offset_array = (ct.c_uint32 * len(offsets))(*offsets)
+    for raw in [body, body + body] + [body[:i] for i in range(len(body))]:
+        out = (ct.c_uint64 * len(offsets))(*([99] * len(offsets)))
+        result = native.mt_mib_parse(chip, raw, len(raw), offset_array, len(offsets), out)
+        try:
+            parsed = mm.parse_mib_reply(name, raw, offsets)
+        except ValueError:
+            assert result == -1
+            assert tuple(out) == (99,) * len(offsets)
+        else:
+            assert result == 0
+            assert tuple(out) == parsed
+
+
+@pytest.mark.parametrize("count", [8, 16, 0x0000000000080000, 0x0000000000100000])
+@pytest.mark.parametrize("requested", [(2, 0), (0,)])
+def test_counter_values_cannot_manufacture_tlv_echoes(native, count, requested):
+    body = bytes(4) + struct.pack("<HHIQHHIQ", 0, 8, 2, count, 0, 8, 0, 42)
+    expected = (count, 42) if len(requested) == 2 else (42,)
+    offsets = (ct.c_uint32 * len(requested))(*requested)
+    values = (ct.c_uint64 * len(requested))()
+    assert mm.parse_mib_reply(m.CHIP_MT7925, body, requested) == expected
+    assert native.mt_mib_parse(1, body, len(body), offsets, len(requested), values) == 0
+    assert tuple(values) == expected
 
 
 def rx_fixture(c3, mask, timestamp=0xFFFFFFFE):
@@ -163,6 +568,42 @@ def test_rx_bounds_and_absence(native, c3):
     fixture = rx_fixture(c3, 0)
     assert native.parity_rx(fixture, len(fixture), chip, output) == 0
     assert tuple(output[:2]) == (0, 0)
+
+
+@pytest.mark.parametrize("mask", range(32))
+@pytest.mark.parametrize("c3", [False, True])
+def test_raw_signal_presence_and_bounds(native, mask, c3):
+    native.parity_raw_signal.argtypes = [ct.c_char_p, ct.c_uint, ct.c_int, ct.POINTER(ct.c_int)]
+    raw = rx_fixture(c3, mask)
+    decode = rxd_connac3.decode if c3 else rxd.decode
+    expected = rxd.decode_fagc(0x10203047, 0x10203048)
+    output = (ct.c_int * 5)()
+    for end in range(len(raw) + 1):
+        # Exercise USB truncation and short declared DMA with bytes still present.
+        declared = bytearray(raw)
+        struct.pack_into("<H", declared, 0, end)
+        for sample in (raw[:end], bytes(declared)):
+            native.parity_raw_signal(sample, len(sample), int(c3), output)
+            decoded = decode(sample) or {}
+            assert bool(output[0]) == ("raw_signal" in decoded)
+            if output[0]:
+                assert decoded["raw_signal"] == expected
+                assert list(output[1:]) == list(expected.values())
+    assert bool(output[0]) == (not c3 and mask & 20 == 20)
+
+
+@pytest.mark.parametrize("value", [0, 1, 127, 128, 255])
+def test_raw_signal_signed_fractional_fields(native, value):
+    native.parity_raw_signal.argtypes = [ct.c_char_p, ct.c_uint, ct.c_int, ct.POINTER(ct.c_int)]
+    raw = bytearray(rx_fixture(False, 20))
+    word7 = value | value << 8
+    word8 = value << 5 | value << 14 | 1 << 4 | 1 << 13
+    struct.pack_into("<2I", raw, 24 + 8 + 28, word7, word8)
+    output = (ct.c_int * 5)()
+    assert native.parity_raw_signal(bytes(raw), len(raw), 0, output) == 0
+    expected = value if value < 128 else value - 256
+    assert list(output) == [1, expected, expected, expected, expected]
+    assert list(rxd.decode(raw)["raw_signal"].values()) == [expected] * 4
 
 
 @pytest.mark.parametrize("chip", [0, 1])
@@ -284,6 +725,55 @@ def test_tx_invalid_inputs(native):
 
 
 @pytest.mark.parametrize("chip", [0, 1])
+@pytest.mark.parametrize("value", [0, 1, 0xFFFFFFFF, 0xE2345678])
+def test_txs_timing_shared_contract(native, chip, value):
+    from tests.test_tx_status_measurements import packet
+
+    name = "mt7925" if chip else "mt7921"
+    raw = packet(name, (0, 1, 2, 3), value)
+    native.parity_txs_timing.argtypes = [
+        ct.c_int,
+        ct.c_char_p,
+        ct.c_uint,
+        ct.c_uint,
+        ct.POINTER(ct.c_uint32),
+    ]
+    mutations = [raw, raw + b"USB padding", packet(name, ()), raw * 2]
+    mutations += [raw[:end] for end in range(len(raw))]
+    for end in range(len(raw) + 1):
+        changed = bytearray(raw)
+        struct.pack_into("<H", changed, 0, end)
+        mutations.append(bytes(changed))
+    wrong_type = bytearray(raw)
+    wrong_type[3] = 2 << 3
+    mutations.append(bytes(wrong_type))
+    for sample in mutations:
+        for cap in (0, 3, 4):
+            output = (ct.c_uint32 * 160)(*([99] * 160))
+            result = native.parity_txs_timing(chip, sample, len(sample), cap, output)
+            try:
+                records = mm.parse_tx_status(name, sample, cap)
+            except ValueError:
+                assert result == -1
+                assert list(output) == [99] * 160
+                continue
+            assert result == len(records)
+            for index, s in enumerate(records):
+                assert list(output[index * 10 : (index + 1) * 10]) == [
+                    chip == 1,
+                    s.bandwidth_raw or 0,
+                    s.rate_stbc or 0,
+                    s.tx_delay_raw or 0,
+                    s.timestamp_raw or 0,
+                    s.front_time_raw is not None,
+                    s.front_time_raw or 0,
+                    s.timestamp_tick_ns or 0,
+                    s.front_time_tick_ns or 0,
+                    s.tx_delay_tick_ns or 0,
+                ]
+
+
+@pytest.mark.parametrize("chip", [0, 1])
 @pytest.mark.parametrize("fmt", range(4))
 def test_txs_shared_bytes(native, chip, fmt):
     from research.dual_radio_probe import tx_status_records
@@ -343,9 +833,45 @@ def test_rate_table_write_and_faults(native, rate, mode):
 
 @pytest.fixture(scope="module")
 def native_probe(tmp_path_factory):
+    return build_probe(tmp_path_factory, "mt76_radio_probe.c")
+
+
+@pytest.fixture(scope="module")
+def native_csi_probe(tmp_path_factory):
+    return build_probe(tmp_path_factory, "mt76_csi_probe.c")
+
+
+@pytest.fixture(scope="module")
+def native_histogram_probe(tmp_path_factory):
+    return build_probe(tmp_path_factory, "mt76_histogram_probe.c")
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        [],
+        ["--chip", "bad"],
+        ["--chip", "mt7925", "--fw", "/unused"],
+        ["--chip", "mt7921", "--fw", "/unused", "--channel", "149", "--reset-shared-histogram"],
+    ],
+)
+def test_native_histogram_probe_refuses_before_usb(native_histogram_probe, extra):
+    result = subprocess.run(  # noqa: S603 -- fixed local probe and refusal fixtures
+        [str(native_histogram_probe), *extra], capture_output=True, text=True, timeout=5
+    )
+    assert result.returncode == 2
+    assert not result.stdout
+
+
+def build_probe(tmp_path_factory, source):
     out = tmp_path_factory.mktemp("c-probe") / "probe"
     sources = [
-        "mt76_radio_probe.c",
+        source,
+        "mt76_histogram.c",
+        "mt76_histogram_acquisition.c",
+        "mt76_session.c",
+        "mt76_csi.c",
+        "mt76_csi_session.c",
         "mt7921_radio.c",
         "mt7921_dev.c",
         "mt7921_mcu.c",
@@ -361,6 +887,7 @@ def native_probe(tmp_path_factory):
             "-Wall",
             "-Wextra",
             "-Werror",
+            "-pthread",
             *(str(ROOT / "c" / name) for name in sources),
             "-framework",
             "IOKit",
@@ -373,6 +900,32 @@ def native_probe(tmp_path_factory):
         capture_output=True,
     )
     return out
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        [],
+        ["--unknown"],
+        ["--event-capacity", "2"],
+        ["--stall-ms", "-1"],
+        ["--receiver-order", "guessed"],
+    ],
+)
+def test_csi_cli_rejects_before_usb(native_csi_probe, extra):
+    result = subprocess.run(  # noqa: S603 -- fixed local executable and bounded arguments
+        [str(native_csi_probe), *extra], capture_output=True, text=True, timeout=5
+    )
+    assert result.returncode == 2
+    assert not result.stdout
+
+
+def test_csi_cli_help_is_offline(native_csi_probe):
+    result = subprocess.run(  # noqa: S603 -- fixed local executable
+        [str(native_csi_probe), "--help"], capture_output=True, text=True, timeout=5
+    )
+    assert result.returncode == 0
+    assert "mt76_csi_probe" in result.stdout
 
 
 @pytest.mark.parametrize(

@@ -9,6 +9,8 @@ import collections
 import hashlib
 import struct
 
+from mt76_csi import parse_csi_tlvs
+
 
 def snr_field_without_offset(version, value):
     """Pinned report22: (PHY0x83080cb8 >>25)+16, unless a type bit forces0.
@@ -23,38 +25,7 @@ def snr_field_without_offset(version, value):
 
 def parse_tlvs(body):
     """Private in-memory data for validation; callers must not serialize this."""
-    if not 8 <= len(body) <= 8192:
-        raise ValueError("CSI body size")
-    if struct.unpack_from("<HH", body, 4) != (0, len(body) - 4):
-        raise ValueError("CSI outer TLV")
-    fields = {}
-    pos = 8
-    while pos < len(body):
-        # Pinned 20260813 report: terminal tag25 followed by 36 zero bytes.
-        # Do not treat this as a generic terminator or ignore nonzero trailing data.
-        if (
-            len(body) - pos == 36
-            and fields
-            and next(reversed(fields)) == 25
-            and len(fields[25]) == 4
-            and not any(body[pos:])
-        ):
-            break
-        if len(fields) >= 64 or len(body) - pos < 8:
-            raise ValueError("CSI inner header")
-        tag, length = struct.unpack_from("<II", body, pos)
-        pos += 8
-        if tag > 63 or length > 8192:
-            raise ValueError(f"CSI out-of-range inner header at {pos - 8}")
-        if tag in fields or length > len(body) - pos:
-            prefix = tuple((t, len(data)) for t, data in fields.items())
-            raise ValueError(
-                f"CSI duplicate or truncated field at {pos - 8}: tag {tag}, "
-                f"length {length}, prefix {prefix}"
-            )
-        fields[tag] = body[pos : pos + length]
-        pos += length
-    return fields
+    return parse_csi_tlvs(body)
 
 
 def iq_layout(fields):

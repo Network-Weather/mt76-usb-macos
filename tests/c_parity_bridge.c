@@ -3,7 +3,123 @@
 #include "mt7921_rxd.h"
 #include "mt7921_chip.h"
 #include "mt7921_radio.h"
+#include "mt76_probe_metrics.h"
 #include <string.h>
+
+void parity_probe_clock(const uint32_t *values, const uint64_t *host_ns,
+                        unsigned count, uint64_t out[5]) {
+    mt_probe_clock_t clock = {0};
+    for (unsigned i = 0; i < count; i++) mt_probe_clock_observe(&clock, values[i], host_ns[i]);
+    out[0] = clock.first; out[1] = clock.last; out[2] = clock.wrap_candidates;
+    out[3] = clock.backsteps; out[4] = clock.ambiguous_gaps;
+}
+
+static uint8_t counter_payload[256];
+static unsigned counter_size, counter_writes;
+static int counter_chip, counter_failure;
+static int thermal_test_action = -1;
+static int counter_write(mt7921_usb_t *usb, uint8_t ep, const void *data, uint32_t len, uint32_t ms) {
+    (void)usb; (void)ep; (void)ms;
+    counter_writes++;
+    if (thermal_test_action >= 0 && counter_failure == 1) return -1;
+    if (counter_failure == 1 && counter_writes == 2) return -1;
+    unsigned prefix = 4 + (counter_chip == MT_CHIP_MT7925 ? MCU_UNI_TXD_LEN : MCU_TXD_LEN);
+    if (len < prefix || len - prefix > sizeof(counter_payload)) return -1;
+    counter_size = len - prefix;
+    memcpy(counter_payload, (const uint8_t *)data + prefix, counter_size);
+    return 0;
+}
+static int counter_reply(void *context, uint8_t seq, uint8_t cid, uint8_t *out,
+                           uint32_t *len, uint32_t ms) {
+    (void)context; (void)cid; (void)ms;
+    const mt7921_chip_profile_t *profile = mt7921_chip_profile(counter_chip);
+    uint8_t raw[512] = {0};
+    unsigned size = profile->mcu_rxd_len;
+    if (thermal_test_action >= 0) {
+        uint32_t value = thermal_test_action == MT_THERMAL_TEMPERATURE ? UINT32_C(0xfffffffb) : 68;
+        unsigned at = size + (counter_chip == MT_CHIP_MT7925 ? 12 : 4);
+        for (unsigned i = 0; i < 4; i++) raw[at + i] = (uint8_t)(value >> (8 * i));
+        if (counter_chip == MT_CHIP_MT7925) raw[size + 6] = 12;
+        size += counter_chip == MT_CHIP_MT7925 ? 16 : 8;
+        raw[counter_chip == MT_CHIP_MT7925 ? 36 : 28] = counter_chip == MT_CHIP_MT7925 ? 0x35 : 0xed;
+    } else if (counter_chip == MT_CHIP_MT7921) {
+        raw[size + 28] = (uint8_t)(100 + counter_payload[4]);
+        size += 32;
+    } else {
+        for (unsigned at = 4; at + 8 <= counter_size && counter_payload[at + 2] == 8; at += 8) {
+            memcpy(raw + size, counter_payload + at, 8);
+            raw[size + 8] = (uint8_t)(100 + counter_payload[at + 4]);
+            size += 16;
+        }
+    }
+    if (counter_failure == 2) size = profile->mcu_rxd_len + 1;
+    raw[0] = (uint8_t)size; raw[1] = (uint8_t)(size >> 8);
+    raw[3] = PKT_TYPE_RX_EVENT << 3;
+    raw[profile->rxd_seq_offset] = seq;
+    if (counter_failure == 5) raw[0] = 1; /* valid bytes outside declared DMA */
+    if (counter_failure == 6) raw[profile->rxd_seq_offset] = (uint8_t)(seq % 15 + 1);
+    if (*len < size) return -1;
+    memcpy(out, raw, size); *len = size;
+    return 0;
+}
+/* Exercises the real read wrapper/encoders with fake USB and matched reply bodies.
+ * Failure cases must leave caller output untouched, including partial EXT reads. */
+int parity_counter_read(int chip, int mode) {
+    thermal_test_action = -1;
+    mt7921_dev_t dev = {0};
+    dev.usb.chip = chip;
+    mt7921_mcu_init(&dev.mcu, &dev.usb);
+    dev.mcu.write_bulk = counter_write;
+    dev.mcu.session_wait = counter_reply;
+    counter_chip = chip; counter_failure = mode; counter_writes = 0;
+    int names[MT_MIB_MAX]; size_t count = 0;
+    for (int c = MT_COUNTER_RX_MPDU; c <= MT_COUNTER_IDLE_SLOTS; c++)
+        if (mt_counter_descriptor(chip, c)) names[count++] = c;
+    if (mode == 3) names[count++] = 999; /* reject entire list before writing */
+    if (mode == 4) names[count++] = names[0];
+    mt_counter_sample_t sample, before;
+    memset(&sample, 0xA5, sizeof(sample)); memcpy(&before, &sample, sizeof(sample));
+    int result = mt_counter_read(&dev, names, count, &sample);
+    bool failed = mode >= 2 || (mode == 1 && chip == MT_CHIP_MT7921);
+    if (failed) {
+        if (!result || memcmp(&sample, &before, sizeof(sample))) return 1;
+        if ((mode == 3 || mode == 4) && counter_writes) return 2;
+    } else {
+        if (result || sample.raw.count != count || sample.raw.closed_us < sample.raw.opened_us) return 3;
+        if (counter_writes != (chip == MT_CHIP_MT7925 ? 1U : count)) return 4;
+        for (size_t i = 0; i < count; i++)
+            if (sample.raw.values[i] != 100 + sample.descriptors[i]->offset ||
+                sample.raw.offsets[i] != sample.descriptors[i]->offset) return 5;
+    }
+    return 0;
+}
+
+int parity_thermal_read(int chip, int action, int mode) {
+    mt7921_usb_t usb = {.chip = chip};
+    mt7921_mcu_t mcu;
+    mt7921_mcu_init(&mcu, &usb);
+    mcu.write_bulk = counter_write; mcu.session_wait = counter_reply;
+    counter_chip = chip; counter_failure = mode; counter_writes = 0;
+    thermal_test_action = action;
+    mt_thermal_sample_t sample, before;
+    memset(&sample, 0xa5, sizeof(sample)); memcpy(&before, &sample, sizeof(sample));
+    int result = mt_thermal_read(&mcu, action, &sample);
+    bool unsupported = (chip == MT_CHIP_MT7921 && action != MT_THERMAL_TEMPERATURE) || action > 1;
+    if (mode || unsupported) {
+        if (!result || memcmp(&sample, &before, sizeof(sample))) return 1;
+        if (unsupported && counter_writes) return 2;
+    } else {
+        if (result || counter_writes != 1 || sample.chip != chip || sample.action != action ||
+            sample.closed_us < sample.opened_us) return 3;
+        if (action == MT_THERMAL_TEMPERATURE) {
+            if (!sample.has_temperature || sample.reported_temperature_c != -5 || sample.raw != UINT32_C(0xfffffffb)) return 4;
+            int32_t value = 99;
+            if (mt7921_get_temperature(&mcu, &value) || value != -5) return 5;
+        } else if (sample.has_temperature || sample.raw != 68) return 6;
+    }
+    thermal_test_action = -1;
+    return 0;
+}
 
 /* Fixed scalar output keeps Python tests independent of C struct padding. */
 int parity_rx(const unsigned char *raw, unsigned len, int chip, unsigned *v) {
@@ -20,6 +136,17 @@ int parity_rx(const unsigned char *raw, unsigned len, int chip, unsigned *v) {
     memcpy(v + 7, frame.g3, sizeof(frame.g3));
     memcpy(v + 11, frame.g5, sizeof(frame.g5));
     return 0;
+}
+
+int parity_raw_signal(const unsigned char *raw, unsigned len, int chip, int *v) {
+    mt7921_rxd_frame_t frame;
+    int result = mt7921_rxd_decoder_for_chip(chip)(raw, len, &frame);
+    v[0] = !result && frame.has_raw_signal;
+    if (v[0]) {
+        v[1] = frame.fagc_ib_raw_s8[0]; v[2] = frame.fagc_ib_raw_s8[1];
+        v[3] = frame.fagc_wb_raw_s8[0]; v[4] = frame.fagc_wb_raw_s8[1];
+    }
+    return result;
 }
 
 typedef struct { uint32_t reg; int step, fail; } fake_reg_t;
@@ -78,6 +205,23 @@ int parity_mcu_fault(int chip, int mode) {
     int ret = mt7921_mcu_wait(&mcu, 3, 0x22, reply, &len, 1);
     if (mode) return ret != 0 ? 0 : 1;
     return ret || len != 64 || mcu.dropped_frames != 1 || mcu.stale_events != 1;
+}
+
+int parity_txs_timing(int chip, const unsigned char *raw, unsigned len,
+                       unsigned capacity, uint32_t *v) {
+    mt_tx_status_t out[16];
+    if (capacity > 16) return -1;
+    int n = mt_tx_status_parse(chip, raw, len, out, capacity);
+    if (n <= 0) return n;
+    for (int i = 0; i < n; i++) {
+        uint32_t *p = v + i * 10;
+        p[0] = out[i].has_timing; p[1] = out[i].bandwidth_raw;
+        p[2] = out[i].rate_stbc; p[3] = out[i].tx_delay_raw;
+        p[4] = out[i].timestamp_raw; p[5] = out[i].has_front_time;
+        p[6] = out[i].front_time_raw; p[7] = out[i].timestamp_tick_ns;
+        p[8] = out[i].front_time_tick_ns; p[9] = out[i].tx_delay_tick_ns;
+    }
+    return n;
 }
 
 int parity_txs(int chip, const unsigned char *raw, unsigned len, int *v) {
@@ -149,4 +293,48 @@ int parity_vendor_timeout(unsigned mode) {
     if (mode == 1) return ret == -1 ? 0 : 2;
     if (mode == 2) return ret == 2 ? 0 : 3;
     return ret == 4 && value == UINT32_MAX ? 0 : 4;
+}
+
+/* Bring-up boundary: emulate only the initial reset/register requests. Never
+ * open hardware. A deliberately unready power-on stops success controls before
+ * firmware download, so this does not pretend to test complete initialization. */
+static unsigned reset_mode, reset_done_reads, reset_power_calls, reset_usb_calls;
+static const mt7921_chip_profile_t *reset_profile;
+static IOReturn reset_device(void *self) {
+    (void)self; reset_usb_calls++; return kIOReturnSuccess;
+}
+static IOReturn reset_request(void *self, IOUSBDevRequestTO *r) {
+    (void)self;
+    uint32_t addr = ((uint32_t)r->wValue << 16) | r->wIndex;
+    uint32_t value = 0;
+    if (r->bRequest == MT_VEND_POWER_ON) reset_power_calls++;
+    if (r->bmRequestType & USB_DIR_IN) {
+        if (r->wLength != 4) return kIOReturnBadArgument;
+        if (r->bRequest == MT_VEND_READ_EXT && addr == MT_CONN_ON_MISC &&
+            !reset_power_calls && reset_mode != 2) value = MT_TOP_MISC2_FW_N9_RDY;
+        if (r->bRequest == MT_VEND_DEV_MODE && addr == reset_profile->wfsys_done_reg) {
+            reset_done_reads++;
+            value = reset_mode == 1 ? reset_profile->wfsys_done_val : 0;
+        }
+        value = CFSwapInt32HostToLittle(value);
+        memcpy(r->pData, &value, 4);
+    }
+    r->wLenDone = r->wLength;
+    return kIOReturnSuccess;
+}
+int parity_bringup_reset(int chip, unsigned mode) {
+    reset_profile = mt7921_chip_profile(chip);
+    if (!reset_profile || mode > 2) return 1;
+    reset_mode = mode; reset_done_reads = reset_power_calls = reset_usb_calls = 0;
+    IOUSBDeviceInterface182 interface = {0};
+    interface.ResetDevice = reset_device; interface.DeviceRequestTO = reset_request;
+    IOUSBDeviceInterface182 *pointer = &interface;
+    mt7921_dev_t dev = {0}; dev.usb.dev = &pointer; dev.usb.chip = chip;
+    mt7921_mcu_init(&dev.mcu, &dev.usb);
+    dev.session_ready = true; dev.tuned = true;
+    if (mt7921_bringup(&dev, NULL, 0, NULL, 0, NULL) != -1) return 2;
+    if (dev.session_ready || dev.tuned || reset_usb_calls != 1) return 3;
+    if (!mode) return reset_power_calls == 0 &&
+        reset_done_reads == MT792x_WFSYS_INIT_RETRY_COUNT ? 0 : 4;
+    return reset_power_calls == 1 && reset_done_reads == (mode == 1 ? 1U : 0U) ? 0 : 5;
 }

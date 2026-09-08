@@ -2,6 +2,13 @@
 
 ## Current result: live 64-tone I/Q reports on MT7925
 
+R32 integration follow-up: [Python/C wire primitives and session controls](CSI_API.md)
+reproduce a new ordering constraint. After START, add the transmitter filter
+**before the final receiver-count command**; reversing them restores both reported
+receiver indices in fresh Python and native runs. Host filtering remains required
+for queued/preconfiguration and late-STOP reports. The full public streaming API
+is still gated, separately from these implemented pure primitives.
+
 **CSI readout works on the attached A9000.** The missing step was a nonzero frame
 selector: UNI 0x4a/tag2, index0/value **0x20**, before START on **band 0**.
 This value was an explicit hypothesis from the firmware's six-bit selector and

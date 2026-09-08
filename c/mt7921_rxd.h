@@ -68,6 +68,9 @@ typedef struct {
     uint8_t g5_words;      /* 0, 18 (connac2), or 24 (connac3) */
     uint32_t g3[4];
     uint32_t g5[24];       /* Raw words, not calibrated noise/SNR. No PN/frame data. */
+    bool has_raw_signal;  /* Complete connac2 Group5 only; absence is not zero. */
+    int8_t fagc_ib_raw_s8[2]; /* Firmware receiver indices, not calibrated antennas/dBm. */
+    int8_t fagc_wb_raw_s8[2];
 } mt7921_rxd_frame_t;
 
 /* Internal shared bounded group walk; caller has classified a normal RX frame.

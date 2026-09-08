@@ -29,6 +29,39 @@ bool mt_mib_delta(uint64_t before, uint64_t after, unsigned bits,
                   uint64_t max_delta, uint64_t *delta);
 uint64_t mt_radio_monotonic_us(void);
 
+/* Named MCU-only profile; docs/MT7925_MIB.md and SUBCHANNEL_MEASUREMENTS.md.
+ * No inferred percentages, MMIO fallback, or dynamic firmware detection. */
+enum {
+    MT_COUNTER_RX_MPDU = 1, MT_COUNTER_RX_FCS_ERROR, MT_COUNTER_RX_MDRDY,
+    MT_COUNTER_PRIMARY_CCA, MT_COUNTER_CCA_NAV_TX, MT_COUNTER_CCK_RX_DURATION,
+    MT_COUNTER_OFDM_RX_DURATION, MT_COUNTER_PRIMARY_ED, MT_COUNTER_NAV,
+    MT_COUNTER_IDLE_SLOTS
+};
+enum { MT_COUNTER_COUNT, MT_COUNTER_DURATION_TICKS, MT_COUNTER_SLOTS };
+typedef struct {
+    const char *name;
+    int counter;
+    uint32_t offset;
+    int unit;
+    unsigned wire_bits, hardware_bits, accumulator_bits, tick_ns;
+    bool hardware_saturates;
+} mt_counter_descriptor_t;
+/* NULL for unsupported chip/name. Zero bits/tick_ns means UNKNOWN, not zero.
+ * Static lifetime. Wire width != hardware/accumulator width; 9-us idle slots
+ * can saturate before firmware reads them, so conversion cannot recover loss. */
+const mt_counter_descriptor_t *mt_counter_descriptor(int chip, int counter);
+typedef struct {
+    mt_mib_sample_t raw;
+    const mt_counter_descriptor_t *descriptors[MT_MIB_MAX];
+} mt_counter_sample_t;
+/* Validate the entire named request before I/O. Band0 only, pinned firmware.
+ * Old chip: serial one-entry queries. New chip: one batch, not a simultaneous
+ * latch. Caller owns device or uses mt_session_call; retain session epoch and
+ * channel generation alongside this outer host interval. Output unchanged on
+ * failure; unsupported names are not successful zero-valued measurements. */
+int mt_counter_read(mt7921_dev_t *dev, const int *counters, size_t count,
+                     mt_counter_sample_t *sample);
+
 /* Injectable register boundary used by restoration/timeout fault tests. */
 typedef struct {
     void *ctx;
@@ -72,6 +105,15 @@ typedef struct {
     uint16_t rate_raw, sequence;
     bool has_tx_count;
     uint8_t tx_count;     /* connac3 format 0 only */
+    bool has_timing;      /* connac3 raw layout; old-chip timing not promoted */
+    uint8_t bandwidth_raw;
+    bool rate_stbc, has_front_time;
+    uint16_t tx_delay_raw; /* service/packet delay, NOT pure contention */
+    uint32_t timestamp_raw; /* wrapping TXS clock, not RXD/host time */
+    uint32_t front_time_raw; /* separate wrapping 25-bit clock, format0 only */
+    unsigned timestamp_tick_ns, front_time_tick_ns, tx_delay_tick_ns;
+    /* Nonzero ticks only for evidenced pinned MT7925 format0; zero = UNKNOWN.
+     * No synchronized clock domains, exact latch points, or ranging claim. */
 } mt_tx_status_t;
 /* Packet type must be TXS (0). Strict DMA bounds and complete records; USB padding
  * beyond DMA length is ignored. Returns record count or -1, no partial output. */

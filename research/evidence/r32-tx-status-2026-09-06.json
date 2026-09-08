@@ -1,0 +1,623 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-06",
+  "branch": "feat/measurement-api",
+  "integration_base": "6c90f8c",
+  "scope": "TX-status parser promotion, no new transmit profile/control. Existing bounded research TX with independent RX; no ambient identifiers or raw frames saved.",
+  "reproduction": {
+    "command": "MT76_FW_DIR=PINNED_DIR python research/phy_tx_probe.py --transmitter mt7925 --channel 6 --suite cck --per-phase 2 --tx-timing --acknowledge-experimental-transmit",
+    "native_comparison": "Build tests/c_parity_bridge.c and c/mt7921_{rxd,rxd_connac3,chip,dev,mcu,usb,radio}.c as a temporary dylib. Instrument mt7925_tx_probe.parse_tx_status so each live status packet also passes through parity_txs_timing with capacity16, comparing the ten timing/presence/scale fields against the installed Python TxStatus records. No second USB reader; native parser only, not native TX transport.",
+    "timing_fields_compared": [
+      "has_timing",
+      "bandwidth_raw",
+      "rate_stbc",
+      "tx_delay_raw",
+      "timestamp_raw",
+      "has_front_time",
+      "front_time_raw",
+      "timestamp_tick_ns",
+      "front_time_tick_ns",
+      "tx_delay_tick_ns"
+    ]
+  },
+  "qualification": {
+    "offline": "1891 Python tests, native tests, ASan/UBSan, sdist/wheel build pass",
+    "live_parsing": "12/12 live format0 status records match Python/C exactly",
+    "independent_rx": "8/12 exact good-FCS receipts: 2/2 at each CCK1/2/5.5/11 phase; 0/2 at both OFDM brackets. Missing controls retained, no general delivery or new TX profile qualification.",
+    "units": "Existing pinned format0 evidence supports 1-us timestamp and 32-us front/delay ticks. This short run does not recalibrate scales or establish absolute latch points. Other formats expose source-defined raw fields with unknown scales; old-chip timing not promoted.",
+    "clock_domains": "Wrapping device clocks; front time is not a duration, TX delay is not pure contention, clocks are not synchronized RXD or host time.",
+    "cleanup": "Both radios alive; transmitter firmware reload alive. No Group5 used."
+  },
+  "exit_code": 0,
+  "result": {
+    "alive_after": [
+      true,
+      true
+    ],
+    "both_endpoints": false,
+    "channel": 6,
+    "cleanup_reload_alive": true,
+    "configured_center": 6,
+    "configured_width_mhz": 20,
+    "date_utc": "2026-09-06T19:57:07.436308+00:00",
+    "firmware_sha256": {
+      "mt7921": [
+        "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      ],
+      "mt7925": [
+        "8eb46014d2a6b4124472eee7476d995008a6f40b1daffef87eb42f30d98699e1",
+        "23ff53b4bb639b30481e2e06bb1688569ad1ba971b897936db539882abfbd120"
+      ]
+    },
+    "fixed_bw": false,
+    "frame_bytes_without_fcs": 65,
+    "gap_s": 0.05,
+    "host_submissions": [
+      {
+        "call_seconds": 0.00013275002129375935,
+        "sequence": 0,
+        "start_seconds": 0.003973249811679125
+      },
+      {
+        "call_seconds": 0.00018595787696540356,
+        "sequence": 1,
+        "start_seconds": 0.05915795802138746
+      },
+      {
+        "call_seconds": 0.00010258401744067669,
+        "sequence": 2,
+        "start_seconds": 0.271884165937081
+      },
+      {
+        "call_seconds": 0.0002087079919874668,
+        "sequence": 3,
+        "start_seconds": 0.3270504998508841
+      },
+      {
+        "call_seconds": 0.00040970812551677227,
+        "sequence": 4,
+        "start_seconds": 0.5391586248297244
+      },
+      {
+        "call_seconds": 0.0002761248033493757,
+        "sequence": 5,
+        "start_seconds": 0.5909065830055624
+      },
+      {
+        "call_seconds": 0.00016429205425083637,
+        "sequence": 6,
+        "start_seconds": 0.8037910829298198
+      },
+      {
+        "call_seconds": 0.0002574578393250704,
+        "sequence": 7,
+        "start_seconds": 0.8590390000026673
+      },
+      {
+        "call_seconds": 0.00019612489268183708,
+        "sequence": 8,
+        "start_seconds": 1.0632641660049558
+      },
+      {
+        "call_seconds": 0.0004299578722566366,
+        "sequence": 9,
+        "start_seconds": 1.1185752500314265
+      },
+      {
+        "call_seconds": 0.00010345806367695332,
+        "sequence": 10,
+        "start_seconds": 1.3311268328689039
+      },
+      {
+        "call_seconds": 0.000324334017932415,
+        "sequence": 11,
+        "start_seconds": 1.3816757909953594
+      }
+    ],
+    "per_phase": 2,
+    "phase_gap_seconds": [
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05
+    ],
+    "phase_tx_width_mhz": [
+      20,
+      20,
+      20,
+      20,
+      20,
+      20
+    ],
+    "radios": [
+      {
+        "chip": "mt7921",
+        "counts": {
+          "decoded_usb_records": 206,
+          "frames_seen": 206,
+          "own_nonce_usb_records": 8
+        },
+        "own_rx_timing": [
+          {
+            "received_host_seconds": 0.579277791082859,
+            "rxd_timestamp_raw": 3982440,
+            "sequence": 2
+          },
+          {
+            "received_host_seconds": 0.6320985830388963,
+            "rxd_timestamp_raw": 4035164,
+            "sequence": 3
+          },
+          {
+            "received_host_seconds": 0.8441415829584002,
+            "rxd_timestamp_raw": 4247092,
+            "sequence": 4
+          },
+          {
+            "received_host_seconds": 0.8956736659165472,
+            "rxd_timestamp_raw": 4298754,
+            "sequence": 5
+          },
+          {
+            "received_host_seconds": 1.1083266660571098,
+            "rxd_timestamp_raw": 4511448,
+            "sequence": 6
+          },
+          {
+            "received_host_seconds": 1.1635917499661446,
+            "rxd_timestamp_raw": 4566686,
+            "sequence": 7
+          },
+          {
+            "received_host_seconds": 1.3677753750234842,
+            "rxd_timestamp_raw": 4770831,
+            "sequence": 8
+          },
+          {
+            "received_host_seconds": 1.4233031659387052,
+            "rxd_timestamp_raw": 4826338,
+            "sequence": 9
+          }
+        ],
+        "phases": [
+          {
+            "median_rssi_raw": null,
+            "name": "ofdm_before",
+            "phy": [],
+            "rate_code": 75,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": -102.5,
+            "name": "cck1_long",
+            "phy": [
+              {
+                "count": 2,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 0,
+                  "mode_name": "CCK",
+                  "nss": 1,
+                  "nsts": 1,
+                  "rate_mbps": 1,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 0,
+            "unique_exact_frames": 2
+          },
+          {
+            "median_rssi_raw": -103,
+            "name": "cck2_long",
+            "phy": [
+              {
+                "count": 2,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 1,
+                  "mode_name": "CCK",
+                  "nss": 1,
+                  "nsts": 1,
+                  "rate_mbps": 2,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 1,
+            "unique_exact_frames": 2
+          },
+          {
+            "median_rssi_raw": -103,
+            "name": "cck5_5_long",
+            "phy": [
+              {
+                "count": 2,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 2,
+                  "mode_name": "CCK",
+                  "nss": 1,
+                  "nsts": 1,
+                  "rate_mbps": 5.5,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 2,
+            "unique_exact_frames": 2
+          },
+          {
+            "median_rssi_raw": -102,
+            "name": "cck11_long",
+            "phy": [
+              {
+                "count": 2,
+                "fields": {
+                  "bw_mhz": 20,
+                  "dcm": false,
+                  "gi": 0,
+                  "ldpc": false,
+                  "mcs": 3,
+                  "mode_name": "CCK",
+                  "nss": 1,
+                  "nsts": 1,
+                  "rate_mbps": 11,
+                  "stbc": false
+                }
+              }
+            ],
+            "rate_code": 3,
+            "unique_exact_frames": 2
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "ofdm_after",
+            "phy": [],
+            "rate_code": 75,
+            "unique_exact_frames": 0
+          }
+        ],
+        "tx_status": []
+      },
+      {
+        "chip": "mt7925",
+        "counts": {
+          "decoded_usb_records": 128,
+          "frames_seen": 116
+        },
+        "own_rx_timing": [],
+        "phases": [
+          {
+            "median_rssi_raw": null,
+            "name": "ofdm_before",
+            "phy": [],
+            "rate_code": 75,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "cck1_long",
+            "phy": [],
+            "rate_code": 0,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "cck2_long",
+            "phy": [],
+            "rate_code": 1,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "cck5_5_long",
+            "phy": [],
+            "rate_code": 2,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "cck11_long",
+            "phy": [],
+            "rate_code": 3,
+            "unique_exact_frames": 0
+          },
+          {
+            "median_rssi_raw": null,
+            "name": "ofdm_after",
+            "phy": [],
+            "rate_code": 75,
+            "unique_exact_frames": 0
+          }
+        ],
+        "tx_status": [
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 40420,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 75,
+              "rate_stbc": false,
+              "sequence": 0,
+              "status_received_host_seconds": 0.3077678750269115,
+              "timestamp_raw": 1164681,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 4
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 42145,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 75,
+              "rate_stbc": false,
+              "sequence": 1,
+              "status_received_host_seconds": 0.3702946670819074,
+              "timestamp_raw": 1227194,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 233
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 48792,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 0,
+              "rate_stbc": false,
+              "sequence": 2,
+              "status_received_host_seconds": 0.5787570830434561,
+              "timestamp_raw": 1435113,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 103
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 50519,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 0,
+              "rate_stbc": false,
+              "sequence": 3,
+              "status_received_host_seconds": 0.6316533330827951,
+              "timestamp_raw": 1487837,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 23
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 57150,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 1,
+              "rate_stbc": false,
+              "sequence": 4,
+              "status_received_host_seconds": 0.8438099580816925,
+              "timestamp_raw": 1700042,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 15
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 58765,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 1,
+              "rate_stbc": false,
+              "sequence": 5,
+              "status_received_host_seconds": 0.8952276250347495,
+              "timestamp_raw": 1751704,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 15
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 65415,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 2,
+              "rate_stbc": false,
+              "sequence": 6,
+              "status_received_host_seconds": 1.1078593330457807,
+              "timestamp_raw": 1964573,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 11
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 67143,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 2,
+              "rate_stbc": false,
+              "sequence": 7,
+              "status_received_host_seconds": 1.1631309580989182,
+              "timestamp_raw": 2019811,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 10
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 73524,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 3,
+              "rate_stbc": false,
+              "sequence": 8,
+              "status_received_host_seconds": 1.3673451251816005,
+              "timestamp_raw": 2224007,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 8
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 75259,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 3,
+              "rate_stbc": false,
+              "sequence": 9,
+              "status_received_host_seconds": 1.4230531251523644,
+              "timestamp_raw": 2279514,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 8
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 81894,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 75,
+              "rate_stbc": false,
+              "sequence": 10,
+              "status_received_host_seconds": 1.6348228750284761,
+              "timestamp_raw": 2491827,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 4
+            }
+          },
+          {
+            "count": 1,
+            "fields": {
+              "ack_error_bits": 0,
+              "bandwidth_raw": 0,
+              "error_bits_16_22": 0,
+              "format": 0,
+              "format1_words5_7_raw": null,
+              "front_time_raw_format0": 83475,
+              "mpdu_counters_format1_hypothesis": null,
+              "pid": 3,
+              "power_raw": 36,
+              "rate_raw": 75,
+              "rate_stbc": false,
+              "sequence": 11,
+              "status_received_host_seconds": 1.6855327081866562,
+              "timestamp_raw": 2542431,
+              "tx_count_format0": 1,
+              "tx_delay_raw": 4
+            }
+          }
+        ]
+      }
+    ],
+    "receiver_g5": false,
+    "requested_management_types": null,
+    "requested_status_formats": null,
+    "spatial_codes": null,
+    "submitted": 12,
+    "suite": "cck",
+    "table_gi_ldpc": null,
+    "table_ltf": null,
+    "table_spatial_codes": null,
+    "timing_padding_bytes": 0,
+    "tool": "phy_tx_probe",
+    "transmitter": "mt7925",
+    "tx_timing": true,
+    "unique_run_payload": true
+  },
+  "parity": {
+    "event": "live_txs_parser_parity",
+    "packets": 12,
+    "records": 12,
+    "mismatches": 0
+  }
+}

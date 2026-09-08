@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-06",
+  "base_commit": "542da24f7028b1bc2a4d9536dc8ead42bcb58dd6",
+  "purpose": "Qualify the bounded C WFSYS reset-timeout error-return fix without attributing unrelated RF silence to that fix.",
+  "offline": {
+    "pytest_passed": 2014,
+    "native_sanitizer": "ASan/UBSan passed: reset boundary controls both chips plus10,000 malformed input cases",
+    "reset_controls": [
+      "retained firmware with done-register timeout aborts before power-on",
+      "completed reset advances to deliberately unready power-on",
+      "no retained firmware skips WFSYS reset and advances to deliberately unready power-on"
+    ],
+    "limits": "Controls deliberately stop before firmware download; they do not simulate full bring-up."
+  },
+  "live": {
+    "command": [
+      "/private/tmp/mt76-reset-gate-smoke",
+      "--usb-id",
+      "0e8d:7961",
+      "--fw",
+      "/Users/dew/dev/mt76-usb-macos/firmware",
+      "--channel",
+      "2.4GHz:6:6:20",
+      "--dwell",
+      "5"
+    ],
+    "exit_code": 2,
+    "summary": {
+      "bands": {
+        "2.4GHz": {
+          "channels_attempted": 1,
+          "channels_with_frames": 0,
+          "channels_with_transfers": 0,
+          "decoded_frames": 0,
+          "frame_types": {
+            "control": 0,
+            "data": 0,
+            "management": 0,
+            "other": 0
+          },
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 19,
+          "usb_transfers": 0
+        }
+      },
+      "device": {
+        "driver": "mt7921_c_iokit",
+        "temperature_c": 38,
+        "chip": "mt7921",
+        "usb_id": "0e8d:7961",
+        "usb_speed_code": 3,
+        "wifi_interface": 3
+      },
+      "duration_seconds": 8.097,
+      "firmware": {
+        "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      },
+      "generated_at_utc": "2026-09-06T21:57:15Z",
+      "host": {
+        "machine": "arm64",
+        "macos": "26.6.1"
+      },
+      "plan": {
+        "channels": 1,
+        "dwell_seconds": 5,
+        "name": "channel",
+        "requested_bands": [
+          "2.4GHz"
+        ]
+      },
+      "schema_version": 1,
+      "software": {
+        "c_driver": "mt7921_c_iokit",
+        "mt76_usb_macos": "0.3.0"
+      },
+      "status": "inconclusive",
+      "totals": {
+        "decoded_frames": 0,
+        "undecoded_transfers": 0,
+        "usb_errors": 0,
+        "usb_timeouts": 19,
+        "usb_transfers": 0
+      }
+    }
+  },
+  "conclusions": {
+    "old_chip_fresh_bringup_and_temperature": true,
+    "old_chip_receive_qualified": false,
+    "rf_silence_cause": null,
+    "new_chip_changed_build_live_check": "pending until the separately owned A9000 soak completes",
+    "running_soak_base_commit": "2074599",
+    "successful_reset_path_changed": false
+  },
+  "packaging": {
+    "sdist_and_wheel": "built without isolation from542da24",
+    "installed_modules_verified_outside_checkout": [
+      "mt76_session",
+      "mt76_measurements",
+      "mt76_csi",
+      "mt76_csi_session",
+      "mt76_histogram",
+      "mt76_histogram_acquisition"
+    ]
+  }
+}

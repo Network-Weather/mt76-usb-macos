@@ -70,6 +70,8 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
     unsigned frames = 0, timestamps = 0, g5 = 0, timeouts = 0, errors = 0, decode_errors = 0;
     unsigned sent = 0, exact = 0, unique = 0, rate_matches = 0, marker_frames = 0;
     unsigned masks[32] = {0}, seen[60] = {0};
+    unsigned raw_signal_count = 0;
+    int raw_signal_min[4] = {0}, raw_signal_max[4] = {0};
     uint32_t first_ts = 0, last_ts = 0;
     int signal_sum = 0;
     uint64_t started = mt_radio_monotonic_us(), next_tx = started + 200000;
@@ -103,6 +105,16 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
                        s->format, s->sequence, s->rate_raw, s->power_raw, s->power_signed,
                        s->pid, s->error_bits_16_22);
                 if (s->has_tx_count) printf("%u", s->tx_count); else printf("null");
+                printf(",\"timing\":");
+                if (s->has_timing) {
+                    printf("{\"timestamp_raw\":%u,\"tx_delay_raw\":%u,"
+                           "\"bandwidth_raw\":%u,\"rate_stbc\":%s,\"front_time_raw\":",
+                           s->timestamp_raw, s->tx_delay_raw, s->bandwidth_raw,
+                           s->rate_stbc ? "true" : "false");
+                    if (s->has_front_time) printf("%u", s->front_time_raw); else printf("null");
+                    printf(",\"timestamp_tick_ns\":%u,\"front_time_tick_ns\":%u,\"tx_delay_tick_ns\":%u}",
+                           s->timestamp_tick_ns, s->front_time_tick_ns, s->tx_delay_tick_ns);
+                } else printf("null");
                 puts("}");
             }
             continue;
@@ -117,6 +129,15 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
         if (!f.frame_len) continue;
         frames++; masks[f.group_mask]++;
         g5 += f.g5_words != 0;
+        if (f.has_raw_signal) {
+            int values[] = {f.fagc_ib_raw_s8[0], f.fagc_ib_raw_s8[1],
+                             f.fagc_wb_raw_s8[0], f.fagc_wb_raw_s8[1]};
+            for (unsigned i = 0; i < 4; i++) {
+                if (!raw_signal_count || values[i] < raw_signal_min[i]) raw_signal_min[i] = values[i];
+                if (!raw_signal_count || values[i] > raw_signal_max[i]) raw_signal_max[i] = values[i];
+            }
+            raw_signal_count++;
+        }
         if (f.has_timestamp) {
             if (!timestamps) first_ts = f.timestamp;
             last_ts = f.timestamp;
@@ -146,7 +167,12 @@ static int dwell(mt7921_dev_t *dev, const char *phase, int seconds, bool mib,
            phase, elapsed, frames, timestamps, first_ts, last_ts, g5, timeouts, errors, decode_errors,
            sent, marker_frames, exact, unique, rate_matches);
     if (unique) printf("%.2f", (double)signal_sum / unique); else printf("null");
-    printf(",\"group_masks\":{");
+    printf(",\"raw_signal\":{");
+    const char *names[] = {"fagc_ib0_raw_s8", "fagc_ib1_raw_s8", "fagc_wb0_raw_s8", "fagc_wb1_raw_s8"};
+    if (raw_signal_count) for (unsigned i = 0; i < 4; i++)
+        printf("%s\"%s\":{\"count\":%u,\"min\":%d,\"max\":%d}",
+               i ? "," : "", names[i], raw_signal_count, raw_signal_min[i], raw_signal_max[i]);
+    printf("},\"group_masks\":{");
     bool comma = false;
     for (unsigned i = 0; i < 32; i++) if (masks[i]) {
         printf("%s\"%02x\":%u", comma ? "," : "", i, masks[i]); comma = true;

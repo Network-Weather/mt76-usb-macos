@@ -1,0 +1,937 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-08",
+  "production_source": "cbf01c1fb226717112aecbdec187fbf6ca5e44f1",
+  "experiment": "Retained-state ALFA factory-calibration reload, monitor/sniffer reapply and traced ordinary bring-up",
+  "probe_tested_sha256": "e0fc9c1c0f826666c8595020bf8a47c60321a7f82f3367591a0dfbcc2de6153b",
+  "probe_later_change": "After these live runs, replace length-only raw reply-word export with exact zero-result comparison; no I/O sequence change.",
+  "method": {
+    "dwell_seconds": 3,
+    "transition_discard_seconds": 0.25,
+    "channels": [
+      1,
+      36,
+      53
+    ],
+    "width_mhz": 20,
+    "physical_cycle": false,
+    "transmit": false,
+    "efuse_programming": false,
+    "owner": "One owner per device; Netgear sham on a separate process with overlapping, not perfectly synchronized, dwells.",
+    "firmware": "Same pinned images recorded in r32-bounded-merge-check-2026-09-08.json. Retained-state runs do not independently attest loaded firmware.",
+    "initial_preflight": "First ALFA attempt at19:14:48UTC refused before any MCU/tune/write because its pre-download SWDEF_MODE readback was0x820f3000. Read-only follow-up confirmed firmware3/host0x7d40. The probe removed the unproven assumption that SWDEF_MODE stays0 after boot. An early A9000 sham completed healthy; the retained paired reference was rerun and fully recorded below.",
+    "privacy": "No frames/addresses/SSID/USB serial/raw efuse or CSI data exported."
+  },
+  "runs": [
+    {
+      "name": "alfa_cal",
+      "exit_code": 0,
+      "records": [
+        {
+          "event": "ready",
+          "utc": "2026-09-08T19:15:48.724262+00:00",
+          "chip": "mt7921",
+          "action": "efuse",
+          "firmware_state": 3,
+          "host_config": 32064,
+          "swdef_mode_readback": 2182033408,
+          "firmware_reloaded": false
+        },
+        {
+          "event": "inherited_rx",
+          "utc": "2026-09-08T19:15:49.801941+00:00",
+          "elapsed_s": 1.077,
+          "counts": {
+            "transfers": 85,
+            "frames": 85,
+            "control": 2,
+            "management": 68,
+            "beacons": 12,
+            "data": 15,
+            "timeouts": 10
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:15:53.090974+00:00",
+          "phase": "before",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.251,
+            "counts": {
+              "transfers": 33,
+              "frames": 33,
+              "management": 17,
+              "beacons": 8,
+              "data": 14,
+              "control": 2
+            }
+          },
+          "elapsed_s": 3.022,
+          "counts": {
+            "transfers": 270,
+            "frames": 270,
+            "management": 134,
+            "beacons": 114,
+            "data": 120,
+            "control": 16
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:15:56.503047+00:00",
+          "phase": "before",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.317,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.08,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:15:59.903369+00:00",
+          "phase": "before",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.319,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.067,
+          "counts": {
+            "timeouts": 28,
+            "transfers": 1,
+            "frames": 1,
+            "data": 1
+          }
+        },
+        {
+          "event": "calibration_reply",
+          "utc": "2026-09-08T19:15:59.906192+00:00",
+          "elapsed_s": 0.002554,
+          "request_hex": "00010000",
+          "sequence": 7,
+          "declared_bytes": 44,
+          "body_bytes": 8,
+          "body_sha256": "5c3f166fce0a8ac78def58145f55f5027fab1433f4d333d383659e6b273f4ca9",
+          "result_words_raw": null
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:02.997344+00:00",
+          "phase": "after_without_retune",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "elapsed_s": 3.091,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:06.509690+00:00",
+          "phase": "after",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.315,
+            "counts": {
+              "transfers": 50,
+              "frames": 50,
+              "management": 13,
+              "beacons": 13,
+              "data": 35,
+              "control": 2
+            }
+          },
+          "elapsed_s": 3.076,
+          "counts": {
+            "transfers": 238,
+            "frames": 238,
+            "management": 144,
+            "beacons": 120,
+            "data": 76,
+            "control": 18
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:10.440290+00:00",
+          "phase": "after",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.322,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.099,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:14.345972+00:00",
+          "phase": "after",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.316,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.078,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "finished",
+          "utc": "2026-09-08T19:16:14.346565+00:00",
+          "legacy_command_frame_discards": 1,
+          "stale_events": 0,
+          "alive": true
+        }
+      ]
+    },
+    {
+      "name": "netgear_ref",
+      "exit_code": 0,
+      "records": [
+        {
+          "event": "ready",
+          "utc": "2026-09-08T19:15:55.183677+00:00",
+          "chip": "mt7925",
+          "action": "sham",
+          "firmware_state": 3,
+          "host_config": 32064,
+          "swdef_mode_readback": 0,
+          "firmware_reloaded": false
+        },
+        {
+          "event": "inherited_rx",
+          "utc": "2026-09-08T19:15:56.203526+00:00",
+          "elapsed_s": 1.019,
+          "counts": {
+            "transfers": 555,
+            "frames": 555,
+            "management": 480,
+            "beacons": 97,
+            "data": 75
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:15:59.472099+00:00",
+          "phase": "before",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.262,
+            "counts": {
+              "transfers": 18,
+              "frames": 18,
+              "management": 12,
+              "beacons": 12,
+              "data": 5,
+              "control": 1
+            }
+          },
+          "elapsed_s": 3,
+          "counts": {
+            "transfers": 434,
+            "frames": 434,
+            "management": 137,
+            "beacons": 134,
+            "control": 24,
+            "data": 273
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:02.745912+00:00",
+          "phase": "before",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.257,
+            "counts": {
+              "transfers": 17,
+              "frames": 17,
+              "management": 13,
+              "beacons": 13,
+              "control": 4
+            }
+          },
+          "elapsed_s": 3.011,
+          "counts": {
+            "transfers": 199,
+            "frames": 199,
+            "control": 51,
+            "management": 147,
+            "beacons": 147,
+            "data": 1
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:06.013506+00:00",
+          "phase": "before",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.25,
+            "counts": {
+              "transfers": 28,
+              "frames": 28,
+              "management": 25,
+              "beacons": 4,
+              "data": 3
+            }
+          },
+          "elapsed_s": 3.011,
+          "counts": {
+            "transfers": 352,
+            "frames": 352,
+            "management": 294,
+            "beacons": 60,
+            "data": 30,
+            "control": 28
+          }
+        },
+        {
+          "event": "sham",
+          "utc": "2026-09-08T19:16:06.064085+00:00"
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:09.065619+00:00",
+          "phase": "after_without_retune",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "elapsed_s": 3.001,
+          "counts": {
+            "transfers": 366,
+            "frames": 366,
+            "management": 298,
+            "beacons": 59,
+            "data": 29,
+            "control": 39
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:12.343991+00:00",
+          "phase": "after",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.261,
+            "counts": {
+              "transfers": 31,
+              "frames": 31,
+              "management": 10,
+              "beacons": 10,
+              "data": 17,
+              "control": 4
+            }
+          },
+          "elapsed_s": 3.01,
+          "counts": {
+            "transfers": 334,
+            "frames": 334,
+            "data": 148,
+            "management": 174,
+            "beacons": 128,
+            "control": 12
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:15.628254+00:00",
+          "phase": "after",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.267,
+            "counts": {
+              "transfers": 20,
+              "frames": 20,
+              "management": 14,
+              "beacons": 14,
+              "control": 6
+            }
+          },
+          "elapsed_s": 3.011,
+          "counts": {
+            "transfers": 194,
+            "frames": 194,
+            "management": 149,
+            "beacons": 145,
+            "control": 43,
+            "data": 2
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:18.895996+00:00",
+          "phase": "after",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.25,
+            "counts": {
+              "transfers": 24,
+              "frames": 24,
+              "management": 23,
+              "beacons": 4,
+              "data": 1
+            }
+          },
+          "elapsed_s": 3.011,
+          "counts": {
+            "transfers": 516,
+            "frames": 516,
+            "management": 294,
+            "beacons": 59,
+            "data": 51,
+            "control": 171
+          }
+        },
+        {
+          "event": "finished",
+          "utc": "2026-09-08T19:16:18.896804+00:00",
+          "legacy_command_frame_discards": 3,
+          "stale_events": 0,
+          "alive": true
+        }
+      ]
+    },
+    {
+      "name": "alfa_monitor",
+      "exit_code": 0,
+      "records": [
+        {
+          "event": "ready",
+          "utc": "2026-09-08T19:16:43.967246+00:00",
+          "chip": "mt7921",
+          "action": "monitor",
+          "firmware_state": 3,
+          "host_config": 32064,
+          "swdef_mode_readback": 2182033408,
+          "firmware_reloaded": false
+        },
+        {
+          "event": "inherited_rx",
+          "utc": "2026-09-08T19:16:45.041152+00:00",
+          "elapsed_s": 1.073,
+          "counts": {
+            "transfers": 4,
+            "frames": 4,
+            "management": 3,
+            "data": 1,
+            "timeouts": 10
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:48.388723+00:00",
+          "phase": "before",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.261,
+            "counts": {
+              "transfers": 52,
+              "frames": 52,
+              "data": 40,
+              "management": 9,
+              "beacons": 9,
+              "control": 3
+            }
+          },
+          "elapsed_s": 3.072,
+          "counts": {
+            "transfers": 272,
+            "frames": 272,
+            "management": 140,
+            "beacons": 119,
+            "data": 99,
+            "control": 33
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:51.817670+00:00",
+          "phase": "before",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.318,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.096,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:55.264277+00:00",
+          "phase": "before",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.329,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.103,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "monitor_reapplied",
+          "utc": "2026-09-08T19:16:55.265416+00:00"
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:58.357535+00:00",
+          "phase": "after_without_retune",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "elapsed_s": 3.092,
+          "counts": {
+            "timeouts": 28,
+            "transfers": 1,
+            "frames": 1,
+            "management": 1
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:01.699273+00:00",
+          "phase": "after",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.255,
+            "counts": {
+              "transfers": 14,
+              "frames": 14,
+              "management": 9,
+              "beacons": 9,
+              "data": 4,
+              "control": 1
+            }
+          },
+          "elapsed_s": 3.072,
+          "counts": {
+            "transfers": 348,
+            "frames": 348,
+            "management": 120,
+            "beacons": 120,
+            "data": 188,
+            "control": 40
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:05.123856+00:00",
+          "phase": "after",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.314,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.096,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:08.546234+00:00",
+          "phase": "after",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.324,
+            "counts": {
+              "timeouts": 3
+            }
+          },
+          "elapsed_s": 3.083,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "finished",
+          "utc": "2026-09-08T19:17:08.546994+00:00",
+          "legacy_command_frame_discards": 0,
+          "stale_events": 0,
+          "alive": true
+        }
+      ]
+    },
+    {
+      "name": "netgear_ref2",
+      "exit_code": 0,
+      "records": [
+        {
+          "event": "ready",
+          "utc": "2026-09-08T19:16:49.399154+00:00",
+          "chip": "mt7925",
+          "action": "sham",
+          "firmware_state": 3,
+          "host_config": 32064,
+          "swdef_mode_readback": 0,
+          "firmware_reloaded": false
+        },
+        {
+          "event": "inherited_rx",
+          "utc": "2026-09-08T19:16:50.414275+00:00",
+          "elapsed_s": 1.014,
+          "counts": {
+            "transfers": 573,
+            "frames": 573,
+            "management": 420,
+            "beacons": 85,
+            "data": 123,
+            "control": 30
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:53.814586+00:00",
+          "phase": "before",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.322,
+            "counts": {
+              "transfers": 20,
+              "frames": 20,
+              "management": 13,
+              "beacons": 13,
+              "data": 5,
+              "control": 2
+            }
+          },
+          "elapsed_s": 3.072,
+          "counts": {
+            "transfers": 324,
+            "frames": 324,
+            "management": 141,
+            "beacons": 136,
+            "data": 164,
+            "control": 19
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:16:57.101774+00:00",
+          "phase": "before",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.27,
+            "counts": {
+              "transfers": 23,
+              "frames": 23,
+              "management": 14,
+              "beacons": 14,
+              "control": 6,
+              "data": 3
+            }
+          },
+          "elapsed_s": 3.011,
+          "counts": {
+            "transfers": 196,
+            "frames": 196,
+            "management": 148,
+            "beacons": 145,
+            "control": 39,
+            "data": 9
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:00.388179+00:00",
+          "phase": "before",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.269,
+            "counts": {
+              "transfers": 27,
+              "frames": 27,
+              "management": 27,
+              "beacons": 4
+            }
+          },
+          "elapsed_s": 3.011,
+          "counts": {
+            "transfers": 310,
+            "frames": 310,
+            "management": 294,
+            "beacons": 60,
+            "data": 15,
+            "control": 1
+          }
+        },
+        {
+          "event": "sham",
+          "utc": "2026-09-08T19:17:00.442184+00:00"
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:03.442512+00:00",
+          "phase": "after_without_retune",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "elapsed_s": 3,
+          "counts": {
+            "transfers": 384,
+            "frames": 384,
+            "management": 297,
+            "beacons": 58,
+            "data": 82,
+            "control": 5
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:06.718382+00:00",
+          "phase": "after",
+          "band": "2.4GHz",
+          "channel": 1,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.256,
+            "counts": {
+              "transfers": 109,
+              "frames": 109,
+              "data": 99,
+              "management": 9,
+              "beacons": 9,
+              "control": 1
+            }
+          },
+          "elapsed_s": 3.014,
+          "counts": {
+            "transfers": 377,
+            "frames": 377,
+            "data": 173,
+            "management": 189,
+            "beacons": 139,
+            "control": 15
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:10.004507+00:00",
+          "phase": "after",
+          "band": "5GHz",
+          "channel": 36,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.269,
+            "counts": {
+              "transfers": 14,
+              "frames": 14,
+              "management": 13,
+              "beacons": 13,
+              "control": 1
+            }
+          },
+          "elapsed_s": 3.01,
+          "counts": {
+            "transfers": 234,
+            "frames": 234,
+            "management": 147,
+            "beacons": 145,
+            "control": 48,
+            "data": 39
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:17:13.290591+00:00",
+          "phase": "after",
+          "band": "6GHz",
+          "channel": 53,
+          "width_mhz": 20,
+          "transition": {
+            "elapsed_s": 0.269,
+            "counts": {
+              "transfers": 35,
+              "frames": 35,
+              "management": 27,
+              "beacons": 4,
+              "control": 1,
+              "data": 7
+            }
+          },
+          "elapsed_s": 3.01,
+          "counts": {
+            "transfers": 367,
+            "frames": 367,
+            "management": 294,
+            "beacons": 60,
+            "data": 49,
+            "control": 24
+          }
+        },
+        {
+          "event": "finished",
+          "utc": "2026-09-08T19:17:13.291350+00:00",
+          "legacy_command_frame_discards": 9,
+          "stale_events": 0,
+          "alive": true
+        }
+      ]
+    },
+    {
+      "name": "alfa_bringup_trace",
+      "exit_code": 0,
+      "records": [
+        {
+          "event": "before",
+          "utc": "2026-09-08T19:18:10.790311+00:00",
+          "misc": 3,
+          "swdef": 2182033408
+        },
+        {
+          "event": "swdef_write",
+          "utc": "2026-09-08T19:18:11.473671+00:00",
+          "requested": 0,
+          "readback": 0
+        },
+        {
+          "event": "bringup_efuse_reply",
+          "utc": "2026-09-08T19:18:11.533652+00:00",
+          "request_hex": "00010000",
+          "body_bytes": 8,
+          "matches_zero_result": true
+        },
+        {
+          "event": "after_bringup",
+          "utc": "2026-09-08T19:18:11.533808+00:00",
+          "swdef": 2182033408
+        },
+        {
+          "event": "after_monitor",
+          "utc": "2026-09-08T19:18:11.534118+00:00",
+          "swdef": 2182033408
+        },
+        {
+          "event": "after_sniffer",
+          "utc": "2026-09-08T19:18:13.091478+00:00",
+          "swdef": 2182033408
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:18:16.555452+00:00",
+          "band": "2.4GHz",
+          "channel": 1,
+          "swdef": 2182033408,
+          "elapsed_s": 3.071,
+          "counts": {
+            "transfers": 311,
+            "frames": 311,
+            "management": 132,
+            "beacons": 120,
+            "control": 33,
+            "data": 146
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:18:20.467093+00:00",
+          "band": "5GHz",
+          "channel": 36,
+          "swdef": 2182033408,
+          "elapsed_s": 3.071,
+          "counts": {
+            "timeouts": 29
+          }
+        },
+        {
+          "event": "dwell",
+          "utc": "2026-09-08T19:18:24.356830+00:00",
+          "band": "6GHz",
+          "channel": 53,
+          "swdef": 2182033408,
+          "elapsed_s": 3.055,
+          "counts": {
+            "timeouts": 28,
+            "transfers": 1,
+            "frames": 1,
+            "data": 1
+          }
+        },
+        {
+          "event": "finished",
+          "utc": "2026-09-08T19:18:24.357477+00:00",
+          "alive": true
+        }
+      ]
+    }
+  ],
+  "interpretation": {
+    "calibration_reply": "44-byte declared MCU record,8-byte body. SHA256 matches exactly little-endian words[0x21,0]. Matched reply/zero result, not proof RF calibration took effect.",
+    "calibration_recovered": false,
+    "monitor_recovered": false,
+    "traced_full_bringup_recovered": false,
+    "swdef": "Pre-download0 write readback is0; by end of bring-up readback is0x820f3000 again. Meaning of runtime value is not established; do not force this register to0 on a running device.",
+    "scope": "Rules out a simply omitted calibration or monitor/sniffer enablement call. Does not exclude cached/ineffective calibration, retained PHY state or an unrelated receiver fault.",
+    "merge": "PR32 remains held; no production fix, release or tag."
+  }
+}
