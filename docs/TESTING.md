@@ -4,6 +4,21 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 attached-radio recheck, 2026-09-08
+
+After the user confirmed both dongles attached, [a bounded current-source check](../research/evidence/r32-attached-radio-recheck-2026-09-08.json)
+at `f3beab9` reads redacted USB/identity descriptors, then fresh Python bring-up
+and passive3s dwells on2.4GHz channels1/6/11. Both adapters enumerate correctly;
+both pre-bring-up firmware-ready registers read3. No physical power cycle was
+observed or established by the user's attachment report.
+
+The Netgear receives893 decoded frames across all three channels, with zero
+USB errors/timeouts (exit0). The ALFA receives zero transfers/frames, with36
+timeouts and no USB errors (exit2/inconclusive). Its prior RF-silence issue is
+not resolved by being attached. Both short processes exit and release their
+devices. No TX, further recovery commands or long-soak restart. This new evidence
+does not qualify5/6GHz, native C, capture-file interoperability or Python two hours.
+
 ## R32 offline and CI qualification, 2026-09-06
 
 The later [user-requested checkpoint](R32_CHECKPOINT.md) stops acquisition and
