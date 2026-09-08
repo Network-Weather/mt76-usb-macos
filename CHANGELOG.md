@@ -7,6 +7,13 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 ### Qualification limits
 
+- [ALFA calibration follow-up](docs/R32_CALIBRATION_CHECK.md): reissuing the
+  existing factory-calibration load and monitor/sniffer configuration does not
+  recover high-band RX. Traced ordinary bring-up confirms the required normal-mode
+  write and zero-result calibration reply; a missing call is not the explanation.
+  Adds a bounded, opt-in retained-state research probe and16 offline tests, not
+  physical efuse programming, public warm adoption or automatic recovery.
+
 - The [bounded R32 merge check](docs/R32_MERGE_CHECK.md) initially passes current
   Python/C three-band reception and independently validates5,651 private-capture
   packets on both radios. ALFA then loses most5/6GHz reception during the histogram

@@ -6,6 +6,12 @@ the recovered ALFA lost most5/6GHz reception during the experimental sequence,
 despite successful control restoration and firmware reload. No implementation
 change, version bump, tag or release was made in this check.
 
+Follow-up: the user's [calibration-enablement hypothesis](R32_CALIBRATION_CHECK.md)
+was tested without a reset, then with traced ordinary bring-up. Reissuing the
+existing factory-calibration load or monitor/sniffer setup does not recover
+high-band reception. Required bring-up writes/replies are observed; the cause
+remains unidentified and the merge hold stays in place.
+
 [Structured, redacted evidence](../research/evidence/r32-bounded-merge-check-2026-09-08.json)
 records source `ec8480e`, pinned firmware hashes, commands, phase counts, queue
 statistics, cleanup and both positive and negative controls. Host: Apple M4 Max,

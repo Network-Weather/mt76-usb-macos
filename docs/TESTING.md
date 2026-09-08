@@ -4,6 +4,16 @@ This document separates repeatable offline tests, current attached-hardware evid
 older observations, and untested behavior. A passing parser test is not presented as a
 hardware result, and a packet seen once is not presented as a reliability guarantee.
 
+## R32 calibration reapply check, 2026-09-08
+
+[Retained-state and traced bring-up checks](R32_CALIBRATION_CHECK.md) rule out a
+simply omitted5/6GHz enablement call: ALFA's factory-calibration command returns
+the expected zero result, and the pre-download normal-mode write reads back0,
+but high-band reception remains impaired. Reapplying monitor/sniffer settings
+also fails to recover it; independent Netgear references stay healthy. The new
+research-only probe has16 offline boundary/opt-in/redaction tests; the full local
+suite passes2,043 cases. No production recovery claim or release is added.
+
 ## R32 bounded merge check, 2026-09-08
 
 **PR32 remains blocked, not merged.** Later current Python/C controls initially

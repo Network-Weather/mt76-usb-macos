@@ -8,6 +8,11 @@ degradation during the histogram sequence. PR32 stays unmerged; next is isolatin
 that sequence or an explicit scope split, not another long soak. Both radios are
 released, and no version bump/release was made.
 
+The [calibration follow-up](docs/R32_CALIBRATION_CHECK.md) confirms the required
+enablement writes/replies occur. Reissuing calibration or monitor/sniffer setup
+does not recover ALFA high-band RX; continue with a physically recovered matched
+control before any new histogram experiment, not speculative calibration writes.
+
 Planning checkpoint 2026-09-06: PR #31 is merged at `7eb35d1`; no new release
 was cut. The [next-release plan](docs/NEXT_RELEASE.md) is the selected sequence for
 remaining research, Python/C integration and acceptance gates.
