@@ -83,7 +83,8 @@ same address succeeds. A broad substitution of all UHW accesses with ordinary
 accesses fails during reset and leaves register reads timing out. These results
 do not establish whether WinUSB or the composite parent rejects the request.
 
-The initial offline suite has 1,487 passes, 139 skips and two failures caused by
-implicit Windows cp1252 decoding of UTF-8 documentation. All four tests in that
-documentation module pass with `python -X utf8`. C compilation passes
-`/W4 /WX /std:c17`. Packet capture is not yet demonstrated by these results.
+The offline suite passes with `python -X utf8 -m pytest -q`: 1,489 passes and
+139 skips. Without UTF-8 mode, two documentation tests fail because Windows uses
+cp1252 for implicit text decoding. C compilation passes `/W4 /WX /std:c17`;
+repository Python lint, formatting and documentation checks pass locally.
+Packet capture is not yet demonstrated by these results.
