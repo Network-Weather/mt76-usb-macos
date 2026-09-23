@@ -1,0 +1,2476 @@
+{
+  "date_local": "2026-09-22",
+  "scope": "One ALFA AWUS036AXML, Windows 11 Pro build 26200, WinUSB interface 3. Representative bounded capabilities, not exhaustive options or product qualification.",
+  "research_base_commit": "c0acea6",
+  "platform": {
+    "os": "Windows 11 Pro",
+    "build": "26200",
+    "architecture": "AMD64",
+    "python": "3.14.2",
+    "pyusb": "1.3.1",
+    "libusb_package": "1.0.30.0",
+    "independent_decoder": "Scapy 2.7.0"
+  },
+  "firmware_sha256": {
+    "patch_sha256": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+    "ram_sha256": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+  },
+  "interpretation": "Exit 0 records script completion, not a successful capability. Nonzero attempts and recoveries are retained. Raw logs and captures remain local and ignored.",
+  "offline_validation": {
+    "passed": 1495,
+    "skipped": 139,
+    "utf8_mode": true,
+    "native_probe_flags": "/W4 /WX /std:c17"
+  },
+  "runs": [
+    {
+      "name": "smoke_all",
+      "script": "scripts/hardware_smoke.py",
+      "arguments": [
+        "--plan",
+        "all",
+        "--dwell",
+        "0.3"
+      ],
+      "exit_code": 1,
+      "seconds": 3.75,
+      "stdout_sha256": "54bde9da3cc314856bd1fa4d5602f9a0497a1a9dabba550ba692bebddbbcd135",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "bringup USB timeout; smoke_all_retry passed",
+      "source_sha256": "347ca60dfcd0d87aa178331f85440747460d7e11081d041fc38e478ca759d95f"
+    },
+    {
+      "name": "smoke_all_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.454,
+      "stdout_sha256": "1670bfeed400f7b3c1db8b836d454e3967d122c35e088076ff185e173254b547",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "widths",
+      "script": "scripts/width_probe.py",
+      "arguments": [
+        "2.4GHz:6:6:20",
+        "2.4GHz:6:8:40",
+        "5GHz:36:36:20",
+        "5GHz:36:38:40",
+        "5GHz:36:42:80",
+        "6GHz:53:53:20",
+        "6GHz:53:55:40",
+        "6GHz:53:55:80",
+        "--seconds",
+        "3"
+      ],
+      "exit_code": 0,
+      "seconds": 28.114,
+      "stdout_sha256": "4817008d8db29241a172a6cc1d47ab543f3ab173a2d406968217fb704a5c476c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "a26104583114d2e0165566d5479c114f088a3412e205bced05353f7f2faa1ef4"
+    },
+    {
+      "name": "retunes",
+      "script": "scripts/retune_drops.py",
+      "arguments": [
+        "--retunes",
+        "20",
+        "--dwell",
+        "0.25",
+        "--candidates",
+        "2.4GHz:6,5GHz:36,6GHz:53"
+      ],
+      "exit_code": 0,
+      "seconds": 11.987,
+      "stdout_sha256": "cec1b18941ae6420b856f6cec3adbe68cff4f4d70aee4ad5d0e9091a90ac05af",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "859b1e22c75742a8c7ce5abc6d504628ba3232bcab6b45b568a4117b8ee9be9d"
+    },
+    {
+      "name": "sustained_rx",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "60",
+        "--channel",
+        "5GHz:36"
+      ],
+      "exit_code": 0,
+      "seconds": 62.918,
+      "stdout_sha256": "3dd9c5349dd5f608ec36959091cf7cbc990b55577155d0ffebd438ec3a873b14",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "mcu_stats",
+      "script": "scripts/mcu_stats.py",
+      "arguments": [
+        "--published",
+        "--seconds",
+        "1"
+      ],
+      "exit_code": 1,
+      "seconds": 3.71,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "dd25e0026dfcf4fe3d63808b8f8cb0b5efc5e750575788e68d579c26a19b7e91",
+      "observation": "bringup USB timeout; default counter plan passed as mcu_stats_default; published offset plan not rerun",
+      "source_sha256": "956da39ab46499b0d8ddf126a2878ff5ff74cdee64299964ddfed0ee80b1befb"
+    },
+    {
+      "name": "mcu_stats_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.483,
+      "stdout_sha256": "8c59587127fa7c93207e1248d36d5281037be4c2a9960e7be457d8fd06900439",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "mib_survey",
+      "script": "scripts/mib_survey.py",
+      "arguments": [
+        "2.4GHz:6",
+        "5GHz:36",
+        "6GHz:53",
+        "--seconds",
+        "1",
+        "--registers"
+      ],
+      "exit_code": 1,
+      "seconds": 6.534,
+      "stdout_sha256": "b405f97b4deccd4ab19eeb72c9891a068aa3d35f29486ab9da03aea9fd19af8b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "warning exit: no frames in dwell after MCU reads; direct MMIO counters zero; firmware counters moved",
+      "source_sha256": "ab4fc4d76b0cb954b7872e920b2309625b3d7dcedcca7b8ff09d9f937e23d7c6"
+    },
+    {
+      "name": "mib_survey_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.458,
+      "stdout_sha256": "8aef4c8c63726b8e66c59334b63cb4ff2dc01f8575c7be952a1c1e44b6b65502",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "mib_offsets",
+      "script": "research/mib_offset_sweep.py",
+      "arguments": [
+        "--max",
+        "64",
+        "--seconds",
+        "1",
+        "--json"
+      ],
+      "exit_code": 0,
+      "seconds": 86.129,
+      "stdout_sha256": "538bd150a6ead649b6da9900985e2fbe549fcef662a732684a16bb68c5dc2bcb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "17065ee517be938ef60b257e349da65b846082b5f4983c397b629f2a817351da"
+    },
+    {
+      "name": "vectors_g5",
+      "script": "research/rx_vector_probe.py",
+      "arguments": [
+        "2.4GHz:6",
+        "5GHz:36",
+        "6GHz:53",
+        "--usb-id",
+        "0e8d:7961",
+        "--seconds",
+        "2",
+        "--g5-cycle"
+      ],
+      "exit_code": 0,
+      "seconds": 22.377,
+      "stdout_sha256": "9963bddbd0a3b54398bde50287fdf3c20d8e2e6f0a9aaf5b11b0fd224d54faec",
+      "stderr_sha256": "0f24164750b5e135f1ec4fa5c70f239286e9a1b59b985ab6dd2568156315274b",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c71b42d4cf269a1e69343a722f79a5d66a3476bbeb1f44f8ea8f67601aba9e52"
+    },
+    {
+      "name": "evm_cn",
+      "script": "research/evm_cn_probe.py",
+      "arguments": [
+        "--channel",
+        "36"
+      ],
+      "exit_code": 0,
+      "seconds": 6.194,
+      "stdout_sha256": "006e4d963e751ad22d66bb06207be843c1664a850dc4e12129d4d84c784c0aef",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c2db8fc59c7b4c5aff819d4263d89b47a4c4b9c78fbebb7185eb151a5e45933b"
+    },
+    {
+      "name": "sniffer_trace",
+      "script": "research/mt7961_sniffer_trace.py",
+      "arguments": [],
+      "exit_code": 0,
+      "seconds": 4.729,
+      "stdout_sha256": "91c0739050948593921f94d959b73ca6cc750f71a8ebbc79fd91d293b7f2cdab",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "ee1e89e14f9eac023bf1610fe8bb18cf065f5b79585c1974b34e25398fe949a6"
+    },
+    {
+      "name": "sr_registers",
+      "script": "research/sr_rmac_probe.py",
+      "arguments": [
+        "--device",
+        "mt7961",
+        "--channel",
+        "36"
+      ],
+      "exit_code": 0,
+      "seconds": 6.595,
+      "stdout_sha256": "c401f4a2d024261cc47395ff308fed1bb0c8bae87f6460a9f12f7e10c143b706",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "8fc6efe9c352341f0428483a85d2f83295c4ab06ea56977193e63d44fe2e6f2d"
+    },
+    {
+      "name": "sr_query",
+      "script": "research/legacy_spatial_reuse_query_probe.py",
+      "arguments": [
+        "--channel",
+        "36"
+      ],
+      "exit_code": 0,
+      "seconds": 7.555,
+      "stdout_sha256": "96d0932856cf2d5fc97f8f85cb3964616cf8bc322e1d8d0fcb66e8f1d9cc994c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "a6212e5af560c9b0895a5452671db51ef8864c5178594fca54ddbacb0261b9c0"
+    },
+    {
+      "name": "rtt",
+      "script": "research/rtt_capability_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961"
+      ],
+      "exit_code": 0,
+      "seconds": 7.526,
+      "stdout_sha256": "50d824ae0d5736f6a908a5299e2d2bc9c47c267fd8f0dae69400bd27e706aca7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "5461cf3868fd5b53e32ed68c70e1290e90946fee5faf0a7016fbd2231e902d91"
+    },
+    {
+      "name": "rx_stats_ext",
+      "script": "research/rx_stat_query.py",
+      "arguments": [
+        "--usb-id",
+        "0e8d:7961"
+      ],
+      "exit_code": 0,
+      "seconds": 16.34,
+      "stdout_sha256": "21587c94a875b77aa947cab83ebd8ea98d4b051256cd2e07d6920925209e0dd1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "0b7fb57f8f25ff0e620fb11698034b70c68e5b6e07791f813b5bd7ca87e4e282"
+    },
+    {
+      "name": "rxv_report",
+      "script": "research/rxv_report_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961",
+        "--enable-reporting",
+        "--registers",
+        "--both-endpoints"
+      ],
+      "exit_code": 2,
+      "seconds": 0.094,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "eb960c319db5cd8faa24a475875ec8ec2e9467b88ab9667fc4aa329fab154a7e",
+      "observation": "CLI refusal: MT7925-only register option; corrected MT7961 run completed",
+      "source_sha256": "c8eade06420c7d4a82d3b18a37db6cc47796a1f3ee7fc3ea2fb4b569208a7fe4"
+    },
+    {
+      "name": "rxv_report_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.48,
+      "stdout_sha256": "d3ce74dba92fa466e016498d397eb76d77320222240d540909e1c7d30f84a864",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "rdd_stop",
+      "script": "research/rdd_stop_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961"
+      ],
+      "exit_code": 0,
+      "seconds": 7.508,
+      "stdout_sha256": "1e209660d102ab16e84740abdc55c7ecf5eebdde6169796ebbe7388aca017ff1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "840b114c9cae2fcdcd384b74b7f754dd68eefc831182564704e3730f2f866f1a"
+    },
+    {
+      "name": "legacy_ics_24",
+      "script": "research/legacy_ics_probe.py",
+      "arguments": [
+        "--activate-legacy-rmac-ics",
+        "--match-rxd-in-memory",
+        "--enable-group5",
+        "--channel",
+        "6"
+      ],
+      "exit_code": 0,
+      "seconds": 6.194,
+      "stdout_sha256": "670317ecd4aa9d32ceb9efa8b1be20c679eb71a8c35797b25ed9aa891e32c9ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "0312d4d618c873cbc4861bd62852f1e37bf75d8b1fc23614490933aff6f6aa5f"
+    },
+    {
+      "name": "legacy_ics_5",
+      "script": "research/legacy_ics_probe.py",
+      "arguments": [
+        "--activate-legacy-rmac-ics",
+        "--match-rxd-in-memory",
+        "--channel",
+        "36"
+      ],
+      "exit_code": 0,
+      "seconds": 7.034,
+      "stdout_sha256": "2a05b4174a3bb92765ad6651a436924a56aa410e2bbb94bfff64bab3cf30a51d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "0312d4d618c873cbc4861bd62852f1e37bf75d8b1fc23614490933aff6f6aa5f"
+    },
+    {
+      "name": "histogram",
+      "script": "research/legacy_noise_hist_probe.py",
+      "arguments": [
+        "--enable-histogram",
+        "--cca-crosscheck",
+        "--channel",
+        "36"
+      ],
+      "exit_code": 0,
+      "seconds": 7.174,
+      "stdout_sha256": "64292f30a346c6ce41084784c6b1bba99345ac9700cd6187d28ecafab08df483",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "b4adaf32d3990bdd047a9e8d726a007991e1e0679a8030932b389c3dc07ccdbb"
+    },
+    {
+      "name": "ipi_read",
+      "script": "research/ipi_probe.py",
+      "arguments": [
+        "--seconds",
+        "1"
+      ],
+      "exit_code": 1,
+      "seconds": 3.692,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6344fa8a41e97e5f6f738973e1e1f72b88754aef4af3a71afcb32dcfaedae2c6",
+      "observation": "bringup USB timeout; retry completed with expected negative histogram exit",
+      "source_sha256": "ee188a9f65ba69913104f08c38ba4ccc68f26437aba515ef8c69dbf82278de13"
+    },
+    {
+      "name": "ipi_read_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.51,
+      "stdout_sha256": "252e433bd47ba65223cd1c4c80bd74eb4e0779eb3c80e42d2d7719f2a6cd0352",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "ipi_hist",
+      "script": "research/ipi_hist_cmd.py",
+      "arguments": [
+        "--seconds",
+        "1"
+      ],
+      "exit_code": 2,
+      "seconds": 4.341,
+      "stdout_sha256": "7ea046cdc3fff554a67495fadfbbe97d6940f1a02a6d2821268b62e6a647274f",
+      "stderr_sha256": "c2f5e7112f2749774075e608723b8048bcf4b40090f75181c37016053f5bcd09",
+      "observation": "expected negative: histogram bins and free-run counter zero",
+      "source_sha256": "a522d2daf7c16ef890800f565000f55be6f30b7e0e98f3c42b125a7a5873c264"
+    },
+    {
+      "name": "ipi_hist_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.503,
+      "stdout_sha256": "63fc21110bde638198e4829d0602556e2343fc507e5084dcf148d72ba1bdef3d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "mcu_commands",
+      "script": "research/mcu_command_probe.py",
+      "arguments": [
+        "--json"
+      ],
+      "exit_code": 0,
+      "seconds": 22.894,
+      "stdout_sha256": "9343e9b720047e09f391a16b10b1342162a4cb737edaafdc04ece1f0c6dd4db1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "162c277acc56030752fc30eb3dacd08ca3cd4a3c98e0f156b247a342ee11f396"
+    },
+    {
+      "name": "station_normal",
+      "script": "research/station_testmode_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961"
+      ],
+      "exit_code": 1,
+      "seconds": 3.686,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "81e1d11ec7a9a5de5342e473e3ee752040a2a3ac439f71e1d5835f2be9d93ba7",
+      "observation": "bringup USB timeout; retry passed",
+      "source_sha256": "e3867af9071ebeb1f906d7de2bbcce8a073ecbd2d92ede5aa357b8f3de1d4529"
+    },
+    {
+      "name": "station_normal_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.518,
+      "stdout_sha256": "5fd11d8ffcdf0ab1596a318cbed3d960007ffff883a1789eae886334d4552ccf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "station_rf",
+      "script": "research/station_testmode_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961",
+        "--test-mode"
+      ],
+      "exit_code": 0,
+      "seconds": 39.24,
+      "stdout_sha256": "234bcd30c098f135b4e58a801243f7e63120ff7c9f584e67affb5449cb023534",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "e3867af9071ebeb1f906d7de2bbcce8a073ecbd2d92ede5aa357b8f3de1d4529"
+    },
+    {
+      "name": "station_engineering",
+      "script": "research/station_testmode_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961",
+        "--test-mode",
+        "--engineering"
+      ],
+      "exit_code": 2,
+      "seconds": 0.09,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f37be3682b5024537e7c5fbd0f7e94477b805c0db2b073fdba0eb19d7fdd301a",
+      "observation": "CLI refusal: engineering transport is MT7925-only",
+      "source_sha256": "e3867af9071ebeb1f906d7de2bbcce8a073ecbd2d92ede5aa357b8f3de1d4529"
+    },
+    {
+      "name": "station_engineering_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.463,
+      "stdout_sha256": "df077113165670085d7fa5f0bd924ca5077030dd6b6065a9fe79571951e0ddd8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "legacy_rx_stats",
+      "script": "research/legacy_rx_stats_probe.py",
+      "arguments": [],
+      "exit_code": 0,
+      "seconds": 24.291,
+      "stdout_sha256": "e1d1a186a75b943f091c08212bef36f5478ce565322bb278f3ae4e101416bd1c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "2aebce13f4e1ffd2e273be08131381ff6c690cf245a6818cece4672cd9a278cb"
+    },
+    {
+      "name": "signal_fields",
+      "script": "research/signal_field_crosscheck_probe.py",
+      "arguments": [],
+      "exit_code": 0,
+      "seconds": 5.913,
+      "stdout_sha256": "3f0cb7b96a43c668699de320ef967c0898fa51b7b1e2b1f7dcf7ff59508e5d00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "3a1a9f05af1208f7c0dc50547a2788661c8db5dd71f1b9ceaf3533681aaad183"
+    },
+    {
+      "name": "cfo",
+      "script": "research/cfo_crosscheck_probe.py",
+      "arguments": [],
+      "exit_code": 0,
+      "seconds": 14.303,
+      "stdout_sha256": "d26856116e5b8575a9c032adff3f39f7f55951e9d8de0744da504ce5274d6530",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "45b38db8bae5f807119fcda412a1938eed53afe5ac7e11627f66f81f07a76d10"
+    },
+    {
+      "name": "phy_stats",
+      "script": "research/phy_stats_probe.py",
+      "arguments": [
+        "--registers"
+      ],
+      "exit_code": 0,
+      "seconds": 16.83,
+      "stdout_sha256": "4c7a6f8061b40d06bfdec2eddf0dee15c4886fbdf0b9728e7bd82a1caafde870",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "e2b3840a60a0ea062ee3fb11dd0aab4021b77fa2aef93f9f114507131b1b68ff"
+    },
+    {
+      "name": "ipi_compact",
+      "script": "research/ipi_compact_probe.py",
+      "arguments": [
+        "--registers"
+      ],
+      "exit_code": 0,
+      "seconds": 14.032,
+      "stdout_sha256": "998de434826b9f2222292905d19f803e7684cee578d4854a1e4fe2fca8ed82bc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "2efe7a22206d6d8d44bac0f1c4e376c500581e0883c11e61f7126e0b319158b4"
+    },
+    {
+      "name": "ipi_compact_rf",
+      "script": "research/ipi_compact_probe.py",
+      "arguments": [
+        "--rf-rx",
+        "--registers"
+      ],
+      "exit_code": 0,
+      "seconds": 15.566,
+      "stdout_sha256": "f59205ec5c45c62850b3552ae9d23940317640c2e921e89d2e0bf2235e837260",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "2efe7a22206d6d8d44bac0f1c4e376c500581e0883c11e61f7126e0b319158b4"
+    },
+    {
+      "name": "ipi_register",
+      "script": "research/ipi_register_probe.py",
+      "arguments": [
+        "--direct-init"
+      ],
+      "exit_code": 1,
+      "seconds": 6.4,
+      "stdout_sha256": "9e579478e93badebd777732ec50e455693f9851caa02b5d857717fc4ac647fe1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "USBTimeoutError; cleanup succeeded and retry completed",
+      "source_sha256": "0359534510c16d900dcb1fa09aa86de4645231f7fc94800fc0dc8afb09e334d2"
+    },
+    {
+      "name": "ipi_register_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.46,
+      "stdout_sha256": "9bb80968a7a461e98076e21c5c3d1d023d0c4daf941bdce97e46352033d2cd9a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "ipi_register_rf",
+      "script": "research/ipi_register_probe.py",
+      "arguments": [
+        "--direct-init",
+        "--rf-rx"
+      ],
+      "exit_code": 0,
+      "seconds": 6.98,
+      "stdout_sha256": "4cbaabd09df7823074004795262f745788943e154fd3def4f6885e606b3e9713",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "0359534510c16d900dcb1fa09aa86de4645231f7fc94800fc0dc8afb09e334d2"
+    },
+    {
+      "name": "rdd_state",
+      "script": "research/legacy_rdd_state_probe.py",
+      "arguments": [
+        "--enable-passive-detector",
+        "--registers"
+      ],
+      "exit_code": 0,
+      "seconds": 9.65,
+      "stdout_sha256": "f31c95bbe2ed6e84295cc79317fe6b7a2753373e4d962a3cd77db59506d0d881",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "4ac101cd090136cc2b3fab546b1852bb252359b162047bcc59fa0493959cd45b"
+    },
+    {
+      "name": "csi",
+      "script": "research/csi_control_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961",
+        "--ack",
+        "--beacon-selector",
+        "--state"
+      ],
+      "exit_code": 2,
+      "seconds": 0.096,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "fc00a9af051fc3e8f3d4b3a42e4c776d89e6fb6f19270048325ac827dc7187a6",
+      "observation": "CLI refusal: ACK, state and selector options MT7925-only; corrected query returned command-not-found",
+      "source_sha256": "4dbf37e1f2900a52a30432d4b6f46d71329ba4ccf39ed527f212ac947a84f65f"
+    },
+    {
+      "name": "csi_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.473,
+      "stdout_sha256": "30f7dff2b054148ca85c1dc6b7d18a6938ad2568c4fdb05ac60b375d64cda89a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "icap_status",
+      "script": "research/icap_status_probe.py",
+      "arguments": [
+        "--mode",
+        "2"
+      ],
+      "exit_code": 0,
+      "seconds": 7.28,
+      "stdout_sha256": "f29e107f4596d34e0483705619ed034ebe0c1cefd3fc6fd30abc7356697d9c5c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c0e5009af06ad789e8d08cb2c88ac361dd984bbdacc9bd883b752b82bb96813b"
+    },
+    {
+      "name": "icap_capture",
+      "script": "research/icap_capture_probe.py",
+      "arguments": [
+        "--samples",
+        "64",
+        "--prepare-rx",
+        "--retrieve",
+        "--registers"
+      ],
+      "exit_code": 0,
+      "seconds": 8.415,
+      "stdout_sha256": "1812d195ed5bcb3ee49a7bf617bff5d7d61db648e15f4c34ba9a180221c2df15",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "a5cb7142086c7d766805d9193300097150d7bbeb3d9e8cf3ed3c48cd7e99f158"
+    },
+    {
+      "name": "final_rx",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "3",
+        "--channel",
+        "2.4GHz:6"
+      ],
+      "exit_code": 0,
+      "seconds": 5.464,
+      "stdout_sha256": "19b2761ab7c4620ef44403ebe459a188877797a28d408639ca575a8f0d56c631",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "smoke_all_retry",
+      "script": "scripts/hardware_smoke.py",
+      "arguments": [
+        "--plan",
+        "all",
+        "--dwell",
+        "0.3"
+      ],
+      "exit_code": 0,
+      "seconds": 34.106,
+      "stdout_sha256": "2776dfedeeb416a30fca408c3cf02c79b5740bf54070acf8c0599857cdca5692",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "347ca60dfcd0d87aa178331f85440747460d7e11081d041fc38e478ca759d95f"
+    },
+    {
+      "name": "mcu_stats_default",
+      "script": "scripts/mcu_stats.py",
+      "arguments": [
+        "--seconds",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.909,
+      "stdout_sha256": "540564561c788c0686809f40fb145860ec9b5ccb2c8ca9981f531bb8c0fb8319",
+      "stderr_sha256": "21764a3c2c9a59eb06094a35db936663e4e697d4fb9e04e5fece42d7bfb14e62",
+      "observation": "completed; see capability summary",
+      "source_sha256": "956da39ab46499b0d8ddf126a2878ff5ff74cdee64299964ddfed0ee80b1befb"
+    },
+    {
+      "name": "ipi_read_retry",
+      "script": "research/ipi_probe.py",
+      "arguments": [
+        "--seconds",
+        "1"
+      ],
+      "exit_code": 2,
+      "seconds": 5.683,
+      "stdout_sha256": "f3bd85d8497fdd470a04997cdb8e85833311ece33ea78c4546e512604f752c60",
+      "stderr_sha256": "2a75f0fd62b23e1aa2beb58c6ed33c83cab5ca29cff7d03913d7c0912961245b",
+      "observation": "expected negative: tested histogram register bins do not accumulate",
+      "source_sha256": "ee188a9f65ba69913104f08c38ba4ccc68f26437aba515ef8c69dbf82278de13"
+    },
+    {
+      "name": "ipi_read_retry_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.472,
+      "stdout_sha256": "35de487643bed0a20006296e2d17c10c0ef6f8362f7a66f2ca12175abc615e4a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "station_normal_retry",
+      "script": "research/station_testmode_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961"
+      ],
+      "exit_code": 0,
+      "seconds": 79.912,
+      "stdout_sha256": "3127cccc8852099740f2f9c7d8e46a92d0c4d37b803df1ec4d957c8c539f3ef7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "e3867af9071ebeb1f906d7de2bbcce8a073ecbd2d92ede5aa357b8f3de1d4529"
+    },
+    {
+      "name": "rxv_report_corrected",
+      "script": "research/rxv_report_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961",
+        "--enable-reporting",
+        "--both-endpoints"
+      ],
+      "exit_code": 0,
+      "seconds": 7.81,
+      "stdout_sha256": "c81f9db4a823591027391f3c564e975455711596a4f95d7030e15c51a7cd4ba8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c8eade06420c7d4a82d3b18a37db6cc47796a1f3ee7fc3ea2fb4b569208a7fe4"
+    },
+    {
+      "name": "csi_corrected",
+      "script": "research/csi_control_probe.py",
+      "arguments": [
+        "--chip",
+        "mt7961"
+      ],
+      "exit_code": 0,
+      "seconds": 6.511,
+      "stdout_sha256": "7a9f205b9f9b90a6c48ae0f22c20bdf8f3f96d4b37404c07e138f5c999368781",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "4dbf37e1f2900a52a30432d4b6f46d71329ba4ccf39ed527f212ac947a84f65f"
+    },
+    {
+      "name": "ipi_register_retry",
+      "script": "research/ipi_register_probe.py",
+      "arguments": [
+        "--direct-init"
+      ],
+      "exit_code": 0,
+      "seconds": 6.214,
+      "stdout_sha256": "113b9e9b406da47813ceeec9343de850161c893999cb98429974fdf057bbc9e8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "0359534510c16d900dcb1fa09aa86de4645231f7fc94800fc0dc8afb09e334d2"
+    },
+    {
+      "name": "single_radio",
+      "script": "research/windows/single_radio_probe.py",
+      "arguments": [
+        "--acknowledge-experimental-transmit"
+      ],
+      "exit_code": 0,
+      "seconds": 12.527,
+      "stdout_sha256": "45716d56075fc4e95ebd89afc9171ade39230c5782a2b6fdf901dd3d3bf00d7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "3022b93deaa3ecc708942e8815878939e5d83c649baca8bb7bfcd4166a344408"
+    },
+    {
+      "name": "scan_all",
+      "script": "examples/scan.py",
+      "arguments": [
+        "all",
+        "--dwell",
+        "0.3"
+      ],
+      "exit_code": 0,
+      "seconds": 33.84,
+      "stdout_sha256": "b288477a1339d3df7cf184d052d3fde4146032e7196b0d75910bc177ac50904b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "f2e153dbd8d02e8a84385595ee84618b8a6f6f6af6467a14fbc3b143908c55e6"
+    },
+    {
+      "name": "roam_watch",
+      "script": "scripts/roam_watch.py",
+      "arguments": [
+        "--lock",
+        "5GHz:36",
+        "--duration",
+        "3",
+        "--width",
+        "80"
+      ],
+      "exit_code": 0,
+      "seconds": 6.011,
+      "stdout_sha256": "27b719d7a52c53238ee46c09a1283f2cc4fdbd44b3a41c0b08791ecfa2fe3eca",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "bounded CLI completed; no management events, no controlled roaming stimulus",
+      "source_sha256": "59c7f1da35fc47a9475b6fca0e7dff54e518aa0673b6a51dad6189d3c6509df2"
+    },
+    {
+      "name": "pcap_5_80",
+      "script": "examples/sniff_to_pcap.py",
+      "arguments": [
+        "36",
+        "5",
+        "build/windows/capture-5ghz-80.pcap",
+        "5GHz",
+        "--width",
+        "80",
+        "--center",
+        "42"
+      ],
+      "exit_code": 1,
+      "seconds": 3.715,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "a32da1adf68d4ee93f3d95518caadf729e54c6ed9a5dd03a5baf48a6df396558",
+      "observation": "bringup USB timeout; retry passed with a separate output file",
+      "source_sha256": "94c56f875edc0b59ab76dc663db0f556d2ce7144331c520c7da6f3c56a55d725"
+    },
+    {
+      "name": "pcap_5_80_recovery",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.462,
+      "stdout_sha256": "c4d5056453b038059ceda35dd41c7689910ff931464a630e323f13c004199335",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "firmware boot and one-second receive recovery completed",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "pcap_6_80",
+      "script": "examples/sniff_to_pcap.py",
+      "arguments": [
+        "53",
+        "5",
+        "build/windows/capture-6ghz-80.pcap",
+        "6GHz",
+        "--width",
+        "80",
+        "--center",
+        "55"
+      ],
+      "exit_code": 0,
+      "seconds": 8.014,
+      "stdout_sha256": "cfee1c65495dcbb11739ebe9fb20e1322f14f23296f716c387a71ed7c8acecdd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "94c56f875edc0b59ab76dc663db0f556d2ce7144331c520c7da6f3c56a55d725"
+    },
+    {
+      "name": "inventory",
+      "script": "scripts/dual_capture.py",
+      "arguments": [
+        "--list"
+      ],
+      "exit_code": 0,
+      "seconds": 0.114,
+      "stdout_sha256": "6d5d5c23d2b30430fa2b73a4d3f25befb01bc5a9b24103ef60bd7ac901691977",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "exactly one MT7961 listed; no concurrent multi-radio test",
+      "source_sha256": "bbcb932174e058849769acd3b68781440678ed097a9fc680537a5c8ca25dffff"
+    },
+    {
+      "name": "final_rx_extended",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "3"
+      ],
+      "exit_code": 0,
+      "seconds": 5.5,
+      "stdout_sha256": "3ed5c30c7e30fd77898bd86f46d3a300da5730394779c239087e9dd205945fe3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    },
+    {
+      "name": "pcap_5_80_retry",
+      "script": "examples/sniff_to_pcap.py",
+      "arguments": [
+        "36",
+        "5",
+        "build/windows/capture-5ghz-80-retry.pcap",
+        "5GHz",
+        "--width",
+        "80",
+        "--center",
+        "42"
+      ],
+      "exit_code": 0,
+      "seconds": 8.11,
+      "stdout_sha256": "3b917da25ba513318df9e3e17ad814f4ec92498bbfff6b83e1df1e52a5a36047",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "94c56f875edc0b59ab76dc663db0f556d2ce7144331c520c7da6f3c56a55d725"
+    },
+    {
+      "name": "inject_demo",
+      "script": "examples/inject_demo.py",
+      "arguments": [
+        "6",
+        "2.4GHz",
+        "--acknowledge-experimental-transmit"
+      ],
+      "exit_code": 0,
+      "seconds": 5.318,
+      "stdout_sha256": "89c3e31d87529b82abd262a38f664bbe334bfc48f62f725c2f3e2b1452ca117e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "three additional wildcard probes accepted; 294 receive frames afterward; no directed probe responses",
+      "source_sha256": "819ea57d2fc94b794b8a2b678c72934921d20aac35b9a66d3b40bf3f19bc73fa"
+    },
+    {
+      "name": "fw_triage",
+      "script": "scripts/fw_triage.py",
+      "arguments": [
+        "--json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.166,
+      "stdout_sha256": "f6339a79f2b1f6b3051b020505bf0e35940b34e121a87bd9a9b7277ebaa1b95a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c4bc50a6b61ccddc85ed859c90326dbc028066522988782f8ef13dae2da2f8de"
+    },
+    {
+      "name": "retunes_24_5",
+      "script": "scripts/retune_drops.py",
+      "arguments": [
+        "--retunes",
+        "10",
+        "--dwell",
+        "0.25",
+        "--candidates",
+        "2.4GHz:6,5GHz:36"
+      ],
+      "exit_code": 0,
+      "seconds": 8.029,
+      "stdout_sha256": "a6dc1735279a7c97f1653f3b5e930a2d09845ebba7dd100bad265d6218ce7992",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "859b1e22c75742a8c7ce5abc6d504628ba3232bcab6b45b568a4117b8ee9be9d"
+    },
+    {
+      "name": "final_rx_after_tx",
+      "script": "scripts/firmware_boot.py",
+      "arguments": [
+        "--rx",
+        "3"
+      ],
+      "exit_code": 0,
+      "seconds": 5.461,
+      "stdout_sha256": "485e5933931887dbbf240a05a39daa1ccdfaf8ebda82796980061bb12d872cad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "completed; see capability summary",
+      "source_sha256": "c96fa0d9e3cbd0076d1eb558da970aa54f1d2a79d22e9fe142a9a4d2ff1506a8"
+    }
+  ],
+  "capture": {
+    "smoke": {
+      "plan": {
+        "channels": 43,
+        "dwell_seconds": 0.3,
+        "name": "all",
+        "requested_bands": [
+          "2.4GHz",
+          "5GHz",
+          "6GHz"
+        ]
+      },
+      "bands": {
+        "2.4GHz": {
+          "channels_attempted": 3,
+          "channels_with_frames": 3,
+          "channels_with_transfers": 3,
+          "decoded_frames": 369,
+          "frame_types": {
+            "control": 77,
+            "data": 165,
+            "management": 127,
+            "other": 0
+          },
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 0,
+          "usb_transfers": 369
+        },
+        "5GHz": {
+          "channels_attempted": 25,
+          "channels_with_frames": 16,
+          "channels_with_transfers": 16,
+          "decoded_frames": 201,
+          "frame_types": {
+            "control": 35,
+            "data": 15,
+            "management": 151,
+            "other": 0
+          },
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 27,
+          "usb_transfers": 201
+        },
+        "6GHz": {
+          "channels_attempted": 15,
+          "channels_with_frames": 9,
+          "channels_with_transfers": 9,
+          "decoded_frames": 345,
+          "frame_types": {
+            "control": 237,
+            "data": 3,
+            "management": 105,
+            "other": 0
+          },
+          "undecoded_transfers": 0,
+          "usb_errors": 0,
+          "usb_timeouts": 13,
+          "usb_transfers": 345
+        }
+      },
+      "totals": {
+        "decoded_frames": 915,
+        "undecoded_transfers": 0,
+        "usb_errors": 0,
+        "usb_timeouts": 40,
+        "usb_transfers": 915
+      },
+      "status": "pass"
+    },
+    "widths": [
+      {
+        "target": "2.4GHz:6",
+        "center": 6,
+        "configured_width_mhz": 20,
+        "seconds": 3.0,
+        "frames": 571,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "20": 571
+        }
+      },
+      {
+        "target": "2.4GHz:6",
+        "center": 8,
+        "configured_width_mhz": 40,
+        "seconds": 3.0,
+        "frames": 456,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "20": 456
+        }
+      },
+      {
+        "target": "5GHz:36",
+        "center": 36,
+        "configured_width_mhz": 20,
+        "seconds": 3.0,
+        "frames": 132,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "20": 132
+        }
+      },
+      {
+        "target": "5GHz:36",
+        "center": 38,
+        "configured_width_mhz": 40,
+        "seconds": 3.0,
+        "frames": 149,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "20": 123,
+          "40": 26
+        }
+      },
+      {
+        "target": "5GHz:36",
+        "center": 42,
+        "configured_width_mhz": 80,
+        "seconds": 3.0,
+        "frames": 121,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "20": 113,
+          "80": 8
+        }
+      },
+      {
+        "target": "6GHz:53",
+        "center": 53,
+        "configured_width_mhz": 20,
+        "seconds": 3.0,
+        "frames": 1187,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "20": 1187
+        }
+      },
+      {
+        "target": "6GHz:53",
+        "center": 55,
+        "configured_width_mhz": 40,
+        "seconds": 3.0,
+        "frames": 1475,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "40": 987,
+          "20": 488
+        }
+      },
+      {
+        "target": "6GHz:53",
+        "center": 55,
+        "configured_width_mhz": 80,
+        "seconds": 3.0,
+        "frames": 1728,
+        "usb_errors": 0,
+        "by_decoded_width_mhz": {
+          "80": 1227,
+          "20": 455,
+          "40": 46
+        }
+      }
+    ],
+    "retunes": {
+      "pair": [
+        "6GHz:53",
+        "2.4GHz:6"
+      ],
+      "retunes_requested": 20,
+      "frames_per_dwell": {
+        "min": 40,
+        "median": 57.0,
+        "max": 111,
+        "total": 1291,
+        "values": [
+          84,
+          43,
+          111,
+          56,
+          78,
+          63,
+          101,
+          51,
+          83,
+          54,
+          40,
+          44,
+          52,
+          58,
+          109,
+          50,
+          61,
+          45,
+          65,
+          43
+        ]
+      },
+      "dropped_frames": {
+        "min": 0,
+        "median": 1.0,
+        "max": 10,
+        "total": 23,
+        "values": [
+          1,
+          0,
+          1,
+          0,
+          2,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          10,
+          1,
+          1,
+          0,
+          2,
+          0
+        ]
+      },
+      "usb_errors": 0
+    },
+    "sustained": {
+      "status": "pass",
+      "rx": {
+        "by_pkt_type": {
+          "NORMAL": 2274
+        },
+        "channel": {
+          "band": "5GHz",
+          "center": 36,
+          "control": 36,
+          "width_mhz": 20
+        },
+        "seconds": 60.0,
+        "transfer_bytes": {
+          "max": 324,
+          "median": 284,
+          "min": 76
+        },
+        "transfers": 2274,
+        "usb_errors": 0,
+        "usb_timeouts": 6
+      }
+    },
+    "final": {
+      "status": "pass",
+      "rx": {
+        "by_pkt_type": {
+          "NORMAL": 443
+        },
+        "channel": {
+          "band": "2.4GHz",
+          "center": 6,
+          "control": 6,
+          "width_mhz": 20
+        },
+        "seconds": 3.0,
+        "transfer_bytes": {
+          "max": 1076,
+          "median": 356,
+          "min": 76
+        },
+        "transfers": 443,
+        "usb_errors": 0,
+        "usb_timeouts": 0
+      }
+    },
+    "retunes_24_5": {
+      "retunes_requested": 10,
+      "pair": [
+        "2.4GHz:6",
+        "5GHz:36"
+      ],
+      "dropped_frames": {
+        "min": 0,
+        "median": 0.0,
+        "max": 2,
+        "total": 3,
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "frames_per_dwell": {
+        "min": 0,
+        "median": 17.5,
+        "max": 44,
+        "total": 196,
+        "values": [
+          43,
+          0,
+          35,
+          0,
+          38,
+          1,
+          44,
+          0,
+          31,
+          4
+        ]
+      },
+      "usb_errors": 0
+    }
+  },
+  "diagnostics": {
+    "mcu_stats": {
+      "mib": {
+        "queried": 19,
+        "responsive": 19,
+        "echoed": 19,
+        "moved": 7,
+        "errors": []
+      },
+      "phy_stat_verdict": {
+        "verdict": "not implemented: every category got the firmware's unsupported-command reply, which is returned before any handler runs",
+        "answered": 16,
+        "refused": 16,
+        "distinct_prefixes": 1
+      }
+    },
+    "rx_vectors": {
+      "chip": "mt7921",
+      "date_utc": "2026-09-23T00:56:42.552795+00:00",
+      "firmware_sha256": {
+        "patch": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+        "ram": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+      },
+      "restored_register": true,
+      "runs": [
+        {
+          "target": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "phase": "baseline",
+          "elapsed_s": 2.013,
+          "packets": {
+            "NORMAL": 737,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 737
+          },
+          "dcr0_readback": "0x2773400"
+        },
+        {
+          "target": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "phase": "enabled",
+          "elapsed_s": 2.005,
+          "packets": {
+            "NORMAL": 622,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 1,
+            "17": 621
+          },
+          "dcr0_readback": "0x2f73400"
+        },
+        {
+          "target": [
+            "2.4GHz",
+            6,
+            6,
+            20
+          ],
+          "phase": "restored",
+          "elapsed_s": 2.002,
+          "packets": {
+            "NORMAL": 687,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 672,
+            "17": 15
+          },
+          "dcr0_readback": "0x2773400"
+        },
+        {
+          "target": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "phase": "baseline",
+          "elapsed_s": 2.015,
+          "packets": {
+            "NORMAL": 89,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 89
+          },
+          "dcr0_readback": "0x2773400"
+        },
+        {
+          "target": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "phase": "enabled",
+          "elapsed_s": 2.005,
+          "packets": {
+            "NORMAL": 55,
+            "fcs_errors": 0,
+            "timeouts": 1
+          },
+          "group_masks": {
+            "07": 1,
+            "17": 54
+          },
+          "dcr0_readback": "0x2f73400"
+        },
+        {
+          "target": [
+            "5GHz",
+            36,
+            36,
+            20
+          ],
+          "phase": "restored",
+          "elapsed_s": 2.024,
+          "packets": {
+            "NORMAL": 63,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 63
+          },
+          "dcr0_readback": "0x2773400"
+        },
+        {
+          "target": [
+            "6GHz",
+            53,
+            53,
+            20
+          ],
+          "phase": "baseline",
+          "elapsed_s": 2.009,
+          "packets": {
+            "NORMAL": 858,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 858
+          },
+          "dcr0_readback": "0x2773400"
+        },
+        {
+          "target": [
+            "6GHz",
+            53,
+            53,
+            20
+          ],
+          "phase": "enabled",
+          "elapsed_s": 2.016,
+          "packets": {
+            "NORMAL": 949,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 2,
+            "17": 947
+          },
+          "dcr0_readback": "0x2f73400"
+        },
+        {
+          "target": [
+            "6GHz",
+            53,
+            53,
+            20
+          ],
+          "phase": "restored",
+          "elapsed_s": 2.011,
+          "packets": {
+            "NORMAL": 653,
+            "fcs_errors": 0
+          },
+          "group_masks": {
+            "07": 631,
+            "17": 22
+          },
+          "dcr0_readback": "0x2773400"
+        }
+      ],
+      "tool": "rx_vector_probe",
+      "usb_id": "0e8d:7961"
+    },
+    "legacy_ics_24": {
+      "channel": 6,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": true,
+      "phases": {
+        "off_before": {
+          "normal_retained": 27,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "records_with_signature_match": {}
+        },
+        "on": {
+          "normal_retained": 27,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "records_with_signature_match": {}
+        },
+        "off_after": {
+          "normal_retained": 27,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "records_with_signature_match": {}
+        }
+      }
+    },
+    "legacy_ics_5": {
+      "channel": 36,
+      "restored": {
+        "0x820e50d0": true,
+        "0x820e705c": true,
+        "0x820e0004": true,
+        "0x820e7000": true
+      },
+      "cleanup_reload_alive": true,
+      "phases": {
+        "off_before": {
+          "normal_retained": 21,
+          "ics_retained": 0,
+          "ics_type12_valid": 0,
+          "records_with_signature_match": {}
+        },
+        "on": {
+          "normal_retained": 13,
+          "ics_retained": 13,
+          "ics_type12_valid": 13,
+          "records_with_signature_match": {
+            "mac_header24": 9
+          }
+        },
+        "off_after": {
+          "normal_retained": 12,
+          "ics_retained": 15,
+          "ics_type12_valid": 15,
+          "records_with_signature_match": {
+            "mac_header24": 6
+          }
+        }
+      }
+    },
+    "rx_stats_ext": {
+      "rows": [
+        {
+          "category": 0,
+          "selector": 0,
+          "state": "refused",
+          "reply_bytes": 16,
+          "nonzero_bytes": 6,
+          "cleanup_alive": true
+        },
+        {
+          "category": 3,
+          "selector": 0,
+          "state": "refused",
+          "reply_bytes": 16,
+          "nonzero_bytes": 6,
+          "cleanup_alive": true
+        },
+        {
+          "category": 4,
+          "selector": 0,
+          "state": "refused",
+          "reply_bytes": 16,
+          "nonzero_bytes": 6,
+          "cleanup_alive": true
+        },
+        {
+          "category": 5,
+          "selector": 0,
+          "state": "refused",
+          "reply_bytes": 16,
+          "nonzero_bytes": 6,
+          "cleanup_alive": true
+        },
+        {
+          "category": 6,
+          "selector": 0,
+          "state": "refused",
+          "reply_bytes": 16,
+          "nonzero_bytes": 6,
+          "cleanup_alive": true
+        }
+      ]
+    },
+    "rtt": {
+      "rows": [
+        {
+          "events": [
+            {
+              "eid": 253,
+              "sequence_matches": true,
+              "sequence_zero": false,
+              "body_bytes": 0,
+              "command_not_found_event": true
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 54
+          },
+          "endpoint_transfers": {
+            "84": 55
+          },
+          "transfers": 55,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0139581999974325
+        },
+        {
+          "events": [
+            {
+              "eid": 253,
+              "sequence_matches": true,
+              "sequence_zero": false,
+              "body_bytes": 0,
+              "command_not_found_event": true
+            }
+          ],
+          "good_fcs_frames_by_phy_mode": {
+            "1": 54
+          },
+          "endpoint_transfers": {
+            "84": 55
+          },
+          "transfers": 55,
+          "transfer_limit_reached": false,
+          "elapsed_seconds": 1.0027303999959258
+        }
+      ],
+      "cleanup_reload_alive": true
+    },
+    "rxv_report_corrected": {
+      "rows": [
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 32,
+            "elapsed_seconds": 1.003783599997405,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 32,
+              "good_fcs_frames": 32
+            },
+            "endpoint_transfers": {
+              "84": 32
+            },
+            "frame_group_masks": {
+              "7": 32
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": true,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 32,
+            "elapsed_seconds": 1.017522199996165,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 32,
+              "good_fcs_frames": 32
+            },
+            "endpoint_transfers": {
+              "84": 32
+            },
+            "frame_group_masks": {
+              "7": 32
+            },
+            "non_frame_sizes": []
+          }
+        },
+        {
+          "rx_report_requested": false,
+          "reply": {
+            "body_bytes": 16,
+            "command_result_status": 0
+          },
+          "window": {
+            "transfers": 31,
+            "elapsed_seconds": 1.0018067000055453,
+            "limit_reached": false,
+            "packet_types": {
+              "NORMAL": 31,
+              "good_fcs_frames": 31
+            },
+            "endpoint_transfers": {
+              "84": 31
+            },
+            "frame_group_masks": {
+              "7": 31
+            },
+            "non_frame_sizes": []
+          }
+        }
+      ],
+      "cleanup_reload_alive": true
+    },
+    "icap_status": {
+      "rows": [
+        {
+          "mode_requested": 2,
+          "events": [
+            {
+              "eid": 237,
+              "ext_eid": 4,
+              "sequence_matches": true,
+              "unsolicited_sequence": false,
+              "body_bytes": 68,
+              "candidate_capture_done_raw": 1
+            }
+          ],
+          "alive_after": true,
+          "cleanup_reload_alive": true
+        }
+      ]
+    },
+    "icap_capture": {
+      "completion_observed": false,
+      "retrieval_skipped": "capture did not report completion",
+      "cleanup_reload_alive": true
+    },
+    "ipi_register_retry": {
+      "histogram": {
+        "echoed_idx": 12,
+        "band_idx": 0,
+        "bins": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "free_run": 0,
+        "tx_assert_us": 0
+      },
+      "restored_control": "0x0",
+      "cleanup_reload_alive": true
+    },
+    "rdd_state": {
+      "cleanup_state": {
+        "address": "0x2037214",
+        "raw": "0x0",
+        "host_enabled_byte": 0,
+        "detector_region_byte": 0
+      },
+      "cleanup_reload_alive": true
+    },
+    "csi": {
+      "phases": [
+        {
+          "name": "stop_before",
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 0,
+                "command_not_found_event": true,
+                "eid": 253,
+                "sequence": 4
+              },
+              "count": 1
+            }
+          ],
+          "valid_csi_events": 0
+        },
+        {
+          "name": "start",
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 0,
+                "command_not_found_event": true,
+                "eid": 253,
+                "sequence": 5
+              },
+              "count": 1
+            }
+          ],
+          "valid_csi_events": 0
+        },
+        {
+          "name": "stop_after",
+          "events": [
+            {
+              "shape": {
+                "body_bytes": 0,
+                "command_not_found_event": true,
+                "eid": 253,
+                "sequence": 6
+              },
+              "count": 1
+            }
+          ],
+          "valid_csi_events": 0
+        }
+      ],
+      "cleanup_reload_alive": true
+    },
+    "single_radio": {
+      "temperature_c": 32,
+      "efuse": {
+        "valid": 1,
+        "bytes": 16
+      },
+      "submitted": 3,
+      "after_tx": {
+        "counts": {
+          "transfers": 348,
+          "frames": 345
+        },
+        "tx_status": [
+          {
+            "format": 0,
+            "rate": 0,
+            "ack_error_bits": 0,
+            "tx_power_raw": 44,
+            "pid": 3
+          },
+          {
+            "format": 0,
+            "rate": 0,
+            "ack_error_bits": 0,
+            "tx_power_raw": 44,
+            "pid": 3
+          },
+          {
+            "format": 0,
+            "rate": 0,
+            "ack_error_bits": 0,
+            "tx_power_raw": 44,
+            "pid": 3
+          }
+        ]
+      },
+      "counter_bits_restored": true,
+      "cleanup_reload_alive": true,
+      "cleanup_rx": {
+        "counts": {
+          "transfers": 142,
+          "frames": 142
+        },
+        "tx_status": []
+      },
+      "lpon_values": [
+        1759446,
+        1874434,
+        1988933
+      ],
+      "tsf_values": [
+        0,
+        0,
+        0
+      ],
+      "queries": [
+        {
+          "band": "2.4GHz",
+          "noise": {
+            "error": "unexpected noise-average event"
+          },
+          "power_reported_channel": 6
+        },
+        {
+          "band": "5GHz",
+          "noise": {
+            "error": "unexpected noise-average event"
+          },
+          "power_reported_channel": 36
+        },
+        {
+          "band": "6GHz",
+          "noise": {
+            "error": "unexpected noise-average event"
+          },
+          "power_reported_channel": 53
+        }
+      ],
+      "counter_phases": [
+        {
+          "phase": "baseline",
+          "bits": 0,
+          "receive": {
+            "counts": {
+              "transfers": 120,
+              "frames": 120
+            },
+            "tx_status": []
+          }
+        },
+        {
+          "phase": "enabled",
+          "bits": 2560,
+          "receive": {
+            "counts": {
+              "transfers": 141,
+              "frames": 141
+            },
+            "tx_status": []
+          }
+        },
+        {
+          "phase": "restored",
+          "bits": 0,
+          "receive": {
+            "counts": {
+              "transfers": 168,
+              "frames": 168
+            },
+            "tx_status": []
+          }
+        }
+      ]
+    },
+    "inject_demo": {
+      "submitted": 3,
+      "write_accepted": true,
+      "alive_after": true,
+      "receive_frames_after": 294,
+      "directed_probe_responses": 0,
+      "independent_receiver": false
+    }
+  },
+  "pcaps": [
+    {
+      "file": "capture-5ghz-80-retry.pcap",
+      "sha256": "60c36004803270c69057a978b0605bf795be49695fedd01d6ed07520e62d6f89",
+      "bytes": 1791,
+      "counts": {
+        "records": 29,
+        "radiotap": 29,
+        "dot11": 29,
+        "beacons": 0
+      },
+      "frequencies_mhz": {
+        "5180": 29
+      },
+      "decoder": "Scapy 2.7.0"
+    },
+    {
+      "file": "capture-6ghz-80.pcap",
+      "sha256": "188e4a6cdc1b947a8a8ca39dc2d5922de94484ae421b6b7994085edc79ee1931",
+      "bytes": 206206,
+      "counts": {
+        "records": 2371,
+        "radiotap": 2371,
+        "dot11": 2371,
+        "beacons": 102
+      },
+      "frequencies_mhz": {
+        "6215": 2371
+      },
+      "decoder": "Scapy 2.7.0"
+    }
+  ],
+  "cli_inventory": [
+    {
+      "script": "research/band_timeout_query_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/beamforming_read_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/cfo_crosscheck_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/channel_geometry_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/clock_retune_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/control_frame_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/cross_measure.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/cross_radio_clock_analysis.py",
+      "coverage": "offline synthetic tests only; no new two-radio hardware trial to analyze"
+    },
+    {
+      "script": "research/csi_control_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/csi_filter_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/data_frame_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/delivery_evidence.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/dual_radio_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/edcca_query_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/error_frame_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/evm_cn_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/evm_cn_stimulus_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/he_dcm_spatial_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/icap_capture_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/icap_status_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/ics_control_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/ics_trace_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/ipi_compact_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/ipi_hist_cmd.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/ipi_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/ipi_register_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/legacy_ics_own_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/legacy_ics_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/legacy_ics_rf_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/legacy_ics_stage_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/legacy_noise_hist_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/legacy_prxv2_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/legacy_rdd_state_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/legacy_rx_stats_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/legacy_rxv_control_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/legacy_spatial_reuse_query_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/link_quality_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/lpon_packet_clock_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/mac_fcs_batch_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/mcu_command_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/mib_offset_sweep.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/mt7925_csi_input_trace.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_diagnostic_stats_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_mib_characterize.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_mib_crosscheck.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_mib_ownership_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_mib_perturb.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_noise_event_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_noise_hist_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_phy_compare_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_subchannel_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_thermal_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_tx_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7925_uni_dispatch_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/mt7961_sniffer_trace.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/noise_average_probe.py",
+      "coverage": "MT7961 helper exercised by single_radio_probe; full two-radio CLI not run"
+    },
+    {
+      "script": "research/noise_self_tx_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/normal_phy_counter_probe.py",
+      "coverage": "MT7961 helper exercised by single_radio_probe; full two-radio CLI not run"
+    },
+    {
+      "script": "research/phy_stats_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/phy_tx_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/rdd_receive_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/rdd_stimulus_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/rdd_stop_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/rmac_ics_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/rtt_capability_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/rx_stat_query.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/rx_vector_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/rxv_log_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/rxv_report_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/signal_field_crosscheck_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/spatial_reuse_query_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/sr_rmac_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/station_testmode_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "research/testmode_receiver_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/testmode_tx_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/tmac_ics_filter_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/tmac_ics_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/tx_airtime_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/tx_power_offset_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/tx_power_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/tx_timing_analysis.py",
+      "coverage": "offline synthetic tests only; no new two-radio hardware trial to analyze"
+    },
+    {
+      "script": "research/txpower_info_probe.py",
+      "coverage": "MT7961 helper exercised by single_radio_probe; full two-radio CLI not run"
+    },
+    {
+      "script": "research/txpower_register_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/uni_mib_probe.py",
+      "coverage": "requires unavailable MT7925 (some modes also require an independent peer)"
+    },
+    {
+      "script": "research/wideband_signal_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "research/width_error_probe.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "scripts/c_radio_pair.py",
+      "coverage": "requires second independent radio for this CLI; unavailable"
+    },
+    {
+      "script": "scripts/check_docs.py",
+      "coverage": "offline documentation validation passed"
+    },
+    {
+      "script": "scripts/dual_capture.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/firmware_boot.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/fw_triage.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/hardware_smoke.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/mcu_stats.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/mib_survey.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/retune_drops.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/roam_watch.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "scripts/usb_descriptors.py",
+      "coverage": "initial hardware run; see evidence-2026-09-22.json"
+    },
+    {
+      "script": "scripts/width_probe.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "examples/inject_demo.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "examples/scan.py",
+      "coverage": "executed; see per-run arguments and observations"
+    },
+    {
+      "script": "examples/sniff_to_pcap.py",
+      "coverage": "executed; see per-run arguments and observations"
+    }
+  ],
+  "transmit_scope": {
+    "synthetic_wildcard_probe_requests_total": 6,
+    "channel": 6,
+    "band": "2.4GHz",
+    "independent_reception_confirmed": false
+  }
+}

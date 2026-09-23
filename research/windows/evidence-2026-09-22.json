@@ -1,0 +1,99 @@
+{
+  "date_local": "2026-09-22",
+  "platform": {
+    "os": "Windows 11 Pro",
+    "build": "26200",
+    "architecture": "AMD64",
+    "python": "3.14.2",
+    "pyusb": "1.3.1",
+    "libusb_package": "1.0.30.0",
+    "independent_decoder": "Scapy 2.7.0"
+  },
+  "device": {
+    "usb_id": "0e8d:7961",
+    "chip_id": "0x7961",
+    "revision": "0x8a10",
+    "interface": 3,
+    "service": "WinUSB",
+    "bulk_max_packet_bytes": 512
+  },
+  "firmware_sha256": {
+    "WIFI_MT7961_patch_mcu_1_2_hdr.bin": "a276c06c2b772adb50b86639d33c82824ff4c21d617feb78caea74c040b873f6",
+    "WIFI_RAM_CODE_MT7961_1.bin": "b94217a951518a9c14095765f367bc5dd7698f2dc033941d6f18fc2ebd6a2ab9"
+  },
+  "unmodified_boot": {
+    "status": "fail",
+    "stage": "DMA initialization",
+    "type": "0xde",
+    "request": "0x01",
+    "address": "0x74011890",
+    "native_winusb_error": 87
+  },
+  "workaround": {
+    "ordinary_register_aliases": [
+      "0x74011890",
+      "0x74000a24"
+    ],
+    "reset_bus": "UHW"
+  },
+  "cold_boot": {
+    "status": "pass",
+    "n9_ready": true,
+    "efuse_pushed": true,
+    "rx_seconds": 3,
+    "channel": 6,
+    "width_mhz": 20,
+    "transfers": 701,
+    "usb_errors": 0,
+    "usb_timeouts": 0
+  },
+  "warm_capture": {
+    "status": "pass",
+    "command": "python research/windows/boot_alias_probe.py capture 6 10 build/windows/capture-24ghz.pcap 2.4GHz",
+    "duration_requested_seconds": 10,
+    "transfers": 2097,
+    "frames_written": 2097,
+    "pcap_sha256": "44916e7a94ad1bd878b8e0a70ba4a90514cbb1cfdc65b1ad0b653c1c0c2c2eed",
+    "pcap_bytes": 498403
+  },
+  "independent_decode": {
+    "packets": 2097,
+    "radiotap": 2097,
+    "dot11": 2097,
+    "beacons": 1204,
+    "frame_types": {
+      "1": 582,
+      "0": 1269,
+      "2": 246
+    },
+    "frequencies_mhz": {
+      "2437": 2097
+    }
+  },
+  "limits": [
+    "One MT7961 adapter, one Windows host, channels 6 and 36 at 20 MHz only.",
+    "No Windows 6 GHz, wider-channel, throughput or sustained-capture qualification.",
+    "Raw PCAP remains local; this record contains no captured addresses, SSIDs or payloads.",
+    "Broad substitution of all UHW accesses failed during reset and required physical unplug/replug."
+  ],
+  "capture_5ghz": {
+    "status": "pass",
+    "channel": 36,
+    "width_mhz": 20,
+    "duration_requested_seconds": 10,
+    "transfers": 336,
+    "frames_written": 336,
+    "command": "python research/windows/boot_alias_probe.py capture 36 10 build/windows/capture-5ghz-ch36.pcap 5GHz",
+    "pcap_sha256": "0f34daafff6fca097b326b0495803cc59bf5663745d2b92e6ebbd8e11a70936e",
+    "pcap_bytes": 61716,
+    "independent_decode": {
+      "packets": 336,
+      "radiotap": 336,
+      "dot11": 336,
+      "beacons": 207,
+      "frequencies_mhz": {
+        "5180": 336
+      }
+    }
+  }
+}
