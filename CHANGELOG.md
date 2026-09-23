@@ -8,8 +8,9 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 ### Added
 
 - Experimental [Windows MT7961 USB probes](research/windows/README.md), including
-  Python/libusb setup and a read-only native WinUSB probe. Register access is
-  demonstrated; firmware bring-up and capture remain unqualified on Windows.
+  Python/libusb setup and a read-only native WinUSB probe. An opt-in two-register
+  workaround boots firmware and captures channel 6 at 20 MHz on one Windows 11
+  host; broader Windows support remains unqualified.
 
 - Native C acquisition parity with the 2026-09-04 Python research: bounded hardware
   timestamp and Group-3/5 export, MT7921 EXT and MT7925 batched UNI MIB queries,

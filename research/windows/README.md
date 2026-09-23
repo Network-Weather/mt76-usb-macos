@@ -4,6 +4,9 @@ This spike targets the ALFA AWUS036AXML (`0e8d:7961`, Wi-Fi interface 3) on
 Windows 11 x64. It is not a Windows support claim. The production driver remains
 unchanged; the native SDK probe isolates USB access from Python and libusb.
 
+The opt-in alias experiment boots firmware and captures on channel 6 at 20 MHz
+on the tested host. See [the sanitized hardware record](evidence-2026-09-22.json).
+
 ## Prepare the Python tools
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run
@@ -66,7 +69,7 @@ write device registers or print device serials. Exit 0 means all reads succeeded
 This opt-in wrapper substitutes ordinary register reads/writes for two addresses:
 endpoint reset options and the connection-infrastructure status selector. Reset
 assertion and deassertion retain the UHW request encoding. The wrapper restores
-the Python methods on exit. This is an unqualified hardware experiment; if the
+the Python methods on exit. This has narrow hardware evidence only; if the
 adapter stops responding, unplug it and reconnect it before another attempt.
 
 ## Evidence and limits
@@ -87,4 +90,15 @@ The offline suite passes with `python -X utf8 -m pytest -q`: 1,489 passes and
 139 skips. Without UTF-8 mode, two documentation tests fail because Windows uses
 cp1252 for implicit text decoding. C compilation passes `/W4 /WX /std:c17`;
 repository Python lint, formatting and documentation checks pass locally.
-Packet capture is not yet demonstrated by these results.
+
+With the two-register workaround, a cold firmware boot reaches N9 ready, pushes
+efuse, and receives 701 transfers over three seconds without USB errors or
+timeouts. A subsequent process successfully resets the running firmware and
+captures 2,097 frames over ten seconds on channel 6 at 20 MHz. Independent Scapy
+2.7.0 decoding recognizes all 2,097 records as radiotap/802.11 at 2437 MHz,
+including 1,204 beacons. The raw PCAP remains local and ignored; its hash and
+aggregate counts are in [the hardware record](evidence-2026-09-22.json).
+
+Windows 5/6 GHz capture, wider channels, sustained capture and other adapters are
+not qualified. These observations establish a working capture spike, not a
+production Windows transport or installer.
