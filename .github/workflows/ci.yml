@@ -14,6 +14,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  windows-research:
+    name: Windows research / Python 3.14
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+          cache: pip
+      - name: Install offline test dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Check Python formatting and lint
+        run: |
+          ruff format --check .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ruff check .
+      - name: Check documentation
+        run: python scripts/check_docs.py
+      - name: Offline tests (no adapter or firmware)
+        run: python -m pytest -q
+      - name: Compile native WinUSB probe
+        run: ./research/windows/build_probe.ps1
+
   lint-and-test:
     name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}

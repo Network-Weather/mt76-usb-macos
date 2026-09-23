@@ -4,8 +4,9 @@
 """Experimental MT7961 WinUSB bring-up with two explicit register aliases.
 
 Run from the repository root with the libusb DLL on PATH. This is a hardware
-experiment, not a supported transport. It boots firmware and optionally captures;
-no association or packet injection is requested. A failed reset may need a replug.
+experiment, not a supported transport. Boot/capture modes are passive; script mode
+forwards the selected research tool's explicit controls, including TX opt-ins.
+A failed reset may need a replug.
 """
 
 from __future__ import annotations
@@ -23,13 +24,37 @@ import mt7921u as m  # noqa: E402
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("tool", choices=("boot", "capture"))
+    parser.add_argument("tool", choices=("boot", "capture", "script"))
     parser.add_argument("args", nargs=argparse.REMAINDER)
     args = parser.parse_args()
+    if args.tool == "script":
+        if not args.args:
+            parser.error("script requires a repository scripts/ or research/ Python file")
+        path = (ROOT / args.args.pop(0)).resolve()
+        if (
+            path.parent
+            not in (
+                ROOT / "scripts",
+                ROOT / "research",
+                ROOT / "research/windows",
+                ROOT / "examples",
+            )
+            or path.suffix != ".py"
+        ):
+            parser.error(
+                "script must be a direct Python file in scripts/, research/, research/windows/, or examples/"
+            )
+        if not path.is_file():
+            parser.error("script does not exist")
+    else:
+        path = ROOT / (
+            "scripts/firmware_boot.py" if args.tool == "boot" else "examples/sniff_to_pcap.py"
+        )
 
     read_uhw = m.Mt7921u.uhw_rr
     write_uhw = m.Mt7921u.uhw_wr
     open_device = m.open_device
+    original_argv = sys.argv
     aliases = {m.MT_SSUSB_EPCTL_CSR_EP_RST_OPT, m.MT_UDMA_CONN_INFRA_STATUS_SEL}
 
     def open_mt7961(usb_id=None, verbose=False, address=None):
@@ -54,9 +79,6 @@ def main() -> None:
     m.Mt7921u.uhw_wr = write
     # The factory returns an unopened object, so refuse other chips before USB I/O.
     m.open_device = open_mt7961
-    path = ROOT / (
-        "scripts/firmware_boot.py" if args.tool == "boot" else "examples/sniff_to_pcap.py"
-    )
     sys.argv = [str(path), *args.args]
     try:
         runpy.run_path(str(path), run_name="__main__")
@@ -64,6 +86,7 @@ def main() -> None:
         m.Mt7921u.uhw_rr = read_uhw
         m.Mt7921u.uhw_wr = write_uhw
         m.open_device = open_device
+        sys.argv = original_argv
 
 
 if __name__ == "__main__":

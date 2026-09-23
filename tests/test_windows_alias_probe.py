@@ -10,6 +10,32 @@ import mt7921u as m
 from research.windows import boot_alias_probe as probe
 
 
+@pytest.mark.parametrize("path", ["../outside.py", "mt7921u.py", "research/windows/missing.py"])
+def test_script_path_refused_before_patching(monkeypatch, path):
+    monkeypatch.setattr(probe.sys, "argv", ["probe", "script", path])
+    read, factory = m.Mt7921u.uhw_rr, m.open_device
+    with pytest.raises(SystemExit) as result:
+        probe.main()
+    assert result.value.code == 2
+    assert m.Mt7921u.uhw_rr is read
+    assert m.open_device is factory
+
+
+def test_script_arguments_forwarded(monkeypatch):
+    seen = []
+
+    def delegated_script(path, run_name):
+        seen.append((path, run_name, list(probe.sys.argv)))
+
+    monkeypatch.setattr(probe.runpy, "run_path", delegated_script)
+    monkeypatch.setattr(
+        probe.sys, "argv", ["probe", "script", "scripts/hardware_smoke.py", "--plan", "all"]
+    )
+    probe.main()
+    path = str(probe.ROOT / "scripts/hardware_smoke.py")
+    assert seen == [(path, "__main__", [path, "--plan", "all"])]
+
+
 def test_refuse_other_chip_before_returning_device_and_restore_on_exit(monkeypatch):
     def factory(*args, **kwargs):
         return SimpleNamespace(CHIP=m.CHIP_MT7925)
