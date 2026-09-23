@@ -4,8 +4,10 @@ This spike targets the ALFA AWUS036AXML (`0e8d:7961`, Wi-Fi interface 3) on
 Windows 11 x64. It is not a Windows support claim. The production driver remains
 unchanged; the native SDK probe isolates USB access from Python and libusb.
 
-The opt-in alias experiment boots firmware and captures on channels 6 and 36 at 20 MHz
-on the tested host. See [the sanitized hardware record](evidence-2026-09-22.json).
+The opt-in alias experiment boots firmware and captures on 2.4, 5 and 6 GHz
+on the tested host, including received 40/80 MHz frames on 5/6 GHz. See
+[initial bring-up evidence](evidence-2026-09-22.json) and the broader
+[qualification report](QUALIFICATION.md). Intermittent bring-up timeouts remain.
 
 ## Prepare the Python tools
 
@@ -88,7 +90,7 @@ same address succeeds. A broad substitution of all UHW accesses with ordinary
 accesses fails during reset and leaves register reads timing out. These results
 do not establish whether WinUSB or the composite parent rejects the request.
 
-The offline suite passes with `python -X utf8 -m pytest -q`: 1,491 passes and
+The offline suite passes with `python -X utf8 -m pytest -q`: 1,495 passes and
 139 skips. Without UTF-8 mode, two documentation tests fail because Windows uses
 cp1252 for implicit text decoding. C compilation passes `/W4 /WX /std:c17`;
 repository Python lint, formatting and documentation checks pass locally.
@@ -105,6 +107,35 @@ A 5 GHz capture on channel 36 at 20 MHz writes 336 frames over ten seconds.
 Independent Scapy decoding recognizes all records as radiotap/802.11 at 5180 MHz,
 including 207 beacons. Its hash and aggregate counts are in the same hardware record.
 
-Windows 6 GHz capture, wider channels, sustained capture and other adapters are
-not qualified. These observations establish a working capture spike, not a
-production Windows transport or installer.
+The broader [qualification report](QUALIFICATION.md) covers tri-band capture,
+20/40/80 MHz configurations, a 60-second receive run, retuning, firmware queries,
+diagnostic controls and bounded TX submission. It distinguishes successful
+measurements from unsupported commands, empty diagnostic streams and recovery
+failures. Other adapters, multi-radio operation and a production Windows
+transport or installer remain unqualified.
+
+## Run existing research on Windows
+
+The wrapper can run a repository Python experiment with its normal arguments:
+
+```powershell
+.\.venv\Scripts\python.exe research\windows\boot_alias_probe.py script research/rx_vector_probe.py 5GHz:36 --usb-id 0e8d:7961 --seconds 3 --g5-cycle
+.\.venv\Scripts\python.exe research\windows\qualify.py
+```
+
+`qualify.py` runs a bounded receive/query matrix sequentially, including reversible
+RF receive-test and diagnostic controls. It includes no transmissions or
+nonvolatile writes. Each probe has a 180-second deadline; after a nonzero exit,
+the harness attempts a firmware reload and stops if recovery fails. Exit 0 from
+the harness means it completed its plan with recovery available, **not** that
+every tested capability works. Inspect every result and its diagnostic output.
+Use `--start` / `--stop` to select a contiguous subset. Logs and a hash-indexed
+`runs.json` stay under a timestamped, ignored `build/windows/qualification/` folder.
+
+`single_radio_probe.py` exercises temperature, read-only efuse access, clock
+snapshots, power/noise queries and reversible PHY counters. Run it through
+`boot_alias_probe.py script research/windows/single_radio_probe.py`. Its optional
+`--acknowledge-experimental-transmit` flag submits exactly three synthetic wildcard
+Probe Requests on channel 6, reports firmware TX status, and reloads firmware.
+It cannot establish independent reception. Script mode preserves each delegated
+tool's opt-in controls; check that tool's hardware requirements before running it.

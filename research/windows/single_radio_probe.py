@@ -130,7 +130,13 @@ def main():
             except Exception as exc:
                 out["cleanup_error"] = str(exc)
     print(json.dumps(out, indent=2))
-    return int("error" in out or "restore_error" in out or not out.get("cleanup_reload_alive"))
+    return int(
+        "error" in out
+        or "restore_error" in out
+        or "cleanup_error" in out
+        or out.get("counter_bits_restored") is False
+        or not out.get("cleanup_reload_alive")
+    )
 
 
 if __name__ == "__main__":
