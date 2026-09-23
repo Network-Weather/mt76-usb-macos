@@ -29,7 +29,14 @@ def main() -> None:
 
     read_uhw = m.Mt7921u.uhw_rr
     write_uhw = m.Mt7921u.uhw_wr
+    open_device = m.open_device
     aliases = {m.MT_SSUSB_EPCTL_CSR_EP_RST_OPT, m.MT_UDMA_CONN_INFRA_STATUS_SEL}
+
+    def open_mt7961(usb_id=None, verbose=False, address=None):
+        device = open_device(usb_id, verbose=verbose, address=address)
+        if device.CHIP != m.CHIP_MT7921:
+            raise m.UnsupportedDevice("Windows register aliases are qualified only for MT7961")
+        return device
 
     def read(self, address):
         if address in aliases:
@@ -45,6 +52,8 @@ def main() -> None:
     # responding while the subsystem is held in reset.
     m.Mt7921u.uhw_rr = read
     m.Mt7921u.uhw_wr = write
+    # The factory returns an unopened object, so refuse other chips before USB I/O.
+    m.open_device = open_mt7961
     path = ROOT / (
         "scripts/firmware_boot.py" if args.tool == "boot" else "examples/sniff_to_pcap.py"
     )
@@ -54,6 +63,7 @@ def main() -> None:
     finally:
         m.Mt7921u.uhw_rr = read_uhw
         m.Mt7921u.uhw_wr = write_uhw
+        m.open_device = open_device
 
 
 if __name__ == "__main__":

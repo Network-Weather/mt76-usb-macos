@@ -9,7 +9,7 @@ separately evidence-gated in [docs/TESTING.md](docs/TESTING.md).
 
 - Experimental [Windows MT7961 USB probes](research/windows/README.md), including
   Python/libusb setup and a read-only native WinUSB probe. An opt-in two-register
-  workaround boots firmware and captures channel 6 at 20 MHz on one Windows 11
+  workaround boots firmware and captures channels 6 and 36 at 20 MHz on one Windows 11
   host; broader Windows support remains unqualified.
 
 - Native C acquisition parity with the 2026-09-04 Python research: bounded hardware

@@ -71,9 +71,29 @@
     }
   },
   "limits": [
-    "One MT7961 adapter, one Windows host, channel 6 at 20 MHz only.",
-    "No Windows 5/6 GHz, wider-channel, throughput or sustained-capture qualification.",
+    "One MT7961 adapter, one Windows host, channels 6 and 36 at 20 MHz only.",
+    "No Windows 6 GHz, wider-channel, throughput or sustained-capture qualification.",
     "Raw PCAP remains local; this record contains no captured addresses, SSIDs or payloads.",
     "Broad substitution of all UHW accesses failed during reset and required physical unplug/replug."
-  ]
+  ],
+  "capture_5ghz": {
+    "status": "pass",
+    "channel": 36,
+    "width_mhz": 20,
+    "duration_requested_seconds": 10,
+    "transfers": 336,
+    "frames_written": 336,
+    "command": "python research/windows/boot_alias_probe.py capture 36 10 build/windows/capture-5ghz-ch36.pcap 5GHz",
+    "pcap_sha256": "0f34daafff6fca097b326b0495803cc59bf5663745d2b92e6ebbd8e11a70936e",
+    "pcap_bytes": 61716,
+    "independent_decode": {
+      "packets": 336,
+      "radiotap": 336,
+      "dot11": 336,
+      "beacons": 207,
+      "frequencies_mhz": {
+        "5180": 336
+      }
+    }
+  }
 }

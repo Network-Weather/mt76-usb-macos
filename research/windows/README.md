@@ -4,7 +4,7 @@ This spike targets the ALFA AWUS036AXML (`0e8d:7961`, Wi-Fi interface 3) on
 Windows 11 x64. It is not a Windows support claim. The production driver remains
 unchanged; the native SDK probe isolates USB access from Python and libusb.
 
-The opt-in alias experiment boots firmware and captures on channel 6 at 20 MHz
+The opt-in alias experiment boots firmware and captures on channels 6 and 36 at 20 MHz
 on the tested host. See [the sanitized hardware record](evidence-2026-09-22.json).
 
 ## Prepare the Python tools
@@ -64,12 +64,14 @@ write device registers or print device serials. Exit 0 means all reads succeeded
 .\.venv\Scripts\python.exe research\windows\boot_alias_probe.py boot --usb-id 0e8d:7961 --rx 3
 # Only after bring-up succeeds:
 .\.venv\Scripts\python.exe research\windows\boot_alias_probe.py capture 6 10 build\windows\capture.pcap 2.4GHz
+.\.venv\Scripts\python.exe research\windows\boot_alias_probe.py capture 36 10 build\windows\capture-5ghz.pcap 5GHz
 ```
 
 This opt-in wrapper substitutes ordinary register reads/writes for two addresses:
 endpoint reset options and the connection-infrastructure status selector. Reset
 assertion and deassertion retain the UHW request encoding. The wrapper restores
-the Python methods on exit. This has narrow hardware evidence only; if the
+the Python methods on exit and rejects other chip families before opening the
+selected device. This has narrow hardware evidence only; if the
 adapter stops responding, unplug it and reconnect it before another attempt.
 
 ## Evidence and limits
@@ -86,7 +88,7 @@ same address succeeds. A broad substitution of all UHW accesses with ordinary
 accesses fails during reset and leaves register reads timing out. These results
 do not establish whether WinUSB or the composite parent rejects the request.
 
-The offline suite passes with `python -X utf8 -m pytest -q`: 1,489 passes and
+The offline suite passes with `python -X utf8 -m pytest -q`: 1,491 passes and
 139 skips. Without UTF-8 mode, two documentation tests fail because Windows uses
 cp1252 for implicit text decoding. C compilation passes `/W4 /WX /std:c17`;
 repository Python lint, formatting and documentation checks pass locally.
@@ -99,6 +101,10 @@ captures 2,097 frames over ten seconds on channel 6 at 20 MHz. Independent Scapy
 including 1,204 beacons. The raw PCAP remains local and ignored; its hash and
 aggregate counts are in [the hardware record](evidence-2026-09-22.json).
 
-Windows 5/6 GHz capture, wider channels, sustained capture and other adapters are
+A 5 GHz capture on channel 36 at 20 MHz writes 336 frames over ten seconds.
+Independent Scapy decoding recognizes all records as radiotap/802.11 at 5180 MHz,
+including 207 beacons. Its hash and aggregate counts are in the same hardware record.
+
+Windows 6 GHz capture, wider channels, sustained capture and other adapters are
 not qualified. These observations establish a working capture spike, not a
 production Windows transport or installer.
